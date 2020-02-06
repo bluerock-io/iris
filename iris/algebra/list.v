@@ -328,6 +328,24 @@ Section properties.
     length l2 ≤ length l1 → (l1 ++ l3) ⋅ l2 = (l1 ⋅ l2) ++ l3.
   Proof. intros ?. by rewrite list_op_app take_ge // drop_ge // right_id_L. Qed.
 
+  Lemma list_drop_op l1 l2 i:
+    drop i l1 ⋅ drop i l2 = drop i (l1 ⋅ l2).
+  Proof.
+    apply list_eq. intros j.
+    rewrite list_lookup_op !lookup_drop -list_lookup_op.
+    done.
+  Qed.
+
+  Lemma list_take_op l1 l2 i:
+    take i l1 ⋅ take i l2 = take i (l1 ⋅ l2).
+  Proof.
+    apply list_eq. intros j.
+    rewrite list_lookup_op.
+    destruct (decide (j < i)%nat).
+    - by rewrite !lookup_take // -list_lookup_op.
+    - by rewrite !lookup_take_ge //; lia.
+  Qed.
+
   Lemma list_lookup_validN_Some n l i x : ✓{n} l → l !! i ≡{n}≡ Some x → ✓{n} x.
   Proof. move=> /list_lookup_validN /(_ i)=> Hl Hi; move: Hl. by rewrite Hi. Qed.
   Lemma list_lookup_valid_Some l i x : ✓ l → l !! i ≡ Some x → ✓ x.
@@ -510,6 +528,152 @@ Section properties.
     rewrite -list_singletonM_snoc. apply op_local_update => ??.
     rewrite list_singletonM_snoc app_validN cons_validN. split_and? => //; [| constructor].
     by apply cmra_valid_validN.
+  Qed.
+
+  Lemma list_lookup_local_update l k l' k':
+    (∀ i, (l !! i, k !! i) ~l~> (l' !! i, k' !! i)) →
+    (l, k) ~l~> (l', k').
+  Proof.
+    intros Hup.
+    apply local_update_unital=> n z Hlv Hl.
+    assert (∀ i, ✓{n} (l' !! i) /\ l' !! i ≡{n}≡ (k' ⋅ z) !! i) as Hup'.
+    { intros i. destruct (Hup i n (Some (z !! i))); simpl in *.
+      - by apply list_lookup_validN.
+      - rewrite -list_lookup_op.
+        by apply list_dist_lookup.
+      - by rewrite list_lookup_op.
+    }
+    split; [apply list_lookup_validN | apply list_dist_lookup].
+    all: intros i; by destruct (Hup' i).
+  Qed.
+
+  Lemma list_alter_local_update i f g l k:
+    (l !! i, k !! i) ~l~> (f <$> (l !! i), g <$> (k !! i)) →
+    (l, k) ~l~> (alter f i l, alter g i k).
+  Proof.
+    intros Hup.
+    apply list_lookup_local_update.
+    intros i'.
+    destruct (decide (i = i')) as [->|].
+    - rewrite !list_lookup_alter //.
+    - rewrite !list_lookup_alter_ne //.
+  Qed.
+
+  (* The "⋅ (replicate ... ++ ...)" part is needed because `m` could be
+     shorter than `l`. *)
+  Lemma app_l_local_update l k k' m m':
+    (k, drop (length l) m) ~l~> (k', m') →
+    (l ++ k, m) ~l~> (l ++ k', take (length l) m ⋅ (replicate (length l) ε ++ m')).
+  Proof.
+    move /(local_update_unital _) => HUp.
+    apply local_update_unital => n mm /(app_validN _) [Hlv Hkv] Heq.
+    move: (HUp n (drop (length l) mm) Hkv).
+    intros [Hk'v Hk'eq];
+      first by rewrite list_drop_op -Heq drop_app_le // drop_ge //.
+    split; first by apply app_validN.
+    rewrite Hk'eq.
+    apply list_dist_lookup. intros i. rewrite !list_lookup_op.
+    destruct (decide (i < length l)%nat) as [HLt|HGe].
+    - rewrite !lookup_app_l //; last by rewrite replicate_length.
+      rewrite lookup_take; last done.
+      rewrite lookup_replicate_2; last done.
+      rewrite comm assoc -list_lookup_op.
+      rewrite (mixin_cmra_comm _ list_cmra_mixin) -Heq.
+      rewrite lookup_app_l; last done.
+      apply lookup_lt_is_Some in HLt as [? HEl].
+      by rewrite HEl -Some_op ucmra_unit_right_id.
+    - assert (length l ≤ i)%nat as HLe by lia.
+      rewrite !lookup_app_r //; last by rewrite replicate_length.
+      rewrite replicate_length.
+      rewrite lookup_take_ge; last done.
+      replace (mm !! _) with (drop (length l) mm !! (i - length l)%nat);
+        last by rewrite lookup_drop; congr (mm !! _); lia.
+      rewrite -assoc -list_lookup_op. symmetry.
+      clear. move: n. apply equiv_dist. apply: ucmra_unit_left_id.
+  Qed.
+
+  Lemma app_l_local_update' l k k' m:
+    (k, ε) ~l~> (k', m) →
+    (l ++ k, ε) ~l~> (l ++ k', replicate (length l) ε ++ m).
+  Proof.
+    remember (app_l_local_update l k k' ε m) as HH. clear HeqHH. move: HH.
+    by rewrite take_nil drop_nil ucmra_unit_left_id.
+  Qed.
+
+  Lemma app_local_update l m:
+    ✓ m → (l, ε) ~l~> (l ++ m, replicate (length l) ε ++ m).
+  Proof.
+    move: (app_l_local_update' l [] m m).
+    rewrite app_nil_r.
+    move=> H Hvm. apply H.
+    apply local_update_unital=> n z _. rewrite ucmra_unit_left_id.
+    move=><-. rewrite ucmra_unit_right_id. split; last done.
+    by apply cmra_valid_validN.
+  Qed.
+
+  (* The "replicate ..." part is needed because `m'` could be
+     shorter than `l`. *)
+  Lemma app_r_local_update l l' k m m':
+    length l = length l' →
+    (l, take (length l) m) ~l~> (l', m') →
+    (l ++ k, m) ~l~> (l' ++ k, replicate (length l) ε ⋅ m' ++ drop (length l) m).
+  Proof.
+    move=> HLen /(local_update_unital _) HUp.
+    apply local_update_unital=> n mm /(app_validN _) [Hlv Hkv] Heq.
+    move: (HUp n (take (length l) mm) Hlv).
+    intros [Hl'v Hl'eq];
+      first by rewrite list_take_op -Heq take_app_le // take_ge //.
+    split; first by apply app_validN.
+    assert (k ≡{n}≡ (drop (length l) (m ⋅ mm))) as ->
+      by rewrite -Heq drop_app_le // drop_ge //.
+    move: HLen. rewrite Hl'eq. clear. move=> HLen.
+    assert (length m' ≤ length l)%nat as HLen'.
+    by rewrite list_length_op in HLen; lia.
+    rewrite list_op_app list_length_op replicate_length max_l;
+      last lia.
+    rewrite list_drop_op -assoc. rewrite HLen. move: HLen'.
+    remember (length l) as o. clear.
+    rewrite list_length_op.
+    remember (length _ `max` length _)%nat as o'.
+    assert (m' ⋅ take o' mm ≡{n}≡ replicate o' ε ⋅ (m' ⋅ take o' mm))
+      as <-; last done.
+    subst. remember (m' ⋅ take _ _) as m''.
+    remember (length m' `max` length (take o mm))%nat as o''.
+    assert (o'' ≤ length m'')%nat as HLen.
+    by subst; rewrite list_length_op !take_length; lia.
+    move: HLen. clear.
+    intros HLen. move: n. apply equiv_dist, list_equiv_lookup.
+    intros i. rewrite list_lookup_op.
+    remember length as L.
+    destruct (decide (i < L m''))%nat as [E|E].
+    - subst. apply lookup_lt_is_Some in E as [? HEl].
+      rewrite HEl.
+      destruct (replicate _ _ !! _) eqn:Z; last done.
+      apply lookup_replicate in Z as [-> _].
+      by rewrite -Some_op ucmra_unit_left_id.
+    - rewrite lookup_ge_None_2.
+      rewrite lookup_ge_None_2.
+      done.
+      by rewrite replicate_length; lia.
+      rewrite -HeqL. lia.
+  Qed.
+
+  Lemma app_r_local_update' l l' k k':
+    length l = length l' →
+    (l, ε) ~l~> (l', k') →
+    (l ++ k, ε) ~l~> (l' ++ k, k').
+  Proof.
+    move=> HLen /(local_update_unital _) HUp.
+    apply local_update_unital=> n mz /(app_validN _) [Hlv Hkv].
+    move: (HUp n l). rewrite !ucmra_unit_left_id.
+    intros [Hk'v Hk'eq] <-; [done|done|].
+    split; first by apply app_validN.
+    move: HLen. rewrite Hk'eq. clear. move=> HLen.
+    assert (length k' ≤ length l)%nat as Hk'Len
+        by (rewrite HLen list_length_op; lia).
+    rewrite (mixin_cmra_comm _ list_cmra_mixin k' (l ++ k)).
+    rewrite list_op_app_le; last done.
+    by rewrite (mixin_cmra_comm _ list_cmra_mixin l k').
   Qed.
 
 End properties.
