@@ -1426,6 +1426,18 @@ Tactic Notation "iModCore" constr(H) :=
 
 (** [pat0] is the unparsed pattern, and is only used in error messages *)
 Local Ltac iDestructHypGo Hz pat0 pat :=
+  let iAndDestructAs pat1 pat2 :=
+      let Hy := iFresh in
+      iAndDestruct Hz as Hz Hy;
+      iDestructHypGo Hz pat0 pat1; iDestructHypGo Hy pat0 pat2 in
+  let iExistDestructPure gallina_id pat2 :=
+      lazymatch gallina_id with
+      | IGallinaAnon =>
+        iExistDestruct Hz as ? Hz; iDestructHypGo Hz pat0 pat2
+      | IGallinaNamed ?s =>
+        let x := string_to_ident s in
+        iExistDestruct Hz as x Hz; iDestructHypGo Hz pat0 pat2
+      end in
   lazymatch pat with
   | IFresh =>
      lazymatch Hz with
@@ -1444,9 +1456,11 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
   | IList [[IDrop; ?pat2]] =>
      iAndDestructChoice Hz as Right Hz;
      iDestructHypGo Hz pat0 pat2
-  | IList [[?pat1; ?pat2]] =>
-     let Hy := iFresh in iAndDestruct Hz as Hz Hy;
-     iDestructHypGo Hz pat0 pat1; iDestructHypGo Hy pat0 pat2
+  (* heuristic to fallback to [iAndDestruct] when both patterns are pure, since
+  the instances for [IntoAnd] are more general than for [IntoExist]. *)
+  | IList [[IPure ?id1; IPure ?id2]] => iAndDestructAs (IPure id1) (IPure id2)
+  | IList [[IPure ?gallina_id; ?pat2]] => iExistDestructPure gallina_id pat2
+  | IList [[?pat1; ?pat2]] => iAndDestructAs pat1 pat2
   | IList [_ :: _ :: _] => fail "iDestruct:" pat0 "has too many conjuncts"
   | IList [[_]] => fail "iDestruct:" pat0 "has just a single conjunct"
 

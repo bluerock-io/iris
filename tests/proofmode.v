@@ -251,6 +251,15 @@ Lemma test_iDestruct_exists_automatic_def P :
   an_exists P -∗ ∃ k, ▷^k P.
 Proof. iDestruct 1 as (?) "H". by iExists an_exists_name. Qed.
 
+(* use an Iris intro pattern [% H] to indicate iExistDestruct rather than (?) *)
+Lemma test_exists_intro_pattern_anonymous P (Φ: nat → PROP) :
+  P ∗ (∃ y:nat, Φ y) -∗ ∃ x, P ∗ Φ x.
+Proof.
+  iIntros "[HP1 [% HP2]]".
+  iExists y.
+  iFrame "HP1 HP2".
+Qed.
+
 Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → ⊢ ⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P.
 Proof. iIntros (??) "H". auto. Qed.
 
@@ -1378,6 +1387,14 @@ Lemma test_not_fresh P (φ : Prop) (H : φ) :
 Proof.
   Fail iIntros "[H %H]".
 Abort.
+
+Lemma test_exists_intro_pattern P (Φ: nat → PROP) :
+  P ∗ (∃ y:nat, Φ y) -∗ ∃ x, P ∗ Φ x.
+Proof.
+  iIntros "[HP1 [%y HP2]]".
+  iExists y.
+  iFrame "HP1 HP2".
+Qed.
 
 End pure_name_tests.
 

@@ -807,14 +807,16 @@ Proof. rewrite /IntoExist=> HP. by rewrite HP affinely_exist. Qed.
 Global Instance into_exist_intuitionistically {A} P (Φ : A → PROP) name :
   IntoExist P Φ name → IntoExist (□ P) (λ a, □ (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP. by rewrite HP intuitionistically_exist. Qed.
-(* [to_ident_name H] makes the default name [H] when [P] is introduced with [?] *)
+(* [to_ident_name H] makes the default name [H] when [P] is destructed with
+[iExistDestruct] *)
 Global Instance into_exist_and_pure P Q φ :
   IntoPureT P φ → IntoExist (P ∧ Q) (λ _ : φ, Q) (to_ident_name H).
 Proof.
   intros (φ'&->&?). rewrite /IntoExist (into_pure P).
   apply pure_elim_l=> Hφ. by rewrite -(exist_intro Hφ).
 Qed.
-(* [to_ident_name H] makes the default name [H] when [P] is introduced with [?] *)
+(* [to_ident_name H] makes the default name [H] when [P] is destructed with
+[iExistDestruct] *)
 Global Instance into_exist_sep_pure P Q φ :
   IntoPureT P φ →
   TCOr (Affine P) (Absorbing Q) →
