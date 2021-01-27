@@ -1181,6 +1181,37 @@ Section map.
     ⊢ ([∗ map] k↦x ∈ m, Φ k x) ∧ ([∗ map] k↦x ∈ m, Ψ k x).
   Proof. auto using and_intro, big_sepM_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepM_pure_1 (φ : K → A → Prop) m :
+    ([∗ map] k↦x ∈ m, ⌜φ k x⌝) ⊢@{PROP} ⌜map_Forall φ m⌝.
+  Proof.
+    induction m using map_ind; simpl.
+    - rewrite pure_True; first by apply True_intro.
+      apply map_Forall_empty.
+    - rewrite -> big_sepM_insert by auto.
+      rewrite -> map_Forall_insert by auto.
+      rewrite IHm sep_and -pure_and.
+      apply pure_mono. done.
+  Qed.
+  Lemma big_sepM_affinely_pure_2 (φ : K → A → Prop) m :
+    <affine> ⌜map_Forall φ m⌝ ⊢@{PROP} ([∗ map] k↦x ∈ m, <affine> ⌜φ k x⌝).
+  Proof.
+    induction m using map_ind; simpl.
+    - rewrite big_sepM_empty. apply affinely_elim_emp.
+    - rewrite -> big_sepM_insert by auto.
+      rewrite -> map_Forall_insert by auto.
+      rewrite pure_and affinely_and IHm persistent_and_sep_1. done.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepM_pure `{!BiAffine PROP} (φ : K → A → Prop) m :
+    ([∗ map] k↦x ∈ m, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜map_Forall φ m⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_sepM_pure_1.
+    rewrite -(affine_affinely (⌜map_Forall φ m⌝)%I).
+    rewrite big_sepM_affinely_pure_2.
+    apply big_sepM_mono=>???.
+    rewrite affine_affinely. done.
+  Qed.
+
   Lemma big_sepM_persistently `{BiAffine PROP} Φ m :
     (<pers> ([∗ map] k↦x ∈ m, Φ k x)) ⊣⊢ ([∗ map] k↦x ∈ m, <pers> (Φ k x)).
   Proof. apply (big_opM_commute _). Qed.
@@ -1292,6 +1323,7 @@ Section map.
   Global Instance big_sepM_timeless `{!Timeless (emp%I : PROP)} Φ m :
     (∀ k x, Timeless (Φ k x)) → Timeless ([∗ map] k↦x ∈ m, Φ k x).
   Proof. rewrite big_opM_eq. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
+
 End map.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
