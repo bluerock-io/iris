@@ -43,6 +43,12 @@ Section instances.
     iIntros "!> >_". done.
   Qed.
 
+  Global Instance persistent_laterable `{!BiAffine PROP} P :
+    Persistent P → Laterable P.
+  Proof.
+    intros ?. apply intuitionistic_laterable; apply _.
+  Qed.
+
   Global Instance sep_laterable P Q :
     Laterable P → Laterable Q → Laterable (P ∗ Q).
   Proof.
@@ -69,7 +75,8 @@ Section instances.
     Laterable ([∗] Ps).
   Proof. induction 2; simpl; apply _. Qed.
 
-  (* A wrapper to obtain a weaker, laterable form of any assertion. *)
+  (* A wrapper to obtain a weaker, laterable form of any assertion.
+     Alternatively: the modality corresponding to [Laterable]. *)
   Definition make_laterable (Q : PROP) : PROP :=
     ∃ P, ▷ P ∗ □ (▷ P -∗ Q).
 
@@ -86,13 +93,17 @@ Section instances.
     (Q1 ⊢ Q2) → (make_laterable Q1 ⊢ make_laterable Q2).
   Proof. by intros ->. Qed.
 
-  (** A stronger version of [make_laterable_mono] that lets us keep persistent
-  resources. *)
+  (** A stronger version of [make_laterable_mono] that lets us keep laterable
+  resources. We cannot keep arbitrary resources since that would let us "frame
+  in" non-laterable things. *)
   Lemma make_laterable_wand Q1 Q2 :
-    □ (Q1 -∗ Q2) -∗ (make_laterable Q1 -∗ make_laterable Q2).
+    make_laterable (Q1 -∗ Q2) -∗ (make_laterable Q1 -∗ make_laterable Q2).
   Proof.
-    iIntros "#HQ HQ1". iDestruct "HQ1" as (P) "[HP #HQ1]".
-    iExists P. iFrame. iIntros "!> HP". iApply "HQ". iApply "HQ1". done.
+    iIntros "HQ HQ1".
+    iDestruct "HQ" as (Q1') "[HQ1' #HQ]".
+    iDestruct "HQ1" as (P) "[HP #HQ1]".
+    iExists (Q1' ∗ P)%I. iFrame. iIntros "!> [HQ1' HP]".
+    iApply ("HQ" with "HQ1'"). iApply "HQ1". done.
   Qed.
 
   Global Instance make_laterable_laterable Q :
