@@ -312,6 +312,28 @@ Proof.
   iApply (twp_store with "H"); [by auto..|]; iIntros "H HΦ". by iApply "HΦ".
 Qed.
 
+Lemma twp_xchg s E l v' v :
+  val_is_unboxed v' ->
+  [[{ l ↦ v' }]] Xchg (Val $ LitV $ LitLoc l) (Val v) @ s; E
+  [[{ RET v'; l ↦ v }]].
+Proof.
+  iIntros (? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; first done.
+  iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (gen_heap_valid with "Hσ Hl") as %?.
+  iSplit; first by eauto with head_step.
+  iIntros (κ v2 σ2 efs Hstep); inv_head_step.
+  iMod (gen_heap_update with "Hσ Hl") as "[$ Hl]".
+  iModIntro. iSplit; first done. iSplit; first done. iFrame. by iApply "HΦ".
+Qed.
+
+Lemma wp_xchg s E l v' v :
+  val_is_unboxed v' ->
+  {{{ ▷ l ↦ v' }}} Xchg (Val $ LitV (LitLoc l)) (Val v) @ s; E
+  {{{ RET v'; l ↦ v }}}.
+Proof.
+  iIntros (? Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
+  iApply (twp_xchg with "H"); [by auto..|]. iIntros "H HΦ". by iApply "HΦ".
+Qed.
+
 Lemma twp_cmpxchg_fail s E l dq v' v1 v2 :
   v' ≠ v1 → vals_compare_safe v' v1 →
   [[{ l ↦{dq} v' }]] CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E

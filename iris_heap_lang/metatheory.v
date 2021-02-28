@@ -13,7 +13,7 @@ Fixpoint is_closed_expr (X : list string) (e : expr) : bool :=
   | Rec f x e => is_closed_expr (f :b: x :b: X) e
   | UnOp _ e | Fst e | Snd e | InjL e | InjR e | Fork e | Free e | Load e =>
      is_closed_expr X e
-  | App e1 e2 | BinOp _ e1 e2 | Pair e1 e2 | AllocN e1 e2 | Store e1 e2 | FAA e1 e2 =>
+  | App e1 e2 | BinOp _ e1 e2 | Pair e1 e2 | AllocN e1 e2 | Store e1 e2 | Xchg e1 e2 | FAA e1 e2 =>
      is_closed_expr X e1 && is_closed_expr X e2
   | If e0 e1 e2 | Case e0 e1 e2 | CmpXchg e0 e1 e2 | Resolve e0 e1 e2 =>
      is_closed_expr X e0 && is_closed_expr X e1 && is_closed_expr X e2
@@ -137,6 +137,7 @@ Proof.
   - by apply heap_closed_alloc.
   - select (_ !! _ = Some _) ltac:(fun H => by specialize (Clσ1 _ _ H)).
   - select (_ !! _ = Some _) ltac:(fun H => by specialize (Clσ1 _ _ H)).
+  - select (_ !! _ = Some _) ltac:(fun H => by specialize (Clσ1 _ _ H)).
   - case_match; try apply map_Forall_insert_2; by naive_solver.
 Qed.
 
@@ -160,6 +161,7 @@ Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
   | Free e => Free (subst_map vs e)
   | Load e => Load (subst_map vs e)
   | Store e1 e2 => Store (subst_map vs e1) (subst_map vs e2)
+  | Xchg e1 e2 => Xchg (subst_map vs e1) (subst_map vs e2)
   | CmpXchg e0 e1 e2 => CmpXchg (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
   | FAA e1 e2 => FAA (subst_map vs e1) (subst_map vs e2)
   | NewProph => NewProph

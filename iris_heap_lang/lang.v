@@ -112,6 +112,7 @@ Inductive expr :=
   | Load (e : expr)
   | Store (e1 : expr) (e2 : expr)
   | CmpXchg (e0 : expr) (e1 : expr) (e2 : expr) (* Compare-exchange *)
+  | Xchg (e0 : expr) (e1 : expr) (* exchange *)
   | FAA (e1 : expr) (e2 : expr) (* Fetch-and-add *)
   (* Prophecy *)
   | NewProph
@@ -249,6 +250,8 @@ Proof.
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
      | CmpXchg e0 e1 e2, CmpXchg e0' e1' e2' =>
         cast_if_and3 (decide (e0 = e0')) (decide (e1 = e1')) (decide (e2 = e2'))
+     | Xchg e0 e1, Xchg e0' e1' =>
+        cast_if_and (decide (e0 = e0')) (decide (e1 = e1'))
      | FAA e1 e2, FAA e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
      | NewProph, NewProph => left _
@@ -331,6 +334,7 @@ Proof.
      | Load e => GenNode 15 [go e]
      | Store e1 e2 => GenNode 16 [go e1; go e2]
      | CmpXchg e0 e1 e2 => GenNode 17 [go e0; go e1; go e2]
+     | Xchg e0 e1 => GenNode 21 [go e0; go e1]
      | FAA e1 e2 => GenNode 18 [go e1; go e2]
      | NewProph => GenNode 19 []
      | Resolve e0 e1 e2 => GenNode 20 [go e0; go e1; go e2]
@@ -370,6 +374,7 @@ Proof.
      | GenNode 18 [e1; e2] => FAA (go e1) (go e2)
      | GenNode 19 [] => NewProph
      | GenNode 20 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
+     | GenNode 21 [e0; e1] => Xchg (go e0) (go e1)
      | _ => Val $ LitV LitUnit (* dummy *)
      end
    with gov v :=
@@ -384,7 +389,7 @@ Proof.
    for go).
  refine (inj_countable' enc dec _).
  refine (fix go (e : expr) {struct e} := _ with gov (v : val) {struct v} := _ for go).
- - destruct e as [v| | | | | | | | | | | | | | | | | | | | |]; simpl; f_equal;
+ - destruct e as [v| | | | | | | | | | | | | | | | | | | | | |]; simpl; f_equal;
      [exact (gov v)|done..].
  - destruct v; by f_equal.
 Qed.
@@ -422,6 +427,8 @@ Inductive ectx_item :=
   | LoadCtx
   | StoreLCtx (v2 : val)
   | StoreRCtx (e1 : expr)
+  | XchgLCtx (v2 : val)
+  | XchgRCtx (e1 : expr)
   | CmpXchgLCtx (v1 : val) (v2 : val)
   | CmpXchgMCtx (e0 : expr) (v2 : val)
   | CmpXchgRCtx (e0 : expr) (e1 : expr)
@@ -459,6 +466,8 @@ Fixpoint fill_item (Ki : ectx_item) (e : expr) : expr :=
   | LoadCtx => Load e
   | StoreLCtx v2 => Store e (Val v2)
   | StoreRCtx e1 => Store e1 e
+  | XchgLCtx v2 => Xchg e (Val v2)
+  | XchgRCtx e1 => Xchg e1 e
   | CmpXchgLCtx v1 v2 => CmpXchg e (Val v1) (Val v2)
   | CmpXchgMCtx e0 v2 => CmpXchg e0 e (Val v2)
   | CmpXchgRCtx e0 e1 => CmpXchg e0 e1 e
@@ -490,6 +499,7 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | AllocN e1 e2 => AllocN (subst x v e1) (subst x v e2)
   | Free e => Free (subst x v e)
   | Load e => Load (subst x v e)
+  | Xchg e1 e2 => Xchg (subst x v e1) (subst x v e2)
   | Store e1 e2 => Store (subst x v e1) (subst x v e2)
   | CmpXchg e0 e1 e2 => CmpXchg (subst x v e0) (subst x v e1) (subst x v e2)
   | FAA e1 e2 => FAA (subst x v e1) (subst x v e2)
@@ -672,6 +682,14 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV LitUnit) (state_upd_heap <[l:=Some w]> σ)
                []
+  | XchgS l v1 v2 σ :
+     σ.(heap) !! l = Some $ Some v1 →
+     val_is_unboxed v1 →
+     head_step (Xchg (Val $ LitV $ LitLoc l) (Val v2)) σ
+               []
+               (Val v1) (state_upd_heap <[l:=Some v2]> σ)
+               []
+
   | CmpXchgS l v1 v2 vl σ b :
      σ.(heap) !! l = Some $ Some vl →
      (* Crucially, this compares the same way as [EqOp]! *)
