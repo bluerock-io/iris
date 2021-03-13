@@ -371,21 +371,23 @@ Tactic Notation "iPureIntro" :=
     |].
 
 (** Framing *)
-Local Ltac iFrameFinish :=
+(** Helper tactics are exposed for users that build their own custom framing
+logic *)
+Ltac iFrameFinish :=
   pm_prettify;
   try match goal with
   | |- envs_entails _ True => by iPureIntro
   | |- envs_entails _ emp => iEmpIntro
   end.
 
-Local Ltac iFramePure t :=
+Ltac iFramePure t :=
   iStartProof;
   let φ := type of t in
   eapply (tac_frame_pure _ _ _ _ t);
     [iSolveTC || fail "iFrame: cannot frame" φ
     |iFrameFinish].
 
-Local Ltac iFrameHyp H :=
+Ltac iFrameHyp H :=
   iStartProof;
   eapply tac_frame with H _ _ _;
     [pm_reflexivity ||
@@ -396,10 +398,10 @@ Local Ltac iFrameHyp H :=
      fail "iFrame: cannot frame" R
     |pm_reduce; iFrameFinish].
 
-Local Ltac iFrameAnyPure :=
+Ltac iFrameAnyPure :=
   repeat match goal with H : _ |- _ => iFramePure H end.
 
-Local Ltac iFrameAnyIntuitionistic :=
+Ltac iFrameAnyIntuitionistic :=
   iStartProof;
   let rec go Hs :=
     match Hs with [] => idtac | ?H :: ?Hs => repeat iFrameHyp H; go Hs end in
@@ -408,7 +410,7 @@ Local Ltac iFrameAnyIntuitionistic :=
      let Hs := eval cbv in (env_dom (env_intuitionistic Δ)) in go Hs
   end.
 
-Local Ltac iFrameAnySpatial :=
+Ltac iFrameAnySpatial :=
   iStartProof;
   let rec go Hs :=
     match Hs with [] => idtac | ?H :: ?Hs => try iFrameHyp H; go Hs end in
