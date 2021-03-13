@@ -2103,11 +2103,11 @@ Section gmultiset.
     { by rewrite (affine (□ _)%I) big_sepMS_empty. }
     rewrite intuitionistically_sep_dup big_sepMS_disj_union.
     rewrite big_sepMS_singleton. f_equiv.
-    - rewrite (forall_elim x) pure_True ?True_impl; last set_solver.
+    - rewrite (forall_elim x) pure_True ?True_impl; last multiset_solver.
       by rewrite intuitionistically_elim.
     - rewrite -IH. f_equiv. apply forall_mono=> y.
       apply impl_intro_l, pure_elim_l=> ?.
-      by rewrite pure_True ?True_impl; last set_solver.
+      by rewrite pure_True ?True_impl; last multiset_solver.
   Qed.
 
   Lemma big_sepMS_forall `{BiAffine PROP} Φ X :

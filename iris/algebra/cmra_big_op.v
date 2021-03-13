@@ -30,7 +30,7 @@ Lemma big_opMS_None {M : cmra} `{Countable A} (f : A → option M) X :
   ([^op mset] x ∈ X, f x) = None ↔ ∀ x, x ∈ X → f x = None.
 Proof.
   induction X as [|x X IH] using gmultiset_ind.
-  { rewrite big_opMS_empty. set_solver. }
+  { rewrite big_opMS_empty. multiset_solver. }
   rewrite -equiv_None big_opMS_disj_union big_opMS_singleton equiv_None op_None IH.
-  set_solver.
+  multiset_solver.
 Qed.
