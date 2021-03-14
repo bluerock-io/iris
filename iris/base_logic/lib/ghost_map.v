@@ -216,6 +216,20 @@ Section lemmas.
   Qed.
 
   (** Derived big-op versions of above lemmas *)
+  Lemma ghost_map_lookup_big γ m m0 :
+    ghost_map_auth γ 1 m -∗
+    ([∗ map] k↦v ∈ m0, k ↪[γ] v) -∗
+    ⌜m0 ⊆ m⌝.
+  Proof.
+    iInduction m0 as [|k v m0 Hk IH] "IH" using map_ind.
+    { iIntros "_ _". iPureIntro. (* FIXME embedded proof of [map_empty_subseteq]. *)
+      apply map_subseteq_spec. intros k v []%lookup_empty_Some. }
+    rewrite big_sepM_insert //. iIntros "Hauth [Helem Hm0]".
+    iDestruct (ghost_map_lookup with "Hauth Helem") as %Helem.
+    iDestruct ("IH" with "Hauth Hm0") as %Hm0.
+    iPureIntro. apply insert_subseteq_l; done.
+  Qed.
+
   Lemma ghost_map_insert_big {γ m} m' :
     m' ##ₘ m →
     ghost_map_auth γ 1 m ==∗
@@ -228,6 +242,31 @@ Section lemmas.
     rewrite !big_opM_insert // -insert_union_l //.
     by iMod (ghost_map_insert with "Hm'm") as "($ & $)";
       first by apply lookup_union_None.
+  Qed.
+
+  Lemma ghost_map_delete_big {γ m m0} :
+    ghost_map_auth γ 1 m -∗
+    ([∗ map] k↦v ∈ m0, k ↪[γ] v) -∗
+    |==> ghost_map_auth γ 1 (m ∖ m0).
+  Proof.
+    iInduction m0 as [|k v m0 Hk IH] "IH" using map_ind.
+    { iIntros "Hauth _".
+      (* FIXME embedded proof of [map_difference_empty]. *)
+      assert (m ∖ ∅ = m) as ->; last done.
+      apply map_eq. intros i. apply option_eq. intros x.
+      rewrite lookup_difference_Some. rewrite lookup_empty.
+      naive_solver. }
+    rewrite big_sepM_insert //. iIntros "Hauth [Helem Hm0]".
+    iMod ("IH" with "Hauth Hm0") as "Hauth".
+    iMod (ghost_map_delete with "Hauth Helem") as "Hauth".
+    assert (delete k (m ∖ m0) = m ∖ <[k:=v]> m0) as ->; last done.
+    { (* FIXME embedded proof of [map_difference_delete_insert]. *)
+      apply map_eq. intros i. apply option_eq. intros x.
+      rewrite lookup_delete_Some. rewrite !lookup_difference_Some. split.
+      - intros (Hne & Hm & Hm0). rewrite lookup_insert_ne //.
+      - destruct (decide (k = i)) as [->|Hne].
+        + rewrite lookup_insert. naive_solver.
+        + rewrite lookup_insert_ne //. }
   Qed.
 
   Theorem ghost_map_update_big {γ m m0} m1 :
