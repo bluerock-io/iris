@@ -222,8 +222,7 @@ Section lemmas.
     ⌜m0 ⊆ m⌝.
   Proof.
     iInduction m0 as [|k v m0 Hk IH] "IH" using map_ind.
-    { iIntros "_ _". iPureIntro. (* FIXME embedded proof of [map_empty_subseteq]. *)
-      apply map_subseteq_spec. intros k v []%lookup_empty_Some. }
+    { iIntros "_ _". iPureIntro. apply map_empty_subseteq. }
     rewrite big_sepM_insert //. iIntros "Hauth [Helem Hm0]".
     iDestruct (ghost_map_lookup with "Hauth Helem") as %Helem.
     iDestruct ("IH" with "Hauth Hm0") as %Hm0.
@@ -243,6 +242,16 @@ Section lemmas.
     by iMod (ghost_map_insert with "Hm'm") as "($ & $)";
       first by apply lookup_union_None.
   Qed.
+  Lemma ghost_map_insert_persist_big {γ m} m' :
+    m' ##ₘ m →
+    ghost_map_auth γ 1 m ==∗
+    ghost_map_auth γ 1 (m' ∪ m) ∗ ([∗ map] k ↦ v ∈ m', k ↪[γ]□ v).
+  Proof.
+    iIntros (Hdisj) "Hauth".
+    iMod (ghost_map_insert_big m' with "Hauth") as "[$ Helem]"; first done.
+    iApply big_sepM_bupd. iApply (big_sepM_impl with "Helem").
+    iIntros "!#" (k v) "_". iApply ghost_map_elem_persist.
+  Qed.
 
   Lemma ghost_map_delete_big {γ m m0} :
     ghost_map_auth γ 1 m -∗
@@ -250,23 +259,11 @@ Section lemmas.
     |==> ghost_map_auth γ 1 (m ∖ m0).
   Proof.
     iInduction m0 as [|k v m0 Hk IH] "IH" using map_ind.
-    { iIntros "Hauth _".
-      (* FIXME embedded proof of [map_difference_empty]. *)
-      assert (m ∖ ∅ = m) as ->; last done.
-      apply map_eq. intros i. apply option_eq. intros x.
-      rewrite lookup_difference_Some. rewrite lookup_empty.
-      naive_solver. }
+    { iIntros "Hauth _". rewrite right_id //. }
     rewrite big_sepM_insert //. iIntros "Hauth [Helem Hm0]".
     iMod ("IH" with "Hauth Hm0") as "Hauth".
     iMod (ghost_map_delete with "Hauth Helem") as "Hauth".
-    assert (delete k (m ∖ m0) = m ∖ <[k:=v]> m0) as ->; last done.
-    { (* FIXME embedded proof of [map_difference_delete_insert]. *)
-      apply map_eq. intros i. apply option_eq. intros x.
-      rewrite lookup_delete_Some. rewrite !lookup_difference_Some. split.
-      - intros (Hne & Hm & Hm0). rewrite lookup_insert_ne //.
-      - destruct (decide (k = i)) as [->|Hne].
-        + rewrite lookup_insert. naive_solver.
-        + rewrite lookup_insert_ne //. }
+    rewrite -delete_difference. done.
   Qed.
 
   Theorem ghost_map_update_big {γ m m0} m1 :
@@ -290,10 +287,7 @@ Section lemmas.
       iMod (ghost_map_update v' with "Hauth Hl") as "[Hauth Hl]".
       iMod ("IH" $! (<[k:=v']> m) (delete k m1) with "[%] Hauth Hm0") as "[Hauth Hm0]".
       { apply (not_elem_of_dom (D:=gset K)) in Hk. set_solver. }
-      (* FIXME this is an embedded proof of [delete_insert_union] *)
-      rewrite -insert_union_r; last by rewrite lookup_delete.
-      rewrite insert_union_l insert_delete [<[k:=v']> m1]insert_id; last done.
-      iFrame. iClear "#".
+      rewrite union_delete_insert //. iFrame. iClear "#".
       iApply big_sepM_delete; first done. by iFrame.
   Qed.
 
