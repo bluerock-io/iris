@@ -215,4 +215,47 @@ Section lemmas.
     rewrite insert_delete. eauto.
   Qed.
 
+  (** Derived big-op versions of above lemmas *)
+  Lemma ghost_map_insert_big {γ m} m' :
+    m' ##ₘ m →
+    ghost_map_auth γ 1 m ==∗
+    ghost_map_auth γ 1 (m' ∪ m) ∗ ([∗ map] k ↦ v ∈ m', k ↪[γ] v).
+  Proof.
+    revert m; induction m' as [|k v m' Hk IH] using map_ind; iIntros (m Hdisj) "Hm".
+    { rewrite left_id_L. auto. }
+    iMod (IH with "Hm") as "[Hm'm Hm']"; first by eapply map_disjoint_insert_l.
+    decompose_map_disjoint.
+    rewrite !big_opM_insert // -insert_union_l //.
+    by iMod (ghost_map_insert with "Hm'm") as "($ & $)";
+      first by apply lookup_union_None.
+  Qed.
+
+  Theorem ghost_map_update_big {γ m m0} m1 :
+    dom (gset K) m0 = dom (gset K) m1 →
+    ghost_map_auth γ 1 m -∗
+    ([∗ map] k↦v ∈ m0, k ↪[γ] v) -∗
+    |==> ghost_map_auth γ 1 (m1 ∪ m) ∗
+        [∗ map] k↦v ∈ m1, k ↪[γ] v.
+  Proof.
+    iIntros (Hdom) "Hauth Hm0". apply (comm (R:=(↔)) (=)) in Hdom.
+    iInduction m0 as [|k v m0 Hk] "IH" using map_ind forall (m m1 Hdom).
+    - rewrite dom_empty_L in Hdom.
+      apply dom_empty_inv_L in Hdom as ->.
+      rewrite left_id_L big_sepM_empty.
+      by iFrame.
+    - rewrite big_sepM_insert //.
+      iDestruct "Hm0" as "[Hl Hm0]".
+      rewrite dom_insert_L in Hdom.
+      assert (k ∈ dom (gset K) m1) as Hindom by set_solver.
+      apply elem_of_dom in Hindom as [v' Hlookup].
+      iMod (ghost_map_update v' with "Hauth Hl") as "[Hauth Hl]".
+      iMod ("IH" $! (<[k:=v']> m) (delete k m1) with "[%] Hauth Hm0") as "[Hauth Hm0]".
+      { apply (not_elem_of_dom (D:=gset K)) in Hk. set_solver. }
+      (* FIXME this is an embedded proof of [delete_insert_union] *)
+      rewrite -insert_union_r; last by rewrite lookup_delete.
+      rewrite insert_union_l insert_delete [<[k:=v']> m1]insert_id; last done.
+      iFrame. iClear "#".
+      iApply big_sepM_delete; first done. by iFrame.
+  Qed.
+
 End lemmas.
