@@ -57,7 +57,7 @@ Proof.
     rewrite /uncurry3 /twp_pre. do 26 (f_equiv || done). by apply pair_ne.
 Qed.
 
-Definition twp_def `{!irisGS Λ Σ} : Twp Λ (iProp Σ) stuckness
+Definition twp_def `{!irisGS Λ Σ} : Twp (iProp Σ) (expr Λ) (val Λ) stuckness
   := λ s E e Φ, bi_least_fixpoint (twp_pre' s) (E,e,Φ).
 Definition twp_aux : seal (@twp_def). Proof. by eexists. Qed.
 Definition twp' := twp_aux.(unseal).
