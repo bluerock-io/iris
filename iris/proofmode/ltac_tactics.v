@@ -3325,7 +3325,9 @@ Tactic Notation "iAccu" :=
 Global Hint Extern 0 (_ ⊢ _) => iStartProof : core.
 Global Hint Extern 0 (⊢ _) => iStartProof : core.
 
-(* Make sure that by and done solve trivial things in proof mode *)
+(* Make sure that [by] and [done] solve trivial things in proof mode.
+[iPureIntro] invokes [FromPure], so adding [FromPure] instances can help improve
+what [done] can do. *)
 Global Hint Extern 0 (envs_entails _ _) => iPureIntro; try done : core.
 Global Hint Extern 0 (envs_entails _ ?Q) =>
   first [is_evar Q; fail 1|iAssumption] : core.
