@@ -115,7 +115,7 @@ Record uPred (M : ucmra) : Type := UPred {
 this way. *)
 Local Coercion uPred_holds : uPred >-> Funclass.
 Bind Scope bi_scope with uPred.
-Global Arguments uPred_holds {_} _%I _ _ : simpl never.
+Global Arguments uPred_holds {_} _ _ _ : simpl never.
 Add Printing Constructor uPred.
 Global Instance: Params (@uPred_holds) 3 := {}.
 
