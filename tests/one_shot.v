@@ -46,7 +46,9 @@ Definition one_shot_inv (γ : gname) (l : loc) : iProp Σ :=
 Lemma wp_one_shot (Φ : val → iProp Σ) :
   (∀ f1 f2 : val,
     (∀ n : Z, □ WP f1 #n {{ w, ⌜w = #true⌝ ∨ ⌜w = #false⌝ }}) ∗
-    □ WP f2 #() {{ g, □ WP g #() {{ _, True }} }} -∗ Φ (f1,f2)%V)
+    □ WP f2 #() {{ g, □ WP (g : val) #() {{ _, True }} }} -∗ Φ (f1,f2)%V)
+      (* FIXME: Once we depend on Coq 8.13, make WP notation use [v closed binder]
+         so that we can add a type annotation at the [g] binder here. *)
   ⊢ WP one_shot_example #() {{ Φ }}.
 Proof.
   iIntros "Hf /=". pose proof (nroot .@ "N") as N.

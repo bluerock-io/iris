@@ -176,9 +176,9 @@ Section tests.
   Proof. Fail wp_store. Abort.
 
   Check "(t)wp_bind_fail".
-  Lemma wp_bind_fail : ⊢ WP #() {{ v, True }}.
+  Lemma wp_bind_fail : ⊢ WP of_val #() {{ v, True }}.
   Proof. Fail wp_bind (!_)%E. Abort.
-  Lemma twp_bind_fail : ⊢ WP #() [{ v, True }].
+  Lemma twp_bind_fail : ⊢ WP of_val #() [{ v, True }].
   Proof. Fail wp_bind (!_)%E. Abort.
 
   Lemma wp_apply_evar e P :
@@ -186,10 +186,10 @@ Section tests.
   Proof. iIntros "HP HW". wp_apply "HW". iExact "HP". Qed.
 
   Lemma wp_pures_val (b : bool) :
-    ⊢ WP #b {{ _, True }}.
+    ⊢ WP of_val #b {{ _, True }}.
   Proof. wp_pures. done. Qed.
   Lemma twp_pures_val (b : bool) :
-    ⊢ WP #b [{ _, True }].
+    ⊢ WP of_val #b [{ _, True }].
   Proof. wp_pures. done. Qed.
 
   Lemma wp_cmpxchg l v :
@@ -315,14 +315,14 @@ Section tests.
 
   Check "test_wp_finish_fupd".
   Lemma test_wp_finish_fupd (v : val) :
-    ⊢ WP v {{ v, |={⊤}=> True }}.
+    ⊢ WP of_val v {{ v, |={⊤}=> True }}.
   Proof.
     wp_pures. Show. (* No second fupd was added. *)
   Abort.
 
   Check "test_twp_finish_fupd".
   Lemma test_twp_finish_fupd (v : val) :
-    ⊢ WP v [{ v, |={⊤}=> True }].
+    ⊢ WP of_val v [{ v, |={⊤}=> True }].
   Proof.
     wp_pures. Show. (* No second fupd was added. *)
   Abort.
