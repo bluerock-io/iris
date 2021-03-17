@@ -59,14 +59,6 @@ Section list_ofe.
   Proof. uPred.unseal; constructor=> n x ?. apply list_dist_lookup. Qed.
 End list_ofe.
 
-Section list_cmra.
-  Context {A : ucmra}.
-  Implicit Types l : list A.
-
-  Lemma list_validI l : ✓ l ⊣⊢ ∀ i, ✓ (l !! i).
-  Proof. uPred.unseal; constructor=> n x ?. apply list_lookup_validN. Qed.
-End list_cmra.
-
 Section excl.
   Context {A : ofe}.
   Implicit Types a b : A.
