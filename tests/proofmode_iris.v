@@ -9,22 +9,6 @@ Section base_logic_tests.
   Context {M : ucmra}.
   Implicit Types P Q R : uPred M.
 
-  (* Test scopes for bupd *)
-  Definition use_bupd_uPred (n : nat) : uPred M :=
-    □ |==> ∃ m : nat , ⌜ n = 2 ⌝.
-  Definition use_plainly_uPred (n : nat) : uPred M :=
-    ■ |==> ∃ m : nat , ⌜ n = 2 ⌝.
-
-  (* Test scopes inside big-ops *)
-  Definition big_op_scope_1 (xs : list nat) : uPred M :=
-    [∗ list] _ ↦ x ∈ xs, True.
-  Definition big_op_scope_2 (xs : list nat) : uPred M :=
-    [∗ list] x; y ∈ xs; xs, True.
-  Definition big_op_scope_3 (m : gmap nat nat) : uPred M :=
-    [∗ map] _ ↦ x ∈ m, True.
-  Definition big_op_scope_4 (m : gmap nat nat) : uPred M :=
-    [∗ map] x; y ∈ m; m, True.
-
   Lemma test_random_stuff (P1 P2 P3 : nat → uPred M) :
     ⊢ ∀ (x y : nat) a b,
       x ≡ y →
@@ -70,12 +54,6 @@ End base_logic_tests.
 Section iris_tests.
   Context `{!invG Σ, !cinvG Σ, !na_invG Σ}.
   Implicit Types P Q R : iProp Σ.
-
-  (* Test scopes for bupd and fupd *)
-  Definition use_bupd_iProp (n : nat) : iProp Σ :=
-    □ |==> ∃ m : nat , ⌜ n = 2 ⌝.
-  Definition use_fupd_iProp (n : nat) : iProp Σ :=
-    □ |={⊤}=> ∃ m : nat , ⌜ n = 2 ⌝.
 
   Lemma test_masks  N E P Q R :
     ↑N ⊆ E →
