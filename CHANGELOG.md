@@ -22,6 +22,8 @@ lemma.
   dedicated support from one of the involved maps/APIs. See
   [algebra.dyn_reservation_map](iris/algebra/dyn_reservation_map.v) for further
   information.
+* Demote the Camera structure on `list` to `iris_staging` since its composition
+  is not very well-behaved.
 
 **Changes in `base_logic`:**
 
