@@ -172,6 +172,17 @@ Proof.
   split; first done. destruct mz as [?|]; constructor; auto.
 Qed.
 
+Lemma option_local_update_None {A: ucmra} (x x' y': A):
+  (x, ε) ~l~> (x', y') ->
+  (Some x, None) ~l~> (Some x', Some y').
+Proof.
+  intros Hup. apply local_update_unital=> n mz.
+  rewrite left_id=> ? <-.
+  destruct (Hup n (Some x)); simpl in *; first done.
+  - by rewrite left_id.
+  - split; first done. rewrite -Some_op. by constructor.
+Qed.
+
 Lemma alloc_option_local_update {A : cmra} (x : A) y :
   ✓ x →
   (None, y) ~l~> (Some x, Some x).
