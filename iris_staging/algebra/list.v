@@ -436,7 +436,8 @@ Section properties.
     (k, ε) ~l~> (k', m) →
     (l ++ k, ε) ~l~> (l ++ k', replicate (length l) ε ++ m).
   Proof.
-    remember (app_l_local_update l k k' ε m) as HH. clear HeqHH. move: HH.
+    remember (app_l_local_update l k k' ε m) as HH eqn:HeqHH.
+    clear HeqHH. move: HH.
     by rewrite take_nil drop_nil ucmra_unit_left_id.
   Qed.
 
@@ -484,7 +485,7 @@ Section properties.
     move: HLen. clear.
     intros HLen. move: n. apply equiv_dist, list_equiv_lookup.
     intros i. rewrite list_lookup_op.
-    remember length as L.
+    remember length as L eqn:HeqL.
     destruct (decide (i < L m''))%nat as [E|E].
     - subst. apply lookup_lt_is_Some in E as [? HEl].
       rewrite HEl.
