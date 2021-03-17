@@ -125,6 +125,8 @@ Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} es σ1 n κs t2 σ2 φ
          (stateI : state Λ → nat → list (observation Λ) → nat → iProp Σ)
          (Φs : list (val Λ → iProp Σ))
          (fork_post : val Λ → iProp Σ)
+         (* Note: existentially quantifying over Iris goal! [iExists _] should
+         usually work. *)
          state_interp_mono,
        let _ : irisG Λ Σ := IrisG _ _ Hinv stateI fork_post num_laters_per_step
                                   state_interp_mono
