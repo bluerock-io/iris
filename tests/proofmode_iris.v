@@ -15,6 +15,16 @@ Section base_logic_tests.
   Definition use_plainly_uPred (n : nat) : uPred M :=
     ■ |==> ∃ m : nat , ⌜ n = 2 ⌝.
 
+  (* Test scopes inside big-ops *)
+  Definition big_op_scope_1 (xs : list nat) : uPred M :=
+    [∗ list] _ ↦ x ∈ xs, True.
+  Definition big_op_scope_2 (xs : list nat) : uPred M :=
+    [∗ list] x; y ∈ xs; xs, True.
+  Definition big_op_scope_3 (m : gmap nat nat) : uPred M :=
+    [∗ map] _ ↦ x ∈ m, True.
+  Definition big_op_scope_4 (m : gmap nat nat) : uPred M :=
+    [∗ map] x; y ∈ m; m, True.
+
   Lemma test_random_stuff (P1 P2 P3 : nat → uPred M) :
     ⊢ ∀ (x y : nat) a b,
       x ≡ y →
