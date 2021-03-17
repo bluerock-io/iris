@@ -173,13 +173,14 @@ Proof.
 Qed.
 
 Lemma option_local_update_None {A: ucmra} (x x' y': A):
-  (x, ε) ~l~> (x', y') -> (Some x, None) ~l~> (Some x', Some y').
+  (x, ε) ~l~> (x', y') ->
+  (Some x, None) ~l~> (Some x', Some y').
 Proof.
-  intros HUp. apply local_update_unital. intros ? ?.
-  rewrite ucmra_unit_left_id => HValid HEq. rewrite -HEq.
-  destruct (HUp n (Some x)); rewrite /= //.
-  - by rewrite ucmra_unit_left_id.
-  - simpl in *. split; try done. rewrite -Some_op. by constructor.
+  intros Hup. apply local_update_unital=> n mz.
+  rewrite left_id=> ? <-.
+  destruct (Hup n (Some x)); simpl in *; first done.
+  - by rewrite left_id.
+  - split; first done. rewrite -Some_op. by constructor.
 Qed.
 
 Lemma alloc_option_local_update {A : cmra} (x : A) y :
