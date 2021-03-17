@@ -249,9 +249,9 @@ Infix "∗" := bi_sep : bi_scope.
 Notation "(∗)" := bi_sep (only parsing) : bi_scope.
 Notation "P -∗ Q" := (bi_wand P Q) : bi_scope.
 Notation "∀ x .. y , P" :=
-  (bi_forall (λ x, .. (bi_forall (λ y, P)) ..)%I) : bi_scope.
+  (bi_forall (λ x, .. (bi_forall (λ y, P%I)) ..)) : bi_scope.
 Notation "∃ x .. y , P" :=
-  (bi_exist (λ x, .. (bi_exist (λ y, P)) ..)%I) : bi_scope.
+  (bi_exist (λ x, .. (bi_exist (λ y, P%I)) ..)) : bi_scope.
 Notation "'<pers>' P" := (bi_persistently P) : bi_scope.
 
 Notation "▷ P" := (bi_later P) : bi_scope.

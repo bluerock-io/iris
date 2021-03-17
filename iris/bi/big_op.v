@@ -7,29 +7,29 @@ Import interface.bi derived_laws.bi derived_laws_later.bi.
 
 (** Notations for unary variants *)
 Notation "'[∗' 'list]' k ↦ x ∈ l , P" :=
-  (big_opL bi_sep (λ k x, P) l) : bi_scope.
+  (big_opL bi_sep (λ k x, P%I) l) : bi_scope.
 Notation "'[∗' 'list]' x ∈ l , P" :=
-  (big_opL bi_sep (λ _ x, P) l) : bi_scope.
-Notation "'[∗]' Ps" := (big_opL bi_sep (λ _ x, x) Ps) : bi_scope.
+  (big_opL bi_sep (λ _ x, P%I) l) : bi_scope.
+Notation "'[∗]' Ps" := (big_opL bi_sep (λ _ x, x) Ps%I) : bi_scope.
 
 Notation "'[∧' 'list]' k ↦ x ∈ l , P" :=
-  (big_opL bi_and (λ k x, P) l) : bi_scope.
+  (big_opL bi_and (λ k x, P%I) l) : bi_scope.
 Notation "'[∧' 'list]' x ∈ l , P" :=
-  (big_opL bi_and (λ _ x, P) l) : bi_scope.
-Notation "'[∧]' Ps" := (big_opL bi_and (λ _ x, x) Ps) : bi_scope.
+  (big_opL bi_and (λ _ x, P%I) l) : bi_scope.
+Notation "'[∧]' Ps" := (big_opL bi_and (λ _ x, x) Ps%I) : bi_scope.
 
 Notation "'[∨' 'list]' k ↦ x ∈ l , P" :=
-  (big_opL bi_or (λ k x, P) l) : bi_scope.
+  (big_opL bi_or (λ k x, P%I) l) : bi_scope.
 Notation "'[∨' 'list]' x ∈ l , P" :=
-  (big_opL bi_or (λ _ x, P) l) : bi_scope.
-Notation "'[∨]' Ps" := (big_opL bi_or (λ _ x, x) Ps) : bi_scope.
+  (big_opL bi_or (λ _ x, P%I) l) : bi_scope.
+Notation "'[∨]' Ps" := (big_opL bi_or (λ _ x, x) Ps%I) : bi_scope.
 
-Notation "'[∗' 'map]' k ↦ x ∈ m , P" := (big_opM bi_sep (λ k x, P) m) : bi_scope.
-Notation "'[∗' 'map]' x ∈ m , P" := (big_opM bi_sep (λ _ x, P) m) : bi_scope.
+Notation "'[∗' 'map]' k ↦ x ∈ m , P" := (big_opM bi_sep (λ k x, P%I) m) : bi_scope.
+Notation "'[∗' 'map]' x ∈ m , P" := (big_opM bi_sep (λ _ x, P%I) m) : bi_scope.
 
-Notation "'[∗' 'set]' x ∈ X , P" := (big_opS bi_sep (λ x, P) X) : bi_scope.
+Notation "'[∗' 'set]' x ∈ X , P" := (big_opS bi_sep (λ x, P%I) X) : bi_scope.
 
-Notation "'[∗' 'mset]' x ∈ X , P" := (big_opMS bi_sep (λ x, P) X) : bi_scope.
+Notation "'[∗' 'mset]' x ∈ X , P" := (big_opMS bi_sep (λ x, P%I) X) : bi_scope.
 
 (** Definitions and notations for binary variants *)
 (** A version of the separating big operator that ranges over two lists. This
@@ -47,9 +47,9 @@ Global Instance: Params (@big_sepL2) 3 := {}.
 Global Arguments big_sepL2 {PROP A B} _ !_ !_ /.
 Typeclasses Opaque big_sepL2.
 Notation "'[∗' 'list]' k ↦ x1 ; x2 ∈ l1 ; l2 , P" :=
-  (big_sepL2 (λ k x1 x2, P) l1 l2) : bi_scope.
+  (big_sepL2 (λ k x1 x2, P%I) l1 l2) : bi_scope.
 Notation "'[∗' 'list]' x1 ; x2 ∈ l1 ; l2 , P" :=
-  (big_sepL2 (λ _ x1 x2, P) l1 l2) : bi_scope.
+  (big_sepL2 (λ _ x1 x2, P%I) l1 l2) : bi_scope.
 
 Definition big_sepM2_def {PROP : bi} `{Countable K} {A B}
     (Φ : K → A → B → PROP) (m1 : gmap K A) (m2 : gmap K B) : PROP :=
@@ -61,9 +61,9 @@ Global Arguments big_sepM2 {PROP K _ _ A B} _ _ _.
 Definition big_sepM2_eq : @big_sepM2 = _ := big_sepM2_aux.(seal_eq).
 Global Instance: Params (@big_sepM2) 6 := {}.
 Notation "'[∗' 'map]' k ↦ x1 ; x2 ∈ m1 ; m2 , P" :=
-  (big_sepM2 (λ k x1 x2, P) m1 m2) : bi_scope.
+  (big_sepM2 (λ k x1 x2, P%I) m1 m2) : bi_scope.
 Notation "'[∗' 'map]' x1 ; x2 ∈ m1 ; m2 , P" :=
-  (big_sepM2 (λ _ x1 x2, P) m1 m2) : bi_scope.
+  (big_sepM2 (λ _ x1 x2, P%I) m1 m2) : bi_scope.
 
 (** * Properties *)
 Section big_op.
