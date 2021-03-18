@@ -170,10 +170,9 @@ iris_heap_lang/lib/array.v
 
 iris_staging/algebra/list.v
 iris_staging/base_logic/algebra.v
+iris_staging/heap_lang/interpreter.v
 
 iris_deprecated/base_logic/auth.v
 iris_deprecated/base_logic/sts.v
 iris_deprecated/base_logic/viewshifts.v
 iris_deprecated/program_logic/hoare.v
-
-iris_staging/heap_lang/interpreter.v
