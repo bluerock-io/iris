@@ -30,11 +30,13 @@ Importing Iris has some side effects as the library sets some global options.
 
 This version is known to compile with:
 
- - Coq 8.11.2 / 8.12.2 / 8.13.1
+ - Coq 8.12.2 / 8.13.1
  - A development version of [std++](https://gitlab.mpi-sws.org/iris/stdpp)
 
 If you need to work with Coq 8.9 or Coq 8.10, you can use the
 [iris-3.3 branch](https://gitlab.mpi-sws.org/iris/iris/tree/iris-3.3).
+For a version compatible with Coq 8.11, check out the
+[iris-3.4 branch](https://gitlab.mpi-sws.org/iris/iris/tree/iris-3.4).
 
 ### Working *with* Iris
 

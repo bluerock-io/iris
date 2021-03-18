@@ -5,6 +5,8 @@ lemma.
 
 ## Iris master
 
+Coq 8.11 is no longer supported in this version of Iris.
+
 **Changes in `algebra`:**
 
 * Generalize the authorative elements of the `view`, `auth` and `gset_bij`
