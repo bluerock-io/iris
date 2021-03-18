@@ -50,6 +50,7 @@ issues before stabilization. *)
 
 *)
 
+From stdpp Require Import gmap.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import tactics pretty.
 From iris.prelude Require Import options.
@@ -706,35 +707,36 @@ Section interpret_ok.
   Qed.
 
   Lemma state_wf_same_dom s f :
-    (dom (gmap.gset _) (f s.(lang_state)).(heap) = dom _ s.(lang_state).(heap)) →
+    (dom (gset loc) (f s.(lang_state)).(heap) = dom _ s.(lang_state).(heap)) →
     state_wf s →
     state_wf (modify_lang_state f s).
   Proof.
     intros Hdom_eq Hwf.
     constructor; rewrite /modify_lang_state /= => l ?.
-    apply fin_map_dom.not_elem_of_dom.
+    apply (fin_map_dom.not_elem_of_dom (D:=gset loc)).
     rewrite Hdom_eq.
     apply fin_map_dom.not_elem_of_dom.
     apply state_wf_holds; auto.
   Qed.
 
   Lemma state_wf_upd s l mv0 v' :
-      state_wf s →
-      heap (lang_state s) !! l = Some mv0 →
-      state_wf (modify_lang_state (λ σ : state, state_upd_heap <[l:=v']> σ) s).
+    state_wf s →
+    heap (lang_state s) !! l = Some mv0 →
+    state_wf (modify_lang_state (λ σ : state, state_upd_heap <[l:=v']> σ) s).
   Proof.
     intros Hwf Heq.
     apply state_wf_same_dom; auto.
     rewrite fin_map_dom.dom_insert_L.
-    apply fin_map_dom.elem_of_dom_2 in Heq.
+    apply (fin_map_dom.elem_of_dom_2 (D:=gset loc)) in Heq.
     set_solver.
   Qed.
 
-  Lemma interpret_wf fuel : ∀ (e: expr) s v s',
-      state_wf s →
-      interpret fuel e s = (inl v, s') →
-      state_wf s'.
+  Lemma interpret_wf fuel (e: expr) s v s' :
+    state_wf s →
+    interpret fuel e s = (inl v, s') →
+    state_wf s'.
   Proof.
+    revert e s v s'.
     induction fuel as [|fuel]; simpl; intros e s v s' **; [ errored | ].
     destruct e; try errored; success; eauto;
       (repeat case_match; subst; try errored;
@@ -753,11 +755,12 @@ Section interpret_ok.
 
   Local Hint Resolve interpret_wf : core.
 
-  Lemma interpret_sound fuel : ∀ e s v s',
-      state_wf s →
-      interpret fuel e s = (inl v, s') →
-      rtc erased_step (e :: s.(forked_threads), s.(lang_state)) (Val v :: s'.(forked_threads), s'.(lang_state)).
+  Lemma interpret_sound fuel e s v s' :
+    state_wf s →
+    interpret fuel e s = (inl v, s') →
+    rtc erased_step (e :: s.(forked_threads), s.(lang_state)) (Val v :: s'.(forked_threads), s'.(lang_state)).
   Proof.
+    revert e s v s'.
     induction fuel as [|fuel]; simpl; intros e s v s' **; [ errored | ].
     destruct e; try errored; success; cbn [forked_threads lang_state];
       repeat match goal with
