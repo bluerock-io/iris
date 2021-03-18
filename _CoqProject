@@ -142,6 +142,7 @@ iris/proofmode/modality_instances.v
 iris_heap_lang/locations.v
 iris_heap_lang/lang.v
 iris_heap_lang/class_instances.v
+iris_heap_lang/pretty.v
 iris_heap_lang/metatheory.v
 iris_heap_lang/tactics.v
 iris_heap_lang/primitive_laws.v
@@ -174,3 +175,5 @@ iris_deprecated/base_logic/auth.v
 iris_deprecated/base_logic/sts.v
 iris_deprecated/base_logic/viewshifts.v
 iris_deprecated/program_logic/hoare.v
+
+iris_staging/heap_lang/interpreter.v

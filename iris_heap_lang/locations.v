@@ -2,15 +2,17 @@ From stdpp Require Import countable numbers gmap.
 From iris.prelude Require Export prelude.
 From iris.prelude Require Import options.
 
-Record loc := { loc_car : Z }.
+Record loc := Loc { loc_car : Z }.
+
+Add Printing Constructor loc.
 
 Global Instance loc_eq_decision : EqDecision loc.
-Proof. solve_decision. Qed.
+Proof. solve_decision. Defined.
 
 Global Instance loc_inhabited : Inhabited loc := populate {|loc_car := 0 |}.
 
 Global Instance loc_countable : Countable loc.
-Proof. by apply (inj_countable' loc_car (λ i, {| loc_car := i |})); intros []. Qed.
+Proof. by apply (inj_countable' loc_car Loc); intros []. Defined.
 
 Program Instance loc_infinite : Infinite loc :=
   inj_infinite (λ p, {| loc_car := p |}) (λ l, Some (loc_car l)) _.
