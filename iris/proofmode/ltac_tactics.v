@@ -1456,9 +1456,9 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
   | IList [[IDrop; ?pat2]] =>
      iAndDestructChoice Hz as Right Hz;
      iDestructHypGo Hz pat0 pat2
-  (* heuristic to fallback to [iAndDestruct] when both patterns are pure, since
-  the instances for [IntoAnd] are more general than for [IntoExist]. *)
-  | IList [[IPure ?id1; IPure ?id2]] => iAndDestructAs (IPure id1) (IPure id2)
+  (* [% ...] is always interpreted as an existential; there are [IntoExist]
+  instances in place to handle conjunctions with a pure left-hand side this way
+  as well. *)
   | IList [[IPure ?gallina_id; ?pat2]] => iExistDestructPure gallina_id pat2
   | IList [[?pat1; ?pat2]] => iAndDestructAs pat1 pat2
   | IList [_ :: _ :: _] => fail "iDestruct:" pat0 "has too many conjuncts"

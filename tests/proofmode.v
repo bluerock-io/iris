@@ -455,6 +455,27 @@ Lemma test_iPure_intro_2 (φ : nat → Prop) P Q R `{!Persistent Q} :
   φ 0 → P -∗ Q → R -∗ ∃ x : nat, <affine> ⌜ φ x ⌝ ∗ ⌜ φ x ⌝.
 Proof. iIntros (?) "HP #HQ HR". iPureIntro; eauto. Qed.
 
+(* Ensure that [% ...] works as a pattern when the left-hand side of and/sep is
+pure. *)
+Lemma test_pure_and_sep_destruct `{!BiAffine PROP} (φ : Prop) (P : PROP) :
+  ⌜φ⌝ ∧ (⌜φ⌝ ∗ P) -∗ P.
+Proof.
+  iIntros "[% [% $]]".
+Qed.
+(* Ensure that [% %] also works when the conjunction is *inside* ⌜...⌝ *)
+Lemma test_pure_inner_and_destruct :
+  ⌜False ∧ True⌝ ⊢@{PROP} False.
+Proof.
+  iIntros "[% %]". done.
+Qed.
+
+(* Ensure that [% %] works as a pattern for an existential with a pure body. *)
+Lemma test_exist_pure_destruct :
+  (∃ x, ⌜ x = 0 ⌝) ⊢@{PROP} True.
+Proof.
+  iIntros "[% %]". done.
+Qed.
+
 Lemma test_fresh P Q:
   (P ∗ Q) -∗ (P ∗ Q).
 Proof.
@@ -1391,8 +1412,8 @@ Abort.
 Lemma test_exists_intro_pattern P (Φ: nat → PROP) :
   P ∗ (∃ y:nat, Φ y) -∗ ∃ x, P ∗ Φ x.
 Proof.
-  iIntros "[HP1 [%y HP2]]".
-  iExists y.
+  iIntros "[HP1 [%yy HP2]]".
+  iExists yy.
   iFrame "HP1 HP2".
 Qed.
 
