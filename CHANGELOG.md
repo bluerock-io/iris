@@ -25,11 +25,12 @@ lemma.
 * Demote the Camera structure on `list` to `iris_staging` since its composition
   is not very well-behaved.
 
-**Changes in `proof_mode`:**
+**Changes in `proofmode`:**
 
 * Add support for pure names `%H` in intro patterns. This is now natively
   supported whereas the previous experimental support required installing
   https://gitlab.mpi-sws.org/iris/string-ident.
+* Add support for destructing existentials with the intro pattern `[% ...]`.
 
 **Changes in `base_logic`:**
 
