@@ -175,7 +175,7 @@ Section lemmas.
   Qed.
 
   (** * Lemmas about the interaction of [ghost_map_auth] with the elements *)
-  Lemma ghost_map_lookup k γ q m dq v :
+  Lemma ghost_map_lookup {γ q m k dq v} :
     ghost_map_auth γ q m -∗ k ↪[γ]{dq} v -∗ ⌜m !! k = Some v⌝.
   Proof.
     unseal. iIntros "Hauth Hel".
@@ -216,8 +216,8 @@ Section lemmas.
   Qed.
 
   (** Derived big-op versions of above lemmas *)
-  Lemma ghost_map_lookup_big γ m m0 :
-    ghost_map_auth γ 1 m -∗
+  Lemma ghost_map_lookup_big {γ q m} m0 :
+    ghost_map_auth γ q m -∗
     ([∗ map] k↦v ∈ m0, k ↪[γ] v) -∗
     ⌜m0 ⊆ m⌝.
   Proof.
@@ -234,9 +234,10 @@ Section lemmas.
     ghost_map_auth γ 1 m ==∗
     ghost_map_auth γ 1 (m' ∪ m) ∗ ([∗ map] k ↦ v ∈ m', k ↪[γ] v).
   Proof.
-    revert m; induction m' as [|k v m' Hk IH] using map_ind; iIntros (m Hdisj) "Hm".
+    iInduction m' as [|k v m' Hk] "IH" using map_ind forall (m); iIntros (Hdisj) "Hm".
     { rewrite left_id_L. auto. }
-    iMod (IH with "Hm") as "[Hm'm Hm']"; first by eapply map_disjoint_insert_l.
+    iMod ("IH" with "[] Hm") as "[Hm'm Hm']".
+    { iPureIntro. by eapply map_disjoint_insert_l. }
     decompose_map_disjoint.
     rewrite !big_opM_insert // -insert_union_l //.
     by iMod (ghost_map_insert with "Hm'm") as "($ & $)";
@@ -253,27 +254,27 @@ Section lemmas.
     iIntros "!#" (k v) "_". iApply ghost_map_elem_persist.
   Qed.
 
-  Lemma ghost_map_delete_big {γ m m0} :
+  Lemma ghost_map_delete_big {γ m} m0 :
     ghost_map_auth γ 1 m -∗
-    ([∗ map] k↦v ∈ m0, k ↪[γ] v) -∗
-    |==> ghost_map_auth γ 1 (m ∖ m0).
+    ([∗ map] k↦v ∈ m0, k ↪[γ] v) ==∗
+    ghost_map_auth γ 1 (m ∖ m0).
   Proof.
     iInduction m0 as [|k v m0 Hk IH] "IH" using map_ind.
-    { iIntros "Hauth _". rewrite right_id //. }
+    { iIntros "Hauth _". rewrite right_id_L //. }
     rewrite big_sepM_insert //. iIntros "Hauth [Helem Hm0]".
     iMod ("IH" with "Hauth Hm0") as "Hauth".
     iMod (ghost_map_delete with "Hauth Helem") as "Hauth".
     rewrite -delete_difference. done.
   Qed.
 
-  Theorem ghost_map_update_big {γ m m0} m1 :
+  Theorem ghost_map_update_big {γ m} m0 m1 :
     dom (gset K) m0 = dom (gset K) m1 →
     ghost_map_auth γ 1 m -∗
-    ([∗ map] k↦v ∈ m0, k ↪[γ] v) -∗
-    |==> ghost_map_auth γ 1 (m1 ∪ m) ∗
+    ([∗ map] k↦v ∈ m0, k ↪[γ] v) ==∗
+    ghost_map_auth γ 1 (m1 ∪ m) ∗
         [∗ map] k↦v ∈ m1, k ↪[γ] v.
   Proof.
-    iIntros (Hdom) "Hauth Hm0". apply (comm (R:=(↔)) (=)) in Hdom.
+    iIntros (Hdom%eq_sym) "Hauth Hm0".
     iInduction m0 as [|k v m0 Hk] "IH" using map_ind forall (m m1 Hdom).
     - rewrite dom_empty_L in Hdom.
       apply dom_empty_inv_L in Hdom as ->.
