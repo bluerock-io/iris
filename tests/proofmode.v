@@ -457,8 +457,18 @@ Proof. iIntros (?) "HP #HQ HR". iPureIntro; eauto. Qed.
 
 (* Ensure that [% ...] works as a pattern when the left-hand side of and/sep is
 pure. *)
-Lemma test_pure_and_sep_destruct `{!BiAffine PROP} (φ : Prop) (P : PROP) :
+Lemma test_pure_and_sep_destruct_affine `{!BiAffine PROP} (φ : Prop) (P : PROP) :
   ⌜φ⌝ ∧ (⌜φ⌝ ∗ P) -∗ P.
+Proof.
+  iIntros "[% [% $]]".
+Qed.
+Lemma test_pure_and_sep_destruct_1 (φ : Prop) (P : PROP) :
+  ⌜φ⌝ ∧ (<affine> ⌜φ⌝ ∗ P) -∗ P.
+Proof.
+  iIntros "[% [% $]]".
+Qed.
+Lemma test_pure_and_sep_destruct_2 (φ : Prop) (P : PROP) :
+  ⌜φ⌝ ∧ (⌜φ⌝ ∗ <absorb> P) -∗ <absorb> P.
 Proof.
   iIntros "[% [% $]]".
 Qed.
