@@ -1356,14 +1356,6 @@ End error_tests_bi.
 Section pure_name_tests.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
-(* mock string_to_ident for just these tests *)
-Ltac ltac_tactics.string_to_ident_hook ::=
-  make_string_to_ident_hook ltac:(fun s => lazymatch s with
-                                        | "HP2" => ident:(HP2)
-                                        | "H" => ident:(H)
-                                        | "y" => ident:(y)
-                                        | _ => fail 100 s
-                                        end).
 
 Check "test_pure_name".
 Lemma test_pure_name P (φ1 φ2 : Prop) (Himpl : φ1 → φ2) :
