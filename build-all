@@ -32,14 +32,17 @@ PROJECTS = [
     { 'name': 'tutorial-popl21', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
 ]
 
+filter = sys.argv[1] if len(sys.argv) > 1 else ''
 for project in PROJECTS:
-    print("Triggering build for {}{}...".format(project['name'], '' if project['branch'] == 'master' else ':'+project['branch']))
-    id = str(project['id']) if 'id' in project else "iris%2F{}".format(project['name'])
-    url = "https://gitlab.mpi-sws.org/api/v4/projects/{}/pipeline".format(id)
-    json = {
-        'ref': project['branch'],
-        'variables': list(map(lambda var: { 'key': var, 'value': os.environ.get(var, "master") }, project['vars'])),
-    }
-    r = requests.post(url, headers={'PRIVATE-TOKEN': GITLAB_TOKEN}, json=json)
-    r.raise_for_status()
-    print("    Pipeline running at {}".format(r.json()['web_url']))
+    name_branch = project['name'] + ('' if project['branch'] == 'master' else ':'+project['branch'])
+    if filter in name_branch:
+        print("Triggering build for {}...".format(name_branch))
+        id = str(project['id']) if 'id' in project else "iris%2F{}".format(project['name'])
+        url = "https://gitlab.mpi-sws.org/api/v4/projects/{}/pipeline".format(id)
+        json = {
+            'ref': project['branch'],
+            'variables': list(map(lambda var: { 'key': var, 'value': os.environ.get(var, "master") }, project['vars'])),
+        }
+        r = requests.post(url, headers={'PRIVATE-TOKEN': GITLAB_TOKEN}, json=json)
+        r.raise_for_status()
+        print("    Pipeline running at {}".format(r.json()['web_url']))
