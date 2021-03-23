@@ -1,7 +1,8 @@
 From stdpp Require Import namespaces hlist pretty.
 From iris.bi Require Export bi telescopes.
 From iris.proofmode Require Import base intro_patterns spec_patterns
-                                   sel_patterns coq_tactics reduction.
+                                   sel_patterns coq_tactics reduction
+                                   string_ident.
 From iris.proofmode Require Export classes notation.
 From iris.prelude Require Import options.
 Export ident.
@@ -1420,30 +1421,6 @@ Tactic Notation "iModCore" constr(H) :=
      fail "iMod: cannot eliminate modality" P "in" Q
     |iSolveSideCondition
     |pm_reduce; pm_prettify(* subgoal *)].
-
-(* This tactic should take a string [s] and solve the goal with [exact (λ
-(s:unit), tt)], where the name of the binder is the string as an identifier.
-We use this API (rather than simply returning the identifier) since it works
-correctly when replaced with [fail].
-
-One way to implement such a function is to use Ltac2 on Coq 8.11+. Another
-option is https://github.com/ppedrot/coq-string-ident for Coq 8.10. *)
-Ltac string_to_ident_hook := fun s => fail 100 "string_to_ident is unavailable in this version of Coq".
-
-(* Turn a string_to_ident that produces an ident value into one that solves the
-goal with a [unit → unit] function instead, as expected for
-[string_to_ident_hook]. *)
-Ltac make_string_to_ident_hook string_to_ident :=
-  fun s => let x := string_to_ident s in
-        exact (λ (x:unit), tt).
-
-(* [string_to_ident] uses [string_to_ident_hook] to turn [s] into an identifier
-and return it. *)
-Local Ltac string_to_ident s :=
-  let ident_fun := constr:(ltac:(string_to_ident_hook s)) in
-  lazymatch ident_fun with
-  | λ (x:_), _ => x
-  end.
 
 (** * Basic destruct tactic *)
 

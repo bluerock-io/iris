@@ -52,6 +52,12 @@ lemma.
 
 * Rename `Build_loc` constructor for `loc` type to `Loc`.
 
+**Changes in `proof_mode`:**
+
+* Add support for pure names `%H` in intro patterns. This is now natively
+  supported whereas the previous experimental support required installing
+  https://gitlab.mpi-sws.org/iris/string-ident.
+
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
 Note that the script is not idempotent, do not run it twice.
