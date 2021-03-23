@@ -176,12 +176,21 @@ Global Arguments from_and {_} _%I _%I _%I {_}.
 Global Hint Mode FromAnd + ! - - : typeclass_instances.
 Global Hint Mode FromAnd + - ! ! : typeclass_instances. (* For iCombine *)
 
+(** The [IntoAnd p P Q1 Q2] class is used (together with [IntoSep]) to handle
+[[H1 H2]] destruct patterns. If [p] is [true] then the destruct is happening in
+the intuitionistic context.
+
+The inputs are [p P] and the outputs are [Q1 Q2]. *)
 Class IntoAnd {PROP : bi} (p : bool) (P Q1 Q2 : PROP) :=
   into_and : □?p P ⊢ □?p (Q1 ∧ Q2).
 Global Arguments IntoAnd {_} _ _%I _%I _%I : simpl never.
 Global Arguments into_and {_} _ _%I _%I _%I {_}.
 Global Hint Mode IntoAnd + + ! - - : typeclass_instances.
 
+(** The [IntoSep P Q1 Q2] class is used (together with [IntoAnd]) to handle
+[[H1 H2]] destruct patterns.
+
+The input is [P] and the outputs are [Q1 Q2]. *)
 Class IntoSep {PROP : bi} (P Q1 Q2 : PROP) :=
   into_sep : P ⊢ Q1 ∗ Q2.
 Global Arguments IntoSep {_} _%I _%I _%I : simpl never.

@@ -608,9 +608,9 @@ Proof.
   rewrite /IntoAnd /= intuitionistically_sep
     -and_sep_intuitionistically intuitionistically_and //.
 Qed.
-Global Instance into_and_sep_affine P Q :
+Global Instance into_and_sep_affine p P Q :
   TCOr (Affine P) (Absorbing Q) → TCOr (Absorbing P) (Affine Q) →
-  IntoAnd true (P ∗ Q) P Q.
+  IntoAnd p (P ∗ Q) P Q.
 Proof. intros. by rewrite /IntoAnd /= sep_and. Qed.
 
 Global Instance into_and_pure p φ ψ : @IntoAnd PROP p ⌜φ ∧ ψ⌝ ⌜φ⌝ ⌜ψ⌝.
@@ -807,32 +807,32 @@ Proof. rewrite /IntoExist=> HP. by rewrite HP affinely_exist. Qed.
 Global Instance into_exist_intuitionistically {A} P (Φ : A → PROP) name :
   IntoExist P Φ name → IntoExist (□ P) (λ a, □ (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP. by rewrite HP intuitionistically_exist. Qed.
-(* Low-priority instance falling back to treating a conjunction with a pure
-left-hand side as an existential. This lets us use [iIntros (P) "..."] and [as
-[% ...]].
+(* This instance is generalized to let us use [iIntros (P) "..."] and
+[as [% ...]]. There is some risk of backtracking here, but that should only
+happen in failing cases (assuming that appropriate modality commuting instances
+are provided for both conjunctions and existential quantification). The
+alternative of providing specialized instances for cases like ⌜P ∧ Q⌝ turned out
+to not be tenable.
+
 [to_ident_name H] makes the default name [H] when [P] is destructed with
-[iExistDestruct] *)
-Global Instance into_exist_and_pure PQ P Q φ :
+[iExistDestruct]. See [IntoPureT] for why [φ] is a [Type]. *)
+Global Instance into_exist_and_pure PQ P Q (φ : Type) :
   IntoAnd false PQ P Q →
   IntoPureT P φ →
-  IntoExist PQ (λ _ : φ, Q) (to_ident_name H) | 100.
+  IntoExist PQ (λ _ : φ, Q) (to_ident_name H) | 10.
 Proof.
   intros HPQ (φ'&->&?). rewrite /IntoAnd /= in HPQ.
   rewrite /IntoExist HPQ (into_pure P).
   apply pure_elim_l=> Hφ. by rewrite -(exist_intro Hφ).
 Qed.
-(* Low-priority instance falling back to treating a sep. conjunction with a pure
-left-hand side as an existential. This lets us use [iIntros (P) "..."] and [as
-[% ...]].
-[to_ident_name H] makes the default name [H] when [P] is destructed with
-[iExistDestruct] *)
-Global Instance into_exist_sep_pure PQ P Q φ :
-  IntoSep PQ P Q →
+(* [to_ident_name H] makes the default name [H] when [P] is destructed with
+[iExistDestruct]. See [IntoPureT] for why [φ] is a [Type]. *)
+Global Instance into_exist_sep_pure P Q (φ : Type) :
   IntoPureT P φ →
   TCOr (Affine P) (Absorbing Q) →
-  IntoExist PQ (λ _ : φ, Q) (to_ident_name H) | 100.
+  IntoExist (P ∗ Q) (λ _ : φ, Q) (to_ident_name H).
 Proof.
-  intros HPQ (φ'&->&?) ?. rewrite /IntoSep in HPQ. rewrite /IntoExist HPQ.
+  intros (φ'&->&?) ?. rewrite /IntoExist.
   eapply (pure_elim φ'); [by rewrite (into_pure P); apply sep_elim_l, _|]=>?.
   rewrite -exist_intro //. apply sep_elim_r, _.
 Qed.
