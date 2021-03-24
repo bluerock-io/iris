@@ -807,12 +807,12 @@ Proof. rewrite /IntoExist=> HP. by rewrite HP affinely_exist. Qed.
 Global Instance into_exist_intuitionistically {A} P (Φ : A → PROP) name :
   IntoExist P Φ name → IntoExist (□ P) (λ a, □ (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP. by rewrite HP intuitionistically_exist. Qed.
-(* This instance is generalized to let us use [iIntros (P) "..."] and
-[as [% ...]]. There is some risk of backtracking here, but that should only
-happen in failing cases (assuming that appropriate modality commuting instances
-are provided for both conjunctions and existential quantification). The
-alternative of providing specialized instances for cases like ⌜P ∧ Q⌝ turned out
-to not be tenable.
+(* This instance is generalized to let us use [iDestruct as (P) "..."] and
+[iIntros "[% ...]"] for conjunctions with a pure left-hand side. There is some
+risk of backtracking here, but that should only happen in failing cases
+(assuming that appropriate modality commuting instances are provided for both
+conjunctions and existential quantification). The alternative of providing
+specialized instances for cases like ⌜P ∧ Q⌝ turned out to not be tenable.
 
 [to_ident_name H] makes the default name [H] when [P] is destructed with
 [iExistDestruct]. See [IntoPureT] for why [φ] is a [Type]. *)

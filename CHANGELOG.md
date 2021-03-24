@@ -30,7 +30,7 @@ lemma.
 * Add support for pure names `%H` in intro patterns. This is now natively
   supported whereas the previous experimental support required installing
   https://gitlab.mpi-sws.org/iris/string-ident.
-* Add support for destructing existentials with the intro pattern `[% ...]`.
+* Add support for destructing existentials with the intro pattern `[%x ...]`.
 
 **Changes in `base_logic`:**
 
