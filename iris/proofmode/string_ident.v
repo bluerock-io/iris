@@ -1,4 +1,4 @@
-From Ltac2 Require Import Ltac2.
+From Ltac2 Require Ltac2.
 From Coq Require Import Strings.String.
 From Coq Require Import Init.Byte.
 From iris.prelude Require Import options.
@@ -6,9 +6,10 @@ From iris.prelude Require Import options.
 Import List.ListNotations.
 Local Open Scope list.
 
-Ltac2 Type exn ::= [ NotStringLiteral(constr) | InvalidIdent(string) ].
-
 Module StringToIdent.
+  Import Ltac2.
+
+  Ltac2 Type exn ::= [ NotStringLiteral(constr) | InvalidIdent(string) ].
 
   Ltac2 coq_byte_to_int b :=
     (match! b with
@@ -19,7 +20,7 @@ Module StringToIdent.
   Ltac2 coq_byte_to_char b :=
     Char.of_int (coq_byte_to_int b).
 
-  Fixpoint coq_string_to_list_byte (s : string): list byte :=
+  Fixpoint coq_string_to_list_byte (s : string) : list byte :=
     match s with
     | EmptyString => []
     | String c s => Ascii.byte_of_ascii c :: coq_string_to_list_byte s
@@ -53,13 +54,9 @@ Module StringToIdent.
     let _ := coq_byte_list_blit_list 0 bytes str in
     str.
 
-  (* to convert the string to an identifier we have to use the tools from Fresh;
-     note we pass Fresh.fresh and empty set of identifiers to avoid, so this
-     isn't necessarily fresh in the context, but if that's desired we can always
-     do it later with Ltac1's fresh. *)
   Ltac2 ident_from_string (s : string) :=
     match Ident.of_string s with
-    | Some id => Fresh.fresh (Fresh.Free.of_ids []) id
+    | Some id => id
     | None => Control.throw (InvalidIdent s)
     end.
 
@@ -67,32 +64,21 @@ Module StringToIdent.
   Ltac2 coq_string_to_ident (s : constr) := ident_from_string (coq_string_to_string s).
 
   (** We want to wrap this in an Ltac1 API, which requires passing a string to
-     Ltac2 and then returning the resulting identifier.
-
-    The only FFI from Ltac1 to Ltac2 is to call an Ltac2 expression that solves
-    a goal. We'll solve that goal with [fun (x:unit) => tt] where the name [x] is
-    the desired identifier - Coq remembers the identifier and we can extract it
-    with Ltac1 pattern matching. *)
+     Ltac2 and then performing an intros. *)
 
   Ltac2 get_opt o := match o with None => Control.throw Not_found | Some x => x end.
 
-  (** solve a goal of the form [unit -> unit] with a function that has the
-  appropriate name *)
-  Ltac coq_string_to_ident_lambda :=
+  Ltac intros_by_string :=
     ltac2:(s1 |- let s := get_opt (Ltac1.to_constr s1) in
                  let ident := coq_string_to_ident s in
-                 clear; (* needed since ident might already be in scope where
-                 this is called *)
-                 intros $ident;
-                 exact tt).
+                 intros $ident).
 End StringToIdent.
 
-(** Finally we wrap everything up by running [coq_string_to_ident_lambda] in a new
-context using a tactic-in-terms, extracting just the identifier from the
-produced lambda, and returning it as an Ltac1 value. *)
-Ltac string_to_ident s :=
-  let s := (eval cbv in s) in
-  let x := constr:(ltac:(StringToIdent.coq_string_to_ident_lambda s) : unit -> unit) in
-  match x with
-  | (fun (name:_) => _) => name
-  end.
+Open Scope string_scope.
+
+(** Finally we wrap everything up intro a tactic that renames a variable given
+by ident [id] into the name given by string [s].
+Only works if [id] can be reverted, i.e. if nothing else depends on it. *)
+Ltac rename_by_string id s :=
+  revert id;
+  StringToIdent.intros_by_string s.
