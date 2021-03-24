@@ -103,6 +103,17 @@ Section tests.
     iAssumption.
   Qed.
 
+  Lemma test_monPred_at_and_pure P i j :
+    (monPred_in j ∧ P) i ⊢ ⌜ j ⊑ i ⌝ ∧ P i.
+  Proof.
+    iDestruct 1 as "[% $]". done.
+  Qed.
+  Lemma test_monPred_at_sep_pure P i j :
+    (monPred_in j ∗ <absorb> P) i ⊢ ⌜ j ⊑ i ⌝ ∧ <absorb> P i.
+  Proof.
+    iDestruct 1 as "[% ?]". auto.
+  Qed.
+
   Context (FU : BiFUpd PROP).
 
   Lemma test_apply_fupd_intro_mask_subseteq E1 E2 P :

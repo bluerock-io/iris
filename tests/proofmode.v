@@ -251,6 +251,15 @@ Lemma test_iDestruct_exists_automatic_def P :
   an_exists P -∗ ∃ k, ▷^k P.
 Proof. iDestruct 1 as (?) "H". by iExists an_exists_name. Qed.
 
+(* use an Iris intro pattern [% H] rather than (?) to indicate iExistDestruct *)
+Lemma test_exists_intro_pattern_anonymous P (Φ: nat → PROP) :
+  P ∗ (∃ y:nat, Φ y) -∗ ∃ x, P ∗ Φ x.
+Proof.
+  iIntros "[HP1 [% HP2]]".
+  iExists y.
+  iFrame "HP1 HP2".
+Qed.
+
 Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → ⊢ ⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P.
 Proof. iIntros (??) "H". auto. Qed.
 
@@ -445,6 +454,37 @@ Proof. iIntros (?) "HP #HQ HR". iPureIntro; eauto. Qed.
 Lemma test_iPure_intro_2 (φ : nat → Prop) P Q R `{!Persistent Q} :
   φ 0 → P -∗ Q → R -∗ ∃ x : nat, <affine> ⌜ φ x ⌝ ∗ ⌜ φ x ⌝.
 Proof. iIntros (?) "HP #HQ HR". iPureIntro; eauto. Qed.
+
+(* Ensure that [% ...] works as a pattern when the left-hand side of and/sep is
+pure. *)
+Lemma test_pure_and_sep_destruct_affine `{!BiAffine PROP} (φ : Prop) P :
+  ⌜φ⌝ ∧ (⌜φ⌝ ∗ P) -∗ P.
+Proof.
+  iIntros "[% [% $]]".
+Qed.
+Lemma test_pure_and_sep_destruct_1 (φ : Prop) P :
+  ⌜φ⌝ ∧ (<affine> ⌜φ⌝ ∗ P) -∗ P.
+Proof.
+  iIntros "[% [% $]]".
+Qed.
+Lemma test_pure_and_sep_destruct_2 (φ : Prop) P :
+  ⌜φ⌝ ∧ (⌜φ⌝ ∗ <absorb> P) -∗ <absorb> P.
+Proof.
+  iIntros "[% [% $]]".
+Qed.
+(* Ensure that [% %] also works when the conjunction is *inside* ⌜...⌝ *)
+Lemma test_pure_inner_and_destruct :
+  ⌜False ∧ True⌝ ⊢@{PROP} False.
+Proof.
+  iIntros "[% %]". done.
+Qed.
+
+(* Ensure that [% %] works as a pattern for an existential with a pure body. *)
+Lemma test_exist_pure_destruct :
+  (∃ x, ⌜ x = 0 ⌝) ⊢@{PROP} True.
+Proof.
+  iIntros "[% %]". done.
+Qed.
 
 Lemma test_fresh P Q:
   (P ∗ Q) -∗ (P ∗ Q).
@@ -1378,6 +1418,14 @@ Lemma test_not_fresh P (φ : Prop) (H : φ) :
 Proof.
   Fail iIntros "[H %H]".
 Abort.
+
+Lemma test_exists_intro_pattern P (Φ: nat → PROP) :
+  P ∗ (∃ y:nat, Φ y) -∗ ∃ x, P ∗ Φ x.
+Proof.
+  iIntros "[HP1 [%yy HP2]]".
+  iExists yy.
+  iFrame "HP1 HP2".
+Qed.
 
 End pure_name_tests.
 

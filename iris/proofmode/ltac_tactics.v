@@ -1444,6 +1444,14 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
   | IList [[IDrop; ?pat2]] =>
      iAndDestructChoice Hz as Right Hz;
      iDestructHypGo Hz pat0 pat2
+  (* [% ...] is always interpreted as an existential; there are [IntoExist]
+  instances in place to handle conjunctions with a pure left-hand side this way
+  as well. *)
+  | IList [[IPure IGallinaAnon; ?pat2]] =>
+     iExistDestruct Hz as ? Hz; iDestructHypGo Hz pat0 pat2
+  | IList [[IPure (IGallinaNamed ?s); ?pat2]] =>
+     let x := string_to_ident s in iExistDestruct Hz as x Hz;
+     iDestructHypGo Hz pat0 pat2
   | IList [[?pat1; ?pat2]] =>
      let Hy := iFresh in iAndDestruct Hz as Hz Hy;
      iDestructHypGo Hz pat0 pat1; iDestructHypGo Hy pat0 pat2
