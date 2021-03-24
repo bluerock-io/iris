@@ -45,7 +45,7 @@ Section proofs.
 
   Lemma na_inv_iff p N P Q : na_inv p N P -∗ ▷ □ (P ↔ Q) -∗ na_inv p N Q.
   Proof.
-    iIntros "HI #HPQ". rewrite /na_inv. iDestruct "HI" as (i ?) "HI".
+    rewrite /na_inv. iIntros "(%i & % & HI) #HPQ".
     iExists i. iSplit; first done. iApply (inv_iff with "HI").
     iIntros "!> !>".
     iSplit; iIntros "[[? Ho]|$]"; iLeft; iFrame "Ho"; by iApply "HPQ".
@@ -97,8 +97,7 @@ Section proofs.
     na_inv p N P -∗ na_own p F ={E}=∗ ▷ P ∗ na_own p (F∖↑N) ∗
                        (▷ P ∗ na_own p (F∖↑N) ={E}=∗ na_own p F).
   Proof.
-    rewrite /na_inv. iIntros (??) "#Hnainv Htoks".
-    iDestruct "Hnainv" as (i) "[% Hinv]".
+    rewrite /na_inv. iIntros (??) "#(%i & % & Hinv) Htoks".
     rewrite [F as X in na_own p X](union_difference_L (↑N) F) //.
     rewrite [X in (X ∪ _)](union_difference_L {[i]} (↑N)) ?na_own_union; [|set_solver..].
     iDestruct "Htoks" as "[[Htoki $] $]".

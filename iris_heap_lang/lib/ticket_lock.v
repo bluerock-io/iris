@@ -65,7 +65,7 @@ Section proof.
 
   Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
   Proof.
-    iDestruct 1 as (o1) "H1". iDestruct 1 as (o2) "H2".
+    iIntros "[%σ1 H1] [%σ2 H2]".
     iDestruct (own_valid_2 with "H1 H2") as %[[] _]%auth_frag_op_valid_1.
   Qed.
 
@@ -74,7 +74,7 @@ Section proof.
   Proof.
     iDestruct 1 as (lo ln ->) "#Hinv"; iIntros "#HR".
     iExists lo, ln; iSplit; [done|]. iApply (inv_iff with "Hinv").
-    iIntros "!> !>"; iSplit; iDestruct 1 as (o n) "(Ho & Hn & H● & H)";
+    iIntros "!> !>"; iSplit; iIntros "(%o & %n & Ho & Hn & H● & H)";
       iExists o, n; iFrame "Ho Hn H●";
       (iDestruct "H" as "[[H◯ H]|H◯]"; [iLeft; iFrame "H◯"; by iApply "HR"|by iRight]).
   Qed.

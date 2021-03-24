@@ -196,7 +196,7 @@ Section gen_heap.
     meta_token l E1 -∗ meta_token l E2 -∗ meta_token l (E1 ∪ E2).
   Proof.
     rewrite meta_token_eq /meta_token_def.
-    iDestruct 1 as (γm1) "[#Hγm1 Hm1]". iDestruct 1 as (γm2) "[#Hγm2 Hm2]".
+    iIntros "(%γm1 & #Hγm1 & Hm1) (%γm2 & #Hγm2 & Hm2)".
     iDestruct (ghost_map_elem_valid_2 with "Hγm1 Hγm2") as %[_ ->].
     iDestruct (own_valid_2 with "Hm1 Hm2") as %?%reservation_map_token_valid_op.
     iExists γm2. iFrame "Hγm2". rewrite reservation_map_token_union //. by iSplitL "Hm1".
@@ -219,7 +219,7 @@ Section gen_heap.
     meta l i x1 -∗ meta l i x2 -∗ ⌜x1 = x2⌝.
   Proof.
     rewrite meta_eq /meta_def.
-    iDestruct 1 as (γm1) "[Hγm1 Hm1]"; iDestruct 1 as (γm2) "[Hγm2 Hm2]".
+    iIntros "(%γm1 & Hγm1 & Hm1) (%γm2 & Hγm2 & Hm2)".
     iDestruct (ghost_map_elem_valid_2 with "Hγm1 Hγm2") as %[_ ->].
     iDestruct (own_valid_2 with "Hm1 Hm2") as %Hγ; iPureIntro.
     move: Hγ. rewrite -reservation_map_data_op reservation_map_data_valid.

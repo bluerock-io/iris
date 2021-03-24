@@ -234,7 +234,7 @@ Section proof.
     Proof.
       iIntros "Hvs". iInduction vs as [|v vs] "IH" forall (Q); simpl.
       { iExists []. by auto. }
-      iDestruct "Hvs" as "[Hv Hvs]"; iDestruct "Hv" as (x ->) "Hv".
+      iDestruct "Hvs" as "[(%x & -> & Hv) Hvs]".
       iDestruct ("IH" with "Hvs") as (xs ->) "Hxs".
       iExists (x :: xs). by iFrame.
     Qed.
