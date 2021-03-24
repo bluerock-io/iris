@@ -31,7 +31,7 @@ build-coq.dev:
   <<: *template
   variables:
     OPAM_PINS: "coq version dev"
-    MANGLE_NAMES: "1"
+    #MANGLE_NAMES: "1" name mangling causes issues with string_ident
 
 build-coq.8.13.1:
   <<: *template
