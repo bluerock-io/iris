@@ -176,9 +176,12 @@ Global Arguments from_and {_} _%I _%I _%I {_}.
 Global Hint Mode FromAnd + ! - - : typeclass_instances.
 Global Hint Mode FromAnd + - ! ! : typeclass_instances. (* For iCombine *)
 
-(** The [IntoAnd p P Q1 Q2] class is used to handle [[H1 H2]] intro patterns in
-the intuitionistic context ([p = true]) and patterns where one of the two sides
-is discarded ([p = false]).
+(** The [IntoAnd p P Q1 Q2] class is used to handle some [[H1 H2]] intro
+patterns:
+- [IntoAnd true] is used for such patterns in the intuitionistic context
+- [IntoAnd false] is used for such patterns where one of the two sides is
+  discarded (e.g. [[_ H]]) or where the left-hand side is pure as in [[% H]]
+  (via an [IntoExist] fallback).
 
 The inputs are [p P] and the outputs are [Q1 Q2]. *)
 Class IntoAnd {PROP : bi} (p : bool) (P Q1 Q2 : PROP) :=
@@ -188,7 +191,10 @@ Global Arguments into_and {_} _ _%I _%I _%I {_}.
 Global Hint Mode IntoAnd + + ! - - : typeclass_instances.
 
 (** The [IntoSep P Q1 Q2] class is used to handle [[H1 H2]] intro patterns in
-the spatial context (except when one side is [_], then [IntoAnd] is used).
+the spatial context, except:
+- when one side is [_], then [IntoAnd] is tried first (but [IntoSep] is used as
+  fallback)
+- when the left-hand side is [%], then [IntoExist] is used)
 
 The input is [P] and the outputs are [Q1 Q2]. *)
 Class IntoSep {PROP : bi} (P Q1 Q2 : PROP) :=
