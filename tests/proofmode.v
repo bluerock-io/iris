@@ -480,10 +480,17 @@ Proof.
 Qed.
 
 (* Ensure that [% %] works as a pattern for an existential with a pure body. *)
-Lemma test_exist_pure_destruct :
+Lemma test_exist_pure_destruct_1 :
   (∃ x, ⌜ x = 0 ⌝) ⊢@{PROP} True.
 Proof.
   iIntros "[% %]". done.
+Qed.
+(* Also test nested existentials where the type of the 2nd depends on the first
+(which could cause trouble if we do things in the wrong order) *)
+Lemma test_exist_pure_destruct_2 :
+  (∃ x (_:x=0), True) ⊢@{PROP} True.
+Proof.
+  iIntros "(% & % & $)".
 Qed.
 
 Lemma test_fresh P Q:
