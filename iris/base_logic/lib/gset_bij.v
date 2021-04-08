@@ -114,7 +114,7 @@ Section gset_bij.
     by apply own_mono, bij_view_included.
   Qed.
 
-  Lemma gset_bij_own_elem_auth_agree {γ q L} a b :
+  Lemma gset_bij_own_both_elem_of {γ q L} a b :
     gset_bij_own_auth γ q L -∗ gset_bij_own_elem γ a b -∗ ⌜(a, b) ∈ L⌝.
   Proof.
     iIntros "Hauth Helem". rewrite gset_bij_own_auth_eq gset_bij_own_elem_eq.
