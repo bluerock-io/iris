@@ -98,7 +98,7 @@ Section gset_bij.
     by iDestruct (own_valid with "Hauth") as %?%gset_bij_auth_dfrac_valid.
   Qed.
 
-  Lemma gset_bij_own_elem_agree γ L a a' b b' :
+  Lemma gset_bij_own_elem_agree γ a a' b b' :
     gset_bij_own_elem γ a b -∗ gset_bij_own_elem γ a' b' -∗
     ⌜a = a' ↔ b = b'⌝.
   Proof.
@@ -113,6 +113,15 @@ Section gset_bij.
     intros. rewrite gset_bij_own_auth_eq gset_bij_own_elem_eq.
     by apply own_mono, bij_view_included.
   Qed.
+
+  Lemma gset_bij_own_elem_auth_agree {γ q L} a b :
+    gset_bij_own_auth γ q L -∗ gset_bij_own_elem γ a b -∗ ⌜(a, b) ∈ L⌝.
+  Proof.
+    iIntros "Hauth Helem". rewrite gset_bij_own_auth_eq gset_bij_own_elem_eq.
+    iPoseProof (own_valid_2 with "Hauth Helem") as "%Ha".
+    iPureIntro. revert Ha. rewrite bij_both_dfrac_valid. intros (_ & _ & ?); done.
+  Qed.
+
   Lemma gset_bij_own_elem_get_big γ q L :
     gset_bij_own_auth γ q L -∗ [∗ set] ab ∈ L, gset_bij_own_elem γ ab.1 ab.2.
   Proof.
