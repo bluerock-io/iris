@@ -132,6 +132,8 @@ Section auth.
   Proof. apply view_frag_mono. Qed.
   Lemma auth_frag_core a : core (◯ a) = ◯ (core a).
   Proof. apply view_frag_core. Qed.
+  Global Instance auth_auth_core_id a : CoreId (●□ a).
+  Proof. rewrite /auth_auth. apply _. Qed.
   Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
   Proof. rewrite /auth_frag. apply _. Qed.
   Global Instance auth_frag_is_op a b1 b2 :
