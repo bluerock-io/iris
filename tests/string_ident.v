@@ -3,39 +3,26 @@ From Coq Require Import Strings.String.
 From stdpp Require Import base.
 Open Scope string.
 
-(* these tests should test name generation directly, which Mangle Names
-interferes with *)
-Unset Mangle Names.
-
 Lemma test_basic_ident : ∀ (n:nat), n = n.
 Proof.
-  let x := string_to_ident "n" in
-  intros x.
+  let x := fresh in intros x; rename_by_string x "n".
   exact (eq_refl n).
 Qed.
 
-Lemma test_in_scope (n:nat) : n = n.
-Proof.
-  let x := string_to_ident "n" in exact (eq_refl n).
-Qed.
-
 Check "test_invalid_ident".
-Lemma test_invalid_ident : True.
+Lemma test_invalid_ident : ∀ (n:nat), True.
 Proof.
-  Fail let x := string_to_ident "has a space" in
-       idtac x.
+  Fail let x := fresh in intros x; rename_by_string x "has a space".
 Abort.
 
 Check "test_not_string".
-Lemma test_not_string : True.
+Lemma test_not_string : ∀ (n:nat), True.
 Proof.
-  Fail let x := string_to_ident 4 in
-       idtac x.
+  Fail let x := fresh in intros x; rename_by_string x 4.
 Abort.
 
 Check "test_not_literal".
-Lemma test_not_literal (s:string) : True.
+Lemma test_not_literal (s:string) : ∀ (n:nat), True.
 Proof.
-  Fail let x := string_to_ident s in
-       idtac x.
+  Fail let x := fresh in intros x; rename_by_string x s.
 Abort.

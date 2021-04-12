@@ -1450,7 +1450,9 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
   | IList [[IPure IGallinaAnon; ?pat2]] =>
      iExistDestruct Hz as ? Hz; iDestructHypGo Hz pat0 pat2
   | IList [[IPure (IGallinaNamed ?s); ?pat2]] =>
-     let x := string_to_ident s in iExistDestruct Hz as x Hz;
+     let x := fresh in
+     iExistDestruct Hz as x Hz;
+     rename_by_string x s;
      iDestructHypGo Hz pat0 pat2
   | IList [[?pat1; ?pat2]] =>
      let Hy := iFresh in iAndDestruct Hz as Hz Hy;
@@ -1468,8 +1470,10 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
   | IList [_;_] => fail "iDestruct: in" pat0 "a disjunct has multiple patterns"
 
   | IPure IGallinaAnon => iPure Hz as ?
-  | IPure (IGallinaNamed ?s) => let x := string_to_ident s in
-                                iPure Hz as x
+  | IPure (IGallinaNamed ?s) =>
+     let x := fresh in
+     iPure Hz as x;
+     rename_by_string x s
   | IRewrite Right => iPure Hz as ->
   | IRewrite Left => iPure Hz as <-
   | IIntuitionistic ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat0 pat
@@ -1568,8 +1572,11 @@ Ltac iIntros_go pats startproof :=
     | false => idtac
     end
   (* Optimizations to avoid generating fresh names *)
-  | IPure (IGallinaNamed ?s) :: ?pats => let i := string_to_ident s in
-                                         iIntro (i); iIntros_go pats startproof
+  | IPure (IGallinaNamed ?s) :: ?pats =>
+     let i := fresh in
+     iIntro (i);
+     rename_by_string i s;
+     iIntros_go pats startproof
   | IPure IGallinaAnon :: ?pats => iIntro (?); iIntros_go pats startproof
   | IIntuitionistic (IIdent ?H) :: ?pats => iIntro #H; iIntros_go pats false
   | IDrop :: ?pats => iIntro _; iIntros_go pats startproof
