@@ -85,3 +85,13 @@ Only works if [id] can be reverted, i.e. if nothing else depends on it. *)
 Ltac rename_by_string id s :=
   revert id;
   StringToIdent.intros_by_string s.
+
+(** We can also use this to write Ltac that *returns* the desired ident.
+However, this function will produce wrong results under [Set Mangle Names], so
+use with caution. *)
+Ltac string_to_ident s :=
+  let s := (eval cbv in s) in
+  let x := constr:(ltac:(StringToIdent.intros_by_string s; exact tt) : unit -> unit) in
+  match x with
+  | (fun (name:_) => _) => name
+  end.
