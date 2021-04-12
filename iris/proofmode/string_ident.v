@@ -64,7 +64,10 @@ Module StringToIdent.
   Ltac2 coq_string_to_ident (s : constr) := ident_from_string (coq_string_to_string s).
 
   (** We want to wrap this in an Ltac1 API, which requires passing a string to
-     Ltac2 and then performing an intros. *)
+      Ltac2 and then performing an intros.
+      TODO: Once we require Coq 8.14, we should be able to pass idents across
+      the Ltac/Ltac2 barrier, which can be used to avoid the revert/intros.
+   *)
 
   Ltac2 get_opt o := match o with None => Control.throw Not_found | Some x => x end.
 
