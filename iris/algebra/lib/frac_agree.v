@@ -49,19 +49,19 @@ Section lemmas.
   Qed.
 
   Lemma frac_agree_included q1 a1 q2 a2 :
-    to_frac_agree q1 a1 ≼ to_frac_agree q2 a2 →
+    to_frac_agree q1 a1 ≼ to_frac_agree q2 a2 ↔
     (q1 < q2)%Qp ∧ a1 ≡ a2.
-  Proof. by intros [?%frac_included ?%to_agree_included]%pair_included. Qed.
+  Proof. by rewrite pair_included frac_included to_agree_included. Qed.
   Lemma frac_agree_included_L `{!LeibnizEquiv A} q1 a1 q2 a2 :
-    to_frac_agree q1 a1 ≼ to_frac_agree q2 a2 →
+    to_frac_agree q1 a1 ≼ to_frac_agree q2 a2 ↔
     (q1 < q2)%Qp ∧ a1 = a2.
   Proof. unfold_leibniz. apply frac_agree_included. Qed.
   Lemma frac_agree_includedN q1 a1 q2 a2 n :
-    to_frac_agree q1 a1 ≼{n} to_frac_agree q2 a2 →
+    to_frac_agree q1 a1 ≼{n} to_frac_agree q2 a2 ↔
     (q1 < q2)%Qp ∧ a1 ≡{n}≡ a2.
   Proof.
-    by intros [?%cmra_discrete_included_iff%frac_included
-               ?%to_agree_includedN]%pair_includedN.
+    by rewrite pair_includedN -cmra_discrete_included_iff
+               frac_included to_agree_includedN.
   Qed.
 
   (** No frame-preserving update lemma needed -- use [cmra_update_exclusive] with
