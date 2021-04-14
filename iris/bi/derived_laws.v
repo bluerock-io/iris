@@ -337,6 +337,11 @@ Global Instance iff_proper :
 
 Lemma iff_refl Q P : Q ⊢ P ↔ P.
 Proof. rewrite /bi_iff; apply and_intro; apply impl_intro_l; auto. Qed.
+Lemma iff_sym P Q : (P ↔ Q) ⊣⊢ (Q ↔ P).
+Proof.
+  apply equiv_entails. split; apply and_intro;
+    try apply and_elim_r; apply and_elim_l.
+Qed.
 
 
 (* BI Stuff *)
@@ -488,6 +493,12 @@ Lemma wand_iff_equiv P Q : (⊢ P ∗-∗ Q) → (P ⊣⊢ Q).
 Proof.
   intros HPQ; apply (anti_symm (⊢));
     apply wand_entails; rewrite /bi_emp_valid HPQ /bi_wand_iff; auto.
+Qed.
+Lemma wand_iff_sym P Q :
+  (P ∗-∗ Q) ⊣⊢ (Q ∗-∗ P).
+Proof.
+  apply equiv_entails; split; apply and_intro;
+    try apply and_elim_r; apply and_elim_l.
 Qed.
 
 Lemma entails_impl P Q : (P ⊢ Q) → (⊢ P → Q).
