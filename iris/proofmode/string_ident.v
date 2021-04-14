@@ -91,7 +91,10 @@ However, this function will produce wrong results under [Set Mangle Names], so
 use with caution. *)
 Ltac string_to_ident s :=
   let s := (eval cbv in s) in
-  let x := constr:(ltac:(StringToIdent.intros_by_string s; exact tt) : unit -> unit) in
+  let x := constr:(ltac:(clear; (* needed since s might already be in scope
+                         where this is called *)
+                         StringToIdent.intros_by_string s;
+                         exact tt) : unit -> unit) in
   match x with
   | (fun (name:_) => _) => name
   end.
