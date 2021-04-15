@@ -1,5 +1,5 @@
 From stdpp Require Export list gmap.
-From iris.algebra Require Export cmra.
+From iris.algebra Require Export list cmra.
 From iris.algebra Require Import updates local_updates proofmode_classes big_op.
 From iris.prelude Require Import options.
 
@@ -96,6 +96,13 @@ Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
 
 (** Internalized properties *)
 End ofe.
+
+Global Instance map_seq_ne {A : ofe} start :
+  NonExpansive (map_seq (M:=gmap nat A) start).
+Proof.
+  intros n l1 l2 Hl. revert start.
+  induction Hl; intros; simpl; repeat (done || f_equiv).
+Qed.
 
 Global Arguments gmapO _ {_ _} _.
 
