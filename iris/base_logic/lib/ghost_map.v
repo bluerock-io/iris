@@ -67,6 +67,15 @@ Section lemmas.
     AsFractional (k ↪[γ]{#q} v) (λ q, k ↪[γ]{#q} v)%I q.
   Proof. split; first done. apply _. Qed.
 
+  Local Lemma ghost_map_elems_unseal γ m dq :
+    ([∗ map] k ↦ v ∈ m, k ↪[γ]{dq} v) ==∗
+    own γ ([^op map] k↦v ∈ m, gmap_view_frag (V:=leibnizO V) k dq v).
+  Proof.
+    unseal. destruct (decide (m = ∅)) as [->|Hne].
+    - rewrite !big_opM_empty. iIntros "_". iApply own_unit.
+    - rewrite big_opM_own //. iIntros "?". done.
+  Qed.
+
   Lemma ghost_map_elem_valid k γ dq v : k ↪[γ]{dq} v -∗ ⌜✓ dq⌝.
   Proof.
     unseal. iIntros "Helem".
@@ -209,24 +218,20 @@ Section lemmas.
   Lemma ghost_map_update {γ m k v} w :
     ghost_map_auth γ 1 m -∗ k ↪[γ] v ==∗ ghost_map_auth γ 1 (<[k := w]> m) ∗ k ↪[γ] w.
   Proof.
-    iIntros "Hauth Hel". iMod (ghost_map_delete with "Hauth Hel") as "Hauth".
-    iMod (ghost_map_insert k with "Hauth").
-    { rewrite lookup_delete. done. }
-    rewrite insert_delete. eauto.
+    unseal. apply bi.wand_intro_r. rewrite -!own_op.
+    apply own_update. apply: gmap_view_update.
   Qed.
 
-  (** Derived big-op versions of above lemmas *)
+  (** Big-op versions of above lemmas *)
   Lemma ghost_map_lookup_big {γ q m} m0 :
     ghost_map_auth γ q m -∗
     ([∗ map] k↦v ∈ m0, k ↪[γ] v) -∗
     ⌜m0 ⊆ m⌝.
   Proof.
-    iInduction m0 as [|k v m0 Hk IH] "IH" using map_ind.
-    { iIntros "_ _". iPureIntro. apply map_empty_subseteq. }
-    rewrite big_sepM_insert //. iIntros "Hauth [Helem Hm0]".
-    iDestruct (ghost_map_lookup with "Hauth Helem") as %Helem.
-    iDestruct ("IH" with "Hauth Hm0") as %Hm0.
-    iPureIntro. apply insert_subseteq_l; done.
+    iIntros "Hauth Hfrag". rewrite map_subseteq_spec. iIntros (k v Hm0).
+    iDestruct (ghost_map_lookup with "Hauth [Hfrag]") as %->.
+    { rewrite big_sepM_lookup; done. }
+    done.
   Qed.
 
   Lemma ghost_map_insert_big {γ m} m' :
@@ -234,14 +239,8 @@ Section lemmas.
     ghost_map_auth γ 1 m ==∗
     ghost_map_auth γ 1 (m' ∪ m) ∗ ([∗ map] k ↦ v ∈ m', k ↪[γ] v).
   Proof.
-    iInduction m' as [|k v m' Hk] "IH" using map_ind forall (m); iIntros (Hdisj) "Hm".
-    { rewrite left_id_L. auto. }
-    iMod ("IH" with "[] Hm") as "[Hm'm Hm']".
-    { iPureIntro. by eapply map_disjoint_insert_l. }
-    decompose_map_disjoint.
-    rewrite !big_opM_insert // -insert_union_l //.
-    by iMod (ghost_map_insert with "Hm'm") as "($ & $)";
-      first by apply lookup_union_None.
+    unseal. intros ?. rewrite -big_opM_own_1 -own_op.
+    apply own_update. apply: gmap_view_alloc_big; done.
   Qed.
   Lemma ghost_map_insert_persist_big {γ m} m' :
     m' ##ₘ m →
@@ -259,12 +258,9 @@ Section lemmas.
     ([∗ map] k↦v ∈ m0, k ↪[γ] v) ==∗
     ghost_map_auth γ 1 (m ∖ m0).
   Proof.
-    iInduction m0 as [|k v m0 Hk IH] "IH" using map_ind.
-    { iIntros "Hauth _". rewrite right_id_L //. }
-    rewrite big_sepM_insert //. iIntros "Hauth [Helem Hm0]".
-    iMod ("IH" with "Hauth Hm0") as "Hauth".
-    iMod (ghost_map_delete with "Hauth Helem") as "Hauth".
-    rewrite -delete_difference. done.
+    iIntros "Hauth Hfrag". iMod (ghost_map_elems_unseal with "Hfrag") as "Hfrag".
+    unseal. iApply (own_update_2 with "Hauth Hfrag").
+    apply: gmap_view_delete_big.
   Qed.
 
   Theorem ghost_map_update_big {γ m} m0 m1 :
@@ -274,22 +270,10 @@ Section lemmas.
     ghost_map_auth γ 1 (m1 ∪ m) ∗
         [∗ map] k↦v ∈ m1, k ↪[γ] v.
   Proof.
-    iIntros (Hdom%eq_sym) "Hauth Hm0".
-    iInduction m0 as [|k v m0 Hk] "IH" using map_ind forall (m m1 Hdom).
-    - rewrite dom_empty_L in Hdom.
-      apply dom_empty_inv_L in Hdom as ->.
-      rewrite left_id_L big_sepM_empty.
-      by iFrame.
-    - rewrite big_sepM_insert //.
-      iDestruct "Hm0" as "[Hl Hm0]".
-      rewrite dom_insert_L in Hdom.
-      assert (k ∈ dom (gset K) m1) as Hindom by set_solver.
-      apply elem_of_dom in Hindom as [v' Hlookup].
-      iMod (ghost_map_update v' with "Hauth Hl") as "[Hauth Hl]".
-      iMod ("IH" $! (<[k:=v']> m) (delete k m1) with "[%] Hauth Hm0") as "[Hauth Hm0]".
-      { apply (not_elem_of_dom (D:=gset K)) in Hk. set_solver. }
-      rewrite union_delete_insert //. iFrame. iClear "#".
-      iApply big_sepM_delete; first done. by iFrame.
+    iIntros (?) "Hauth Hfrag". iMod (ghost_map_elems_unseal with "Hfrag") as "Hfrag".
+    unseal. rewrite -big_opM_own_1 -own_op.
+    iApply (own_update_2 with "Hauth Hfrag").
+    apply: gmap_view_update_big. done.
   Qed.
 
 End lemmas.

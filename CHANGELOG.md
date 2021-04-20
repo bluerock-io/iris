@@ -26,6 +26,7 @@ Coq 8.11 is no longer supported in this version of Iris.
   information.
 * Demote the Camera structure on `list` to `iris_staging` since its composition
   is not very well-behaved.
+* Extend `gmap_view` with lemmas for "big" operations on maps.
 
 **Changes in `proofmode`:**
 
