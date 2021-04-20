@@ -86,7 +86,7 @@ Section gmultiset.
   Qed.
 
   Lemma big_opMS_singletons X :
-    ([^op mset] x ∈ X, {[ x ]}) = X.
+    ([^op mset] x ∈ X, {[+ x +]}) = X.
   Proof.
     induction X as [|x X IH] using gmultiset_ind.
     - rewrite big_opMS_empty. done.

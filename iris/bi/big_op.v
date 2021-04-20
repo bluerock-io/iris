@@ -2053,7 +2053,7 @@ Section gmultiset.
   Proof. apply big_opMS_disj_union. Qed.
 
   Lemma big_sepMS_delete Φ X x :
-    x ∈ X → ([∗ mset] y ∈ X, Φ y) ⊣⊢ Φ x ∗ [∗ mset] y ∈ X ∖ {[ x ]}, Φ y.
+    x ∈ X → ([∗ mset] y ∈ X, Φ y) ⊣⊢ Φ x ∗ [∗ mset] y ∈ X ∖ {[+ x +]}, Φ y.
   Proof. apply big_opMS_delete. Qed.
 
   Lemma big_sepMS_elem_of Φ X x `{!Absorbing (Φ x)} :
@@ -2067,7 +2067,7 @@ Section gmultiset.
     intros. rewrite big_sepMS_delete //. by apply sep_mono_r, wand_intro_l.
   Qed.
 
-  Lemma big_sepMS_singleton Φ x : ([∗ mset] y ∈ {[ x ]}, Φ y) ⊣⊢ Φ x.
+  Lemma big_sepMS_singleton Φ x : ([∗ mset] y ∈ {[+ x +]}, Φ y) ⊣⊢ Φ x.
   Proof. apply big_opMS_singleton. Qed.
 
   Lemma big_sepMS_sep Φ Ψ X :
@@ -2155,7 +2155,7 @@ Section gmultiset.
     Φ x ∗
     (* we reobtain the bigop for a predicate [Ψ] selected by the user *)
     ∀ Ψ,
-      □ (∀ y, ⌜ y ∈ X ∖ {[ x ]} ⌝ → Φ y -∗ Ψ y) -∗
+      □ (∀ y, ⌜ y ∈ X ∖ {[+ x +]} ⌝ → Φ y -∗ Ψ y) -∗
       Ψ x -∗
       [∗ mset] y ∈ X, Ψ y.
   Proof.

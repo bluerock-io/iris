@@ -630,13 +630,13 @@ Section gmultiset.
     ([^o mset] y ∈ X ⊎ Y, f y) ≡ ([^o mset] y ∈ X, f y) `o` [^o mset] y ∈ Y, f y.
   Proof. by rewrite big_opMS_eq /big_opMS_def gmultiset_elements_disj_union big_opL_app. Qed.
 
-  Lemma big_opMS_singleton f x : ([^o mset] y ∈ {[ x ]}, f y) ≡ f x.
+  Lemma big_opMS_singleton f x : ([^o mset] y ∈ {[+ x +]}, f y) ≡ f x.
   Proof.
     intros. by rewrite big_opMS_eq /big_opMS_def gmultiset_elements_singleton /= right_id.
   Qed.
 
   Lemma big_opMS_delete f X x :
-    x ∈ X → ([^o mset] y ∈ X, f y) ≡ f x `o` [^o mset] y ∈ X ∖ {[ x ]}, f y.
+    x ∈ X → ([^o mset] y ∈ X, f y) ≡ f x `o` [^o mset] y ∈ X ∖ {[+ x +]}, f y.
   Proof.
     intros. rewrite -big_opMS_singleton -big_opMS_disj_union.
     by rewrite -gmultiset_disj_union_difference'.
