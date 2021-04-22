@@ -23,6 +23,37 @@ recommend importing in the following order:
 - iris.program_logic
 - iris.heap_lang
 
+## Resolving mask mismatches
+
+Sometimes, `fupd` masks are not exactly what they need to be to make progress.
+There are two situations to distinguish here.
+
+#### Eliminating a [fupd] with a mask smaller than the current one
+
+When our goal us `|={E,_}=> _` and you want to do [iMod] on an `|={E',_}=> _`, Coq will complain even if `E' ⊆ E`.
+To resolve this, you first need to explicitly weaken your mask from `E` to `E'` by doing:
+```
+iMod (fupd_mask_subseteq E') as "Hclose".
+{ (* Resolve subset sidecondition. *) }
+```
+Later, you can `iMod "Hclose" as "_"` to restore the mask back from `E'` to `E`.
+
+Notice that this will make the invariants in `E' ∖ E` unavailable until you use `Hclose`.
+Usually this is not a problem, but there are theoretical situations where using `fupd_mask_subseteq` like this can prevent you from proving a goal.
+In that case, you will have to experiment with rules like `fupd_mask_frame`, but those are not very convenient to use.
+
+#### Introducing a [fupd] when the masks are not yet the same
+
+When your goal is `|={E,E'}=> _` and you want to do `iModIntro`, Coq will complain even if `E' ⊆ E`.
+This arises, for example, in clients of TaDA-style logically atomic specifications.
+To resolve this, do:
+```
+iApply fupd_mask_intro.
+{ (* Resolve subset sidecondition. *) }
+iIntros "Hclose".
+```
+Later, you can `iMod "Hclose" as "_"` to restore the mask back from `E'` to `E`.
+
 ## Canonical structures and type classes
 
 In Iris, we use both canonical structures and type classes, and some careful
