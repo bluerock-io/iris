@@ -30,9 +30,9 @@ There are two situations to distinguish here.
 
 #### Eliminating a [fupd] with a mask smaller than the current one
 
-When our goal us `|={E,_}=> _` and you want to do [iMod] on an `|={E',_}=> _`, Coq will complain even if `E' ⊆ E`.
+When your goal is `|={E,_}=> _` and you want to do `iMod` on an `|={E',_}=> _`, Coq will complain even if `E' ⊆ E`.
 To resolve this, you first need to explicitly weaken your mask from `E` to `E'` by doing:
-```
+```coq
 iMod (fupd_mask_subseteq E') as "Hclose".
 { (* Resolve subset sidecondition. *) }
 ```
@@ -47,7 +47,7 @@ In that case, you will have to experiment with rules like `fupd_mask_frame`, but
 When your goal is `|={E,E'}=> _` and you want to do `iModIntro`, Coq will complain even if `E' ⊆ E`.
 This arises, for example, in clients of TaDA-style logically atomic specifications.
 To resolve this, do:
-```
+```coq
 iApply fupd_mask_intro.
 { (* Resolve subset sidecondition. *) }
 iIntros "Hclose".
