@@ -33,10 +33,10 @@ build-coq.dev:
     OPAM_PINS: "coq version dev"
     MANGLE_NAMES: "1"
 
-build-coq.8.13.1:
+build-coq.8.13.2:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.13.1"
+    OPAM_PINS: "coq version 8.13.2"
     DENY_WARNINGS: "1"
     OPAM_PKG: "1"
     DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
