@@ -284,7 +284,7 @@ Section fupd_derived.
     ((|={E2,E1}=> emp) ={E2,E3}=∗ P) -∗ |={E1,E3}=> P.
   Proof.
     intros HE.
-    (* Get an [emp] so we can apply [fupd_intro_mask']. *)
+    (* Get an [emp] so we can apply [fupd_mask_subseteq]. *)
     rewrite -[X in (X -∗ _)](left_id emp%I bi_sep).
     rewrite {1}(fupd_mask_subseteq E2) //.
     rewrite fupd_frame_r. by rewrite wand_elim_r fupd_trans.
