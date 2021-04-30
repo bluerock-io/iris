@@ -4,3 +4,6 @@ From iris.prelude Require Import options.
 Global Open Scope general_if_scope.
 Global Set SsrOldRewriteGoalsOrder. (* See Coq issue #5706 *)
 Ltac done := stdpp.tactics.done.
+
+(** Iris itself and many dependencies still rely on this coercion. *)
+Coercion Z.of_nat : nat >-> Z.
