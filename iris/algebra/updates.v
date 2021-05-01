@@ -59,6 +59,7 @@ Proof.
   - intros x y z. rewrite !cmra_update_updateP.
     eauto using cmra_updateP_compose with subst.
 Qed.
+Global Instance cmra_update_rewrite_relation : RewriteRelation (@cmra_update A) := {}.
 
 Lemma cmra_updateP_op (P1 P2 Q : A → Prop) x1 x2 :
   x1 ~~>: P1 → x2 ~~>: P2 → (∀ y1 y2, P1 y1 → P2 y2 → Q (y1 ⋅ y2)) →

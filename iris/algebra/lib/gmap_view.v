@@ -331,7 +331,7 @@ Section lemmas.
   Proof.
     intros. induction m' as [|k v m' ? IH] using map_ind; decompose_map_disjoint.
     { rewrite big_opM_empty left_id_L right_id. done. }
-    etrans; first by apply IH.
+    rewrite IH //.
     rewrite big_opM_insert // assoc.
     apply cmra_update_op; last done.
     rewrite -insert_union_l. apply (gmap_view_alloc _ k dq); last done.
@@ -370,10 +370,9 @@ Section lemmas.
     gmap_view_auth 1 m ⋅ gmap_view_frag k (DfracOwn 1) v ~~>
       gmap_view_auth 1 (<[k := v']> m) ⋅ gmap_view_frag k (DfracOwn 1) v'.
   Proof.
-    etrans; first by eapply gmap_view_delete. etrans.
-    - eapply (gmap_view_alloc _ k (DfracOwn 1) v'); last done.
-      rewrite lookup_delete //.
-    - rewrite insert_delete. done.
+    rewrite gmap_view_delete.
+    rewrite (gmap_view_alloc _ k (DfracOwn 1) v') //; last by rewrite lookup_delete.
+    rewrite insert_delete //.
   Qed.
 
   Lemma gmap_view_update_big m m0 m1 :
