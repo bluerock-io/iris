@@ -492,12 +492,16 @@ Section gset.
     Proper (pointwise_relation _ (≡) ==> (=) ==> (≡)) (big_opS o (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opS_proper; intros; apply Hf. Qed.
 
+  Lemma big_opS_elements f X :
+    ([^o set] x ∈ X, f x) = [^o list] _↦x ∈ elements X, f x.
+  Proof. by rewrite big_opS_eq. Qed.
+
   Lemma big_opS_empty f : ([^o set] x ∈ ∅, f x) = monoid_unit.
-  Proof. by rewrite big_opS_eq /big_opS_def elements_empty. Qed.
+  Proof. by rewrite big_opS_elements elements_empty. Qed.
 
   Lemma big_opS_insert f X x :
     x ∉ X → ([^o set] y ∈ {[ x ]} ∪ X, f y) ≡ (f x `o` [^o set] y ∈ X, f y).
-  Proof. intros. by rewrite big_opS_eq /big_opS_def elements_union_singleton. Qed.
+  Proof. intros. by rewrite !big_opS_elements elements_union_singleton. Qed.
   Lemma big_opS_fn_insert {B} (f : A → B → M) h X x b :
     x ∉ X →
     ([^o set] y ∈ {[ x ]} ∪ X, f y (<[x:=b]> h y))
@@ -529,7 +533,7 @@ Section gset.
   Qed.
 
   Lemma big_opS_singleton f x : ([^o set] y ∈ {[ x ]}, f y) ≡ f x.
-  Proof. intros. by rewrite big_opS_eq /big_opS_def elements_singleton /= right_id. Qed.
+  Proof. intros. by rewrite big_opS_elements elements_singleton /= right_id. Qed.
 
   Lemma big_opS_unit X : ([^o set] y ∈ X, monoid_unit) ≡ (monoid_unit : M).
   Proof.
@@ -552,7 +556,7 @@ Section gset.
 
   Lemma big_opS_op f g X :
     ([^o set] y ∈ X, f y `o` g y) ≡ ([^o set] y ∈ X, f y) `o` ([^o set] y ∈ X, g y).
-  Proof. by rewrite big_opS_eq /big_opS_def -big_opL_op. Qed.
+  Proof. by rewrite !big_opS_elements -big_opL_op. Qed.
 
   Lemma big_opS_list_to_set f (l : list A) :
     NoDup l →

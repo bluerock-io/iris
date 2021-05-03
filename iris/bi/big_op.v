@@ -357,6 +357,19 @@ Section sep_list.
 End sep_list.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
+Lemma big_sepL_sepL {A B : Type} (Φ : nat → A → nat → B → PROP) (l1 : list A) (l2 : list B) :
+  ([∗ list] k1↦x1 ∈ l1, [∗ list] k2↦x2 ∈ l2, Φ k1 x1 k2 x2) ⊣⊢
+  ([∗ list] k2↦x2 ∈ l2, [∗ list] k1↦x1 ∈ l1, Φ k1 x1 k2 x2).
+Proof.
+  revert Φ l2. induction l1 as [|x1 l1 IH]; intros Φ l2.
+  { rewrite big_sepL_nil. setoid_rewrite big_sepL_nil.
+    rewrite big_sepL_emp. done. }
+  rewrite big_sepL_cons.
+  setoid_rewrite big_sepL_cons.
+  rewrite big_sepL_sep. f_equiv.
+  rewrite IH //.
+Qed.
+
 Lemma big_sepL_sep_zip_with {A B C} (f : A → B → C) (g1 : C → A) (g2 : C → B)
     (Φ1 : nat → A → PROP) (Φ2 : nat → B → PROP) l1 l2 :
   (∀ x y, g1 (f x y) = x) →
@@ -2010,6 +2023,10 @@ Section gset.
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepS_mono. Qed.
 
+  Lemma big_sepS_elements Φ X :
+    ([∗ set] x ∈ X, Φ x) ⊣⊢ [∗ list] _↦x ∈ elements X, Φ x.
+  Proof. by rewrite big_opS_elements. Qed.
+
   Lemma big_sepS_empty Φ : ([∗ set] x ∈ ∅, Φ x) ⊣⊢ emp.
   Proof. by rewrite big_opS_empty. Qed.
   Lemma big_sepS_empty' P `{!Affine P} Φ : P ⊢ [∗ set] x ∈ ∅, Φ x.
@@ -2231,6 +2248,14 @@ Section gset.
     (∀ x, Timeless (Φ x)) → Timeless ([∗ set] x ∈ X, Φ x).
   Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
 End gset.
+
+Lemma big_sepS_sepS `{Countable A, Countable B}
+    (X : gset A) (Y : gset B) (Φ : A → B → PROP) :
+  ([∗ set] x ∈ X, [∗ set] y ∈ Y, Φ x y) -∗ ([∗ set] y ∈ Y, [∗ set] x ∈ X, Φ x y).
+Proof.
+  repeat setoid_rewrite big_sepS_elements.
+  rewrite big_sepL_sepL. done.
+Qed.
 
 Lemma big_sepM_dom `{Countable K} {A} (Φ : K → PROP) (m : gmap K A) :
   ([∗ map] k↦_ ∈ m, Φ k) ⊣⊢ ([∗ set] k ∈ dom _ m, Φ k).
