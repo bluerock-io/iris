@@ -182,6 +182,7 @@ Structure bi := Bi {
   bi_bi_later_mixin : BiLaterMixin bi_entails bi_pure bi_or bi_impl
                                    bi_forall bi_exist bi_sep bi_persistently bi_later;
 }.
+Bind Scope bi_scope with bi_car.
 
 Coercion bi_ofeO (PROP : bi) : ofe := Ofe PROP (bi_ofe_mixin PROP).
 Canonical Structure bi_ofeO.
@@ -204,18 +205,18 @@ Global Instance: Params (@bi_later) 1  := {}.
 Global Arguments bi_car : simpl never.
 Global Arguments bi_dist : simpl never.
 Global Arguments bi_equiv : simpl never.
-Global Arguments bi_entails {PROP} _%I _%I : simpl never, rename.
+Global Arguments bi_entails {PROP} _ _ : simpl never, rename.
 Global Arguments bi_emp {PROP} : simpl never, rename.
 Global Arguments bi_pure {PROP} _%stdpp : simpl never, rename.
-Global Arguments bi_and {PROP} _%I _%I : simpl never, rename.
-Global Arguments bi_or {PROP} _%I _%I : simpl never, rename.
-Global Arguments bi_impl {PROP} _%I _%I : simpl never, rename.
+Global Arguments bi_and {PROP} _ _ : simpl never, rename.
+Global Arguments bi_or {PROP} _ _ : simpl never, rename.
+Global Arguments bi_impl {PROP} _ _ : simpl never, rename.
 Global Arguments bi_forall {PROP _} _%I : simpl never, rename.
 Global Arguments bi_exist {PROP _} _%I : simpl never, rename.
-Global Arguments bi_sep {PROP} _%I _%I : simpl never, rename.
-Global Arguments bi_wand {PROP} _%I _%I : simpl never, rename.
-Global Arguments bi_persistently {PROP} _%I : simpl never, rename.
-Global Arguments bi_later {PROP} _%I : simpl never, rename.
+Global Arguments bi_sep {PROP} _ _ : simpl never, rename.
+Global Arguments bi_wand {PROP} _ _ : simpl never, rename.
+Global Arguments bi_persistently {PROP} _ : simpl never, rename.
+Global Arguments bi_later {PROP} _ : simpl never, rename.
 
 Global Hint Extern 0 (bi_entails _ _) => reflexivity : core.
 Global Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) := {}.
