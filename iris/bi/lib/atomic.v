@@ -354,6 +354,10 @@ Section lemmas.
               (atomic_acc Eo Ei α Pas β Φ).
   Proof. intros Helim. apply Helim. Qed.
 
+  (** Lemmas for directly proving one atomic accessor in terms of another (or an
+      atomic update).  These are only really useful when the atomic accessor you
+      are trying to prove exactly corresponds to an atomic update/accessor you
+      have as an assumption -- which is not very common. *)
   Lemma aacc_aacc {TA' TB' : tele} E1 E1' E2 E3
         α P β Φ
         (α' : TA' → PROP) P' (β' Φ' : TA' → TB' → PROP) :
