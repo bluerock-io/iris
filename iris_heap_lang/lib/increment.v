@@ -59,8 +59,9 @@ Section increment.
     (* Prove the atomic update for load *)
     (* To [iMod] a *mask-changing* update (like "AU"), we have to unfold
        [atomic_acc].
-       Note that [iInv] would work here without unfolding, i.e., an [AACC] in
-       the goal supports eliminating accessors but it does not support
+       Note that non-mask-changing [iMod] and [iInv] would work here without
+       unfolding, i.e., an [AACC] in the goal supports eliminating
+       non-mask-changing updates and accessors but it does not support
        eliminating mask-changing updates. *)
     rewrite /atomic_acc /=. iMod "AU" as (v) "[Hl [Hclose _]]".
     (* Usually, we would use [iAaccIntro], but here we cannot because we
