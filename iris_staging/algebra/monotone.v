@@ -15,7 +15,7 @@ Local Arguments cmra_valid _  !_ /.
 
 (* Given a preorder relation R on a type A we construct a resource algebra mra R
    and an injection principal : A -> mra R such that:
-   R x y iff principal x ≼ principal y
+   [R x y] iff [principal x ≼ principal y]
    where ≼ is the extension order of mra R resource algebra. This is exactly
    what the lemma [principal_included] shows.
 
