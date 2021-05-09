@@ -86,7 +86,7 @@ Section increment.
   Qed.
 
   (** A proof of the incr specification that uses lemmas ([aacc_aupd_*]) to
-      avoid reasining with the definition of atomic accessors. These lemmas are
+      avoid reasoning with the definition of atomic accessors. These lemmas are
       only usable here because the atomic update we have and the one we try to
       prove are in 1:1 correspondence; most logically atomic proofs will not be
       able to use them. *)
