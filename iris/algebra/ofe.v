@@ -18,6 +18,10 @@ Notation "x ≡{ n }≡ y" := (dist n x y)
   (at level 70, n at next level, format "x  ≡{ n }≡  y").
 Notation "x ≡{ n }@{ A }≡ y" := (dist (A:=A) n x y)
   (at level 70, n at next level, only parsing).
+Notation "(≡{ n }≡)" := (dist n) (only parsing).
+Notation "(≡{ n }@{ A }≡)" := (dist (A:=A) n) (only parsing).
+Notation "( x ≡{ n }≡.)" := (dist n x) (only parsing).
+Notation "(.≡{ n }≡ y )" := (λ x, x ≡{n}≡ y) (only parsing).
 
 Global Hint Extern 0 (_ ≡{_}≡ _) => reflexivity : core.
 Global Hint Extern 0 (_ ≡{_}≡ _) => symmetry; assumption : core.
