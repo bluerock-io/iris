@@ -56,6 +56,7 @@ Coq 8.11 is no longer supported in this version of Iris.
    - Use `fupd_intro _ _` for the new field `state_interp_mono` of `irisG`.
    - Some proofs using lifting lemmas and adequacy theorems need to be adapted
      to ignore the new step counter.
+* Remove `wp_frame_wand_l`; add `wp_frame_wand` as more symmetric replacement.
 
 **Changes in `heap_lang`:**
 

@@ -257,6 +257,12 @@ Proof. iIntros "[H Hwp]". iApply (twp_wand with "Hwp H"). Qed.
 Lemma twp_wand_r s E e Φ Ψ :
   WP e @ s; E [{ Φ }] ∗ (∀ v, Φ v -∗ Ψ v) -∗ WP e @ s; E [{ Ψ }].
 Proof. iIntros "[Hwp H]". iApply (twp_wand with "Hwp H"). Qed.
+Lemma twp_frame_wand s E e Φ R :
+  R -∗ WP e @ s; E [{ v, R -∗ Φ v }] -∗ WP e @ s; E [{ Φ }].
+Proof.
+  iIntros "HR HWP". iApply (twp_wand with "HWP").
+  iIntros (v) "HΦ". by iApply "HΦ".
+Qed.
 
 Lemma twp_wp_step s E e P Φ :
   TCEq (to_val e) None →

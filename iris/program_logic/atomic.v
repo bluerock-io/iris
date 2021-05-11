@@ -112,7 +112,7 @@ Section lemmas.
     ∀ Φ, ∀.. x, α x -∗ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e {{ Φ }}.
   Proof.
     rewrite ->tforall_forall in HL. iIntros "Hwp" (Φ x) "Hα HΦ".
-    iApply wp_frame_wand_l. iSplitL "HΦ"; first iAccu. iApply "Hwp".
+    iApply (wp_frame_wand with "HΦ"). iApply "Hwp".
     iAuIntro. iAaccIntro with "Hα"; first by eauto. iIntros (y) "Hβ !>".
     (* FIXME: Using ssreflect rewrite does not work, see Coq bug #7773. *)
     rewrite ->!tele_app_bind. iIntros "HΦ". iApply "HΦ". done.
