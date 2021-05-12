@@ -198,9 +198,10 @@ Global Instance into_pure_persistently P φ :
   IntoPure P φ → IntoPure (<pers> P) φ.
 Proof. rewrite /IntoPure=> ->. apply: persistently_elim. Qed.
 
-Global Instance into_pure_big_sepM {K A} `{Countable K}
-    (Φ : K → A → PROP) (φ : K → A → Prop) (m: gmap K A) :
-  (∀ k v, IntoPure (Φ k v) (φ k v)) → IntoPure ([∗ map] k↦x ∈ m, Φ k x) (map_Forall φ m).
+Global Instance into_pure_big_sepM `{Countable K} {A}
+    (Φ : K → A → PROP) (φ : K → A → Prop) (m : gmap K A) :
+  (∀ k x, IntoPure (Φ k x) (φ k x)) →
+  IntoPure ([∗ map] k↦x ∈ m, Φ k x) (map_Forall φ m).
 Proof.
   rewrite /IntoPure. intros HΦ.
   setoid_rewrite HΦ. rewrite big_sepM_pure_1. done.
@@ -297,18 +298,17 @@ Proof.
   by rewrite -persistent_absorbingly_affinely_2.
 Qed.
 
-Global Instance from_pure_big_sepM {K A} `{Countable K}
-    a (Φ : K → A → PROP) (φ : K → A → Prop) (m: gmap K A) :
-  (∀ k v, FromPure a (Φ k v) (φ k v)) →
+Global Instance from_pure_big_sepM `{Countable K} {A}
+    a (Φ : K → A → PROP) (φ : K → A → Prop) (m : gmap K A) :
+  (∀ k x, FromPure a (Φ k x) (φ k x)) →
   TCOr (TCEq a true) (BiAffine PROP) →
   FromPure a ([∗ map] k↦x ∈ m, Φ k x) (map_Forall φ m).
 Proof.
   rewrite /FromPure. destruct a; simpl; intros HΦ Haffine.
   - rewrite big_sepM_affinely_pure_2.
     setoid_rewrite HΦ. done.
-  - destruct Haffine as [?%TCEq_eq|?]; first done.
-    rewrite -big_sepM_pure.
-    setoid_rewrite HΦ. done.
+  - destruct Haffine as [[=]%TCEq_eq|?].
+    rewrite -big_sepM_pure. setoid_rewrite HΦ. done.
 Qed.
 
 (** IntoPersistent *)
