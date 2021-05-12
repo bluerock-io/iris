@@ -359,11 +359,9 @@ Section lemmas.
   Proof.
     induction m' as [|k v m' ? IH] using map_ind.
     { rewrite right_id_L big_opM_empty right_id //. }
-    rewrite big_opM_insert //. etrans.
-    - rewrite [gmap_view_frag _ _ _ ⋅ _]comm assoc.
-      eapply cmra_update_op; [eapply IH|reflexivity].
-    - etrans; first by eapply gmap_view_delete.
-      rewrite -delete_difference. done.
+    rewrite big_opM_insert //.
+    rewrite [gmap_view_frag _ _ _ ⋅ _]comm assoc IH gmap_view_delete.
+    rewrite -delete_difference. done.
   Qed.
 
   Lemma gmap_view_update m k v v' :
@@ -388,18 +386,16 @@ Section lemmas.
     rewrite dom_insert_L in Hdom.
     assert (k ∈ dom (gset K) m1) as Hindom by set_solver.
     apply elem_of_dom in Hindom as [v' Hlookup].
-    rewrite big_opM_insert //. etrans; last etrans.
-    - rewrite [gmap_view_frag _ _ _ ⋅ _]comm assoc.
-      eapply cmra_update_op; [eapply (IH (delete k m1))|reflexivity].
-      rewrite dom_delete_L Hdom.
-      apply not_elem_of_dom in Hnotdom. set_solver -Hdom.
-    - rewrite -assoc [_ ⋅ gmap_view_frag _ _ _]comm assoc.
-      eapply cmra_update_op; last reflexivity.
-      eapply (gmap_view_update _ _ v v').
-    - rewrite (big_opM_delete _ m1 k v') // -assoc.
-      eapply cmra_update_op; last done.
-      rewrite insert_union_r; last by rewrite lookup_delete.
-      rewrite union_delete_insert //.
+    rewrite big_opM_insert //.
+    rewrite [gmap_view_frag _ _ _ ⋅ _]comm assoc.
+    rewrite (IH (delete k m1)); last first.
+    { rewrite dom_delete_L Hdom.
+      apply not_elem_of_dom in Hnotdom. set_solver -Hdom. }
+    rewrite -assoc [_ ⋅ gmap_view_frag _ _ _]comm assoc.
+    rewrite (gmap_view_update _ _ _ v').
+    rewrite (big_opM_delete _ m1 k v') // -assoc.
+    rewrite insert_union_r; last by rewrite lookup_delete.
+    rewrite union_delete_insert //.
   Qed.
 
   Lemma gmap_view_persist k dq v :
