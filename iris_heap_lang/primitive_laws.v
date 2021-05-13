@@ -313,11 +313,12 @@ Proof.
 Qed.
 
 Lemma twp_xchg s E l v' v :
-  val_is_unboxed v' ->
+  val_is_unboxed v →
+  val_is_unboxed v' →
   [[{ l ↦ v' }]] Xchg (Val $ LitV $ LitLoc l) (Val v) @ s; E
   [[{ RET v'; l ↦ v }]].
 Proof.
-  iIntros (? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; first done.
+  iIntros (Hv Hv' Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; first done.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (gen_heap_valid with "Hσ Hl") as %?.
   iSplit; first by eauto with head_step.
   iIntros (κ v2 σ2 efs Hstep); inv_head_step.
@@ -326,11 +327,12 @@ Proof.
 Qed.
 
 Lemma wp_xchg s E l v' v :
-  val_is_unboxed v' ->
+  val_is_unboxed v →
+  val_is_unboxed v' →
   {{{ ▷ l ↦ v' }}} Xchg (Val $ LitV (LitLoc l)) (Val v) @ s; E
   {{{ RET v'; l ↦ v }}}.
 Proof.
-  iIntros (? Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
+  iIntros (Hv Hv' Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
   iApply (twp_xchg with "H"); [by auto..|]. iIntros "H HΦ". by iApply "HΦ".
 Qed.
 

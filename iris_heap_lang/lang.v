@@ -334,10 +334,10 @@ Proof.
      | Load e => GenNode 15 [go e]
      | Store e1 e2 => GenNode 16 [go e1; go e2]
      | CmpXchg e0 e1 e2 => GenNode 17 [go e0; go e1; go e2]
-     | Xchg e0 e1 => GenNode 21 [go e0; go e1]
-     | FAA e1 e2 => GenNode 18 [go e1; go e2]
-     | NewProph => GenNode 19 []
-     | Resolve e0 e1 e2 => GenNode 20 [go e0; go e1; go e2]
+     | Xchg e0 e1 => GenNode 18 [go e0; go e1]
+     | FAA e1 e2 => GenNode 19 [go e1; go e2]
+     | NewProph => GenNode 20 []
+     | Resolve e0 e1 e2 => GenNode 21 [go e0; go e1; go e2]
      end
    with gov v :=
      match v with
@@ -371,10 +371,10 @@ Proof.
      | GenNode 15 [e] => Load (go e)
      | GenNode 16 [e1; e2] => Store (go e1) (go e2)
      | GenNode 17 [e0; e1; e2] => CmpXchg (go e0) (go e1) (go e2)
-     | GenNode 18 [e1; e2] => FAA (go e1) (go e2)
-     | GenNode 19 [] => NewProph
-     | GenNode 20 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
-     | GenNode 21 [e0; e1] => Xchg (go e0) (go e1)
+     | GenNode 18 [e0; e1] => Xchg (go e0) (go e1)
+     | GenNode 19 [e1; e2] => FAA (go e1) (go e2)
+     | GenNode 20 [] => NewProph
+     | GenNode 21 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
      | _ => Val $ LitV LitUnit (* dummy *)
      end
    with gov v :=
@@ -685,6 +685,7 @@ Inductive head_step : expr → state → list observation → expr → state →
   | XchgS l v1 v2 σ :
      σ.(heap) !! l = Some $ Some v1 →
      val_is_unboxed v1 →
+     val_is_unboxed v2 →
      head_step (Xchg (Val $ LitV $ LitLoc l) (Val v2)) σ
                []
                (Val v1) (state_upd_heap <[l:=Some v2]> σ)
