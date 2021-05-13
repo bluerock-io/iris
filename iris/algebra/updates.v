@@ -52,12 +52,24 @@ Lemma cmra_update_exclusive `{!Exclusive x} y:
 Proof. move=>??[z|]=>[/exclusiveN_l[]|_]. by apply cmra_valid_validN. Qed.
 
 (** Updates form a preorder. *)
+Global Instance cmra_update_rewrite_relation :
+  RewriteRelation (@cmra_update A) := {}.
 Global Instance cmra_update_preorder : PreOrder (@cmra_update A).
 Proof.
   split.
   - intros x. by apply cmra_update_updateP, cmra_updateP_id.
   - intros x y z. rewrite !cmra_update_updateP.
     eauto using cmra_updateP_compose with subst.
+Qed.
+Global Instance cmra_update_proper_update :
+  Proper (flip cmra_update ==> cmra_update ==> impl) (@cmra_update A).
+Proof.
+  intros x1 x2 Hx y1 y2 Hy ?. etrans; [apply Hx|]. by etrans; [|apply Hy].
+Qed.
+Global Instance cmra_update_flip_proper_update :
+  Proper (cmra_update ==> flip cmra_update ==> flip impl) (@cmra_update A).
+Proof.
+  intros x1 x2 Hx y1 y2 Hy ?. etrans; [apply Hx|]. by etrans; [|apply Hy].
 Qed.
 
 Lemma cmra_updateP_op (P1 P2 Q : A → Prop) x1 x2 :
@@ -79,6 +91,13 @@ Lemma cmra_update_op x1 x2 y1 y2 : x1 ~~> y1 → x2 ~~> y2 → x1 ⋅ x2 ~~> y1 
 Proof.
   rewrite !cmra_update_updateP; eauto using cmra_updateP_op with congruence.
 Qed.
+
+Global Instance cmra_update_op_proper :
+  Proper (cmra_update ==> cmra_update ==> cmra_update) (op (A:=A)).
+Proof. intros x1 x2 Hx y1 y2 Hy. by apply cmra_update_op. Qed.
+Global Instance cmra_update_op_flip_proper :
+  Proper (flip cmra_update ==> flip cmra_update ==> flip cmra_update) (op (A:=A)).
+Proof. intros x1 x2 Hx y1 y2 Hy. by apply cmra_update_op. Qed.
 
 Lemma cmra_update_op_l x y : x ⋅ y ~~> x.
 Proof. intros n mz. rewrite comm cmra_op_opM_assoc. apply cmra_validN_op_r. Qed.

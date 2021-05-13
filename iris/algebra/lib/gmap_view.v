@@ -331,7 +331,7 @@ Section lemmas.
   Proof.
     intros. induction m' as [|k v m' ? IH] using map_ind; decompose_map_disjoint.
     { rewrite big_opM_empty left_id_L right_id. done. }
-    etrans; first by apply IH.
+    rewrite IH //.
     rewrite big_opM_insert // assoc.
     apply cmra_update_op; last done.
     rewrite -insert_union_l. apply (gmap_view_alloc _ k dq); last done.
@@ -353,29 +353,49 @@ Section lemmas.
       rewrite lookup_delete_ne //.
   Qed.
 
+  Lemma gmap_view_delete_big m m' :
+    gmap_view_auth 1 m ⋅ ([^op map] k↦v ∈ m', gmap_view_frag k (DfracOwn 1) v) ~~>
+    gmap_view_auth 1 (m ∖ m').
+  Proof.
+    induction m' as [|k v m' ? IH] using map_ind.
+    { rewrite right_id_L big_opM_empty right_id //. }
+    rewrite big_opM_insert //.
+    rewrite [gmap_view_frag _ _ _ ⋅ _]comm assoc IH gmap_view_delete.
+    rewrite -delete_difference. done.
+  Qed.
+
   Lemma gmap_view_update m k v v' :
     gmap_view_auth 1 m ⋅ gmap_view_frag k (DfracOwn 1) v ~~>
       gmap_view_auth 1 (<[k := v']> m) ⋅ gmap_view_frag k (DfracOwn 1) v'.
   Proof.
-    apply view_update=>n bf Hrel j [df va] /=.
-    rewrite lookup_op. destruct (decide (j = k)) as [->|Hne].
-    - assert (bf !! k = None) as Hbf.
-      { move: Hrel =>/view_rel_validN /(_ k).
-        rewrite lookup_op lookup_singleton.
-        destruct (bf !! k) as [[df' va']|] eqn:Hbf; last done.
-        rewrite Hbf. clear Hbf.
-        rewrite -Some_op -pair_op.
-        move=>[/= /dfrac_full_exclusive Hdf _]. done. }
-      rewrite Hbf right_id lookup_singleton. clear Hbf.
-      intros [= <- <-].
-      eexists. do 2 (split; first done).
-      rewrite lookup_insert. done.
-    - rewrite lookup_singleton_ne; last done.
-      rewrite left_id=>Hbf.
-      edestruct (Hrel j) as (v'' & ? & ? & Hm).
-      { rewrite lookup_op lookup_singleton_ne // left_id. done. }
-      simpl in *. eexists. do 2 (split; first done).
-      rewrite lookup_insert_ne //.
+    rewrite gmap_view_delete.
+    rewrite (gmap_view_alloc _ k (DfracOwn 1) v') //; last by rewrite lookup_delete.
+    rewrite insert_delete //.
+  Qed.
+
+  Lemma gmap_view_update_big m m0 m1 :
+    dom (gset K) m0 = dom (gset K) m1 →
+    gmap_view_auth 1 m ⋅ ([^op map] k↦v ∈ m0, gmap_view_frag k (DfracOwn 1) v) ~~>
+      gmap_view_auth 1 (m1 ∪ m) ⋅ ([^op map] k↦v ∈ m1, gmap_view_frag k (DfracOwn 1) v).
+  Proof.
+    intros Hdom%eq_sym. revert m1 Hdom.
+    induction m0 as [|k v m0 Hnotdom IH] using map_ind; intros m1 Hdom.
+    { rewrite dom_empty_L in Hdom.
+      apply dom_empty_inv_L in Hdom as ->.
+      rewrite left_id_L big_opM_empty. done. }
+    rewrite dom_insert_L in Hdom.
+    assert (k ∈ dom (gset K) m1) as Hindom by set_solver.
+    apply elem_of_dom in Hindom as [v' Hlookup].
+    rewrite big_opM_insert //.
+    rewrite [gmap_view_frag _ _ _ ⋅ _]comm assoc.
+    rewrite (IH (delete k m1)); last first.
+    { rewrite dom_delete_L Hdom.
+      apply not_elem_of_dom in Hnotdom. set_solver -Hdom. }
+    rewrite -assoc [_ ⋅ gmap_view_frag _ _ _]comm assoc.
+    rewrite (gmap_view_update _ _ _ v').
+    rewrite (big_opM_delete _ m1 k v') // -assoc.
+    rewrite insert_union_r; last by rewrite lookup_delete.
+    rewrite union_delete_insert //.
   Qed.
 
   Lemma gmap_view_persist k dq v :
