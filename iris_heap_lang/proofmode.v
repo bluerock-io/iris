@@ -385,7 +385,7 @@ Proof.
   rewrite -wp_bind. eapply wand_apply; first by eapply wp_xchg.
   rewrite into_laterN_env_sound -later_sep envs_simple_replace_sound //; simpl.
   rewrite right_id.
-    by apply later_mono, sep_mono_r, wand_mono.
+  by apply later_mono, sep_mono_r, wand_mono.
 Qed.
 Lemma tac_twp_xchg Δ s E i K l v v' Φ :
   envs_lookup i Δ = Some (false, l ↦ v)%I →
