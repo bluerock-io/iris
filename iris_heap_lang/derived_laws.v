@@ -206,7 +206,7 @@ Proof.
 Qed.
 
 Lemma twp_xchg_offset s E l off vs v v' :
-  (vs !! off) = Some v →
+  vs !! off = Some v →
   val_is_unboxed v ->
   [[{ l ↦∗ vs }]] Xchg #(l +ₗ off) v' @ s; E [[{ RET v; l ↦∗ <[off:=v']> vs }]].
 Proof.
