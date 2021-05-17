@@ -333,7 +333,7 @@ Section mapsto_tests.
   (* Loading from the general mapsto for any [dfrac]. *)
   Lemma general_mapsto dq l v :
     [[{ l ↦{dq} v }]] ! #l [[{ RET v; True }]].
-  Proof. 
+  Proof.
     iIntros (Φ) "Hl HΦ". Show. wp_load. by iApply "HΦ".
   Qed.
 
@@ -382,6 +382,30 @@ Section atomic.
     (* Test if a side-condition for [Atomic] is generated *)
     iIntros (?) "H". iInv "H" as "H". Show.
   Abort.
+
+  Check "xchg_example".
+
+  Lemma xchg_example l (v₁ v₂ : val) :
+    {{{ l ↦ v₁ }}}
+      Xchg #l v₂
+    {{{ RET v₁; l ↦ v₂ }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ".
+    wp_xchg.
+    Show.
+  Abort.
+
+  Lemma xchg_inv_example N l (v : val) :
+    {{{ inv N (∃ v, l ↦ v) }}}
+      Xchg #l v
+    {{{ v', RET v'; True }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ".
+    iInv "Hl" as (v') "Hl" "Hclose".
+    wp_xchg.
+    Show.
+  Abort.
+
 End atomic.
 
 Section printing_tests.
