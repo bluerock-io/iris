@@ -170,7 +170,10 @@ iris_heap_lang/lib/arith.v
 iris_heap_lang/lib/array.v
 
 iris_staging/algebra/list.v
+iris_staging/algebra/max_prefix_list.v
+iris_staging/algebra/mono_list.v
 iris_staging/base_logic/algebra.v
+iris_staging/base_logic/mono_list.v
 iris_staging/heap_lang/interpreter.v
 iris_staging/algebra/monotone.v
 
