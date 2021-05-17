@@ -10,7 +10,7 @@ Section upred.
 Context {M : ucmra}.
 
 (* Force implicit argument M *)
-Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P%I Q%I).
+Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P Q).
 Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
 
 Lemma prod_validI {A B : cmra} (x : A * B) : ✓ x ⊣⊢ ✓ x.1 ∧ ✓ x.2.
@@ -146,7 +146,7 @@ Section view.
   Qed.
   Lemma view_both_dfrac_validI_2 (relI : uPred M) dq a b :
     (∀ n (x : M), relI n x → rel n a b) →
-    ⌜✓dq⌝%Qp ∧ relI ⊢ ✓ (●V{dq} a ⋅ ◯V b : view rel).
+    ⌜✓dq⌝ ∧ relI ⊢ ✓ (●V{dq} a ⋅ ◯V b : view rel).
   Proof.
     intros Hrel. uPred.unseal. split=> n x _ /=.
     rewrite /uPred_holds /= view_both_dfrac_validN. by move=> [? /Hrel].

@@ -111,7 +111,7 @@ Lemma löb `{!BiLöb PROP} P : (▷ P → P) ⊢ P.
 Proof.
   apply entails_impl_True, löb_weak. apply impl_intro_r.
   rewrite -{2}(idemp (∧) (▷ P → P))%I.
-  rewrite {2}(later_intro (▷ P → P))%I.
+  rewrite {2}(later_intro (▷ P → P)).
   rewrite later_impl.
   rewrite assoc impl_elim_l.
   rewrite impl_elim_r. done.
@@ -131,7 +131,7 @@ Proof.
   assert (Q ⊣⊢ (▷ Q → P)) as HQ by (exact: fixpoint_unfold).
   intros HP. rewrite -HP.
   assert (▷ Q ⊢ P) as HQP.
-  { rewrite -HP. rewrite -(idemp (∧) (▷ Q))%I {2}(later_intro (▷ Q))%I.
+  { rewrite -HP. rewrite -(idemp (∧) (▷ Q))%I {2}(later_intro (▷ Q)).
     by rewrite {1}HQ {1}later_impl impl_elim_l. }
   rewrite -HQP HQ -2!later_intro.
   apply (entails_impl_True _ P). done.
@@ -139,15 +139,15 @@ Qed.
 
 Lemma löb_wand_intuitionistically `{!BiLöb PROP} P : □ (□ ▷ P -∗ P) ⊢ P.
 Proof.
-  rewrite -{3}(intuitionistically_elim P) -(löb (□ P)%I). apply impl_intro_l.
+  rewrite -{3}(intuitionistically_elim P) -(löb (□ P)). apply impl_intro_l.
   rewrite {1}intuitionistically_into_persistently_1 later_persistently.
   rewrite persistently_and_intuitionistically_sep_l.
-  rewrite -{1}(intuitionistically_idemp (▷ P)%I) intuitionistically_sep_2.
+  rewrite -{1}(intuitionistically_idemp (▷ P)) intuitionistically_sep_2.
   by rewrite wand_elim_r.
 Qed.
 Lemma löb_wand `{!BiLöb PROP} P : □ (▷ P -∗ P) ⊢ P.
 Proof.
-  by rewrite -(intuitionistically_elim (▷ P)%I) löb_wand_intuitionistically.
+  by rewrite -(intuitionistically_elim (▷ P)) löb_wand_intuitionistically.
 Qed.
 
 (** The proof of the right-to-left direction relies on the BI being affine. It
@@ -322,7 +322,7 @@ Proof. by rewrite {1}(except_0_intro Q) except_0_sep. Qed.
 
 Lemma later_affinely_1 `{!Timeless (PROP:=PROP) emp} P : ▷ <affine> P ⊢ ◇ <affine> ▷ P.
 Proof.
-  rewrite /bi_affinely later_and (timeless emp%I) except_0_and.
+  rewrite /bi_affinely later_and (timeless emp) except_0_and.
   by apply and_mono, except_0_intro.
 Qed.
 

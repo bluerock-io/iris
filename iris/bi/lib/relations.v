@@ -10,7 +10,7 @@ Set Default Proof Using "Type*".
 Definition bi_rtc_pre `{!BiInternalEq PROP}
     {A : ofe} (R : A → A → PROP)
     (x2 : A) (rec : A → PROP) (x1 : A) : PROP :=
-  (<affine> (x1 ≡ x2) ∨ ∃ x', R x1 x' ∗ rec x')%I.
+  <affine> (x1 ≡ x2) ∨ ∃ x', R x1 x' ∗ rec x'.
 
 Global Instance bi_rtc_pre_mono `{!BiInternalEq PROP}
     {A : ofe} (R : A → A → PROP) `{NonExpansive2 R} (x : A) :

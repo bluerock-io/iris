@@ -8,7 +8,7 @@ Set Default Proof Using "Type*".
 (** This file contains an alternative version of basic updates, that is
 expression in terms of just the plain modality [■]. *)
 Definition bupd_alt `{BiPlainly PROP} (P : PROP) : PROP :=
-  (∀ R, (P -∗ ■ R) -∗ ■ R)%I.
+  ∀ R, (P -∗ ■ R) -∗ ■ R.
 
 (** This definition is stated for any BI with a plain modality. The above
 definition is akin to the continuation monad, where one should think of [■ R]

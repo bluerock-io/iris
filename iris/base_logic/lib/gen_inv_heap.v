@@ -53,9 +53,9 @@ Section definitions.
   Context `{!invG Σ, !gen_heapG L V Σ, gG: !inv_heapG L V Σ}.
 
   Definition inv_heap_inv_P : iProp Σ :=
-    (∃ h : gmap L (V * (V -d> PropO)),
-        own (inv_heap_name gG) (● to_inv_heap h) ∗
-        [∗ map] l ↦ p ∈ h, ⌜p.2 p.1⌝ ∗ l ↦ p.1)%I.
+    ∃ h : gmap L (V * (V -d> PropO)),
+       own (inv_heap_name gG) (● to_inv_heap h) ∗
+       [∗ map] l ↦ p ∈ h, ⌜p.2 p.1⌝ ∗ l ↦ p.1.
 
   Definition inv_heap_inv : iProp Σ := inv inv_heapN inv_heap_inv_P.
 

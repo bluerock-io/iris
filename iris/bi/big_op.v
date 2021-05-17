@@ -718,7 +718,7 @@ Section sep_list2.
   Lemma big_sepL2_later_1 `{BiAffine PROP} Φ l1 l2 :
     (▷ [∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ⊢ ◇ [∗ list] k↦y1;y2 ∈ l1;l2, ▷ Φ k y1 y2.
   Proof.
-    rewrite !big_sepL2_alt later_and big_sepL_later (timeless ⌜ _ ⌝%I).
+    rewrite !big_sepL2_alt later_and big_sepL_later (timeless ⌜ _ ⌝).
     rewrite except_0_and. auto using and_mono, except_0_intro.
   Qed.
 
@@ -1189,7 +1189,7 @@ Section map.
     □ (∀ k x, ⌜m !! k = Some x⌝ → Φ k x) ⊢ [∗ map] k↦x ∈ m, Φ k x.
   Proof.
     revert Φ. induction m as [|i x m ? IH] using map_ind=> Φ.
-    { by rewrite (affine (□ _)%I) big_sepM_empty. }
+    { by rewrite (affine (□ _)) big_sepM_empty. }
     rewrite big_sepM_insert // intuitionistically_sep_dup. f_equiv.
     - rewrite (forall_elim i) (forall_elim x) lookup_insert.
       by rewrite pure_True // True_impl intuitionistically_elim.
@@ -1597,11 +1597,11 @@ Section map2.
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ∗ ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2).
   Proof.
     rewrite big_sepM2_eq /big_sepM2_def.
-    rewrite -{1}(and_idem ⌜∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)⌝%I).
-    rewrite -and_assoc.
+    rewrite -{1}(idemp bi_and ⌜∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)⌝%I).
+    rewrite -assoc.
     rewrite !persistent_and_affinely_sep_l /=.
-    rewrite -sep_assoc. apply sep_proper=>//.
-    rewrite sep_assoc (sep_comm _ (<affine> _)%I) -sep_assoc.
+    rewrite -assoc. apply sep_proper=>//.
+    rewrite assoc (comm _ _ (<affine> _)%I) -assoc.
     apply sep_proper=>//. apply big_sepM_sep.
   Qed.
 
@@ -1694,7 +1694,7 @@ Section map2.
     (▷ [∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2)
     ⊢ ◇ ([∗ map] k↦x1;x2 ∈ m1;m2, ▷ Φ k x1 x2).
   Proof.
-    rewrite big_sepM2_eq /big_sepM2_def later_and (timeless ⌜_⌝%I).
+    rewrite big_sepM2_eq /big_sepM2_def later_and (timeless ⌜_⌝).
     rewrite big_sepM_later except_0_and.
     auto using and_mono_r, except_0_intro.
   Qed.
@@ -1702,7 +1702,7 @@ Section map2.
     ([∗ map] k↦x1;x2 ∈ m1;m2, ▷ Φ k x1 x2)
     ⊢ ▷ [∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2.
   Proof.
-    rewrite big_sepM2_eq /big_sepM2_def later_and -(later_intro ⌜_⌝%I).
+    rewrite big_sepM2_eq /big_sepM2_def later_and -(later_intro ⌜_⌝).
     apply and_mono_r. by rewrite big_opM_commute.
   Qed.
 
@@ -1904,7 +1904,7 @@ Section gset.
     □ (∀ x, ⌜x ∈ X⌝ → Φ x) ⊢ [∗ set] x ∈ X, Φ x.
   Proof.
     revert Φ. induction X as [|x X ? IH] using set_ind_L=> Φ.
-    { by rewrite (affine (□ _)%I) big_sepS_empty. }
+    { by rewrite (affine (□ _)) big_sepS_empty. }
     rewrite intuitionistically_sep_dup big_sepS_insert //. f_equiv.
     - rewrite (forall_elim x) pure_True ?True_impl; last set_solver.
       by rewrite intuitionistically_elim.
@@ -2100,7 +2100,7 @@ Section gmultiset.
     □ (∀ x, ⌜x ∈ X⌝ → Φ x) ⊢ [∗ mset] x ∈ X, Φ x.
   Proof.
     revert Φ. induction X as [|x X IH] using gmultiset_ind=> Φ.
-    { by rewrite (affine (□ _)%I) big_sepMS_empty. }
+    { by rewrite (affine (□ _)) big_sepMS_empty. }
     rewrite intuitionistically_sep_dup big_sepMS_disj_union.
     rewrite big_sepMS_singleton. f_equiv.
     - rewrite (forall_elim x) pure_True ?True_impl; last multiset_solver.

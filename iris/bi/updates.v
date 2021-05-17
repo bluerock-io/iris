@@ -358,7 +358,7 @@ Section fupd_derived.
     rewrite -(fupd_mask_frame E E'); first apply fupd_mono; last done.
     (* The most horrible way to apply fupd_intro_mask *)
     rewrite -[X in (X -∗ _)](right_id emp%I).
-    rewrite (fupd_mask_intro_subseteq (E1 ∖ E2 ∪ E ∖ E1) (E ∖ E2) emp%I); last first.
+    rewrite (fupd_mask_intro_subseteq (E1 ∖ E2 ∪ E ∖ E1) (E ∖ E2) emp); last first.
     { rewrite {1}(union_difference_L _ _ HE). set_solver. }
     rewrite fupd_frame_l fupd_frame_r. apply fupd_elim.
     apply fupd_mono.
@@ -411,7 +411,7 @@ Section fupd_derived.
   Lemma step_fupd_wand Eo Ei P Q : (|={Eo}[Ei]▷=> P) -∗ (P -∗ Q) -∗ |={Eo}[Ei]▷=> Q.
   Proof.
     apply wand_intro_l.
-    by rewrite (later_intro (P -∗ Q)%I) fupd_frame_l -later_sep fupd_frame_l
+    by rewrite (later_intro (P -∗ Q)) fupd_frame_l -later_sep fupd_frame_l
                wand_elim_l.
   Qed.
 
@@ -425,10 +425,10 @@ Section fupd_derived.
     Ei2 ⊆ Ei1 → Eo1 ⊆ Eo2 → (|={Eo1}[Ei1]▷=> P) ⊢ |={Eo2}[Ei2]▷=> P.
   Proof.
     intros ??. rewrite -(emp_sep (|={Eo1}[Ei1]▷=> P)%I).
-    rewrite (fupd_mask_intro_subseteq Eo2 Eo1 emp%I) //.
+    rewrite (fupd_mask_intro_subseteq Eo2 Eo1 emp) //.
     rewrite fupd_frame_r -(fupd_trans Eo2 Eo1 Ei2). f_equiv.
     rewrite fupd_frame_l -(fupd_trans Eo1 Ei1 Ei2). f_equiv.
-    rewrite (fupd_mask_intro_subseteq Ei1 Ei2 (|={_,_}=> emp)%I) //.
+    rewrite (fupd_mask_intro_subseteq Ei1 Ei2 (|={_,_}=> emp)) //.
     rewrite fupd_frame_r. f_equiv.
     rewrite [X in (X ∗ _)%I]later_intro -later_sep. f_equiv.
     rewrite fupd_frame_r -(fupd_trans Ei2 Ei1 Eo2). f_equiv.
@@ -500,7 +500,7 @@ Section fupd_derived.
     Qed.
 
     Lemma fupd_plainly_elim E P : ■ P ={E}=∗ P.
-    Proof. by rewrite (fupd_intro E (■ P)%I) fupd_plainly_mask. Qed.
+    Proof. by rewrite (fupd_intro E (■ P)) fupd_plainly_mask. Qed.
 
     Lemma fupd_plainly_keep_r E P R : R ∗ (R ={E}=∗ ■ P) ⊢ |={E}=> R ∗ P.
     Proof. by rewrite !(comm _ R) fupd_plainly_keep_l. Qed.
@@ -543,7 +543,7 @@ Section fupd_derived.
       trans (∀ x, |={E1}=> Φ x)%I.
       { apply forall_mono=> x. by rewrite fupd_plain_mask. }
       rewrite fupd_plain_forall_2. apply fupd_elim.
-      rewrite {1}(plain (∀ x, Φ x)) (fupd_mask_intro_discard E1 E2 (■ _)%I) //.
+      rewrite {1}(plain (∀ x, Φ x)) (fupd_mask_intro_discard E1 E2 (■ _)) //.
       apply fupd_elim. by rewrite fupd_plainly_elim.
     Qed.
     Lemma fupd_plain_forall' E {A} (Φ : A → PROP) `{!∀ x, Plain (Φ x)} :
@@ -552,7 +552,7 @@ Section fupd_derived.
 
     Lemma step_fupd_plain Eo Ei P `{!Plain P} : (|={Eo}[Ei]▷=> P) ={Eo}=∗ ▷ ◇ P.
     Proof.
-      rewrite -(fupd_plain_mask _ Ei (▷ ◇ P)%I).
+      rewrite -(fupd_plain_mask _ Ei (▷ ◇ P)).
       apply fupd_elim. by rewrite fupd_plain_mask -fupd_plain_later.
     Qed.
 

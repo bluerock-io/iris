@@ -743,19 +743,19 @@ Lemma monPred_objectively_big_sepMS `{BiIndexBottom bot} `{Countable A}
 Proof. apply (big_opMS_commute _). Qed.
 
 Global Instance big_sepL_objective {A} (l : list A) Φ `{∀ n x, Objective (Φ n x)} :
-  @Objective I PROP ([∗ list] n↦x ∈ l, Φ n x)%I.
+  @Objective I PROP ([∗ list] n↦x ∈ l, Φ n x).
 Proof. generalize dependent Φ. induction l=>/=; apply _. Qed.
 Global Instance big_sepM_objective `{Countable K} {A}
        (Φ : K → A → monPred) (m : gmap K A) `{∀ k x, Objective (Φ k x)} :
-  Objective ([∗ map] k↦x ∈ m, Φ k x)%I.
+  Objective ([∗ map] k↦x ∈ m, Φ k x).
 Proof. intros ??. rewrite !monPred_at_big_sepM. do 3 f_equiv. by apply objective_at. Qed.
 Global Instance big_sepS_objective `{Countable A} (Φ : A → monPred)
        (X : gset A) `{∀ y, Objective (Φ y)} :
-  Objective ([∗ set] y ∈ X, Φ y)%I.
+  Objective ([∗ set] y ∈ X, Φ y).
 Proof. intros ??. rewrite !monPred_at_big_sepS. do 2 f_equiv. by apply objective_at. Qed.
 Global Instance big_sepMS_objective `{Countable A} (Φ : A → monPred)
        (X : gmultiset A) `{∀ y, Objective (Φ y)} :
-  Objective ([∗ mset] y ∈ X, Φ y)%I.
+  Objective ([∗ mset] y ∈ X, Φ y).
 Proof. intros ??. rewrite !monPred_at_big_sepMS. do 2 f_equiv. by apply objective_at. Qed.
 
 (** BUpd *)
@@ -784,7 +784,7 @@ Lemma monPred_at_bupd `{BiBUpd PROP} i P : (|==> P) i ⊣⊢ |==> P i.
 Proof. by rewrite monPred_bupd_eq. Qed.
 
 Global Instance bupd_objective `{BiBUpd PROP} P `{!Objective P} :
-  Objective (|==> P)%I.
+  Objective (|==> P).
 Proof. intros ??. by rewrite !monPred_at_bupd objective_at. Qed.
 
 Global Instance monPred_bi_embed_bupd `{BiBUpd PROP} :
@@ -915,7 +915,7 @@ Lemma monPred_at_fupd `{BiFUpd PROP} i E1 E2 P :
 Proof. by rewrite monPred_fupd_eq. Qed.
 
 Global Instance fupd_objective E1 E2 P `{!Objective P} `{BiFUpd PROP} :
-  Objective (|={E1,E2}=> P)%I.
+  Objective (|={E1,E2}=> P).
 Proof. intros ??. by rewrite !monPred_at_fupd objective_at. Qed.
 
 (** Plainly *)

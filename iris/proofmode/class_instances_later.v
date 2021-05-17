@@ -10,13 +10,13 @@ Implicit Types P Q R : PROP.
 
 (** FromAssumption *)
 Global Instance from_assumption_later p P Q :
-  FromAssumption p P Q → KnownRFromAssumption p P (▷ Q)%I.
+  FromAssumption p P Q → KnownRFromAssumption p P (▷ Q).
 Proof. rewrite /KnownRFromAssumption /FromAssumption=>->. apply later_intro. Qed.
 Global Instance from_assumption_laterN n p P Q :
-  FromAssumption p P Q → KnownRFromAssumption p P (▷^n Q)%I.
+  FromAssumption p P Q → KnownRFromAssumption p P (▷^n Q).
 Proof. rewrite /KnownRFromAssumption /FromAssumption=>->. apply laterN_intro. Qed.
 Global Instance from_assumption_except_0 p P Q :
-  FromAssumption p P Q → KnownRFromAssumption p P (◇ Q)%I.
+  FromAssumption p P Q → KnownRFromAssumption p P (◇ Q).
 Proof. rewrite /KnownRFromAssumption /FromAssumption=>->. apply except_0_intro. Qed.
 
 (** FromPure *)
@@ -39,7 +39,7 @@ Global Instance into_wand_later_args p q R P Q :
 Proof.
   rewrite /IntoWand' /IntoWand /= => HR.
   by rewrite !later_intuitionistically_if_2
-             (later_intro (□?p R)%I) -later_wand HR.
+             (later_intro (□?p R)) -later_wand HR.
 Qed.
 Global Instance into_wand_laterN n p q R P Q :
   IntoWand p q R P Q → IntoWand p q (▷^n R) (▷^n P) (▷^n Q).
@@ -52,7 +52,7 @@ Global Instance into_wand_laterN_args n p q R P Q :
 Proof.
   rewrite /IntoWand' /IntoWand /= => HR.
   by rewrite !laterN_intuitionistically_if_2
-             (laterN_intro _ (□?p R)%I) -laterN_wand HR.
+             (laterN_intro _ (□?p R)) -laterN_wand HR.
 Qed.
 
 (** FromAnd *)
@@ -186,15 +186,15 @@ Proof. rewrite /IntoForall=> HP. by rewrite HP except_0_forall. Qed.
 
 (** FromForall *)
 Global Instance from_forall_later {A} P (Φ : A → PROP) name :
-  FromForall P Φ name → FromForall (▷ P)%I (λ a, ▷ (Φ a))%I name.
+  FromForall P Φ name → FromForall (▷ P) (λ a, ▷ (Φ a))%I name.
 Proof. rewrite /FromForall=> <-. by rewrite later_forall. Qed.
 
 Global Instance from_forall_laterN {A} P (Φ : A → PROP) n name :
-      FromForall P Φ name → FromForall (▷^n P)%I (λ a, ▷^n (Φ a))%I name.
+      FromForall P Φ name → FromForall (▷^n P) (λ a, ▷^n (Φ a))%I name.
 Proof. rewrite /FromForall => <-. by rewrite laterN_forall. Qed.
 
 Global Instance from_forall_except_0 {A} P (Φ : A → PROP) name :
-  FromForall P Φ name → FromForall (◇ P)%I (λ a, ◇ (Φ a))%I name.
+  FromForall P Φ name → FromForall (◇ P) (λ a, ◇ (Φ a))%I name.
 Proof. rewrite /FromForall=> <-. by rewrite except_0_forall. Qed.
 
 (** IsExcept0 *)
@@ -238,7 +238,7 @@ Proof. rewrite /IntoExcept0=> ->. by rewrite except_0_persistently. Qed.
 Global Instance elim_modal_timeless p P P' Q :
   IntoExcept0 P P' → IsExcept0 Q → ElimModal True p p P P' Q Q.
 Proof.
-  intros. rewrite /ElimModal (except_0_intro (_ -∗ _)%I) (into_except_0 P).
+  intros. rewrite /ElimModal (except_0_intro (_ -∗ _)) (into_except_0 P).
   by rewrite except_0_intuitionistically_if_2 -except_0_sep wand_elim_r.
 Qed.
 
@@ -247,23 +247,23 @@ Qed.
 Global Instance add_modal_later_except_0 P Q :
   Timeless P → AddModal (▷ P) P (◇ Q) | 0.
 Proof.
-  intros. rewrite /AddModal (except_0_intro (_ -∗ _)%I) (timeless P).
+  intros. rewrite /AddModal (except_0_intro (_ -∗ _)) (timeless P).
   by rewrite -except_0_sep wand_elim_r except_0_idemp.
 Qed.
 Global Instance add_modal_later P Q :
   Timeless P → AddModal (▷ P) P (▷ Q) | 0.
 Proof.
-  intros. rewrite /AddModal (except_0_intro (_ -∗ _)%I) (timeless P).
+  intros. rewrite /AddModal (except_0_intro (_ -∗ _)) (timeless P).
   by rewrite -except_0_sep wand_elim_r except_0_later.
 Qed.
 Global Instance add_modal_except_0 P Q : AddModal (◇ P) P (◇ Q) | 1.
 Proof.
-  intros. rewrite /AddModal (except_0_intro (_ -∗ _)%I).
+  intros. rewrite /AddModal (except_0_intro (_ -∗ _)).
   by rewrite -except_0_sep wand_elim_r except_0_idemp.
 Qed.
 Global Instance add_modal_except_0_later P Q : AddModal (◇ P) P (▷ Q) | 1.
 Proof.
-  intros. rewrite /AddModal (except_0_intro (_ -∗ _)%I).
+  intros. rewrite /AddModal (except_0_intro (_ -∗ _)).
   by rewrite -except_0_sep wand_elim_r except_0_later.
 Qed.
 

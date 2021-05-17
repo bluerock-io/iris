@@ -67,9 +67,9 @@ Global Instance into_wand_affine_embed_true q P Q R :
   IntoWand true q R P Q → IntoWand true q ⎡R⎤ (<affine> ⎡P⎤) (<affine> ⎡Q⎤) | 100.
 Proof.
   rewrite /IntoWand /=.
-  rewrite -(intuitionistically_idemp ⎡ _ ⎤%I) embed_intuitionistically_2=> ->.
+  rewrite -(intuitionistically_idemp ⎡ _ ⎤) embed_intuitionistically_2=> ->.
   apply bi.wand_intro_l. destruct q; simpl.
-  - rewrite affinely_elim  -(intuitionistically_idemp ⎡ _ ⎤%I).
+  - rewrite affinely_elim  -(intuitionistically_idemp ⎡ _ ⎤).
     rewrite embed_intuitionistically_2 intuitionistically_sep_2 -embed_sep.
     by rewrite wand_elim_r intuitionistically_affinely.
   - by rewrite intuitionistically_affinely affinely_sep_2 -embed_sep wand_elim_r.

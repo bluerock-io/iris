@@ -43,8 +43,8 @@ Section definitions.
     map_Forall (λ p vs, vs = proph_list_resolves pvs p) R.
 
   Definition proph_map_interp pvs (ps : gset P) : iProp Σ :=
-    (∃ R, ⌜proph_resolves_in_list R pvs ∧
-          dom (gset _) R ⊆ ps⌝ ∗ ghost_map_auth (proph_map_name pG) 1 R)%I.
+    ∃ R, ⌜proph_resolves_in_list R pvs ∧
+         dom (gset _) R ⊆ ps⌝ ∗ ghost_map_auth (proph_map_name pG) 1 R.
 
   Definition proph_def (p : P) (vs : list V) : iProp Σ :=
     p ↪[proph_map_name pG] vs.

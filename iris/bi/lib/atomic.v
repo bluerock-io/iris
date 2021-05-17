@@ -21,9 +21,8 @@ Section definition.
   (** atomic_acc as the "introduction form" of atomic updates: An accessor
       that can be aborted back to [P]. *)
   Definition atomic_acc Eo Ei α P β Φ : PROP :=
-    (|={Eo, Ei}=> ∃.. x, α x ∗
-          ((α x ={Ei, Eo}=∗ P) ∧ (∀.. y, β x y ={Ei, Eo}=∗ Φ x y))
-    )%I.
+    |={Eo, Ei}=> ∃.. x, α x ∗
+          ((α x ={Ei, Eo}=∗ P) ∧ (∀.. y, β x y ={Ei, Eo}=∗ Φ x y)).
 
   Lemma atomic_acc_wand Eo Ei α P1 P2 β Φ1 Φ2 :
     ((P1 -∗ P2) ∧ (∀.. x y, Φ1 x y -∗ Φ2 x y)) -∗

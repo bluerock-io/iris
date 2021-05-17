@@ -71,7 +71,7 @@ Section instances.
 
   (* A wrapper to obtain a weaker, laterable form of any assertion. *)
   Definition make_laterable (Q : PROP) : PROP :=
-    (∃ P, ▷ P ∗ □ (▷ P -∗ Q))%I.
+    ∃ P, ▷ P ∗ □ (▷ P -∗ Q).
 
   Global Instance make_laterable_ne : NonExpansive make_laterable.
   Proof. solve_proper. Qed.

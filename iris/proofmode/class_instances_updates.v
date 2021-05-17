@@ -14,7 +14,7 @@ Global Instance from_assumption_bupd `{!BiBUpd PROP} p P Q :
 Proof. rewrite /KnownRFromAssumption /FromAssumption=>->. apply bupd_intro. Qed.
 Global Instance from_assumption_fupd
     `{!BiBUpd PROP, !BiFUpd PROP, !BiBUpdFUpd PROP} E p P Q :
-  FromAssumption p P (|==> Q) → KnownRFromAssumption p P (|={E}=> Q)%I.
+  FromAssumption p P (|==> Q) → KnownRFromAssumption p P (|={E}=> Q).
 Proof. rewrite /KnownRFromAssumption /FromAssumption=>->. apply bupd_fupd. Qed.
 
 Global Instance from_pure_bupd `{!BiBUpd PROP} a P φ :
@@ -100,7 +100,7 @@ Global Instance from_forall_fupd
   (* Some cases in which [E2 ⊆ E1] holds *)
   TCOr (TCEq E1 E2) (TCOr (TCEq E1 ⊤) (TCEq E2 ∅)) →
   FromForall P Φ name → (∀ x, Plain (Φ x)) →
-  FromForall (|={E1,E2}=> P)%I (λ a, |={E1,E2}=> (Φ a))%I name.
+  FromForall (|={E1,E2}=> P) (λ a, |={E1,E2}=> (Φ a))%I name.
 Proof.
   rewrite /FromForall=> -[->|[->|->]] <- ?; rewrite fupd_plain_forall; set_solver.
 Qed.
@@ -109,7 +109,7 @@ Global Instance from_forall_step_fupd
   (* Some cases in which [E2 ⊆ E1] holds *)
   TCOr (TCEq E1 E2) (TCOr (TCEq E1 ⊤) (TCEq E2 ∅)) →
   FromForall P Φ name → (∀ x, Plain (Φ x)) →
-  FromForall (|={E1}[E2]▷=> P)%I (λ a, |={E1}[E2]▷=> (Φ a))%I name.
+  FromForall (|={E1}[E2]▷=> P) (λ a, |={E1}[E2]▷=> (Φ a))%I name.
 Proof.
   rewrite /FromForall=> -[->|[->|->]] <- ?; rewrite step_fupd_plain_forall; set_solver.
 Qed.

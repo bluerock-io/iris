@@ -138,7 +138,7 @@ Proof. destruct p; last done. exact: persistently_elim_plainly. Qed.
 Lemma plainly_persistently_elim P : ■ <pers> P ⊣⊢ ■ P.
 Proof.
   apply (anti_symm _).
-  - rewrite -{1}(left_id True%I bi_and (■ _)%I) (plainly_emp_intro True%I).
+  - rewrite -{1}(left_id True%I bi_and (■ _)%I) (plainly_emp_intro True).
     rewrite -{2}(persistently_and_emp_elim P).
     rewrite !and_alt -plainly_forall_2. by apply forall_mono=> -[].
   - by rewrite {1}plainly_idemp_2 (plainly_elim_persistently P).
@@ -208,7 +208,7 @@ Proof.
 Qed.
 
 Lemma plainly_and_sep_l_1 P Q : ■ P ∧ Q ⊢ ■ P ∗ Q.
-Proof. by rewrite -{1}(emp_sep Q%I) plainly_and_sep_assoc and_elim_l. Qed.
+Proof. by rewrite -{1}(emp_sep Q) plainly_and_sep_assoc and_elim_l. Qed.
 Lemma plainly_and_sep_r_1 P Q : P ∧ ■ Q ⊢ P ∗ ■ Q.
 Proof. by rewrite !(comm _ P) plainly_and_sep_l_1. Qed.
 
@@ -217,7 +217,7 @@ Proof. apply (anti_symm _); eauto using plainly_mono, plainly_emp_intro. Qed.
 Lemma plainly_and_sep P Q : ■ (P ∧ Q) ⊢ ■ (P ∗ Q).
 Proof.
   rewrite plainly_and.
-  rewrite -{1}plainly_idemp -plainly_and -{1}(emp_sep Q%I).
+  rewrite -{1}plainly_idemp -plainly_and -{1}(emp_sep Q).
   by rewrite plainly_and_sep_assoc (comm bi_and) plainly_and_emp_elim.
 Qed.
 
@@ -244,7 +244,7 @@ Proof. by rewrite -plainly_and_sep plainly_and -and_sep_plainly. Qed.
 Lemma plainly_sep `{BiPositive PROP} P Q : ■ (P ∗ Q) ⊣⊢ ■ P ∗ ■ Q.
 Proof.
   apply (anti_symm _); auto using plainly_sep_2.
-  rewrite -(plainly_affinely_elim (_ ∗ _)%I) affinely_sep -and_sep_plainly. apply and_intro.
+  rewrite -(plainly_affinely_elim (_ ∗ _)) affinely_sep -and_sep_plainly. apply and_intro.
   - by rewrite (affinely_elim_emp Q) right_id affinely_elim.
   - by rewrite (affinely_elim_emp P) left_id affinely_elim.
 Qed.
@@ -260,7 +260,7 @@ Proof. intros; rewrite -plainly_and_sep_r_1; auto. Qed.
 Lemma plainly_impl_wand_2 P Q : ■ (P -∗ Q) ⊢ ■ (P → Q).
 Proof.
   apply plainly_intro', impl_intro_r.
-  rewrite -{2}(emp_sep P%I) plainly_and_sep_assoc.
+  rewrite -{2}(emp_sep P) plainly_and_sep_assoc.
   by rewrite (comm bi_and) plainly_and_emp_elim wand_elim_l.
 Qed.
 
@@ -579,7 +579,7 @@ Section prop_ext.
     apply (anti_symm (⊢)); last exact: prop_ext_2.
     apply (internal_eq_rewrite' P Q (λ Q, ■ (P ∗-∗ Q))%I);
       [ solve_proper | done | ].
-    rewrite (plainly_emp_intro (P ≡ Q)%I).
+    rewrite (plainly_emp_intro (P ≡ Q)).
     apply plainly_mono, wand_iff_refl.
   Qed.
 
@@ -608,7 +608,7 @@ Section prop_ext.
       by rewrite wand_elim_r.
     - rewrite internal_eq_sym (internal_eq_rewrite _ _
         (λ Q, ■ (True -∗ Q))%I ltac:(shelve)); last solve_proper.
-      by rewrite -entails_wand // -(plainly_emp_intro True%I) True_impl.
+      by rewrite -entails_wand // -(plainly_emp_intro True) True_impl.
   Qed.
 
   (* This proof uses [BiPlainlyExist] and [BiLöb] via [plainly_timeless] and

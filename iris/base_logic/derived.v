@@ -15,7 +15,7 @@ Implicit Types P Q : uPred M.
 Implicit Types A : Type.
 
 (* Force implicit argument M *)
-Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P%I Q%I).
+Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P Q).
 Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
 
 (** Propers *)
@@ -24,7 +24,7 @@ Global Instance cmra_valid_proper {A : cmra} :
   Proper ((≡) ==> (⊣⊢)) (@uPred_cmra_valid M A) := ne_proper _.
 
 (** Own and valid derived *)
-Lemma persistently_cmra_valid_1 {A : cmra} (a : A) : ✓ a ⊢ <pers> (✓ a : uPred M).
+Lemma persistently_cmra_valid_1 {A : cmra} (a : A) : ✓ a ⊢@{uPredI M} <pers> (✓ a).
 Proof. by rewrite {1}plainly_cmra_valid_1 plainly_elim_persistently. Qed.
 Lemma intuitionistically_ownM (a : M) : CoreId a → □ uPred_ownM a ⊣⊢ uPred_ownM a.
 Proof.

@@ -292,7 +292,7 @@ Proof.
   - iMod (slice_delete_full with "Hslice1 Hbox") as (P1) "(HQ1 & Heq1 & Hbox)"; try done.
     iMod (slice_delete_full with "Hslice2 Hbox") as (P2) "(HQ2 & Heq2 & Hbox)"; first done.
     { by simplify_map_eq. }
-    iMod (slice_insert_full _ _ _ _ (Q1 ∗ Q2)%I with "[$HQ1 $HQ2] Hbox")
+    iMod (slice_insert_full _ _ _ _ (Q1 ∗ Q2) with "[$HQ1 $HQ2] Hbox")
       as (γ ?) "[#Hslice Hbox]"; first done.
     iExists γ. iIntros "{$% $#} !>". iNext.
     iApply (internal_eq_rewrite_contractive _ _ (box _ _) with "[Heq1 Heq2] Hbox").

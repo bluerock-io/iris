@@ -42,7 +42,7 @@ Module löb_em. Section löb_em.
 
   Lemma later_anything P : ⊢@{PROP} ▷ P.
   Proof.
-    iDestruct (em (▷ False)%I) as "#[HP|HnotP]".
+    iDestruct (em (▷ False)) as "#[HP|HnotP]".
     - iNext. done.
     - iExFalso. iLöb as "IH". iSpecialize ("HnotP" with "IH"). done.
   Qed.
@@ -81,7 +81,7 @@ Module savedprop. Section savedprop.
   Qed.
 
   (** A bad recursive reference: "Assertion with name [i] does not hold" *)
-  Definition A (i : ident) : PROP := (∃ P, □ ¬ P ∗ saved i P)%I.
+  Definition A (i : ident) : PROP := ∃ P, □ ¬ P ∗ saved i P.
 
   Lemma A_alloc : ⊢ |==> ∃ i, saved i (A i).
   Proof. by apply sprop_alloc_dep. Qed.
@@ -120,7 +120,6 @@ Module inv. Section inv.
   (** We have the update modality (two classes: empty/full mask) *)
   Inductive mask := M0 | M1.
   Context (fupd : mask → PROP → PROP).
-  Global Arguments fupd _ _%I.
   Hypothesis fupd_intro : ∀ E P, P ⊢ fupd E P.
   Hypothesis fupd_mono : ∀ E P Q, (P ⊢ Q) → fupd E P ⊢ fupd E Q.
   Hypothesis fupd_fupd : ∀ E P, fupd E (fupd E P) ⊢ fupd E P.
@@ -198,13 +197,13 @@ Module inv. Section inv.
 
   (** Now to the actual counterexample. We start with a weird form of saved propositions. *)
   Definition saved (γ : gname) (P : PROP) : PROP :=
-    (∃ i, inv i (start γ ∨ (finished γ ∗ □ P)))%I.
+    ∃ i, inv i (start γ ∨ (finished γ ∗ □ P)).
   Global Instance saved_persistent γ P : Persistent (saved γ P) := _.
 
   Lemma saved_alloc (P : gname → PROP) : ⊢ fupd M1 (∃ γ, saved γ (P γ)).
   Proof.
     iIntros "". iMod (sts_alloc) as (γ) "Hs".
-    iMod (inv_alloc (start γ ∨ (finished γ ∗ □ (P γ)))%I with "[Hs]") as (i) "#Hi".
+    iMod (inv_alloc (start γ ∨ (finished γ ∗ □ (P γ))) with "[Hs]") as (i) "#Hi".
     { auto. }
     iApply fupd_intro. by iExists γ, i.
   Qed.
@@ -231,7 +230,7 @@ Module inv. Section inv.
 
   (** And now we tie a bad knot. *)
   Notation not_fupd P := (□ (P -∗ fupd M1 False))%I.
-  Definition A i : PROP := (∃ P, not_fupd P ∗ saved i P)%I.
+  Definition A i : PROP := ∃ P, not_fupd P ∗ saved i P.
   Global Instance A_persistent i : Persistent (A i) := _.
 
   Lemma A_alloc : ⊢ fupd M1 (∃ i, saved i (A i)).
@@ -287,7 +286,6 @@ Module linear. Section linear.
   (** We have the mask-changing update modality (two classes: empty/full mask) *)
   Inductive mask := M0 | M1.
   Context (fupd : mask → mask → PROP → PROP).
-  Global Arguments fupd _ _ _%I.
   Hypothesis fupd_intro : ∀ E P, P ⊢ fupd E E P.
   Hypothesis fupd_mono : ∀ E1 E2 P Q, (P ⊢ Q) → fupd E1 E2 P ⊢ fupd E1 E2 Q.
   Hypothesis fupd_fupd : ∀ E1 E2 E3 P, fupd E1 E2 (fupd E2 E3 P) ⊢ fupd E1 E3 P.
@@ -324,7 +322,7 @@ Module linear. Section linear.
   Lemma leak P : P -∗ fupd M1 M1 emp.
   Proof.
     iIntros "HP".
-    iMod ((cinv_alloc _ True%I) with "[//]") as (γ) "[Hinv Htok]".
+    iMod (cinv_alloc _ True with "[//]") as (γ) "[Hinv Htok]".
     iMod (cinv_acc with "Hinv Htok") as "(Htrue & Htok & Hclose)".
     iApply "Hclose". done.
   Qed.

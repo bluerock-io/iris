@@ -26,7 +26,7 @@ Lemma tac_stop Δ P :
    | Enil, Γs => env_to_prop Γs
    | Γp, Enil => □ env_to_prop_and Γp
    | Γp, Γs => □ env_to_prop_and Γp ∗ env_to_prop Γs
-   end%I ⊢ P) →
+   end ⊢ P) →
   envs_entails Δ P.
 Proof.
   rewrite envs_entails_eq !of_envs_eq. intros <-.
@@ -166,7 +166,7 @@ Proof.
   - destruct HPQ.
     + rewrite -(affine_affinely P) (into_pure P) -persistent_and_affinely_sep_l.
       by apply pure_elim_l.
-    + rewrite (into_pure P) -(persistent_absorbingly_affinely ⌜ _ ⌝%I) absorbingly_sep_lr.
+    + rewrite (into_pure P) -(persistent_absorbingly_affinely ⌜ _ ⌝) absorbingly_sep_lr.
       rewrite -persistent_and_affinely_sep_l. apply pure_elim_l=> ?. by rewrite HQ.
 Qed.
 
@@ -462,10 +462,10 @@ Class IntoIH (φ : Prop) (Δ : envs PROP) (Q : PROP) :=
 Global Instance into_ih_entails Δ Q : IntoIH (envs_entails Δ Q) Δ Q.
 Proof. by rewrite envs_entails_eq /IntoIH. Qed.
 Global Instance into_ih_forall {A} (φ : A → Prop) Δ Φ :
-  (∀ x, IntoIH (φ x) Δ (Φ x)) → IntoIH (∀ x, φ x) Δ (∀ x, Φ x)%I | 2.
+  (∀ x, IntoIH (φ x) Δ (Φ x)) → IntoIH (∀ x, φ x) Δ (∀ x, Φ x) | 2.
 Proof. rewrite /IntoIH=> HΔ ?. apply forall_intro=> x. by rewrite (HΔ x). Qed.
 Global Instance into_ih_impl (φ ψ : Prop) Δ Q :
-  IntoIH φ Δ Q → IntoIH (ψ → φ) Δ (⌜ψ⌝ → Q)%I | 1.
+  IntoIH φ Δ Q → IntoIH (ψ → φ) Δ (⌜ψ⌝ → Q) | 1.
 Proof. rewrite /IntoIH=> HΔ ?. apply impl_intro_l, pure_elim_l. auto. Qed.
 
 Lemma tac_revert_ih Δ P Q {φ : Prop} (Hφ : φ) :
@@ -828,7 +828,7 @@ Proof.
   destruct (envs_simple_replace _ _ _ _) as [Δ'|] eqn:?; last done. rewrite -Hentails.
   rewrite -(idemp bi_and (of_envs Δ)) {2}(envs_lookup_sound _ i) //.
   rewrite (envs_simple_replace_singleton_sound _ _ j) //=.
-  rewrite HP HPxy (intuitionistically_if_elim _ (_ ≡ _)%I) sep_elim_l.
+  rewrite HP HPxy (intuitionistically_if_elim _ (_ ≡ _)) sep_elim_l.
   rewrite persistent_and_affinely_sep_r -assoc. apply wand_elim_r'.
   rewrite -persistent_and_affinely_sep_r. apply impl_elim_r'. destruct d.
   - apply (internal_eq_rewrite x y (λ y, □?q Φ y -∗ of_envs Δ')%I). solve_proper.
@@ -1023,7 +1023,7 @@ Section tac_modal_intro.
     - intros ?. rewrite HΓ //. destruct Hif as [-> [? ->| ->]| ->].
       + by rewrite (affine P) left_id.
       + by rewrite right_id comm (True_intro P).
-      + by rewrite comm -assoc (True_intro (_ ∗ P)%I).
+      + by rewrite comm -assoc (True_intro (_ ∗ P)).
     - inversion 1; auto.
     - intros j. destruct (ident_beq _ _); naive_solver.
   Qed.
@@ -1071,8 +1071,8 @@ Section tac_modal_intro.
         rewrite -(right_id emp%I bi_sep (M _)).
         eauto using modality_spatial_transform.
     - rewrite -HQ' /= right_id comm -{2}(modality_spatial_clear M) //.
-      by rewrite (True_intro ([∗] Γs)%I).
-    - rewrite -HQ' {1}(modality_spatial_id M ([∗] Γs)%I) //.
+      by rewrite (True_intro ([∗] Γs)).
+    - rewrite -HQ' {1}(modality_spatial_id M ([∗] Γs)) //.
       by rewrite -modality_sep.
   Qed.
 End tac_modal_intro.

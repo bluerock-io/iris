@@ -415,12 +415,12 @@ Global Instance into_wand_affine p q R P Q :
   IntoWand p q R P Q → IntoWand p q (<affine> R) (<affine> P) (<affine> Q).
 Proof.
   rewrite /IntoWand /= => HR. apply wand_intro_r. destruct p; simpl in *.
-  - rewrite (affinely_elim R) -(affine_affinely (□ R)%I) HR. destruct q; simpl in *.
-    + rewrite (affinely_elim P) -{2}(affine_affinely (□ P)%I).
+  - rewrite (affinely_elim R) -(affine_affinely (□ R)) HR. destruct q; simpl in *.
+    + rewrite (affinely_elim P) -{2}(affine_affinely (□ P)).
       by rewrite affinely_sep_2 wand_elim_l.
     + by rewrite affinely_sep_2 wand_elim_l.
   - rewrite HR. destruct q; simpl in *.
-    + rewrite (affinely_elim P) -{2}(affine_affinely (□ P)%I).
+    + rewrite (affinely_elim P) -{2}(affine_affinely (□ P)).
       by rewrite affinely_sep_2 wand_elim_l.
     + by rewrite affinely_sep_2 wand_elim_l.
 Qed.
@@ -437,8 +437,8 @@ Global Instance into_wand_affine_args q R P Q :
   IntoWand true q R P Q → IntoWand' true q R (<affine> P) (<affine> Q).
 Proof.
   rewrite /IntoWand' /IntoWand /= => HR. apply wand_intro_r.
-  rewrite -(affine_affinely (□ R)%I) HR. destruct q; simpl.
-  - rewrite (affinely_elim P) -{2}(affine_affinely (□ P)%I).
+  rewrite -(affine_affinely (□ R)) HR. destruct q; simpl.
+  - rewrite (affinely_elim P) -{2}(affine_affinely (□ P)).
     by rewrite affinely_sep_2 wand_elim_l.
   - by rewrite affinely_sep_2 wand_elim_l.
 Qed.
@@ -645,7 +645,7 @@ Proof. by rewrite /IntoSep. Qed.
 
 Inductive AndIntoSep : PROP → PROP → PROP → PROP → Prop :=
   | and_into_sep_affine P Q Q' : Affine P → FromAffinely Q' Q → AndIntoSep P P Q Q'
-  | and_into_sep P Q : AndIntoSep P (<affine> P)%I Q Q.
+  | and_into_sep P Q : AndIntoSep P (<affine> P) Q Q.
 Existing Class AndIntoSep.
 Global Existing Instance and_into_sep_affine | 0.
 Global Existing Instance and_into_sep | 2.
@@ -873,7 +873,7 @@ Global Instance into_forall_wand_pure a φ P Q :
 Proof.
   rewrite /FromPureT /FromPure /IntoForall=> -[φ' [-> <-]] /=.
   apply forall_intro=>? /=. rewrite -affinely_affinely_if.
-  by rewrite -(pure_intro _ True%I) // /bi_affinely right_id emp_wand.
+  by rewrite -(pure_intro _ True) // /bi_affinely right_id emp_wand.
 Qed.
 
 (* These instances must be used only after [into_forall_wand_pure] and

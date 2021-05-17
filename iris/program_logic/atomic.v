@@ -15,9 +15,9 @@ Definition atomic_wp `{!irisG Λ Σ} {TA TB : tele}
   (β: TA → TB → iProp Σ) (* atomic post-condition *)
   (f: TA → TB → val Λ) (* Turn the return data into the return value *)
   : iProp Σ :=
-    (∀ (Φ : val Λ → iProp Σ),
-             atomic_update Eo ∅ α β (λ.. x y, Φ (f x y)) -∗
-             WP e {{ Φ }})%I.
+    ∀ (Φ : val Λ → iProp Σ),
+            atomic_update Eo ∅ α β (λ.. x y, Φ (f x y)) -∗
+            WP e {{ Φ }}.
 (* Note: To add a private postcondition, use
    atomic_update α β Eo Ei (λ x y, POST x y -∗ Φ (f x y)) *)
 

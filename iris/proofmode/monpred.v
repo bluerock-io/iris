@@ -142,7 +142,7 @@ Proof. by rewrite /MakeMonPredAt monPred_at_in. Qed.
 Global Instance make_monPred_at_default i P : MakeMonPredAt i P (P i) | 100.
 Proof. by rewrite /MakeMonPredAt. Qed.
 Global Instance make_monPred_at_bupd `{BiBUpd PROP} i P 𝓟 :
-  MakeMonPredAt i P 𝓟 → MakeMonPredAt i (|==> P)%I (|==> 𝓟)%I.
+  MakeMonPredAt i P 𝓟 → MakeMonPredAt i (|==> P) (|==> 𝓟).
 Proof. by rewrite /MakeMonPredAt monPred_at_bupd=> <-. Qed.
 
 Global Instance from_assumption_make_monPred_at_l p i j P 𝓟 :
@@ -480,16 +480,16 @@ Global Instance make_monPred_at_internal_eq `{!BiInternalEq PROP} {A : ofe} (x y
   MakeMonPredAt i (x ≡ y) (x ≡ y).
 Proof. by rewrite /MakeMonPredAt monPred_at_internal_eq. Qed.
 Global Instance make_monPred_at_except_0 i P 𝓠 :
-  MakeMonPredAt i P 𝓠 → MakeMonPredAt i (◇ P)%I (◇ 𝓠)%I.
+  MakeMonPredAt i P 𝓠 → MakeMonPredAt i (◇ P) (◇ 𝓠).
 Proof. by rewrite /MakeMonPredAt monPred_at_except_0=><-. Qed.
 Global Instance make_monPred_at_later i P 𝓠 :
-  MakeMonPredAt i P 𝓠 → MakeMonPredAt i (▷ P)%I (▷ 𝓠)%I.
+  MakeMonPredAt i P 𝓠 → MakeMonPredAt i (▷ P) (▷ 𝓠).
 Proof. by rewrite /MakeMonPredAt monPred_at_later=><-. Qed.
 Global Instance make_monPred_at_laterN i n P 𝓠 :
-  MakeMonPredAt i P 𝓠 → MakeMonPredAt i (▷^n P)%I (▷^n 𝓠)%I.
+  MakeMonPredAt i P 𝓠 → MakeMonPredAt i (▷^n P) (▷^n 𝓠).
 Proof. rewrite /MakeMonPredAt=> <-. elim n=>//= ? <-. by rewrite monPred_at_later. Qed.
 Global Instance make_monPred_at_fupd `{BiFUpd PROP} i E1 E2 P 𝓟 :
-  MakeMonPredAt i P 𝓟 → MakeMonPredAt i (|={E1,E2}=> P)%I (|={E1,E2}=> 𝓟)%I.
+  MakeMonPredAt i P 𝓟 → MakeMonPredAt i (|={E1,E2}=> P) (|={E1,E2}=> 𝓟).
 Proof. by rewrite /MakeMonPredAt monPred_at_fupd=> <-. Qed.
 
 Global Instance into_internal_eq_monPred_at `{!BiInternalEq PROP}

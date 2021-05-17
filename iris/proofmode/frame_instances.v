@@ -210,7 +210,7 @@ Global Instance frame_affinely p R P Q Q' :
   Frame p R P Q → MakeAffinely Q Q' → Frame p R (<affine> P) Q'.
 Proof.
   rewrite /Frame /MakeAffinely=> -[->|?] <- <- /=;
-    by rewrite -{1}(affine_affinely (_ R)%I) affinely_sep_2.
+    by rewrite -{1}(affine_affinely (_ R)) affinely_sep_2.
 Qed.
 
 Global Instance make_intuitionistically_emp :
@@ -347,6 +347,6 @@ Global Instance frame_except_0 p R P Q Q' :
   Frame p R P Q → MakeExcept0 Q Q' → Frame p R (◇ P) Q'.
 Proof.
   rewrite /Frame /MakeExcept0=><- <-.
-  by rewrite except_0_sep -(except_0_intro (□?p R)%I).
+  by rewrite except_0_sep -(except_0_intro (□?p R)).
 Qed.
 End bi.

@@ -22,8 +22,8 @@ Section defs.
     own p (CoPset E, GSet ∅).
 
   Definition na_inv (p : na_inv_pool_name) (N : namespace) (P : iProp Σ) : iProp Σ :=
-    (∃ i, ⌜i ∈ (↑N:coPset)⌝ ∧
-          inv N (P ∗ own p (CoPset ∅, GSet {[i]}) ∨ na_own p {[i]}))%I.
+    ∃ i, ⌜i ∈ (↑N:coPset)⌝ ∧
+         inv N (P ∗ own p (CoPset ∅, GSet {[i]}) ∨ na_own p {[i]}).
 End defs.
 
 Global Instance: Params (@na_inv) 3 := {}.

@@ -2,13 +2,13 @@ From iris.algebra Require Import monoid.
 From iris.bi Require Export interface.
 From iris.prelude Require Import options.
 
-Definition bi_iff {PROP : bi} (P Q : PROP) : PROP := ((P → Q) ∧ (Q → P))%I.
+Definition bi_iff {PROP : bi} (P Q : PROP) : PROP := (P → Q) ∧ (Q → P).
 Global Arguments bi_iff {_} _%I _%I : simpl never.
 Global Instance: Params (@bi_iff) 1 := {}.
 Infix "↔" := bi_iff : bi_scope.
 
 Definition bi_wand_iff {PROP : bi} (P Q : PROP) : PROP :=
-  ((P -∗ Q) ∧ (Q -∗ P))%I.
+  (P -∗ Q) ∧ (Q -∗ P).
 Global Arguments bi_wand_iff {_} _%I _%I : simpl never.
 Global Instance: Params (@bi_wand_iff) 1 := {}.
 Infix "∗-∗" := bi_wand_iff : bi_scope.
@@ -19,7 +19,7 @@ Global Arguments persistent {_} _%I {_}.
 Global Hint Mode Persistent + ! : typeclass_instances.
 Global Instance: Params (@Persistent) 1 := {}.
 
-Definition bi_affinely {PROP : bi} (P : PROP) : PROP := (emp ∧ P)%I.
+Definition bi_affinely {PROP : bi} (P : PROP) : PROP := emp ∧ P.
 Global Arguments bi_affinely {_} _%I : simpl never.
 Global Instance: Params (@bi_affinely) 1 := {}.
 Typeclasses Opaque bi_affinely.
@@ -38,7 +38,7 @@ Class BiPositive (PROP : bi) :=
   bi_positive (P Q : PROP) : <affine> (P ∗ Q) ⊢ <affine> P ∗ Q.
 Global Hint Mode BiPositive ! : typeclass_instances.
 
-Definition bi_absorbingly {PROP : bi} (P : PROP) : PROP := (True ∗ P)%I.
+Definition bi_absorbingly {PROP : bi} (P : PROP) : PROP := True ∗ P.
 Global Arguments bi_absorbingly {_} _%I : simpl never.
 Global Instance: Params (@bi_absorbingly) 1 := {}.
 Typeclasses Opaque bi_absorbingly.
@@ -88,13 +88,13 @@ Fixpoint bi_laterN {PROP : bi} (n : nat) (P : PROP) : PROP :=
   match n with
   | O => P
   | S n' => ▷ ▷^n' P
-  end%I
+  end
 where "▷^ n P" := (bi_laterN n P) : bi_scope.
 Global Arguments bi_laterN {_} !_%nat_scope _%I.
 Global Instance: Params (@bi_laterN) 2 := {}.
 Notation "▷? p P" := (bi_laterN (Nat.b2n p) P) : bi_scope.
 
-Definition bi_except_0 {PROP : bi} (P : PROP) : PROP := (▷ False ∨ P)%I.
+Definition bi_except_0 {PROP : bi} (P : PROP) : PROP := ▷ False ∨ P.
 Global Arguments bi_except_0 {_} _%I : simpl never.
 Notation "◇ P" := (bi_except_0 P) : bi_scope.
 Global Instance: Params (@bi_except_0) 1 := {}.
@@ -112,7 +112,7 @@ Global Instance: Params (@Timeless) 1 := {}.
 Definition bi_wandM {PROP : bi} (mP : option PROP) (Q : PROP) : PROP :=
   match mP with
   | None => Q
-  | Some P => (P -∗ Q)%I
+  | Some P => P -∗ Q
   end.
 Global Arguments bi_wandM {_} !_%I _%I /.
 Notation "mP -∗? Q" := (bi_wandM mP Q)

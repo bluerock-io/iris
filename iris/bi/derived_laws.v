@@ -607,7 +607,7 @@ Lemma pure_wand_forall φ P `{!Absorbing P} : (⌜φ⌝ -∗ P) ⊣⊢ (∀ _ : 
 Proof.
   apply (anti_symm _).
   - apply forall_intro=> Hφ.
-    rewrite -(pure_intro φ emp%I) // emp_wand //.
+    rewrite -(pure_intro φ emp) // emp_wand //.
   - apply wand_intro_l, wand_elim_l', pure_elim'=> Hφ.
     apply wand_intro_l. rewrite (forall_elim Hφ) comm. by apply absorbing.
 Qed.
@@ -794,7 +794,7 @@ Section bi_affine.
   Context `{BiAffine PROP}.
 
   Global Instance bi_affine_absorbing P : Absorbing P | 0.
-  Proof. by rewrite /Absorbing /bi_absorbingly (affine True%I) left_id. Qed.
+  Proof. by rewrite /Absorbing /bi_absorbingly (affine True) left_id. Qed.
   Global Instance bi_affine_positive : BiPositive PROP.
   Proof. intros P Q. by rewrite !affine_affinely. Qed.
 
@@ -929,7 +929,7 @@ Qed.
 
 Lemma persistently_and_sep_l_1 P Q : <pers> P ∧ Q ⊢ <pers> P ∗ Q.
 Proof.
-  by rewrite -{1}(emp_sep Q%I) persistently_and_sep_assoc and_elim_l.
+  by rewrite -{1}(emp_sep Q) persistently_and_sep_assoc and_elim_l.
 Qed.
 Lemma persistently_and_sep_r_1 P Q : P ∧ <pers> Q ⊢ P ∗ <pers> Q.
 Proof. by rewrite !(comm _ P) persistently_and_sep_l_1. Qed.
@@ -937,7 +937,7 @@ Proof. by rewrite !(comm _ P) persistently_and_sep_l_1. Qed.
 Lemma persistently_and_sep P Q : <pers> (P ∧ Q) ⊢ <pers> (P ∗ Q).
 Proof.
   rewrite persistently_and.
-  rewrite -{1}persistently_idemp -persistently_and -{1}(emp_sep Q%I).
+  rewrite -{1}persistently_idemp -persistently_and -{1}(emp_sep Q).
   by rewrite persistently_and_sep_assoc (comm bi_and) persistently_and_emp_elim.
 Qed.
 
@@ -990,7 +990,7 @@ Proof. intros; rewrite -persistently_and_sep_r_1; auto. Qed.
 Lemma persistently_impl_wand_2 P Q : <pers> (P -∗ Q) ⊢ <pers> (P → Q).
 Proof.
   apply persistently_intro', impl_intro_r.
-  rewrite -{2}(emp_sep P%I) persistently_and_sep_assoc.
+  rewrite -{2}(emp_sep P) persistently_and_sep_assoc.
   by rewrite (comm bi_and) persistently_and_emp_elim wand_elim_l.
 Qed.
 
