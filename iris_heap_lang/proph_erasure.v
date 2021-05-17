@@ -279,16 +279,13 @@ Proof.
   eexists _, _, _, _; simpl; split; first econstructor; eauto.
 Qed.
 Lemma erased_head_step_head_step_Xchg l v w σ :
-  val_is_unboxed v →
-  val_is_unboxed w →
   erase_heap (heap σ) !! l = Some (Some v) →
   head_steps_to_erasure_of (Xchg #l w) σ v
    {| heap := <[l:=Some $ erase_val w]> (erase_heap (heap σ)); used_proph_id := ∅ |} [].
 Proof.
-  intros Hv Hw Hl.
+  intros Hl.
   rewrite lookup_erase_heap in Hl.
   destruct (heap σ !! l) as [[|]|] eqn:?; simplify_eq/=.
-  rewrite val_is_unboxed_erased in Hv * => //; intros Hv.
   eexists _, _, _, _; simpl; split; first econstructor; repeat split; eauto.
   rewrite /state_upd_heap /erase_state /= erase_heap_insert_Some //.
 Qed.
@@ -725,14 +722,11 @@ Proof.
 Qed.
 
 Lemma head_step_erased_prim_step_xchg σ l v w :
-  val_is_unboxed v →
-  val_is_unboxed w →
   heap σ !! l = Some (Some v) →
   ∃ e2' σ2' ef', prim_step (Xchg #l (erase_val w)) (erase_state σ) [] e2' σ2' ef'.
 Proof.
-  intros Hv Hw Hl. do 3 eexists; apply head_prim_step; econstructor.
-  1: rewrite /erase_state /state_upd_heap /= lookup_erase_heap Hl; eauto.
-  1,2: by rewrite val_is_unboxed_erased.
+  intros Hl. do 3 eexists; apply head_prim_step; econstructor.
+  rewrite /erase_state /state_upd_heap /= lookup_erase_heap Hl; eauto.
 Qed.
 
 Lemma head_step_erased_prim_step_store σ l v w :

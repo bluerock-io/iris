@@ -684,8 +684,6 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
   | XchgS l v1 v2 σ :
      σ.(heap) !! l = Some $ Some v1 →
-     val_is_unboxed v1 →
-     val_is_unboxed v2 →
      head_step (Xchg (Val $ LitV $ LitLoc l) (Val v2)) σ
                []
                (Val v1) (state_upd_heap <[l:=Some v2]> σ)

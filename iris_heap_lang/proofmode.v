@@ -373,15 +373,13 @@ Qed.
 Lemma tac_wp_xchg Δ Δ' s E i K l v v' Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦ v)%I →
-  val_is_unboxed v' →
-  val_is_unboxed v  →
   match envs_simple_replace i false (Esnoc Enil i (l ↦ v')) Δ' with
   | Some Δ'' => envs_entails Δ'' (WP fill K (Val $ v) @ s; E {{ Φ }})
   | None => False
   end →
   envs_entails Δ (WP fill K (Xchg (LitV l) (Val v')) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ?????.
+  rewrite envs_entails_eq=> ???.
   destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   rewrite -wp_bind. eapply wand_apply; first by eapply wp_xchg.
   rewrite into_laterN_env_sound -later_sep envs_simple_replace_sound //; simpl.
@@ -390,8 +388,6 @@ Proof.
 Qed.
 Lemma tac_twp_xchg Δ s E i K l v v' Φ :
   envs_lookup i Δ = Some (false, l ↦ v)%I →
-  val_is_unboxed v' →
-  val_is_unboxed v →
   match envs_simple_replace i false (Esnoc Enil i (l ↦ v')) Δ with
   | Some Δ' => envs_entails Δ' (WP fill K (Val $ v) @ s; E [{ Φ }])
   | None => False
