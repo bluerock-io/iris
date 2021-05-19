@@ -42,6 +42,7 @@ Coq 8.11 is no longer supported in this version of Iris.
   view and per-element points-to facts written `k ↪[γ] w`.
 * Generalize the soundness lemma of the base logic `step_fupdN_soundness`.
   It applies even if invariants stay open accross an arbitrary number of laters.
+  (by Jacques-Henri Jourdan)
 
 **Changes in `program_logic`:**
 
@@ -58,6 +59,7 @@ Coq 8.11 is no longer supported in this version of Iris.
    - Use `fupd_intro _ _` for the new field `state_interp_mono` of `irisG`.
    - Some proofs using lifting lemmas and adequacy theorems need to be adapted
      to ignore the new step counter.
+  (by Jacques-Henri Jourdan)
 * Remove `wp_frame_wand_l`; add `wp_frame_wand` as more symmetric replacement.
 
 **Changes in `heap_lang`:**
