@@ -8,7 +8,7 @@ Set Default Proof Using "Type".
 Unset Mangle Names.
 
 Section tests.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val → iProp Σ.
 
@@ -329,7 +329,7 @@ Section tests.
 End tests.
 
 Section mapsto_tests.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   (* Test that the different versions of mapsto work with the tactics, parses,
      and prints correctly. *)
@@ -371,7 +371,7 @@ Section mapsto_tests.
 End mapsto_tests.
 
 Section inv_mapsto_tests.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   (* Make sure these parse and type-check. *)
   Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
@@ -387,7 +387,7 @@ Section inv_mapsto_tests.
 End inv_mapsto_tests.
 
 Section atomic.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
   Implicit Types P Q : iProp Σ.
 
   (* These tests check if a side-condition for [Atomic] is generated *)
@@ -417,7 +417,7 @@ Section atomic.
 End atomic.
 
 Section printing_tests.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   Lemma ref_print :
     True -∗ WP let: "f" := (λ: "x", "x") in ref ("f" #10) {{ _, True }}.
@@ -468,7 +468,7 @@ Section printing_tests.
 End printing_tests.
 
 Section error_tests.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   Check "not_cmpxchg".
   Lemma not_cmpxchg :

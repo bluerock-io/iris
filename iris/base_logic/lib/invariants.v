@@ -7,7 +7,7 @@ From iris.prelude Require Import options.
 Import uPred.
 
 (** Semantic Invariants *)
-Definition inv_def `{!invG Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
+Definition inv_def `{!invGS Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
   □ ∀ E, ⌜↑N ⊆ E⌝ → |={E,E ∖ ↑N}=> ▷ P ∗ (▷ P ={E ∖ ↑N,E}=∗ True).
 Definition inv_aux : seal (@inv_def). Proof. by eexists. Qed.
 Definition inv := inv_aux.(unseal).
@@ -17,7 +17,7 @@ Global Instance: Params (@inv) 3 := {}.
 
 (** * Invariants *)
 Section inv.
-  Context `{!invG Σ}.
+  Context `{!invGS Σ}.
   Implicit Types i : positive.
   Implicit Types N : namespace.
   Implicit Types E : coPset.

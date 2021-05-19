@@ -2,7 +2,7 @@ From iris.base_logic.lib Require Export invariants.
 From iris.heap_lang Require Import primitive_laws notation.
 From iris.prelude Require Import options.
 
-Structure lock Σ `{!heapG Σ} := Lock {
+Structure lock Σ `{!heapGS Σ} := Lock {
   (** * Operations *)
   newlock : val;
   acquire : val;
@@ -38,5 +38,5 @@ Global Arguments locked {_ _} _ _.
 
 Global Existing Instances is_lock_ne is_lock_persistent locked_timeless.
 
-Global Instance is_lock_proper Σ `{!heapG Σ} (L: lock Σ) γ lk:
+Global Instance is_lock_proper Σ `{!heapGS Σ} (L: lock Σ) γ lk:
   Proper ((≡) ==> (≡)) (is_lock L γ lk) := ne_proper _.

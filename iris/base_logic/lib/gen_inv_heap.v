@@ -30,12 +30,12 @@ Definition to_inv_heap {L V : Type} `{Countable L}
     (h: gmap L (V * (V -d> PropO))) : inv_heap_mapUR L V :=
   prod_map (λ x, Excl' x) to_agree <$> h.
 
-Class inv_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  inv_heap_preG_inG :> inG Σ (authR (inv_heap_mapUR L V))
+Class inv_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
+  inv_heapGpreS_inG :> inG Σ (authR (inv_heap_mapUR L V))
 }.
 
-Class inv_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := Inv_HeapG {
-  inv_heap_inG :> inv_heapPreG L V Σ;
+Class inv_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := Inv_HeapG {
+  inv_heap_inG :> inv_heapGpreS L V Σ;
   inv_heap_name : gname
 }.
 Global Arguments Inv_HeapG _ _ {_ _ _ _}.
@@ -44,13 +44,13 @@ Global Arguments inv_heap_name {_ _ _ _ _} _ : assert.
 Definition inv_heapΣ (L V : Type) `{Countable L} : gFunctors :=
   #[ GFunctor (authR (inv_heap_mapUR L V)) ].
 
-Global Instance subG_inv_heapPreG (L V : Type) `{Countable L} {Σ} :
-  subG (inv_heapΣ L V) Σ → inv_heapPreG L V Σ.
+Global Instance subG_inv_heapGpreS (L V : Type) `{Countable L} {Σ} :
+  subG (inv_heapΣ L V) Σ → inv_heapGpreS L V Σ.
 Proof. solve_inG. Qed.
 
 Section definitions.
   Context {L V : Type} `{Countable L}.
-  Context `{!invG Σ, !gen_heapG L V Σ, gG: !inv_heapG L V Σ}.
+  Context `{!invGS Σ, !gen_heapGS L V Σ, gG: !inv_heapGS L V Σ}.
 
   Definition inv_heap_inv_P : iProp Σ :=
     ∃ h : gmap L (V * (V -d> PropO)),
@@ -112,8 +112,8 @@ Section to_inv_heap.
   Qed.
 End to_inv_heap.
 
-Lemma inv_heap_init (L V : Type) `{Countable L, !invG Σ, !gen_heapG L V Σ, !inv_heapPreG L V Σ} E :
-  ⊢ |==> ∃ _ : inv_heapG L V Σ, |={E}=> inv_heap_inv L V.
+Lemma inv_heap_init (L V : Type) `{Countable L, !invGS Σ, !gen_heapGS L V Σ, !inv_heapGpreS L V Σ} E :
+  ⊢ |==> ∃ _ : inv_heapGS L V Σ, |={E}=> inv_heap_inv L V.
 Proof.
   iMod (own_alloc (● (to_inv_heap ∅))) as (γ) "H●".
   { rewrite auth_auth_valid. exact: to_inv_heap_valid. }
@@ -126,7 +126,7 @@ Qed.
 
 Section inv_heap.
   Context {L V : Type} `{Countable L}.
-  Context `{!invG Σ, !gen_heapG L V Σ, gG: !inv_heapG L V Σ}.
+  Context `{!invGS Σ, !gen_heapGS L V Σ, gG: !inv_heapGS L V Σ}.
   Implicit Types (l : L) (v : V) (I : V → Prop).
   Implicit Types (h : gmap L (V * (V -d> PropO))).
 

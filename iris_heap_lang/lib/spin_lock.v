@@ -13,7 +13,7 @@ Definition acquire : val :=
 Definition release : val := λ: "l", "l" <- #false.
 
 (** The CMRA we need. *)
-(* Not bundling heapG, as it may be shared with other users. *)
+(* Not bundling heapGS, as it may be shared with other users. *)
 Class lockG Σ := LockG { lock_tokG :> inG Σ (exclR unitO) }.
 Definition lockΣ : gFunctors := #[GFunctor (exclR unitO)].
 
@@ -21,7 +21,7 @@ Global Instance subG_lockΣ {Σ} : subG lockΣ Σ → lockG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.
-  Context `{!heapG Σ, !lockG Σ}.
+  Context `{!heapGS Σ, !lockG Σ}.
   Let N := nroot .@ "spin_lock".
 
   Definition lock_inv (γ : gname) (l : loc) (R : iProp Σ) : iProp Σ :=
@@ -102,7 +102,7 @@ End proof.
 
 Typeclasses Opaque is_lock locked.
 
-Canonical Structure spin_lock `{!heapG Σ, !lockG Σ} : lock Σ :=
+Canonical Structure spin_lock `{!heapGS Σ, !lockG Σ} : lock Σ :=
   {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
      lock.newlock_spec := newlock_spec;
      lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.

@@ -17,7 +17,7 @@ Global Instance subG_boxΣ Σ : subG boxΣ Σ → boxG Σ.
 Proof. solve_inG. Qed.
 
 Section box_defs.
-  Context `{!invG Σ, !boxG Σ} (N : namespace).
+  Context `{!invGS Σ, !boxG Σ} (N : namespace).
 
   Definition slice_name := gname.
 
@@ -46,7 +46,7 @@ Global Instance: Params (@slice) 5 := {}.
 Global Instance: Params (@box) 5 := {}.
 
 Section box.
-Context `{!invG Σ, !boxG Σ} (N : namespace).
+Context `{!invGS Σ, !boxG Σ} (N : namespace).
 Implicit Types P Q : iProp Σ.
 
 Global Instance box_own_prop_ne γ : NonExpansive (box_own_prop γ).

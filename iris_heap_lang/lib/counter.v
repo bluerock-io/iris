@@ -20,7 +20,7 @@ Global Instance subG_mcounterΣ {Σ} : subG mcounterΣ Σ → mcounterG Σ.
 Proof. solve_inG. Qed.
 
 Section mono_proof.
-  Context `{!heapG Σ, !mcounterG Σ} (N : namespace).
+  Context `{!heapGS Σ, !mcounterG Σ} (N : namespace).
 
   Definition mcounter_inv (γ : gname) (l : loc) : iProp Σ :=
     ∃ n, own γ (● (MaxNat n)) ∗ l ↦ #n.
@@ -94,7 +94,7 @@ Global Instance subG_ccounterΣ {Σ} : subG ccounterΣ Σ → ccounterG Σ.
 Proof. solve_inG. Qed.
 
 Section contrib_spec.
-  Context `{!heapG Σ, !ccounterG Σ} (N : namespace).
+  Context `{!heapGS Σ, !ccounterG Σ} (N : namespace).
 
   Definition ccounter_inv (γ : gname) (l : loc) : iProp Σ :=
     ∃ n, own γ (●F n) ∗ l ↦ #n.

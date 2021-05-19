@@ -9,7 +9,7 @@ From iris.deprecated.base_logic Require Export viewshifts.
 From iris.program_logic Require Export weakestpre.
 From iris.prelude Require Import options.
 
-Definition ht `{!irisG Λ Σ} (s : stuckness) (E : coPset) (P : iProp Σ)
+Definition ht `{!irisGS Λ Σ} (s : stuckness) (E : coPset) (P : iProp Σ)
     (e : expr Λ) (Φ : val Λ → iProp Σ) : iProp Σ :=
   (□ (P -∗ WP e @ s; E {{ Φ }}))%I.
 Global Instance: Params (@ht) 5 := {}.
@@ -47,7 +47,7 @@ Notation "{{ P } } e ? {{ v , Q } }" := (ht MaybeStuck ⊤ P%I e%E (λ v, Q)%I)
    format "{{  P  } }  e  ? {{  v ,  Q  } }") : stdpp_scope.
 
 Section hoare.
-Context `{!irisG Λ Σ}.
+Context `{!irisGS Λ Σ}.
 Implicit Types s : stuckness.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ Ψ : val Λ → iProp Σ.

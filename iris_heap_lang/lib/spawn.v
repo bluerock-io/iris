@@ -18,7 +18,7 @@ Definition join : val :=
     end.
 
 (** The CMRA & functor we need. *)
-(* Not bundling heapG, as it may be shared with other users. *)
+(* Not bundling heapGS, as it may be shared with other users. *)
 Class spawnG Σ := SpawnG { spawn_tokG :> inG Σ (exclR unitO) }.
 Definition spawnΣ : gFunctors := #[GFunctor (exclR unitO)].
 
@@ -27,7 +27,7 @@ Proof. solve_inG. Qed.
 
 (** Now we come to the Iris part of the proof. *)
 Section proof.
-Context `{!heapG Σ, !spawnG Σ} (N : namespace).
+Context `{!heapGS Σ, !spawnG Σ} (N : namespace).
 
 Definition spawn_inv (γ : gname) (l : loc) (Ψ : val → iProp Σ) : iProp Σ :=
   ∃ lv, l ↦ lv ∗ (⌜lv = NONEV⌝ ∨

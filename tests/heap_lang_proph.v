@@ -4,7 +4,7 @@ From iris.heap_lang Require Import lang.
 Set Default Proof Using "Type".
 
 Section tests.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val → iProp Σ.
 

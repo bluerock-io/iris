@@ -216,6 +216,8 @@ For details, consult [the Coq manual](https://coq.inria.fr/refman/user-extension
 * UR: unital cameras or resources algebras
 * F: functors (can be combined with all of the above, e.g. OF is an OFE functor)
 * G: global camera functor management (typeclass; see the [resource algebra docs](resource_algebras.md))
+* GS: global singleton (a `*G` typeclass withe extra data that needs to be unique in a proof)
+* GpreS: collecting preconditions to instantiate the corresponding `*GS`
 * I: bunched implication logic (of type `bi`)
 * SI: step-indexed bunched implication logic (of type `sbi`)
 * T: canonical structures for algebraic classes (for example ofe for OFEs, cmra for cameras)

@@ -6,7 +6,7 @@ From iris.prelude Require Import options.
 Import uPred.
 
 Section adequacy.
-Context `{!irisG Λ Σ}.
+Context `{!irisGS Λ Σ}.
 Implicit Types e : expr Λ.
 
 Definition twptp_pre (twptp : list (expr Λ) → iProp Σ)
@@ -116,12 +116,12 @@ Proof.
 Qed.
 End adequacy.
 
-Theorem twp_total Σ Λ `{!invPreG Σ} s e σ Φ :
-  (∀ `{Hinv : !invG Σ},
+Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ :
+  (∀ `{Hinv : !invGS Σ},
      ⊢ |={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
-       let _ : irisG Λ Σ :=
+       let _ : irisGS Λ Σ :=
            IrisG _ _ Hinv (λ σ _, stateI σ) fork_post (λ _, 0)
                  (λ _ _ _ _, fupd_intro _ _)
        in

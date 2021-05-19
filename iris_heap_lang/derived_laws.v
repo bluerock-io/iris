@@ -14,7 +14,7 @@ From iris.prelude Require Import options.
 (** The [array] connective is a version of [mapsto] that works
 with lists of values. *)
 
-Definition array `{!heapG Σ} (l : loc) (dq : dfrac) (vs : list val) : iProp Σ :=
+Definition array `{!heapGS Σ} (l : loc) (dq : dfrac) (vs : list val) : iProp Σ :=
   [∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦{dq} v.
 
 (** FIXME: Refactor these notations using custom entries once Coq bug #13654
@@ -33,7 +33,7 @@ Notation "l ↦∗ vs" := (array l (DfracOwn 1) vs)
 lead to overlapping instances. *)
 
 Section lifting.
-Context `{!heapG Σ}.
+Context `{!heapGS Σ}.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ : val → iProp Σ.
 Implicit Types σ : state.

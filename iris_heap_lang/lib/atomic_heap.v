@@ -6,7 +6,7 @@ From iris.heap_lang Require Import notation proofmode.
 From iris.prelude Require Import options.
 
 (** A general logically atomic interface for a heap. *)
-Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
+Class atomic_heap {Σ} `{!heapGS Σ} := AtomicHeap {
   (* -- operations -- *)
   alloc : val;
   free : val;
@@ -69,7 +69,7 @@ Module notation.
 End notation.
 
 Section derived.
-  Context `{!heapG Σ, !atomic_heap Σ}.
+  Context `{!heapGS Σ, !atomic_heap Σ}.
 
   Import notation.
 
@@ -99,7 +99,7 @@ Definition primitive_cmpxchg : val :=
   λ: "l" "e1" "e2", CmpXchg "l" "e1" "e2".
 
 Section proof.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   Lemma primitive_alloc_spec (v : val) :
     {{{ True }}} primitive_alloc v {{{ l, RET #l; l ↦ v }}}.
@@ -148,7 +148,7 @@ End proof.
 
 (* NOT an instance because users should choose explicitly to use it
      (using [Explicit Instance]). *)
-Definition primitive_atomic_heap `{!heapG Σ} : atomic_heap Σ :=
+Definition primitive_atomic_heap `{!heapGS Σ} : atomic_heap Σ :=
   {| alloc_spec := primitive_alloc_spec;
      free_spec := primitive_free_spec;
      load_spec := primitive_load_spec;

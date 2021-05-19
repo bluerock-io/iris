@@ -36,7 +36,7 @@ Global Instance subG_tlockΣ {Σ} : subG tlockΣ Σ → tlockG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.
-  Context `{!heapG Σ, !tlockG Σ}.
+  Context `{!heapGS Σ, !tlockG Σ}.
   Let N := nroot .@ "ticket_lock".
 
   Definition lock_inv (γ : gname) (lo ln : loc) (R : iProp Σ) : iProp Σ :=
@@ -172,7 +172,7 @@ End proof.
 
 Typeclasses Opaque is_lock issued locked.
 
-Canonical Structure ticket_lock `{!heapG Σ, !tlockG Σ} : lock Σ :=
+Canonical Structure ticket_lock `{!heapGS Σ, !tlockG Σ} : lock Σ :=
   {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
      lock.newlock_spec := newlock_spec;
      lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.

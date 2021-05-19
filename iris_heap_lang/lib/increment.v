@@ -11,7 +11,7 @@ atomicity. *)
 (** First: logically atomic increment directly on top of the physical heap. *)
 
 Section increment_physical.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   Definition incr_phy : val :=
     rec: "incr" "l" :=
@@ -38,7 +38,7 @@ End increment_physical.
 (** Next: logically atomic increment on top of an arbitrary logically atomic heap *)
 
 Section increment.
-  Context `{!heapG Σ} {aheap: atomic_heap Σ}.
+  Context `{!heapGS Σ} {aheap: atomic_heap Σ}.
 
   Import atomic_heap.notation.
 
@@ -145,7 +145,7 @@ Section increment.
 End increment.
 
 Section increment_client.
-  Context `{!heapG Σ, !spawnG Σ}.
+  Context `{!heapGS Σ, !spawnG Σ}.
 
   Local Existing Instance primitive_atomic_heap.
 

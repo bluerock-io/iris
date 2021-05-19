@@ -9,7 +9,7 @@ Import uPred.
 we prove a number of auxilary results. *)
 
 Section adequacy.
-Context `{!irisG Λ Σ}.
+Context `{!irisGS Λ Σ}.
 Implicit Types e : expr Λ.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
@@ -117,9 +117,9 @@ Qed.
 End adequacy.
 
 (** Iris's generic adequacy result *)
-Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} es σ1 n κs t2 σ2 φ
+Theorem wp_strong_adequacy Σ Λ `{!invGpreS Σ} es σ1 n κs t2 σ2 φ
         (num_laters_per_step : nat → nat) :
-  (∀ `{Hinv : !invG Σ},
+  (∀ `{Hinv : !invGS Σ},
     ⊢ |={⊤}=> ∃
          (s: stuckness)
          (stateI : state Λ → nat → list (observation Λ) → nat → iProp Σ)
@@ -128,7 +128,7 @@ Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} es σ1 n κs t2 σ2 φ
          (* Note: existentially quantifying over Iris goal! [iExists _] should
          usually work. *)
          state_interp_mono,
-       let _ : irisG Λ Σ := IrisG _ _ Hinv stateI fork_post num_laters_per_step
+       let _ : irisGS Λ Σ := IrisG _ _ Hinv stateI fork_post num_laters_per_step
                                   state_interp_mono
        in
        stateI σ1 0 κs 0 ∗
@@ -216,7 +216,7 @@ Proof.
   right; exists (t2' ++ e3 :: t2'' ++ efs), σ3, κ; econstructor; eauto.
 Qed.
 
-(** This simpler form of adequacy requires the [irisG] instance that you use
+(** This simpler form of adequacy requires the [irisGS] instance that you use
 everywhere to syntactically be of the form
 {|
   iris_invG := ...;
@@ -229,12 +229,12 @@ In other words, the state interpretation must ignore [ns] and [nt], the number
 of laters per step must be 0, and the proof of [state_interp_mono] must have
 this specific proof term.
 *)
-Corollary wp_adequacy Σ Λ `{!invPreG Σ} s e σ φ :
-  (∀ `{Hinv : !invG Σ} κs,
+Corollary wp_adequacy Σ Λ `{!invGpreS Σ} s e σ φ :
+  (∀ `{Hinv : !invGS Σ} κs,
      ⊢ |={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → iProp Σ)
          (fork_post : val Λ → iProp Σ),
-       let _ : irisG Λ Σ :=
+       let _ : irisGS Λ Σ :=
            IrisG _ _ Hinv (λ σ _ κs _, stateI σ κs) fork_post (λ _, 0)
                  (λ _ _ _ _, fupd_intro _ _)
        in
@@ -252,12 +252,12 @@ Proof.
   iIntros (v2 t2'' [= -> <-]). by rewrite to_of_val.
 Qed.
 
-Corollary wp_invariance Σ Λ `{!invPreG Σ} s e1 σ1 t2 σ2 φ :
-  (∀ `{Hinv : !invG Σ} κs,
+Corollary wp_invariance Σ Λ `{!invGpreS Σ} s e1 σ1 t2 σ2 φ :
+  (∀ `{Hinv : !invGS Σ} κs,
      ⊢ |={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
-       let _ : irisG Λ Σ := IrisG _ _ Hinv (λ σ _, stateI σ) fork_post
+       let _ : irisGS Λ Σ := IrisG _ _ Hinv (λ σ _, stateI σ) fork_post
               (λ _, 0) (λ _ _ _ _, fupd_intro _ _) in
        stateI σ1 κs 0 ∗ WP e1 @ s; ⊤ {{ _, True }} ∗
        (stateI σ2 [] (pred (length t2)) -∗ ∃ E, |={⊤,E}=> ⌜φ⌝)) →

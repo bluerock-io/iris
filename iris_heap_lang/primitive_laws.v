@@ -10,14 +10,14 @@ From iris.heap_lang Require Export class_instances.
 From iris.heap_lang Require Import tactics notation.
 From iris.prelude Require Import options.
 
-Class heapG Σ := HeapG {
-  heapG_invG : invG Σ;
-  heapG_gen_heapG :> gen_heapG loc (option val) Σ;
-  heapG_inv_heapG :> inv_heapG loc (option val) Σ;
-  heapG_proph_mapG :> proph_mapG proph_id (val * val) Σ;
+Class heapGS Σ := HeapGS {
+  heapG_invG : invGS Σ;
+  heapG_gen_heapG :> gen_heapGS loc (option val) Σ;
+  heapG_inv_heapG :> inv_heapGS loc (option val) Σ;
+  heapG_proph_mapG :> proph_mapGS proph_id (val * val) Σ;
 }.
 
-Global Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
+Global Instance heapG_irisGS `{!heapGS Σ} : irisGS heap_lang Σ := {
   iris_invG := heapG_invG;
   state_interp σ _ κs _ :=
     (gen_heap_interp σ.(heap) ∗ proph_map_interp κs σ.(used_proph_id))%I;
@@ -43,7 +43,7 @@ Notation "l ↦ v" := (mapsto (L:=loc) (V:=option val) l (DfracOwn 1) (Some v%V)
 make setoid rewriting in the predicate [I] work we need actual definitions
 here. *)
 Section definitions.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
   Definition inv_mapsto_own (l : loc) (v : val) (I : val → Prop) : iProp Σ :=
     inv_mapsto_own l (Some v) (from_option I False).
   Definition inv_mapsto (l : loc) (I : val → Prop) : iProp Σ :=
@@ -60,7 +60,7 @@ Notation "l ↦_ I v" := (inv_mapsto_own l v I%stdpp%type)
   (at level 20, I at level 9, format "l  ↦_ I  v") : bi_scope.
 
 Section lifting.
-Context `{!heapG Σ}.
+Context `{!heapGS Σ}.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ Ψ : val → iProp Σ.
 Implicit Types efs : list expr.

@@ -16,7 +16,7 @@ Notation "e1 ||| e2" := (par (λ: <>, e1)%V (λ: <>, e2)%V) : val_scope.
 
 Section proof.
 Local Set Default Proof Using "Type*".
-Context `{!heapG Σ, !spawnG Σ}.
+Context `{!heapGS Σ, !spawnG Σ}.
 
 (* Notice that this allows us to strip a later *after* the two Ψ have been
    brought together.  That is strictly stronger than first stripping a later

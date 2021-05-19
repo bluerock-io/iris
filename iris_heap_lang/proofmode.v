@@ -6,11 +6,11 @@ From iris.heap_lang Require Import notation.
 From iris.prelude Require Import options.
 Import uPred.
 
-Lemma tac_wp_expr_eval `{!heapG Σ} Δ s E Φ e e' :
+Lemma tac_wp_expr_eval `{!heapGS Σ} Δ s E Φ e e' :
   (∀ (e'':=e'), e = e'') →
   envs_entails Δ (WP e' @ s; E {{ Φ }}) → envs_entails Δ (WP e @ s; E {{ Φ }}).
 Proof. by intros ->. Qed.
-Lemma tac_twp_expr_eval `{!heapG Σ} Δ s E Φ e e' :
+Lemma tac_twp_expr_eval `{!heapGS Σ} Δ s E Φ e e' :
   (∀ (e'':=e'), e = e'') →
   envs_entails Δ (WP e' @ s; E [{ Φ }]) → envs_entails Δ (WP e @ s; E [{ Φ }]).
 Proof. by intros ->. Qed.
@@ -28,7 +28,7 @@ Tactic Notation "wp_expr_eval" tactic3(t) :=
   end.
 Ltac wp_expr_simpl := wp_expr_eval simpl.
 
-Lemma tac_wp_pure `{!heapG Σ} Δ Δ' s E K e1 e2 φ n Φ :
+Lemma tac_wp_pure `{!heapGS Σ} Δ Δ' s E K e1 e2 φ n Φ :
   PureExec φ n e1 e2 →
   φ →
   MaybeIntoLaterNEnvs n Δ Δ' →
@@ -40,7 +40,7 @@ Proof.
   pose proof @pure_exec_fill.
   rewrite HΔ' -lifting.wp_pure_step_later //.
 Qed.
-Lemma tac_twp_pure `{!heapG Σ} Δ s E K e1 e2 φ n Φ :
+Lemma tac_twp_pure `{!heapGS Σ} Δ s E K e1 e2 φ n Φ :
   PureExec φ n e1 e2 →
   φ →
   envs_entails Δ (WP (fill K e2) @ s; E [{ Φ }]) →
@@ -52,17 +52,17 @@ Proof.
   rewrite -total_lifting.twp_pure_step //.
 Qed.
 
-Lemma tac_wp_value_nofupd `{!heapG Σ} Δ s E Φ v :
+Lemma tac_wp_value_nofupd `{!heapGS Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E {{ Φ }}).
 Proof. rewrite envs_entails_eq=> ->. by apply wp_value. Qed.
-Lemma tac_twp_value_nofupd `{!heapG Σ} Δ s E Φ v :
+Lemma tac_twp_value_nofupd `{!heapGS Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
 Proof. rewrite envs_entails_eq=> ->. by apply twp_value. Qed.
 
-Lemma tac_wp_value `{!heapG Σ} Δ s E (Φ : val → iPropI Σ) v :
+Lemma tac_wp_value `{!heapGS Σ} Δ s E (Φ : val → iPropI Σ) v :
   envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E {{ Φ }}).
 Proof. rewrite envs_entails_eq=> ->. by rewrite wp_value_fupd. Qed.
-Lemma tac_twp_value `{!heapG Σ} Δ s E (Φ : val → iPropI Σ) v :
+Lemma tac_twp_value `{!heapGS Σ} Δ s E (Φ : val → iPropI Σ) v :
   envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
 Proof. rewrite envs_entails_eq=> ->. by rewrite twp_value_fupd. Qed.
 
@@ -170,12 +170,12 @@ Tactic Notation "wp_inj" := wp_pure (InjL _) || wp_pure (InjR _).
 Tactic Notation "wp_pair" := wp_pure (Pair _ _).
 Tactic Notation "wp_closure" := wp_pure (Rec _ _ _).
 
-Lemma tac_wp_bind `{!heapG Σ} K Δ s E Φ e f :
+Lemma tac_wp_bind `{!heapGS Σ} K Δ s E Φ e f :
   f = (λ e, fill K e) → (* as an eta expanded hypothesis so that we can `simpl` it *)
   envs_entails Δ (WP e @ s; E {{ v, WP f (Val v) @ s; E {{ Φ }} }})%I →
   envs_entails Δ (WP fill K e @ s; E {{ Φ }}).
 Proof. rewrite envs_entails_eq=> -> ->. by apply: wp_bind. Qed.
-Lemma tac_twp_bind `{!heapG Σ} K Δ s E Φ e f :
+Lemma tac_twp_bind `{!heapGS Σ} K Δ s E Φ e f :
   f = (λ e, fill K e) → (* as an eta expanded hypothesis so that we can `simpl` it *)
   envs_entails Δ (WP e @ s; E [{ v, WP f (Val v) @ s; E [{ Φ }] }])%I →
   envs_entails Δ (WP fill K e @ s; E [{ Φ }]).
@@ -206,7 +206,7 @@ Tactic Notation "wp_bind" open_constr(efoc) :=
 
 (** Heap tactics *)
 Section heap.
-Context `{!heapG Σ}.
+Context `{!heapGS Σ}.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ : val → iProp Σ.
 Implicit Types Δ : envs (uPredI (iResUR Σ)).
