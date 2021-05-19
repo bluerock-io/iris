@@ -65,6 +65,7 @@ Coq 8.11 is no longer supported in this version of Iris.
 **Changes in `heap_lang`:**
 
 * Rename `Build_loc` constructor for `loc` type to `Loc`.
+* Add atomic `Xchg` ("exchange"/"swap") operation. (by Simon Hudon, Google)
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
