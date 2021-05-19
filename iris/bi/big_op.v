@@ -2251,7 +2251,7 @@ End gset.
 
 Lemma big_sepS_sepS `{Countable A, Countable B}
     (X : gset A) (Y : gset B) (Φ : A → B → PROP) :
-  ([∗ set] x ∈ X, [∗ set] y ∈ Y, Φ x y) -∗ ([∗ set] y ∈ Y, [∗ set] x ∈ X, Φ x y).
+  ([∗ set] x ∈ X, [∗ set] y ∈ Y, Φ x y) ⊣⊢ ([∗ set] y ∈ Y, [∗ set] x ∈ X, Φ x y).
 Proof.
   repeat setoid_rewrite big_sepS_elements.
   rewrite big_sepL_sepL. done.
