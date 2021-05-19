@@ -228,7 +228,6 @@ Proof.
   setoid_rewrite vec_to_list_insert. apply twp_xchg_offset => //.
   by apply vlookup_lookup.
 Qed.
-
 Lemma wp_xchg_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v :
    {{{ ▷ l ↦∗ vs }}} Xchg #(l +ₗ off) v @ s; E {{{ RET (vs !!! off); l ↦∗ vinsert off v vs }}}.
 Proof.

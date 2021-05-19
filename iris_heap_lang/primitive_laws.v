@@ -323,7 +323,6 @@ Proof.
   iMod (gen_heap_update with "Hσ Hl") as "[$ Hl]".
   iModIntro. iSplit; first done. iSplit; first done. iFrame. by iApply "HΦ".
 Qed.
-
 Lemma wp_xchg s E l v' v :
   {{{ ▷ l ↦ v' }}} Xchg (Val $ LitV (LitLoc l)) (Val v) @ s; E
   {{{ RET v'; l ↦ v }}}.
