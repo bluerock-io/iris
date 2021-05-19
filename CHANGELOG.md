@@ -13,7 +13,7 @@ Coq 8.11 is no longer supported in this version of Iris.
   cameras to be parameterized by a [discardable fraction](iris/algebra/dfrac.v)
   (`dfrac`) instead of a fraction (`frac`). Normal fractions are now denoted
   `●{#q} a` and `●V{#q} a`. Lemmas affected by this have been renamed such that
-  the "frac" in their name has been changed into "dfrac".
+  the "frac" in their name has been changed into "dfrac". (by Simon Friis Vindum)
 * Generalize `namespace_map` to `reservation_map` which enhances `gmap positive
   A` with a notion of 'tokens' that enable allocating a particular name in the
   map. See [algebra.reservation_map](iris/algebra/reservation_map.v) for further
@@ -32,8 +32,9 @@ Coq 8.11 is no longer supported in this version of Iris.
 
 * Add support for pure names `%H` in intro patterns. This is now natively
   supported whereas the previous experimental support required installing
-  https://gitlab.mpi-sws.org/iris/string-ident.
+  https://gitlab.mpi-sws.org/iris/string-ident. (by Tej Chajed)
 * Add support for destructing existentials with the intro pattern `[%x ...]`.
+  (by Tej Chajed)
 
 **Changes in `base_logic`:**
 
