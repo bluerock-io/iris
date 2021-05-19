@@ -205,6 +205,37 @@ Proof.
   iApply (twp_store_offset_vec with "H"); [eauto..|]; iIntros "H HΦ". by iApply "HΦ".
 Qed.
 
+Lemma twp_xchg_offset s E l off vs v v' :
+  vs !! off = Some v →
+  [[{ l ↦∗ vs }]] Xchg #(l +ₗ off) v' @ s; E [[{ RET v; l ↦∗ <[off:=v']> vs }]].
+Proof.
+  iIntros (Hlookup Φ) "Hl HΦ".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iApply (twp_xchg with "Hl1") => //. iIntros "Hl1".
+  iApply "HΦ". iApply "Hl2". iApply "Hl1".
+Qed.
+Lemma wp_xchg_offset s E l off vs v v' :
+  vs !! off = Some v →
+  {{{ ▷ l ↦∗ vs }}} Xchg #(l +ₗ off) v' @ s; E {{{ RET v; l ↦∗ <[off:=v']> vs }}}.
+Proof.
+  iIntros (? Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
+  iApply (twp_xchg_offset with "H"); [eauto..|]; iIntros "H HΦ". by iApply "HΦ".
+Qed.
+
+Lemma twp_xchg_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v :
+  [[{ l ↦∗ vs }]] Xchg #(l +ₗ off) v @ s; E [[{ RET (vs !!! off); l ↦∗ vinsert off v vs }]].
+Proof.
+  setoid_rewrite vec_to_list_insert. apply twp_xchg_offset => //.
+  by apply vlookup_lookup.
+Qed.
+
+Lemma wp_xchg_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v :
+   {{{ ▷ l ↦∗ vs }}} Xchg #(l +ₗ off) v @ s; E {{{ RET (vs !!! off); l ↦∗ vinsert off v vs }}}.
+Proof.
+  iIntros (Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
+  iApply (twp_xchg_offset_vec with "H"); [eauto..|]; iIntros "H HΦ". by iApply "HΦ".
+Qed.
+
 Lemma twp_cmpxchg_suc_offset s E l off vs v' v1 v2 :
   vs !! off = Some v' →
   v' = v1 →

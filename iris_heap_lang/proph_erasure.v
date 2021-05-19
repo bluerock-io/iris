@@ -43,6 +43,7 @@ Fixpoint erase_expr (e : expr) : expr :=
   | AllocN e1 e2 => AllocN (erase_expr e1) (erase_expr e2)
   | Free e => Free (erase_expr e)
   | Load e => Load (erase_expr e)
+  | Xchg e1 e2 => Xchg (erase_expr e1) (erase_expr e2)
   | Store e1 e2 => Store (erase_expr e1) (erase_expr e2)
   | CmpXchg e0 e1 e2 => CmpXchg (erase_expr e0) (erase_expr e1) (erase_expr e2)
   | FAA e1 e2 => FAA (erase_expr e1) (erase_expr e2)
@@ -97,6 +98,8 @@ Fixpoint erase_ectx_item (Ki : ectx_item) : list ectx_item :=
   | AllocNRCtx e1 => [AllocNRCtx (erase_expr e1)]
   | FreeCtx => [FreeCtx]
   | LoadCtx => [LoadCtx]
+  | XchgLCtx v2 => [XchgLCtx (erase_val v2)]
+  | XchgRCtx e1 => [XchgRCtx (erase_expr e1)]
   | StoreLCtx v2 => [StoreLCtx (erase_val v2)]
   | StoreRCtx e1 => [StoreRCtx (erase_expr e1)]
   | CmpXchgLCtx v1 v2 => [CmpXchgLCtx (erase_val v1) (erase_val v2)]
@@ -275,6 +278,17 @@ Proof.
   destruct (heap σ !! l) as [[|]|] eqn:?; simplify_eq/=.
   eexists _, _, _, _; simpl; split; first econstructor; eauto.
 Qed.
+Lemma erased_head_step_head_step_Xchg l v w σ :
+  erase_heap (heap σ) !! l = Some (Some v) →
+  head_steps_to_erasure_of (Xchg #l w) σ v
+   {| heap := <[l:=Some $ erase_val w]> (erase_heap (heap σ)); used_proph_id := ∅ |} [].
+Proof.
+  intros Hl.
+  rewrite lookup_erase_heap in Hl.
+  destruct (heap σ !! l) as [[|]|] eqn:?; simplify_eq/=.
+  eexists _, _, _, _; simpl; split; first econstructor; repeat split; eauto.
+  rewrite /state_upd_heap /erase_state /= erase_heap_insert_Some //.
+Qed.
 Lemma erased_head_step_head_step_Store l v w σ :
   erase_heap (heap σ) !! l = Some (Some v) →
   head_steps_to_erasure_of (#l <- w) σ #()
@@ -342,6 +356,8 @@ Proof.
              apply un_op_eval_erase in H as [? [? ?]]
            | H : bin_op_eval _ (erase_val _) (erase_val _) = Some _ |- _ =>
              apply bin_op_eval_erase in H as [? [? ?]]
+           | H : val_is_unboxed (erase_val _) |- _ =>
+             apply -> val_is_unboxed_erased in H
            end; simplify_eq/=;
     try (by repeat econstructor);
   eauto using erased_head_step_head_step_rec,
@@ -349,6 +365,7 @@ Proof.
     erased_head_step_head_step_AllocN,
     erased_head_step_head_step_Free,
     erased_head_step_head_step_Load,
+    erased_head_step_head_step_Xchg,
     erased_head_step_head_step_Store,
     erased_head_step_head_step_CmpXchg,
     erased_head_step_head_step_FAA.
@@ -704,6 +721,14 @@ Proof.
   by destruct lookup; simplify_eq.
 Qed.
 
+Lemma head_step_erased_prim_step_xchg σ l v w :
+  heap σ !! l = Some (Some v) →
+  ∃ e2' σ2' ef', prim_step (Xchg #l (erase_val w)) (erase_state σ) [] e2' σ2' ef'.
+Proof.
+  intros Hl. do 3 eexists; apply head_prim_step; econstructor.
+  rewrite /erase_state /state_upd_heap /= lookup_erase_heap Hl; eauto.
+Qed.
+
 Lemma head_step_erased_prim_step_store σ l v w :
   heap σ !! l = Some (Some v) →
   ∃ e2' σ2' ef', prim_step (#l <- erase_val w) (erase_state σ) [] e2' σ2' ef'.
@@ -739,6 +764,7 @@ Proof.
                 head_step_erased_prim_step_free,
                 head_step_erased_prim_step_load,
                 head_step_erased_prim_step_store,
+                head_step_erased_prim_step_xchg,
                 head_step_erased_prim_step_FAA;
     by do 3 eexists; apply head_prim_step; econstructor.
 Qed.

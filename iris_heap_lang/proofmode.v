@@ -370,6 +370,37 @@ Proof.
   rewrite right_id. by apply sep_mono_r, wand_mono.
 Qed.
 
+Lemma tac_wp_xchg Δ Δ' s E i K l v v' Φ :
+  MaybeIntoLaterNEnvs 1 Δ Δ' →
+  envs_lookup i Δ' = Some (false, l ↦ v)%I →
+  match envs_simple_replace i false (Esnoc Enil i (l ↦ v')) Δ' with
+  | Some Δ'' => envs_entails Δ'' (WP fill K (Val $ v) @ s; E {{ Φ }})
+  | None => False
+  end →
+  envs_entails Δ (WP fill K (Xchg (LitV l) (Val v')) @ s; E {{ Φ }}).
+Proof.
+  rewrite envs_entails_eq=> ???.
+  destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
+  rewrite -wp_bind. eapply wand_apply; first by eapply wp_xchg.
+  rewrite into_laterN_env_sound -later_sep envs_simple_replace_sound //; simpl.
+  rewrite right_id.
+  by apply later_mono, sep_mono_r, wand_mono.
+Qed.
+Lemma tac_twp_xchg Δ s E i K l v v' Φ :
+  envs_lookup i Δ = Some (false, l ↦ v)%I →
+  match envs_simple_replace i false (Esnoc Enil i (l ↦ v')) Δ with
+  | Some Δ' => envs_entails Δ' (WP fill K (Val $ v) @ s; E [{ Φ }])
+  | None => False
+  end →
+  envs_entails Δ (WP fill K (Xchg (LitV l) v') @ s; E [{ Φ }]).
+Proof.
+  rewrite envs_entails_eq. intros.
+  destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
+  rewrite -twp_bind. eapply wand_apply; first by eapply twp_xchg.
+  rewrite envs_simple_replace_sound //; simpl.
+  rewrite right_id. by apply sep_mono_r, wand_mono.
+Qed.
+
 Lemma tac_wp_cmpxchg Δ Δ' s E i K l v v1 v2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦ v)%I →
@@ -684,6 +715,28 @@ Tactic Notation "wp_store" :=
     [solve_mapsto ()
     |pm_reduce; first [wp_seq|wp_finish]]
   | _ => fail "wp_store: not a 'wp'"
+  end.
+
+Tactic Notation "wp_xchg" :=
+  let solve_mapsto _ :=
+    let l := match goal with |- _ = Some (_, (?l ↦{_} _)%I) => l end in
+    iAssumptionCore || fail "wp_xchg: cannot find" l "↦ ?" in
+  wp_pures;
+  lazymatch goal with
+  | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
+    first
+      [reshape_expr e ltac:(fun K e' => eapply (tac_wp_xchg _ _ _ _ _ K))
+      |fail 1 "wp_xchg: cannot find 'Xchg' in" e];
+    [iSolveTC
+    |solve_mapsto ()
+    |pm_reduce; first [wp_seq|wp_finish]]
+  | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
+    first
+      [reshape_expr e ltac:(fun K e' => eapply (tac_twp_xchg _ _ _ _ K))
+      |fail 1 "wp_xchg: cannot find 'Xchg' in" e];
+    [solve_mapsto ()
+    |pm_reduce; first [wp_seq|wp_finish]]
+  | _ => fail "wp_xchg: not a 'wp'"
   end.
 
 Tactic Notation "wp_cmpxchg" "as" simple_intropattern(H1) "|" simple_intropattern(H2) :=

@@ -199,6 +199,37 @@ Section tests.
     iIntros (?) "?". wp_cmpxchg as ? | ?. done. done.
   Qed.
 
+  Lemma wp_xchg l (v₁ v₂ : val) :
+    {{{ l ↦ v₁ }}}
+      Xchg #l v₂
+    {{{ RET v₁; l ↦ v₂ }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ".
+    wp_xchg.
+    iApply "HΦ" => //.
+  Qed.
+
+   Lemma twp_xchg l (v₁ v₂ : val) :
+     l ↦ v₁ -∗
+       WP  Xchg #l v₂ [{ v₁, l ↦ v₂ }].
+  Proof.
+    iIntros "Hl".
+    wp_xchg => //.
+  Qed.
+
+  Lemma wp_xchg_inv N l (v : val) :
+    {{{ inv N (∃ v, l ↦ v) }}}
+      Xchg #l v
+    {{{ v', RET v'; True }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ".
+    iInv "Hl" as (v') "Hl" "Hclose".
+    wp_xchg.
+    iApply "HΦ".
+    iApply "Hclose".
+    iExists _ => //.
+  Qed.
+
   Lemma wp_alloc_split :
     ⊢ WP Alloc #0 {{ _, True }}.
   Proof. wp_alloc l as "[Hl1 Hl2]". Show. done. Qed.
@@ -333,7 +364,7 @@ Section mapsto_tests.
   (* Loading from the general mapsto for any [dfrac]. *)
   Lemma general_mapsto dq l v :
     [[{ l ↦{dq} v }]] ! #l [[{ RET v; True }]].
-  Proof. 
+  Proof.
     iIntros (Φ) "Hl HΦ". Show. wp_load. by iApply "HΦ".
   Qed.
 
@@ -382,6 +413,7 @@ Section atomic.
     (* Test if a side-condition for [Atomic] is generated *)
     iIntros (?) "H". iInv "H" as "H". Show.
   Abort.
+
 End atomic.
 
 Section printing_tests.
