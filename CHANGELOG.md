@@ -80,7 +80,7 @@ s/\bbij_both_frac_valid\b/bij_both_dfrac_valid/g
 EOF
 ```
 
-## Iris 3.4.0
+## Iris 3.4.0 (released 2021-02-16)
 
 The highlights and most notable changes of this release are as follows:
 * Coq 8.13 is now supported; the old Coq 8.9 and Coq 8.10 are not supported any
