@@ -267,37 +267,6 @@ goal 2 is:
 --------------------------------------∗
 WP #() #() @ E ∖ ↑N {{ _, |={E ∖ ↑N}=> ▷ P ∗ True }}
 
-"xchg_example"
-     : string
-1 goal
-  
-  Σ : gFunctors
-  heapG0 : heapG Σ
-  l : loc
-  v₁, v₂ : val
-  Φ : val → iPropI Σ
-  ============================
-  "Hl" : l ↦ v₂
-  "HΦ" : l ↦ v₂ -∗ Φ v₁
-  --------------------------------------∗
-  |={⊤}=> Φ v₁
-  
-1 goal
-  
-  Σ : gFunctors
-  heapG0 : heapG Σ
-  N : namespace
-  l : loc
-  v : val
-  Φ : language.val heap_lang → iPropI Σ
-  v' : val
-  ============================
-  "HΦ" : ∀ v'0 : language.val heap_lang, True -∗ Φ v'0
-  "Hl" : l ↦ v
-  "Hclose" : ▷ (∃ v0 : val, l ↦ v0) ={⊤ ∖ ↑N,⊤}=∗ emp
-  --------------------------------------∗
-  |={⊤ ∖ ↑N,⊤}=> Φ v'
-  
 1 goal
   
   Σ : gFunctors

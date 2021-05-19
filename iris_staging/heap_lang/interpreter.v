@@ -535,6 +535,13 @@ Section interpreter.
       let '(l, _) := l_v0 in
       _ ← interp_modify_state (state_upd_heap <[l:=Some w]>);
       mret (LitV LitUnit)
+    | Xchg el e =>
+      w ← interp e;
+      vl ← interp el;
+      l_v0 ← read_loc "xchg" vl;
+      let '(l, v0) := l_v0 in
+      _ ← interp_modify_state (state_upd_heap <[l:=Some w]>);
+      mret v0
     | CmpXchg e e1 e2 =>
       v2 ← interp e2;
       v1 ← interp e1;

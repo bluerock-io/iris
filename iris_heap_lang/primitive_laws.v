@@ -317,7 +317,7 @@ Lemma twp_xchg s E l v' v :
   [[{ RET v'; l ↦ v }]].
 Proof.
   iIntros (Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; first done.
-  iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (gen_heap_valid with "Hσ Hl") as %?.
+  iIntros (σ1 ns κs nt) "[Hσ Hκs] !>". iDestruct (gen_heap_valid with "Hσ Hl") as %?.
   iSplit; first by eauto with head_step.
   iIntros (κ v2 σ2 efs Hstep); inv_head_step.
   iMod (gen_heap_update with "Hσ Hl") as "[$ Hl]".

@@ -199,6 +199,37 @@ Section tests.
     iIntros (?) "?". wp_cmpxchg as ? | ?. done. done.
   Qed.
 
+  Lemma wp_xchg l (v₁ v₂ : val) :
+    {{{ l ↦ v₁ }}}
+      Xchg #l v₂
+    {{{ RET v₁; l ↦ v₂ }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ".
+    wp_xchg.
+    iApply "HΦ" => //.
+  Qed.
+
+   Lemma twp_xchg l (v₁ v₂ : val) :
+     l ↦ v₁ -∗
+       WP  Xchg #l v₂ [{ v₁, l ↦ v₂ }].
+  Proof.
+    iIntros "Hl".
+    wp_xchg => //.
+  Qed.
+
+  Lemma wp_xchg_inv N l (v : val) :
+    {{{ inv N (∃ v, l ↦ v) }}}
+      Xchg #l v
+    {{{ v', RET v'; True }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ".
+    iInv "Hl" as (v') "Hl" "Hclose".
+    wp_xchg.
+    iApply "HΦ".
+    iApply "Hclose".
+    iExists _ => //.
+  Qed.
+
   Lemma wp_alloc_split :
     ⊢ WP Alloc #0 {{ _, True }}.
   Proof. wp_alloc l as "[Hl1 Hl2]". Show. done. Qed.
@@ -381,29 +412,6 @@ Section atomic.
   Proof.
     (* Test if a side-condition for [Atomic] is generated *)
     iIntros (?) "H". iInv "H" as "H". Show.
-  Abort.
-
-  Check "xchg_example".
-
-  Lemma xchg_example l (v₁ v₂ : val) :
-    {{{ l ↦ v₁ }}}
-      Xchg #l v₂
-    {{{ RET v₁; l ↦ v₂ }}}.
-  Proof.
-    iIntros (Φ) "Hl HΦ".
-    wp_xchg.
-    Show.
-  Abort.
-
-  Lemma xchg_inv_example N l (v : val) :
-    {{{ inv N (∃ v, l ↦ v) }}}
-      Xchg #l v
-    {{{ v', RET v'; True }}}.
-  Proof.
-    iIntros (Φ) "Hl HΦ".
-    iInv "Hl" as (v') "Hl" "Hclose".
-    wp_xchg.
-    Show.
   Abort.
 
 End atomic.
