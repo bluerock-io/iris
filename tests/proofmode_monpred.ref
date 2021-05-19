@@ -63,7 +63,7 @@ Tactic failure: iFrame: cannot frame (P i).
   
   I : biIndex
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   N : namespace
   𝓟 : iProp Σ
   ============================
@@ -76,7 +76,7 @@ Tactic failure: iFrame: cannot frame (P i).
   
   I : biIndex
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   N : namespace
   𝓟 : iProp Σ
   ============================
