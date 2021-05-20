@@ -6,7 +6,23 @@ stages:
 variables:
   CPU_CORES: "10"
 
+.only_branches: &only_branches
+  only:
+  - /^master/@iris/iris
+  - /^ci/@iris/iris
+
+.only_mr: &only_mr
+  only:
+  - merge_requests
+
+.branches_and_mr: &branches_and_mr
+  only:
+  - /^master/@iris/iris
+  - /^ci/@iris/iris
+  - merge_requests
+
 .template: &template
+  <<: *only_branches
   stage: build
   tags:
   - fp
@@ -17,9 +33,6 @@ variables:
     key: "$CI_JOB_NAME"
     paths:
     - _opam/
-  only:
-  - /^master/@iris/iris
-  - /^ci/@iris/iris
   except:
   - triggers
   - schedules
@@ -29,8 +42,11 @@ variables:
 
 build-coq.dev:
   <<: *template
+  <<: *branches_and_mr
   variables:
-    OPAM_PINS: "coq version dev"
+    # Pinning a commit to avoid constant re-builds in MR pipelines
+    COQ_REV: "f16b7c75bcc8651e43ec1f0c8ae6744748665213"
+    OPAM_PINS: "coq-core.dev git git+https://github.com/coq/coq#$COQ_REV   coq-stdlib.dev git git+https://github.com/coq/coq#$COQ_REV   coq.dev git git+https://github.com/coq/coq#$COQ_REV"
     MANGLE_NAMES: "1"
 
 build-coq.8.13.2:
@@ -46,6 +62,7 @@ build-coq.8.13.2:
 
 build-coq.8.12.2:
   <<: *template
+  <<: *branches_and_mr
   variables:
     OPAM_PINS: "coq version 8.12.2"
     DENY_WARNINGS: "1"
