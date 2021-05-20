@@ -77,8 +77,6 @@ Module StringToIdent.
                  intros $ident).
 End StringToIdent.
 
-Global Open Scope string_scope.
-
 (** Finally we wrap everything up intro a tactic that renames a variable given
 by ident [id] into the name given by string [s].
 Only works if [id] can be reverted, i.e. if nothing else depends on it. *)
