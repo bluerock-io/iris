@@ -62,7 +62,7 @@ Definition twp_def `{!irisG Λ Σ} : Twp Λ (iProp Σ) stuckness
 Definition twp_aux : seal (@twp_def). Proof. by eexists. Qed.
 Definition twp' := twp_aux.(unseal).
 Global Arguments twp' {Λ Σ _}.
-Existing Instance twp'.
+Global Existing Instance twp'.
 Lemma twp_eq `{!irisG Λ Σ} : twp = @twp_def Λ Σ _.
 Proof. rewrite -twp_aux.(seal_eq) //. Qed.
 

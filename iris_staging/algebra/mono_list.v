@@ -17,8 +17,8 @@ Definition mono_list_auth {A : ofe} (q : dfrac) (l : list A) : mono_listR A :=
   ●{q} (to_max_prefix_list l) ⋅ ◯ (to_max_prefix_list l).
 Definition mono_list_lb {A : ofe} (l : list A) : mono_listR A :=
   ◯ (to_max_prefix_list l).
-Instance: Params (@mono_list_auth) 2 := {}.
-Instance: Params (@mono_list_lb) 1 := {}.
+Global Instance: Params (@mono_list_auth) 2 := {}.
+Global Instance: Params (@mono_list_lb) 1 := {}.
 Typeclasses Opaque mono_list_auth mono_list_lb.
 
 (** FIXME: Refactor these notations using custom entries once Coq bug #13654

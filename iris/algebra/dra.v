@@ -44,7 +44,7 @@ Global Arguments dra_op : simpl never.
 Global Arguments dra_valid : simpl never.
 Global Arguments dra_mixin : simpl never.
 Add Printing Constructor draT.
-Existing Instances dra_equiv dra_pcore dra_disjoint dra_op dra_valid.
+Global Existing Instances dra_equiv dra_pcore dra_disjoint dra_op dra_valid.
 
 (** Lifting properties from the mixin *)
 Section dra_mixin.
@@ -146,10 +146,10 @@ Local Hint Immediate dra_disjoint_move_l dra_disjoint_move_r : core.
 Lemma validity_valid_car_valid z : ✓ z → ✓ validity_car z.
 Proof. apply validity_prf. Qed.
 Local Hint Resolve validity_valid_car_valid : core.
-Program Instance validity_pcore_instance : PCore (validity A) := λ x,
+Local Program Instance validity_pcore_instance : PCore (validity A) := λ x,
   Some (Validity (core (validity_car x)) (✓ x) _).
 Solve Obligations with naive_solver eauto using dra_core_valid.
-Program Instance validity_op_instance : Op (validity A) := λ x y,
+Local Program Instance validity_op_instance : Op (validity A) := λ x y,
   Validity (validity_car x ⋅ validity_car y)
            (✓ x ∧ ✓ y ∧ validity_car x ## validity_car y) _.
 Solve Obligations with naive_solver eauto using dra_op_valid.

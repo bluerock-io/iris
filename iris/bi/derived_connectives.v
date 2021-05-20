@@ -32,7 +32,7 @@ Global Hint Mode Affine + ! : typeclass_instances.
 
 Class BiAffine (PROP : bi) := absorbing_bi (Q : PROP) : Affine Q.
 Global Hint Mode BiAffine ! : typeclass_instances.
-Existing Instance absorbing_bi | 0.
+Global Existing Instance absorbing_bi | 0.
 
 Class BiPositive (PROP : bi) :=
   bi_positive (P Q : PROP) : <affine> (P ∗ Q) ⊢ <affine> P ∗ Q.

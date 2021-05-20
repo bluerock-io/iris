@@ -535,7 +535,7 @@ Record ofe_mor (A B : ofe) : Type := OfeMor {
 }.
 Global Arguments OfeMor {_ _} _ {_}.
 Add Printing Constructor ofe_mor.
-Existing Instance ofe_mor_ne.
+Global Existing Instance ofe_mor_ne.
 
 Notation "'λne' x .. y , t" :=
   (@OfeMor _ _ (λ x, .. (@OfeMor _ _ (λ y, t) _) ..) _)
@@ -710,7 +710,7 @@ Record oFunctor := OFunctor {
       (f : A2 -n> A1) (g : A3 -n> A2) (f' : B1 -n> B2) (g' : B2 -n> B3) x :
     oFunctor_map (f◎g, g'◎f') x ≡ oFunctor_map (g,g') (oFunctor_map (f,f') x)
 }.
-Existing Instance oFunctor_map_ne.
+Global Existing Instance oFunctor_map_ne.
 Global Instance: Params (@oFunctor_map) 9 := {}.
 
 Declare Scope oFunctor_scope.
@@ -1329,7 +1329,7 @@ Section iso_cofe_subtype.
   Context (g_dist : ∀ n y1 y2, y1 ≡{n}≡ y2 ↔ g y1 ≡{n}≡ g y2).
   Let Hgne : NonExpansive g.
   Proof. intros n y1 y2. apply g_dist. Qed.
-  Existing Instance Hgne.
+  Local Existing Instance Hgne.
   Context (gf : ∀ x Hx, g (f x Hx) ≡ x).
   Context (Hlimit : ∀ c : chain B, P (compl (chain_map g c))).
   Program Definition iso_cofe_subtype : Cofe B :=
