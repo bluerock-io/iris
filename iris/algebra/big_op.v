@@ -337,6 +337,12 @@ Section gmap.
            (big_opM o (K:=K) (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opM_proper; intros; apply Hf. Qed.
 
+  (* FIXME: This lemma could be generalized from [≡] to [=], but that breaks
+  [setoid_rewrite] in the proof of [big_sepS_sepS]. See Coq issue #14349. *)
+  Lemma big_opM_map_to_list f m :
+    ([^o map] k↦x ∈ m, f k x) ≡ [^o list] xk ∈ map_to_list m, f (xk.1) (xk.2).
+  Proof. rewrite big_opM_eq. apply big_opL_proper'; [|done]. by intros ? [??]. Qed.
+
   Lemma big_opM_singleton f i x : ([^o map] k↦y ∈ {[i:=x]}, f k y) ≡ f i x.
   Proof.
     rewrite -insert_empty big_opM_insert/=; last eauto using lookup_empty.
@@ -492,12 +498,14 @@ Section gset.
     Proper (pointwise_relation _ (≡) ==> (=) ==> (≡)) (big_opS o (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opS_proper; intros; apply Hf. Qed.
 
+  (* FIXME: This lemma could be generalized from [≡] to [=], but that breaks
+  [setoid_rewrite] in the proof of [big_sepS_sepS]. See Coq issue #14349. *)
   Lemma big_opS_elements f X :
-    ([^o set] x ∈ X, f x) = [^o list] _↦x ∈ elements X, f x.
+    ([^o set] x ∈ X, f x) ≡ [^o list] x ∈ elements X, f x.
   Proof. by rewrite big_opS_eq. Qed.
 
   Lemma big_opS_empty f : ([^o set] x ∈ ∅, f x) = monoid_unit.
-  Proof. by rewrite big_opS_elements elements_empty. Qed.
+  Proof. by rewrite big_opS_eq /big_opS_def elements_empty. Qed.
 
   Lemma big_opS_insert f X x :
     x ∉ X → ([^o set] y ∈ {[ x ]} ∪ X, f y) ≡ (f x `o` [^o set] y ∈ X, f y).
@@ -627,6 +635,12 @@ Section gmultiset.
     Proper (pointwise_relation _ (≡) ==> (=) ==> (≡)) (big_opMS o (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opMS_proper; intros; apply Hf. Qed.
 
+  (* FIXME: This lemma could be generalized from [≡] to [=], but that breaks
+  [setoid_rewrite] in the proof of [big_sepS_sepS]. See Coq issue #14349. *)
+  Lemma big_opMS_elements f X :
+    ([^o mset] x ∈ X, f x) ≡ [^o list] x ∈ elements X, f x.
+  Proof. by rewrite big_opMS_eq. Qed.
+
   Lemma big_opMS_empty f : ([^o mset] x ∈ ∅, f x) = monoid_unit.
   Proof. by rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. Qed.
 
@@ -660,6 +674,71 @@ Section gmultiset.
     ([^o mset] y ∈ X, f y `o` g y) ≡ ([^o mset] y ∈ X, f y) `o` ([^o mset] y ∈ X, g y).
   Proof. by rewrite big_opMS_eq /big_opMS_def -big_opL_op. Qed.
 End gmultiset.
+
+(** Commuting lemmas *)
+Lemma big_opL_opL {A B} (f : nat → A → nat → B → M) (l1 : list A) (l2 : list B) :
+  ([^o list] k1↦x1 ∈ l1, [^o list] k2↦x2 ∈ l2, f k1 x1 k2 x2) ≡
+  ([^o list] k2↦x2 ∈ l2, [^o list] k1↦x1 ∈ l1, f k1 x1 k2 x2).
+Proof.
+  revert f l2. induction l1 as [|x1 l1 IH]; simpl; intros Φ l2.
+  { by rewrite big_opL_unit. }
+  by rewrite IH big_opL_op.
+Qed.
+Lemma big_opL_opM {A} `{Countable K} {B}
+    (f : nat → A → K → B → M) (l1 : list A) (m2 : gmap K B) :
+  ([^o list] k1↦x1 ∈ l1, [^o map] k2↦x2 ∈ m2, f k1 x1 k2 x2) ≡
+  ([^o map] k2↦x2 ∈ m2, [^o list] k1↦x1 ∈ l1, f k1 x1 k2 x2).
+Proof. repeat setoid_rewrite big_opM_map_to_list. by rewrite big_opL_opL. Qed.
+Lemma big_opL_opS {A} `{Countable B}
+    (f : nat → A → B → M) (l1 : list A) (X2 : gset B) :
+  ([^o list] k1↦x1 ∈ l1, [^o set] x2 ∈ X2, f k1 x1 x2) ≡
+  ([^o set] x2 ∈ X2, [^o list] k1↦x1 ∈ l1, f k1 x1 x2).
+Proof. repeat setoid_rewrite big_opS_elements. by rewrite big_opL_opL. Qed.
+Lemma big_opL_opMS {A} `{Countable B}
+    (f : nat → A → B → M) (l1 : list A) (X2 : gmultiset B) :
+  ([^o list] k1↦x1 ∈ l1, [^o mset] x2 ∈ X2, f k1 x1 x2) ≡
+  ([^o mset] x2 ∈ X2, [^o list] k1↦x1 ∈ l1, f k1 x1 x2).
+Proof. repeat setoid_rewrite big_opMS_elements. by rewrite big_opL_opL. Qed.
+
+Lemma big_opM_opM `{Countable K1} {A} `{Countable K2} {B}
+    (f : K1 → A → K2 → B → M) (m1 : gmap K1 A) (m2 : gmap K2 B) :
+  ([^o map] k1↦x1 ∈ m1, [^o map] k2↦x2 ∈ m2, f k1 x1 k2 x2) ≡
+  ([^o map] k2↦x2 ∈ m2, [^o map] k1↦x1 ∈ m1, f k1 x1 k2 x2).
+Proof. repeat setoid_rewrite big_opM_map_to_list. by rewrite big_opL_opL. Qed.
+Lemma big_opM_opS `{Countable K} {A} `{Countable B}
+    (f : K → A → B → M) (m1 : gmap K A) (X2 : gset B) :
+  ([^o map] k1↦x1 ∈ m1, [^o set] x2 ∈ X2, f k1 x1 x2) ≡
+  ([^o set] x2 ∈ X2, [^o map] k1↦x1 ∈ m1, f k1 x1 x2).
+Proof.
+  repeat setoid_rewrite big_opM_map_to_list.
+  repeat setoid_rewrite big_opS_elements. by rewrite big_opL_opL.
+Qed.
+Lemma big_opM_opMS `{Countable K} {A} `{Countable B} (f : K → A → B → M)
+    (m1 : gmap K A) (X2 : gmultiset B) :
+  ([^o map] k1↦x1 ∈ m1, [^o mset] x2 ∈ X2, f k1 x1 x2) ≡
+  ([^o mset] x2 ∈ X2, [^o map] k1↦x1 ∈ m1, f k1 x1 x2).
+Proof.
+  repeat setoid_rewrite big_opM_map_to_list.
+  repeat setoid_rewrite big_opMS_elements. by rewrite big_opL_opL.
+Qed.
+
+Lemma big_opS_opS `{Countable A, Countable B}
+    (X : gset A) (Y : gset B) (f : A → B → M) :
+  ([^o set] x ∈ X, [^o set] y ∈ Y, f x y) ≡ ([^o set] y ∈ Y, [^o set] x ∈ X, f x y).
+Proof. repeat setoid_rewrite big_opS_elements. by rewrite big_opL_opL. Qed.
+Lemma big_opS_opMS `{Countable A, Countable B}
+    (X : gset A) (Y : gmultiset B) (f : A → B → M) :
+  ([^o set] x ∈ X, [^o mset] y ∈ Y, f x y) ≡ ([^o mset] y ∈ Y, [^o set] x ∈ X, f x y).
+Proof.
+  repeat setoid_rewrite big_opS_elements.
+  repeat setoid_rewrite big_opMS_elements. by rewrite big_opL_opL.
+Qed.
+
+Lemma big_opMS_opMS `{Countable A, Countable B}
+    (X : gmultiset A) (Y : gmultiset B) (f : A → B → M) :
+  ([^o mset] x ∈ X, [^o mset] y ∈ Y, f x y) ≡ ([^o mset] y ∈ Y, [^o mset] x ∈ X, f x y).
+Proof. repeat setoid_rewrite big_opMS_elements. by rewrite big_opL_opL. Qed.
+
 End big_op.
 
 Section homomorphisms.
