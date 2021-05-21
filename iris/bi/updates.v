@@ -201,7 +201,7 @@ Section bupd_derived.
     - apply bupd_intro.
   Qed.
 
-  Global Instance bupd_homomorphism :
+  Global Instance bupd_sep_homomorphism :
     MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (bupd (PROP:=PROP)).
   Proof. split; [split|]; try apply _; [apply bupd_sep | apply bupd_intro]. Qed.
 
@@ -381,7 +381,7 @@ Section fupd_derived.
   Lemma fupd_sep E P Q : (|={E}=> P) ∗ (|={E}=> Q) ={E}=∗ P ∗ Q.
   Proof. by rewrite fupd_frame_r fupd_frame_l fupd_trans. Qed.
 
-  Global Instance fupd_homomorphism E :
+  Global Instance fupd_sep_homomorphism E :
     MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (fupd (PROP:=PROP) E E).
   Proof. split; [split|]; try apply _; [apply fupd_sep | apply fupd_intro]. Qed.
 
