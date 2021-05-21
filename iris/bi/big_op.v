@@ -2000,6 +2000,36 @@ Section gset.
     ([∗ set] y ∈ X, Φ y ∧ Ψ y) ⊢ ([∗ set] y ∈ X, Φ y) ∧ ([∗ set] y ∈ X, Ψ y).
   Proof. auto using and_intro, big_sepS_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepS_pure_1 (φ : A → Prop) X :
+    ([∗ set] y ∈ X, ⌜φ y⌝) ⊢@{PROP} ⌜set_Forall φ X⌝.
+  Proof.
+    induction X as [|x X ? IH] using set_ind_L.
+    { apply pure_intro, set_Forall_empty. }
+    rewrite big_sepS_insert // IH sep_and -pure_and.
+    f_equiv=>-[Hx HX]. apply set_Forall_union.
+    - apply set_Forall_singleton. done.
+    - done.
+  Qed.
+  Lemma big_sepS_affinely_pure_2 (φ : A → Prop) X :
+    <affine> ⌜set_Forall φ X⌝ ⊢@{PROP} ([∗ set] y ∈ X, <affine> ⌜φ y⌝).
+  Proof.
+    induction X as [|x X ? IH] using set_ind_L.
+    { rewrite big_sepS_empty. apply affinely_elim_emp. }
+    rewrite big_sepS_insert // -IH.
+    rewrite -persistent_and_sep_1 -affinely_and -pure_and.
+    f_equiv. f_equiv=>HX. split.
+    - apply HX. set_solver+.
+    - apply set_Forall_union_inv_2 in HX. done.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepS_pure `{!BiAffine PROP} (φ : A → Prop) X :
+    ([∗ set] y ∈ X, ⌜φ y⌝) ⊣⊢@{PROP} ⌜set_Forall φ X⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_sepS_pure_1.
+    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite big_sepS_affinely_pure_2. by setoid_rewrite affinely_elim.
+  Qed.
+
   Lemma big_sepS_persistently `{BiAffine PROP} Φ X :
     <pers> ([∗ set] y ∈ X, Φ y) ⊣⊢ [∗ set] y ∈ X, <pers> (Φ y).
   Proof. apply (big_opS_commute _). Qed.
