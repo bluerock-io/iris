@@ -857,6 +857,9 @@ Section and_list.
     ([∧ list] k↦y ∈ l1 ++ l2, Φ k y)
     ⊣⊢ ([∧ list] k↦y ∈ l1, Φ k y) ∧ ([∧ list] k↦y ∈ l2, Φ (length l1 + k) y).
   Proof. by rewrite big_opL_app. Qed.
+  Lemma big_andL_snoc Φ l x :
+    ([∧ list] k↦y ∈ l ++ [x], Φ k y) ⊣⊢ ([∧ list] k↦y ∈ l, Φ k y) ∧ Φ (length l) x.
+  Proof. by rewrite big_opL_snoc. Qed.
 
   Lemma big_andL_submseteq (Φ : A → PROP) l1 l2 :
     l1 ⊆+ l2 → ([∧ list] y ∈ l2, Φ y) ⊢ [∧ list] y ∈ l1, Φ y.
@@ -916,6 +919,36 @@ Section and_list.
     ⊣⊢ ([∧ list] k↦x ∈ l, Φ k x) ∧ ([∧ list] k↦x ∈ l, Ψ k x).
   Proof. by rewrite big_opL_op. Qed.
 
+  Lemma big_andL_pure_1 (φ : nat → A → Prop) l :
+    ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
+  Proof.
+    induction l as [|x l IH] using rev_ind.
+    { apply pure_intro=>??. rewrite lookup_nil. done. }
+    rewrite big_andL_snoc // IH -pure_and.
+    f_equiv=>-[Hl Hx] k y /lookup_app_Some =>-[Hy|[Hlen Hy]].
+    - by apply Hl.
+    - replace k with (length l) in Hy |- *; last first.
+      { apply lookup_lt_Some in Hy. simpl in Hy. lia. }
+      rewrite Nat.sub_diag /= in Hy. injection Hy as [= ->]. done.
+  Qed.
+  Lemma big_andL_pure_2 (φ : nat → A → Prop) l :
+    ⌜∀ k x, l !! k = Some x → φ k x⌝ ⊢@{PROP} ([∧ list] k↦x ∈ l, ⌜φ k x⌝).
+  Proof.
+    induction l as [|x l IH] using rev_ind.
+    { rewrite big_andL_nil. apply True_intro. }
+    rewrite big_andL_snoc // -IH -pure_and.
+    f_equiv=>- Hlx. split.
+    - intros k y Hy. apply Hlx. rewrite lookup_app Hy //.
+    - apply Hlx. rewrite lookup_app lookup_ge_None_2 //.
+      rewrite Nat.sub_diag //.
+  Qed.
+  Lemma big_andL_pure (φ : nat → A → Prop) l :
+    ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_andL_pure_1.
+    apply big_andL_pure_2.
+  Qed.
+
   Lemma big_andL_persistently Φ l :
     <pers> ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ [∧ list] k↦x ∈ l, <pers> (Φ k x).
   Proof. apply (big_opL_commute _). Qed.
@@ -956,6 +989,9 @@ Section or_list.
     ([∨ list] k↦y ∈ l1 ++ l2, Φ k y)
     ⊣⊢ ([∨ list] k↦y ∈ l1, Φ k y) ∨ ([∨ list] k↦y ∈ l2, Φ (length l1 + k) y).
   Proof. by rewrite big_opL_app. Qed.
+  Lemma big_orL_snoc Φ l x :
+    ([∨ list] k↦y ∈ l ++ [x], Φ k y) ⊣⊢ ([∨ list] k↦y ∈ l, Φ k y) ∨ Φ (length l) x.
+  Proof. by rewrite big_opL_snoc. Qed.
 
   Lemma big_orL_submseteq (Φ : A → PROP) l1 l2 :
     l1 ⊆+ l2 → ([∨ list] y ∈ l1, Φ y) ⊢ [∨ list] y ∈ l2, Φ y.
@@ -1030,6 +1066,15 @@ Section or_list.
       - rewrite IH. apply exist_elim=> k. by rewrite -(exist_intro (S k)). }
     apply exist_elim=> k; apply exist_elim=> x. apply pure_elim_l=> ?.
     by apply: big_orL_lookup.
+  Qed.
+
+  Lemma big_orL_pure (φ : nat → A → Prop) l :
+    ([∨ list] k↦x ∈ l, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜∃ k x, l !! k = Some x ∧ φ k x⌝.
+  Proof.
+    rewrite big_orL_exist.
+    rewrite pure_exist. apply exist_proper=>k.
+    rewrite pure_exist. apply exist_proper=>x.
+    rewrite -pure_and. done.
   Qed.
 
   Lemma big_orL_sep_l P Φ l :
