@@ -2204,6 +2204,10 @@ Section gmultiset.
   Lemma big_sepMS_singleton Φ x : ([∗ mset] y ∈ {[+ x +]}, Φ y) ⊣⊢ Φ x.
   Proof. apply big_opMS_singleton. Qed.
 
+  Lemma big_sepMS_insert Φ X x :
+    ([∗ mset] y ∈ {[+ x +]} ⊎ X, Φ y) ⊣⊢ (Φ x ∗ [∗ mset] y ∈ X, Φ y).
+  Proof. apply big_opMS_insert. Qed.
+
   Lemma big_sepMS_sep Φ Ψ X :
     ([∗ mset] y ∈ X, Φ y ∗ Ψ y) ⊣⊢ ([∗ mset] y ∈ X, Φ y) ∗ ([∗ mset] y ∈ X, Ψ y).
   Proof. apply big_opMS_op. Qed.
@@ -2225,6 +2229,36 @@ Section gmultiset.
   Lemma big_sepMS_laterN_2 Φ n X :
     ([∗ mset] y ∈ X, ▷^n Φ y) ⊢ ▷^n [∗ mset] y ∈ X, Φ y.
   Proof. by rewrite big_opMS_commute. Qed.
+
+  Lemma big_sepMS_pure_1 (φ : A → Prop) X :
+    ([∗ mset] y ∈ X, ⌜φ y⌝) ⊢@{PROP} ⌜∀ y : A, y ∈ X → φ y⌝.
+  Proof.
+    induction X as [|x X IH] using gmultiset_ind.
+    { apply pure_intro=>??. exfalso. multiset_solver. }
+    rewrite big_sepMS_insert // IH sep_and -pure_and.
+    f_equiv=>-[Hx HX] y /gmultiset_elem_of_disj_union [|].
+    - move=>/gmultiset_elem_of_singleton =>->. done.
+    - eauto.
+  Qed.
+  Lemma big_sepMS_affinely_pure_2 (φ : A → Prop) X :
+    <affine> ⌜∀ y : A, y ∈ X → φ y⌝ ⊢@{PROP} ([∗ mset] y ∈ X, <affine> ⌜φ y⌝).
+  Proof.
+    induction X as [|x X IH] using gmultiset_ind.
+    { rewrite big_sepMS_empty. apply affinely_elim_emp. }
+    rewrite big_sepMS_insert // -IH.
+    rewrite -persistent_and_sep_1 -affinely_and -pure_and.
+    f_equiv. f_equiv=>HX. split.
+    - apply HX. set_solver+.
+    - intros y Hy. apply HX. multiset_solver.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepMS_pure `{!BiAffine PROP} (φ : A → Prop) X :
+    ([∗ mset] y ∈ X, ⌜φ y⌝) ⊣⊢@{PROP} ⌜∀ y : A, y ∈ X → φ y⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_sepMS_pure_1.
+    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite big_sepMS_affinely_pure_2. by setoid_rewrite affinely_elim.
+  Qed.
 
   Lemma big_sepMS_persistently `{BiAffine PROP} Φ X :
     <pers> ([∗ mset] y ∈ X, Φ y) ⊣⊢ [∗ mset] y ∈ X, <pers> (Φ y).
