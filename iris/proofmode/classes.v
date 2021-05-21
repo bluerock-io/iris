@@ -247,7 +247,7 @@ Global Hint Mode IsExcept0 + ! : typeclass_instances.
 The inputs are [p], [P] and [Q], and the outputs are [φ], [p'], [P'] and [Q'].
 
 The class is used to transform a hypothesis [P] into a hypothesis [P'], given
-a goal [Q], which is simultaniously transformed into [Q']. The Booleans [p]
+a goal [Q], which is simultaneously transformed into [Q']. The Booleans [p]
 and [p'] indicate whether the original, respectively, updated hypothesis reside
 in the persistent context (iff [true]). The proposition [φ] can be used to
 express a side-condition that [iMod] will generate (if not [True]).
