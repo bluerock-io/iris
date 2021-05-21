@@ -198,6 +198,14 @@ Global Instance into_pure_persistently P φ :
   IntoPure P φ → IntoPure (<pers> P) φ.
 Proof. rewrite /IntoPure=> ->. apply: persistently_elim. Qed.
 
+Global Instance into_pure_big_sepL {A}
+    (Φ : nat → A → PROP) (φ : nat → A → Prop) (l : list A) :
+  (∀ k x, IntoPure (Φ k x) (φ k x)) →
+  IntoPure ([∗ list] k↦x ∈ l, Φ k x) (∀ k x, l !! k = Some x → φ k x).
+Proof.
+  rewrite /IntoPure. intros HΦ.
+  setoid_rewrite HΦ. rewrite big_sepL_pure_1. done.
+Qed.
 Global Instance into_pure_big_sepM `{Countable K} {A}
     (Φ : K → A → PROP) (φ : K → A → Prop) (m : gmap K A) :
   (∀ k x, IntoPure (Φ k x) (φ k x)) →
@@ -205,6 +213,22 @@ Global Instance into_pure_big_sepM `{Countable K} {A}
 Proof.
   rewrite /IntoPure. intros HΦ.
   setoid_rewrite HΦ. rewrite big_sepM_pure_1. done.
+Qed.
+Global Instance into_pure_big_sepS `{Countable A}
+    (Φ : A → PROP) (φ : A → Prop) (X : gset A) :
+  (∀ x, IntoPure (Φ x) (φ x)) →
+  IntoPure ([∗ set] x ∈ X, Φ x) (set_Forall φ X).
+Proof.
+  rewrite /IntoPure. intros HΦ.
+  setoid_rewrite HΦ. rewrite big_sepS_pure_1. done.
+Qed.
+Global Instance into_pure_big_sepMS `{Countable A}
+    (Φ : A → PROP) (φ : A → Prop) (X : gmultiset A) :
+  (∀ x, IntoPure (Φ x) (φ x)) →
+  IntoPure ([∗ mset] x ∈ X, Φ x) (∀ y : A, y ∈ X → φ y).
+Proof.
+  rewrite /IntoPure. intros HΦ.
+  setoid_rewrite HΦ. rewrite big_sepMS_pure_1. done.
 Qed.
 
 (** FromPure *)
@@ -298,6 +322,18 @@ Proof.
   by rewrite -persistent_absorbingly_affinely_2.
 Qed.
 
+Global Instance from_pure_big_sepL {A}
+    a (Φ : nat → A → PROP) (φ : nat → A → Prop) (l : list A) :
+  (∀ k x, FromPure a (Φ k x) (φ k x)) →
+  TCOr (TCEq a true) (BiAffine PROP) →
+  FromPure a ([∗ list] k↦x ∈ l, Φ k x) (∀ k x, l !! k = Some x → φ k x).
+Proof.
+  rewrite /FromPure. destruct a; simpl; intros HΦ Haffine.
+  - rewrite big_sepL_affinely_pure_2.
+    setoid_rewrite HΦ. done.
+  - destruct Haffine as [[=]%TCEq_eq|?].
+    rewrite -big_sepL_pure. setoid_rewrite HΦ. done.
+Qed.
 Global Instance from_pure_big_sepM `{Countable K} {A}
     a (Φ : K → A → PROP) (φ : K → A → Prop) (m : gmap K A) :
   (∀ k x, FromPure a (Φ k x) (φ k x)) →
@@ -309,6 +345,30 @@ Proof.
     setoid_rewrite HΦ. done.
   - destruct Haffine as [[=]%TCEq_eq|?].
     rewrite -big_sepM_pure. setoid_rewrite HΦ. done.
+Qed.
+Global Instance from_pure_big_sepS `{Countable A}
+    a (Φ : A → PROP) (φ : A → Prop) (X : gset A) :
+  (∀ x, FromPure a (Φ x) (φ x)) →
+  TCOr (TCEq a true) (BiAffine PROP) →
+  FromPure a ([∗ set] x ∈ X, Φ x) (set_Forall φ X).
+Proof.
+  rewrite /FromPure. destruct a; simpl; intros HΦ Haffine.
+  - rewrite big_sepS_affinely_pure_2.
+    setoid_rewrite HΦ. done.
+  - destruct Haffine as [[=]%TCEq_eq|?].
+    rewrite -big_sepS_pure. setoid_rewrite HΦ. done.
+Qed.
+Global Instance from_pure_big_sepMS `{Countable A}
+    a (Φ : A → PROP) (φ : A → Prop) (X : gmultiset A) :
+  (∀ x, FromPure a (Φ x) (φ x)) →
+  TCOr (TCEq a true) (BiAffine PROP) →
+  FromPure a ([∗ mset] x ∈ X, Φ x) (∀ y : A, y ∈ X → φ y).
+Proof.
+  rewrite /FromPure. destruct a; simpl; intros HΦ Haffine.
+  - rewrite big_sepMS_affinely_pure_2.
+    setoid_rewrite HΦ. done.
+  - destruct Haffine as [[=]%TCEq_eq|?].
+    rewrite -big_sepMS_pure. setoid_rewrite HΦ. done.
 Qed.
 
 (** IntoPersistent *)
