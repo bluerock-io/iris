@@ -641,6 +641,43 @@ Section sep_list2.
     ⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∧ ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2).
   Proof. auto using and_intro, big_sepL2_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepL2_pure_1 (φ : nat → A → B → Prop) l1 l2 :
+    ([∗ list] k↦y1;y2 ∈ l1;l2, ⌜φ k y1 y2⌝) ⊢@{PROP}
+      ⌜∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → φ k y1 y2⌝.
+  Proof.
+    rewrite big_sepL2_alt big_sepL_pure_1.
+    rewrite -pure_and. f_equiv=>-[Hlen Hlookup] k y1 y2 Hy1 Hy2.
+    eapply (Hlookup k (y1, y2)).
+    rewrite lookup_zip_with Hy1 /= Hy2 /= //.
+  Qed.
+  Lemma big_sepL2_affinely_pure_2 (φ : nat → A → B → Prop) l1 l2 :
+    length l1 = length l2 →
+    <affine> ⌜∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → φ k y1 y2⌝ ⊢@{PROP}
+    ([∗ list] k↦y1;y2 ∈ l1;l2, <affine> ⌜φ k y1 y2⌝).
+  Proof.
+    intros Hdom. rewrite big_sepL2_alt.
+    rewrite -big_sepL_affinely_pure_2.
+    rewrite affinely_and_r -pure_and. f_equiv. f_equiv=>-Hforall.
+    split; first done.
+    intros k [y1 y2] (? & ? & [= <- <-] & Hy1 & Hy2)%lookup_zip_with_Some.
+    by eapply Hforall.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepL2_pure `{!BiAffine PROP} (φ : nat → A → B → Prop) l1 l2 :
+    ([∗ list] k↦y1;y2 ∈ l1;l2, ⌜φ k y1 y2⌝) ⊣⊢@{PROP}
+      ⌜length l1 = length l2 ∧
+       ∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → φ k y1 y2⌝.
+  Proof.
+    apply (anti_symm (⊢)).
+    { rewrite pure_and. apply and_intro.
+      - apply big_sepL2_length.
+      - apply big_sepL2_pure_1. }
+    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite pure_and -affinely_and_r.
+    apply pure_elim_l=>Hdom.
+    rewrite big_sepL2_affinely_pure_2 //. by setoid_rewrite affinely_elim.
+  Qed.
+
   Lemma big_sepL2_persistently `{BiAffine PROP} Φ l1 l2 :
     <pers> ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2)
     ⊣⊢ [∗ list] k↦y1;y2 ∈ l1;l2, <pers> (Φ k y1 y2).
