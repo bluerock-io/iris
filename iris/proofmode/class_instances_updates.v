@@ -73,27 +73,17 @@ Proof. rewrite /FromSep =><-. apply fupd_sep. Qed.
 
 Global Instance from_or_bupd `{!BiBUpd PROP} P Q1 Q2 :
   FromOr P Q1 Q2 → FromOr (|==> P) (|==> Q1) (|==> Q2).
-Proof.
-  rewrite /FromOr=><-.
-  apply or_elim; apply bupd_mono; auto using or_intro_l, or_intro_r.
-Qed.
+Proof. rewrite /FromOr=><-. apply bupd_or. Qed.
 Global Instance from_or_fupd `{!BiFUpd PROP} E1 E2 P Q1 Q2 :
   FromOr P Q1 Q2 → FromOr (|={E1,E2}=> P) (|={E1,E2}=> Q1) (|={E1,E2}=> Q2).
-Proof.
-  rewrite /FromOr=><-. apply or_elim; apply fupd_mono;
-                         [apply bi.or_intro_l|apply bi.or_intro_r].
-Qed.
+Proof. rewrite /FromOr=><-. apply fupd_or. Qed.
 
 Global Instance from_exist_bupd `{!BiBUpd PROP} {A} P (Φ : A → PROP) :
   FromExist P Φ → FromExist (|==> P) (λ a, |==> Φ a)%I.
-Proof.
-  rewrite /FromExist=><-. apply exist_elim=> a. by rewrite -(exist_intro a).
-Qed.
+Proof. rewrite /FromExist=><-. apply bupd_exist. Qed.
 Global Instance from_exist_fupd `{!BiFUpd PROP} {A} E1 E2 P (Φ : A → PROP) :
   FromExist P Φ → FromExist (|={E1,E2}=> P) (λ a, |={E1,E2}=> Φ a)%I.
-Proof.
-  rewrite /FromExist=><-. apply exist_elim=> a. by rewrite -(exist_intro a).
-Qed.
+Proof. rewrite /FromExist=><-. apply fupd_exist. Qed.
 
 Global Instance from_forall_fupd
     `{!BiFUpd PROP, !BiPlainly PROP, !BiFUpdPlainly PROP} E1 E2 {A} P (Φ : A → PROP) name :

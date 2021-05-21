@@ -40,7 +40,8 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Add lemmas for swapping nested big-ops: `big_sep{L,M,S,MS}_sep{L,M,S,MS}`.
 * Rename `big_sep{L,L2,M,M2,S}_intuitionistically_forall` →
   `big_sep{L,L2,M,M2,S}_intro`, and `big_orL_lookup` → `big_orL_intro`.
-* Rename `bupd_forall` to `bupd_plain_forall`.
+* Rename `bupd_forall` to `bupd_plain_forall`, and add
+  `{bupd,fupd}_{and,or,forall,exist}`.
 
 **Changes in `proofmode`:**
 
