@@ -22,7 +22,7 @@ Global Instance from_pure_bupd `{!BiBUpd PROP} a P φ :
 Proof. rewrite /FromPure=> <-. apply bupd_intro. Qed.
 Global Instance from_pure_fupd `{!BiFUpd PROP} a E P φ :
   FromPure a P φ → FromPure a (|={E}=> P) φ.
-Proof. rewrite /FromPure. intros <-. apply fupd_intro. Qed.
+Proof. rewrite /FromPure=> <-. apply fupd_intro. Qed.
 
 Global Instance into_wand_bupd `{!BiBUpd PROP} p q R P Q :
   IntoWand false false R P Q → IntoWand p q (|==> R) (|==> P) (|==> Q).
