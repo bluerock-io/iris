@@ -1714,6 +1714,45 @@ Section map2.
     ⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ∧ ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2).
   Proof. auto using and_intro, big_sepM2_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepM2_pure_1 (φ : K → A → B → Prop) m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m1;m2, ⌜φ k y1 y2⌝) ⊢@{PROP}
+      ⌜∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → φ k y1 y2⌝.
+  Proof.
+    rewrite big_sepM2_eq /big_sepM2_def.
+    rewrite big_sepM_pure_1 -pure_and.
+    f_equiv=>-[Hdom Hforall] k y1 y2 Hy1 Hy2.
+    eapply (Hforall k (y1, y2)). clear Hforall.
+    apply map_lookup_zip_with_Some. naive_solver.
+  Qed.
+  Lemma big_sepM2_affinely_pure_2 (φ : K → A → B → Prop) m1 m2 :
+    (∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+    <affine> ⌜∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → φ k y1 y2⌝ ⊢@{PROP}
+      ([∗ map] k↦y1;y2 ∈ m1;m2, <affine> ⌜φ k y1 y2⌝).
+  Proof.
+    intros Hdom.
+    rewrite big_sepM2_eq /big_sepM2_def.
+    rewrite -big_sepM_affinely_pure_2.
+    rewrite affinely_and_r -pure_and. f_equiv. f_equiv=>-Hforall.
+    split; first done.
+    intros k [y1 y2] (? & ? & [= <- <-] & Hy1 & Hy2)%map_lookup_zip_with_Some; simpl.
+    by eapply Hforall.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepM2_pure `{!BiAffine PROP} (φ : K → A → B → Prop) m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m1;m2, ⌜φ k y1 y2⌝) ⊣⊢@{PROP}
+      ⌜(∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) ∧
+       (∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → φ k y1 y2)⌝.
+  Proof.
+    apply (anti_symm (⊢)).
+    { rewrite pure_and. apply and_intro.
+      - apply big_sepM2_lookup_iff.
+      - apply big_sepM2_pure_1. }
+    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite pure_and -affinely_and_r.
+    apply pure_elim_l=>Hdom.
+    rewrite big_sepM2_affinely_pure_2 //. by setoid_rewrite affinely_elim.
+  Qed.
+
   Lemma big_sepM2_persistently `{BiAffine PROP} Φ m1 m2 :
     <pers> ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊣⊢ [∗ map] k↦y1;y2 ∈ m1;m2, <pers> (Φ k y1 y2).
