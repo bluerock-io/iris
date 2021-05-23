@@ -93,10 +93,11 @@ Global Arguments cmra_validN : simpl never.
 Global Arguments cmra_ofe_mixin : simpl never.
 Global Arguments cmra_mixin : simpl never.
 Add Printing Constructor cmra.
-Global Hint Extern 0 (PCore _) => eapply (@cmra_pcore _) : typeclass_instances.
-Global Hint Extern 0 (Op _) => eapply (@cmra_op _) : typeclass_instances.
-Global Hint Extern 0 (Valid _) => eapply (@cmra_valid _) : typeclass_instances.
-Global Hint Extern 0 (ValidN _) => eapply (@cmra_validN _) : typeclass_instances.
+(* FIXME(Coq #6294) : we need the new unification algorithm here. *)
+Global Hint Extern 0 (PCore _) => refine (cmra_pcore _); shelve : typeclass_instances.
+Global Hint Extern 0 (Op _) => refine (cmra_op _); shelve : typeclass_instances.
+Global Hint Extern 0 (Valid _) => refine (cmra_valid _); shelve : typeclass_instances.
+Global Hint Extern 0 (ValidN _) => refine (cmra_validN _); shelve : typeclass_instances.
 Coercion cmra_ofeO (A : cmra) : ofe := Ofe A (cmra_ofe_mixin A).
 Canonical Structure cmra_ofeO.
 
@@ -215,7 +216,8 @@ Global Arguments ucmra_ofe_mixin : simpl never.
 Global Arguments ucmra_cmra_mixin : simpl never.
 Global Arguments ucmra_mixin : simpl never.
 Add Printing Constructor ucmra.
-Global Hint Extern 0 (Unit _) => eapply (@ucmra_unit _) : typeclass_instances.
+(* FIXME(Coq #6294) : we need the new unification algorithm here. *)
+Global Hint Extern 0 (Unit _) => refine (ucmra_unit _); shelve : typeclass_instances.
 Coercion ucmra_ofeO (A : ucmra) : ofe := Ofe A (ucmra_ofe_mixin A).
 Canonical Structure ucmra_ofeO.
 Coercion ucmra_cmraR (A : ucmra) : cmra :=
@@ -1543,7 +1545,7 @@ Section option_prod.
   Proof. intros ?%Some_pair_included. by rewrite -(Some_included_total b1). Qed.
 End option_prod.
 
-Lemma option_fmap_mono {A B : cmra} (f : A → B) ma mb :
+Lemma option_fmap_mono {A B : cmra} (f : A → B) (ma mb : option A) :
   Proper ((≡) ==> (≡)) f →
   (∀ a b, a ≼ b → f a ≼ f b) →
   ma ≼ mb → f <$> ma ≼ f <$> mb.

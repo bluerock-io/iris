@@ -56,8 +56,9 @@ Structure ofe := Ofe {
 }.
 Global Arguments Ofe _ {_ _} _.
 Add Printing Constructor ofe.
-Global Hint Extern 0 (Equiv _) => eapply (@ofe_equiv _) : typeclass_instances.
-Global Hint Extern 0 (Dist _) => eapply (@ofe_dist _) : typeclass_instances.
+(* FIXME(Coq #6294) : we need the new unification algorithm here. *)
+Global Hint Extern 0 (Equiv _) => refine (ofe_equiv _); shelve : typeclass_instances.
+Global Hint Extern 0 (Dist _) => refine (ofe_dist _); shelve : typeclass_instances.
 Global Arguments ofe_car : simpl never.
 Global Arguments ofe_equiv : simpl never.
 Global Arguments ofe_dist : simpl never.
