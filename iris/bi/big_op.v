@@ -1926,6 +1926,60 @@ Section map2.
     [∗ map] k↦y1;y2 ∈ m1;m2, Φ1 k y1 ∗ Φ2 k y2.
   Proof. intros. apply wand_intro_r. by rewrite big_sepM2_sepM. Qed.
 
+  Lemma big_sepM2_union_inv_l (Φ : K → A → B → PROP) (m1 m2 : gmap K A) (n : gmap K B):
+      m1 ##ₘ m2 →
+      ([∗ map] k↦x;y ∈ (m1 ∪ m2);n, Φ k x y)
+        ⊢ ∃ n1 n2, ⌜n = n1 ∪ n2⌝ ∧
+                  ([∗ map] k↦x;y ∈ m1;n1, Φ k x y) ∗
+                  ([∗ map] k↦x;y ∈ m2;n2, Φ k x y).
+  Proof.
+    pose (P := λ m1, ∀ (m2 : gmap K A) (n : gmap K B),
+                 m1 ##ₘ m2 →
+                 ([∗ map] k↦x;y ∈ (m1 ∪ m2);n, Φ k x y)
+                   -∗ ∃ n1 n2 : gmap K B,
+                     ⌜n = n1 ∪ n2⌝ ∧
+                     ([∗ map] k↦x;y ∈ m1;n1, Φ k x y) ∗
+                     ([∗ map] k↦x;y ∈ m2;n2, Φ k x y)).
+    revert m1 m2 n. eapply (map_ind P); unfold P; clear P.
+    { intros m2 n ?. rewrite left_id.
+      rewrite -(exist_intro ∅) -(exist_intro n) left_id pure_True // left_id.
+      rewrite big_sepM2_empty left_id //. }
+    intros i x m1 Hm1 IH m2 n [Hm2i Hmm]%map_disjoint_insert_l.
+    eapply (pure_elim (dom (gset K) n = {[i]} ∪ dom (gset K) m1 ∪ dom (gset K) m2)).
+    { rewrite big_sepM2_dom dom_union_L dom_insert_L. eapply pure_mono.
+      naive_solver. }
+    intros Hdomn.
+
+    destruct (n !! i) as [y|] eqn:Hni; last first.
+    { exfalso. eapply (not_elem_of_dom n i); eauto; set_solver. }
+
+    assert (n = <[i:=y]>(delete i n)) as ->.
+    { by rewrite insert_delete insert_id//. }
+
+    assert ((m1 ∪ m2) !! i = None) as Hm1m2i.
+    { eapply lookup_union_None; naive_solver. }
+
+    assert (delete i n !! i = None) by eapply lookup_delete.
+
+    rewrite -insert_union_l big_sepM2_insert//.
+    rewrite (IH m2 (delete i n)) //.
+    rewrite sep_exist_l. eapply exist_elim=>n1.
+    rewrite sep_exist_l. eapply exist_elim=>n2.
+    rewrite comm. eapply wand_elim_l'.
+    eapply pure_elim_l=>Hn1n2.
+
+    rewrite -(exist_intro (<[i:=y]>n1)) -(exist_intro n2).
+    rewrite pure_True; last first.
+    { rewrite Hn1n2. by rewrite insert_union_l. }
+    eapply (pure_elim (n1 !! i = None)).
+    { rewrite big_sepM2_dom. rewrite sep_elim_l.
+      eapply pure_mono. intros Hfoo.
+      eapply not_elem_of_dom. rewrite -Hfoo.
+      by eapply not_elem_of_dom. }
+    intros Hn1. rewrite big_sepM2_insert // left_id.
+    eapply wand_intro_l. by rewrite assoc.
+  Qed.
+
   Global Instance big_sepM2_empty_persistent Φ :
     Persistent ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
   Proof. rewrite big_sepM2_empty. apply _. Qed.
