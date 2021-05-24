@@ -2005,6 +2005,20 @@ Section map2.
   Proof. intros. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 End map2.
 
+Lemma big_sepM2_union_inv_r `{Countable K} {A B}
+      (Φ : K → A → B → PROP) (m1 m2 : gmap K B) (n : gmap K A) :
+  m1 ##ₘ m2 →
+  ([∗ map] k↦x;y ∈ n;(m1 ∪ m2), Φ k x y)
+    ⊢ ∃ n1 n2, ⌜n = n1 ∪ n2⌝ ∧
+               ([∗ map] k↦x;y ∈ n1;m1, Φ k x y) ∗
+               ([∗ map] k↦x;y ∈ n2;m2, Φ k x y).
+Proof.
+  intros Hm. rewrite -(big_sepM2_flip Φ).
+  rewrite (big_sepM2_union_inv_l (λ k (x : B) y, Φ k y x)) //.
+  f_equiv=>n1. f_equiv=>n2. f_equiv.
+  by rewrite -!(big_sepM2_flip Φ).
+Qed.
+
 Lemma big_sepM_sepM2_diag `{Countable K} {A} (Φ : K → A → A → PROP) (m : gmap K A) :
   ([∗ map] k↦y ∈ m, Φ k y y) -∗
   ([∗ map] k↦y1;y2 ∈ m;m, Φ k y1 y2).
