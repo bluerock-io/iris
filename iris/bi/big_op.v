@@ -188,9 +188,8 @@ Section sep_list.
     rewrite big_sepL_snoc // IH sep_and -pure_and.
     f_equiv=>-[Hl Hx] k y /lookup_app_Some =>-[Hy|[Hlen Hy]].
     - by apply Hl.
-    - replace k with (length l) in Hy |- *; last first.
-      { apply lookup_lt_Some in Hy. simpl in Hy. lia. }
-      rewrite Nat.sub_diag /= in Hy. injection Hy as [= ->]. done.
+    - apply list_lookup_singleton_Some in Hy as [Hk ->].
+      replace k with (length l) by lia. done.
   Qed.
   Lemma big_sepL_affinely_pure_2 (φ : nat → A → Prop) l :
     <affine> ⌜∀ k x, l !! k = Some x → φ k x⌝ ⊢@{PROP} ([∗ list] k↦x ∈ l, <affine> ⌜φ k x⌝).
@@ -964,9 +963,8 @@ Section and_list.
     rewrite big_andL_snoc // IH -pure_and.
     f_equiv=>-[Hl Hx] k y /lookup_app_Some =>-[Hy|[Hlen Hy]].
     - by apply Hl.
-    - replace k with (length l) in Hy |- *; last first.
-      { apply lookup_lt_Some in Hy. simpl in Hy. lia. }
-      rewrite Nat.sub_diag /= in Hy. injection Hy as [= ->]. done.
+    - apply list_lookup_singleton_Some in Hy as [Hk ->].
+      replace k with (length l) by lia. done.
   Qed.
   Lemma big_andL_pure_2 (φ : nat → A → Prop) l :
     ⌜∀ k x, l !! k = Some x → φ k x⌝ ⊢@{PROP} ([∧ list] k↦x ∈ l, ⌜φ k x⌝).
