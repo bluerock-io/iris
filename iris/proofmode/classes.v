@@ -5,6 +5,11 @@ From iris.proofmode Require Export ident_name modalities.
 From iris.prelude Require Import options.
 Import bi.
 
+(** Use this as precondition on "failing" instances of typeclasses that have
+pure preconditions (such as [ElimModal]), if you want a nice error to be shown
+when this instances is picked as part of some proof mode tactic. *)
+Definition pm_error (s : string) := False.
+
 Class FromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   from_assumption : □?p P ⊢ Q.
 Global Arguments FromAssumption {_} _ _%I _%I : simpl never.

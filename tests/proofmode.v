@@ -1389,16 +1389,19 @@ Proof. intros Hk. Fail iRevert (k). Abort.
 Check "iRevert_dep_var".
 Lemma iRevert_dep_var (k : nat) (Φ : nat → PROP) : Φ k -∗ Φ (S k).
 Proof. iIntros "Hk". Fail iRevert (k). Abort.
-End error_tests.
-
-Section error_tests_bi.
-Context {PROP : bi}.
-Implicit Types P Q R : PROP.
 
 Check "iLöb_no_BiLöb".
 Lemma iLöb_no_BiLöb P : ⊢ P.
 Proof. Fail iLöb as "IH". Abort.
-End error_tests_bi.
+
+Check "iMod_mask_mismatch".
+Lemma iMod_mask_mismatch `{!BiFUpd PROP} E1 E2 (P : PROP) :
+  (|={E2}=> P) ⊢ |={E1}=> P.
+Proof.
+  Fail iIntros ">HP".
+  iIntros "HP". Fail iMod "HP".
+Abort.
+End error_tests.
 
 Section pure_name_tests.
 Context {PROP : bi}.

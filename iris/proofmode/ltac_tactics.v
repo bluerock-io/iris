@@ -28,7 +28,10 @@ Ltac iSolveTC :=
 (** Tactic used for solving side-conditions arising from TC resolution in [iMod]
 and [iInv]. *)
 Ltac iSolveSideCondition :=
-  split_and?; try solve [ fast_done | solve_ndisj | iSolveTC ].
+  lazymatch goal with
+  | |- pm_error ?err => fail "" err
+  | _ => split_and?; try solve [ fast_done | solve_ndisj | iSolveTC ]
+  end.
 
 (** Used for printing [string]s and [ident]s. *)
 Ltac pretty_ident H :=

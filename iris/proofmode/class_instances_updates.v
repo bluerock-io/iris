@@ -161,6 +161,13 @@ Proof.
   by rewrite /ElimModal intuitionistically_if_elim
     fupd_frame_r wand_elim_r fupd_trans.
 Qed.
+Global Instance elim_modal_fupd_fupd_wrong_mask `{!BiFUpd PROP} p E0 E1 E2 E3 P Q :
+  ElimModal
+    (pm_error "Goal and eliminated modality must have the same mask.
+Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]")
+    p false
+    (|={E1,E2}=> P) False (|={E0,E3}=> Q) False | 100.
+Proof. intros []. Qed.
 
 Global Instance add_modal_bupd `{!BiBUpd PROP} P Q : AddModal (|==> P) P (|==> Q).
 Proof. by rewrite /AddModal bupd_frame_r wand_elim_r bupd_trans. Qed.
