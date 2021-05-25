@@ -1401,6 +1401,15 @@ Proof.
   Fail iIntros ">HP".
   iIntros "HP". Fail iMod "HP".
 Abort.
+
+Check "iModIntro_mask_mismatch".
+Lemma iMod_mask_mismatch `{!BiFUpd PROP} E1 E2 (P : PROP) :
+  ⊢ |={E1,E2}=> P.
+Proof.
+  Fail iModIntro.
+  Fail iIntros "!>".
+Abort.
+
 End error_tests.
 
 Section pure_name_tests.

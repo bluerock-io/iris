@@ -129,6 +129,12 @@ Proof. by rewrite /FromModal /= -bupd_intro. Qed.
 Global Instance from_modal_fupd E P `{!BiFUpd PROP} :
   FromModal True modality_id (|={E}=> P) (|={E}=> P) P.
 Proof. by rewrite /FromModal /= -fupd_intro. Qed.
+Global Instance from_modal_fupd_wrong_mask E1 E2 P `{!BiFUpd PROP} :
+  FromModal
+        (pm_error "Only non-mask-changing update modalities can be introduced directly.
+Use [iApply fupd_mask_intro] to introduce mask-changing update modalities")
+    modality_id (|={E1,E2}=> P) (|={E1,E2}=> P) P | 100.
+Proof. by intros []. Qed.
 
 Global Instance elim_modal_bupd `{!BiBUpd PROP} p P Q :
   ElimModal True p false (|==> P) P (|==> Q) (|==> Q).
