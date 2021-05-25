@@ -29,7 +29,7 @@ Structure gFunctor := GFunctor {
   gFunctor_map_contractive : rFunctorContractive gFunctor_F;
 }.
 Global Arguments GFunctor _ {_}.
-Existing Instance gFunctor_map_contractive.
+Global Existing Instance gFunctor_map_contractive.
 Add Printing Constructor gFunctor.
 
 (** The type [gFunctors] describes the parameters [Σ] of the Iris logic: lists

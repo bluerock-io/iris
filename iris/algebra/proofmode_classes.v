@@ -27,7 +27,7 @@ Global Hint Mode IsOp' + ! - - : typeclass_instances.
 Global Hint Mode IsOp' + - ! ! : typeclass_instances.
 
 Class IsOp'LR {A : cmra} (a b1 b2 : A) := is_op_lr : IsOp a b1 b2.
-Existing Instance is_op_lr | 0.
+Global Existing Instance is_op_lr | 0.
 Global Hint Mode IsOp'LR + ! - - : typeclass_instances.
 Global Instance is_op_lr_op {A : cmra} (a b : A) : IsOp'LR (a ⋅ b) a b | 0.
 Proof. by rewrite /IsOp'LR /IsOp. Qed.

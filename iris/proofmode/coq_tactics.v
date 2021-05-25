@@ -931,7 +931,7 @@ Inductive IntoModalIntuitionisticEnv {PROP2} : ∀ {PROP1} (M : modality PROP1 P
   | MIEnvId_intuitionistic (M : modality PROP2 PROP2) Γ :
      IntoModalIntuitionisticEnv M Γ Γ MIEnvId.
 Existing Class IntoModalIntuitionisticEnv.
-Existing Instances MIEnvIsEmpty_intuitionistic MIEnvForall_intuitionistic
+Global Existing Instances MIEnvIsEmpty_intuitionistic MIEnvForall_intuitionistic
   MIEnvTransform_intuitionistic MIEnvClear_intuitionistic MIEnvId_intuitionistic.
 
 (* The class [IntoModalSpatialEnv M Γin Γout s] is used to transform the spatial
@@ -963,7 +963,7 @@ Inductive IntoModalSpatialEnv {PROP2} : ∀ {PROP1} (M : modality PROP1 PROP2)
   | MIEnvId_spatial (M : modality PROP2 PROP2) Γ :
      IntoModalSpatialEnv M Γ Γ MIEnvId false.
 Existing Class IntoModalSpatialEnv.
-Existing Instances MIEnvIsEmpty_spatial MIEnvForall_spatial
+Global Existing Instances MIEnvIsEmpty_spatial MIEnvForall_spatial
   MIEnvTransform_spatial MIEnvClear_spatial MIEnvId_spatial.
 
 Section tac_modal_intro.

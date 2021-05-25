@@ -86,7 +86,7 @@ Local Instance agree_validN_instance : ValidN (agree A) := λ n x,
   end.
 Local Instance agree_valid_instance : Valid (agree A) := λ x, ∀ n, ✓{n} x.
 
-Program Instance agree_op_instance : Op (agree A) := λ x y,
+Local Program Instance agree_op_instance : Op (agree A) := λ x y,
   {| agree_car := agree_car x ++ agree_car y |}.
 Next Obligation. by intros [[|??]] y. Qed.
 Local Instance agree_pcore_instance : PCore (agree A) := Some.

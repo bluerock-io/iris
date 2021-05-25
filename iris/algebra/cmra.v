@@ -795,7 +795,7 @@ Record rFunctor := RFunctor {
       (fg : (A2 -n> A1) * (B1 -n> B2)) :
     CmraMorphism (rFunctor_map fg)
 }.
-Existing Instances rFunctor_map_ne rFunctor_mor.
+Global Existing Instances rFunctor_map_ne rFunctor_mor.
 Global Instance: Params (@rFunctor_map) 9 := {}.
 
 Declare Scope rFunctor_scope.
@@ -886,7 +886,7 @@ Record urFunctor := URFunctor {
       (fg : (A2 -n> A1) * (B1 -n> B2)) :
     CmraMorphism (urFunctor_map fg)
 }.
-Existing Instances urFunctor_map_ne urFunctor_mor.
+Global Existing Instances urFunctor_map_ne urFunctor_mor.
 Global Instance: Params (@urFunctor_map) 9 := {}.
 
 Declare Scope urFunctor_scope.

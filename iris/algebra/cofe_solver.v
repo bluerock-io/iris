@@ -6,7 +6,7 @@ Record solution (F : oFunctor) := Solution {
   solution_cofe : Cofe solution_car;
   solution_iso :> ofe_iso (oFunctor_apply F solution_car) solution_car;
 }.
-Existing Instance solution_cofe.
+Global Existing Instance solution_cofe.
 
 Module solver. Section solver.
 Context (F : oFunctor) `{Fcontr : oFunctorContractive F}.

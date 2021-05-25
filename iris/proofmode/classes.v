@@ -512,7 +512,7 @@ Global Arguments AsEmpValid {_} _%type _%I.
 Class AsEmpValid0 {PROP : bi} (φ : Prop) (P : PROP) :=
   as_emp_valid_0 : AsEmpValid φ P.
 Global Arguments AsEmpValid0 {_} _%type _%I.
-Existing Instance as_emp_valid_0 | 0.
+Global Existing Instance as_emp_valid_0 | 0.
 
 Lemma as_emp_valid_1 (φ : Prop) {PROP : bi} (P : PROP) `{!AsEmpValid φ P} :
   φ → ⊢ P.
@@ -570,7 +570,7 @@ Global Hint Mode IntoAcc + - ! - - - - - - - : typeclass_instances.
 
 (* The typeclass used for the [iInv] tactic.
    Input: [Pinv]
-   Arguments:
+   Other Arguments:
    - [Pinv] is an invariant assertion
    - [Pin] is an additional logic assertion needed for opening an invariant
    - [φ] is an additional Coq assertion needed for opening an invariant

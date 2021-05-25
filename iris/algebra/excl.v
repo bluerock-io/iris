@@ -29,11 +29,11 @@ Implicit Types x y : excl A.
 Inductive excl_equiv : Equiv (excl A) :=
   | Excl_equiv a b : a ≡ b → Excl a ≡ Excl b
   | ExclBot_equiv : ExclBot ≡ ExclBot.
-Existing Instance excl_equiv.
+Local Existing Instance excl_equiv.
 Inductive excl_dist : Dist (excl A) :=
   | Excl_dist a b n : a ≡{n}≡ b → Excl a ≡{n}≡ Excl b
   | ExclBot_dist n : ExclBot ≡{n}≡ ExclBot.
-Existing Instance excl_dist.
+Local Existing Instance excl_dist.
 
 Global Instance Excl_ne : NonExpansive (@Excl A).
 Proof. by constructor. Qed.

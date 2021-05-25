@@ -147,7 +147,7 @@ End increment.
 Section increment_client.
   Context `{!heapG Σ, !spawnG Σ}.
 
-  Existing Instance primitive_atomic_heap.
+  Local Existing Instance primitive_atomic_heap.
 
   Definition incr_client : val :=
     λ: "x",
