@@ -44,7 +44,8 @@ Global Arguments dra_op : simpl never.
 Global Arguments dra_valid : simpl never.
 Global Arguments dra_mixin : simpl never.
 Add Printing Constructor draT.
-Global Existing Instances dra_equiv dra_pcore dra_disjoint dra_op dra_valid.
+(* FIXME: Should some of these be [Global]? *)
+Local Existing Instances dra_equiv dra_pcore dra_disjoint dra_op dra_valid.
 
 (** Lifting properties from the mixin *)
 Section dra_mixin.
