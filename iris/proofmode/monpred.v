@@ -55,35 +55,40 @@ Implicit Types φ : Prop.
 Implicit Types i j : I.
 
 Global Instance from_modal_objectively P :
-  FromModal modality_objectively (<obj> P) (<obj> P) P | 1.
+  FromModal True modality_objectively (<obj> P) (<obj> P) P | 1.
 Proof. by rewrite /FromModal. Qed.
 Global Instance from_modal_subjectively P :
-  FromModal modality_id (<subj> P) (<subj> P) P | 1.
+  FromModal True modality_id (<subj> P) (<subj> P) P | 1.
 Proof. by rewrite /FromModal /= -monPred_subjectively_intro. Qed.
 
-Global Instance from_modal_affinely_monPred_at `(sel : A) P Q 𝓠 i :
-  FromModal modality_affinely sel P Q → MakeMonPredAt i Q 𝓠 →
-  FromModal modality_affinely sel (P i) 𝓠 | 0.
+Global Instance from_modal_affinely_monPred_at φ `(sel : A) P Q 𝓠 i :
+  FromModal φ modality_affinely sel P Q →
+  MakeMonPredAt i Q 𝓠 →
+  FromModal φ modality_affinely sel (P i) 𝓠 | 0.
 Proof.
-  rewrite /FromModal /MakeMonPredAt /==> <- <-. by rewrite monPred_at_affinely.
+  rewrite /FromModal /MakeMonPredAt /==> HPQ <- ?.
+  by rewrite -HPQ // monPred_at_affinely.
 Qed.
-Global Instance from_modal_persistently_monPred_at `(sel : A) P Q 𝓠 i :
-  FromModal modality_persistently sel P Q → MakeMonPredAt i Q 𝓠 →
-  FromModal modality_persistently sel (P i) 𝓠 | 0.
+Global Instance from_modal_persistently_monPred_at φ `(sel : A) P Q 𝓠 i :
+  FromModal φ modality_persistently sel P Q →
+  MakeMonPredAt i Q 𝓠 →
+  FromModal φ modality_persistently sel (P i) 𝓠 | 0.
 Proof.
-  rewrite /FromModal /MakeMonPredAt /==> <- <-. by rewrite monPred_at_persistently.
+  rewrite /FromModal /MakeMonPredAt /==> HPQ <- ?.
+  by rewrite -HPQ // monPred_at_persistently.
 Qed.
-Global Instance from_modal_intuitionistically_monPred_at `(sel : A) P Q 𝓠 i :
-  FromModal modality_intuitionistically sel P Q → MakeMonPredAt i Q 𝓠 →
-  FromModal modality_intuitionistically sel (P i) 𝓠 | 0.
+Global Instance from_modal_intuitionistically_monPred_at φ `(sel : A) P Q 𝓠 i :
+  FromModal φ modality_intuitionistically sel P Q →
+  MakeMonPredAt i Q 𝓠 →
+  FromModal φ modality_intuitionistically sel (P i) 𝓠 | 0.
 Proof.
-  rewrite /FromModal /MakeMonPredAt /==> <- <-.
-  by rewrite monPred_at_affinely monPred_at_persistently.
+  rewrite /FromModal /MakeMonPredAt /==> HPQ <- ?.
+  by rewrite -HPQ // monPred_at_affinely monPred_at_persistently.
 Qed.
-Global Instance from_modal_id_monPred_at `(sel : A) P Q 𝓠 i :
-  FromModal modality_id sel P Q → MakeMonPredAt i Q 𝓠 →
-  FromModal modality_id sel (P i) 𝓠.
-Proof. by rewrite /FromModal /MakeMonPredAt=> <- <-. Qed.
+Global Instance from_modal_id_monPred_at φ `(sel : A) P Q 𝓠 i :
+  FromModal φ modality_id sel P Q → MakeMonPredAt i Q 𝓠 →
+  FromModal φ modality_id sel (P i) 𝓠.
+Proof. rewrite /FromModal /MakeMonPredAt=> HPQ <- ?. by rewrite -HPQ. Qed.
 
 Global Instance make_monPred_at_pure φ i : MakeMonPredAt i ⌜φ⌝ ⌜φ⌝.
 Proof. by rewrite /MakeMonPredAt monPred_at_pure. Qed.
@@ -511,11 +516,13 @@ Proof.
   rewrite /IntoLaterN /MaybeIntoLaterN /MakeMonPredAt=> -> <-. elim n=>//= ? <-.
   by rewrite monPred_at_later.
 Qed.
-Global Instance from_later_monPred_at i `(sel : A) n P Q 𝓠 :
-  FromModal (modality_laterN n) sel P Q → MakeMonPredAt i Q 𝓠 →
-  FromModal (modality_laterN n) sel (P i) 𝓠.
+Global Instance from_later_monPred_at i φ `(sel : A) n P Q 𝓠 :
+  FromModal φ (modality_laterN n) sel P Q →
+  MakeMonPredAt i Q 𝓠 →
+  FromModal φ (modality_laterN n) sel (P i) 𝓠.
 Proof.
-  rewrite /FromModal /MakeMonPredAt=> <- <-. elim n=>//= ? ->.
+  rewrite /FromModal /MakeMonPredAt=> HPQ <- ?. rewrite -HPQ //.
+  elim n=>//= ? ->.
   by rewrite monPred_at_later.
 Qed.
 

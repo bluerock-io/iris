@@ -315,23 +315,23 @@ Proof. intros. by rewrite /IntoPersistent. Qed.
 
 (** FromModal *)
 Global Instance from_modal_affinely P :
-  FromModal modality_affinely (<affine> P) (<affine> P) P | 2.
+  FromModal True modality_affinely (<affine> P) (<affine> P) P | 2.
 Proof. by rewrite /FromModal. Qed.
 
 Global Instance from_modal_persistently P :
-  FromModal modality_persistently (<pers> P) (<pers> P) P | 2.
+  FromModal True modality_persistently (<pers> P) (<pers> P) P | 2.
 Proof. by rewrite /FromModal. Qed.
 Global Instance from_modal_intuitionistically P :
-  FromModal modality_intuitionistically (□ P) (□ P) P | 1.
+  FromModal True modality_intuitionistically (□ P) (□ P) P | 1.
 Proof. by rewrite /FromModal. Qed.
 Global Instance from_modal_intuitionistically_affine_bi P :
-  BiAffine PROP → FromModal modality_persistently (□ P) (□ P) P | 0.
+  BiAffine PROP → FromModal True modality_persistently (□ P) (□ P) P | 0.
 Proof.
   intros. by rewrite /FromModal /= intuitionistically_into_persistently.
 Qed.
 
 Global Instance from_modal_absorbingly P :
-  FromModal modality_id (<absorb> P) (<absorb> P) P.
+  FromModal True modality_id (<absorb> P) (<absorb> P) P.
 Proof. by rewrite /FromModal /= -absorbingly_intro. Qed.
 
 (** IntoWand *)

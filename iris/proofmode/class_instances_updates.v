@@ -124,10 +124,10 @@ Global Instance is_except_0_fupd `{!BiFUpd PROP} E1 E2 P :
 Proof. by rewrite /IsExcept0 except_0_fupd. Qed.
 
 Global Instance from_modal_bupd `{!BiBUpd PROP} P :
-  FromModal modality_id (|==> P) (|==> P) P.
+  FromModal True modality_id (|==> P) (|==> P) P.
 Proof. by rewrite /FromModal /= -bupd_intro. Qed.
 Global Instance from_modal_fupd E P `{!BiFUpd PROP} :
-  FromModal modality_id (|={E}=> P) (|={E}=> P) P.
+  FromModal True modality_id (|={E}=> P) (|={E}=> P) P.
 Proof. by rewrite /FromModal /= -fupd_intro. Qed.
 
 Global Instance elim_modal_bupd `{!BiBUpd PROP} p P Q :

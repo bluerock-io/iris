@@ -33,26 +33,26 @@ Qed.
 (* When having a modality nested in an embedding, e.g. [ ⎡|==> P⎤ ], we prefer
 the embedding over the modality. *)
 Global Instance from_modal_embed P :
-  FromModal (@modality_embed PROP PROP' _) ⎡P⎤ ⎡P⎤ P.
+  FromModal True (@modality_embed PROP PROP' _) ⎡P⎤ ⎡P⎤ P.
 Proof. by rewrite /FromModal. Qed.
 
-Global Instance from_modal_id_embed `(sel : A) P Q :
-  FromModal modality_id sel P Q →
-  FromModal modality_id sel ⎡P⎤ ⎡Q⎤ | 100.
-Proof. by rewrite /FromModal /= =><-. Qed.
+Global Instance from_modal_id_embed φ `(sel : A) P Q :
+  FromModal φ modality_id sel P Q →
+  FromModal φ modality_id sel ⎡P⎤ ⎡Q⎤ | 100.
+Proof. rewrite /FromModal /= =>HPQ ?. by rewrite -HPQ. Qed.
 
-Global Instance from_modal_affinely_embed `(sel : A) P Q :
-  FromModal modality_affinely sel P Q →
-  FromModal modality_affinely sel ⎡P⎤ ⎡Q⎤ | 100.
-Proof. rewrite /FromModal /= =><-. by rewrite embed_affinely_2. Qed.
-Global Instance from_modal_persistently_embed `(sel : A) P Q :
-  FromModal modality_persistently sel P Q →
-  FromModal modality_persistently sel ⎡P⎤ ⎡Q⎤ | 100.
-Proof. rewrite /FromModal /= =><-. by rewrite embed_persistently. Qed.
-Global Instance from_modal_intuitionistically_embed `(sel : A) P Q :
-  FromModal modality_intuitionistically sel P Q →
-  FromModal modality_intuitionistically sel ⎡P⎤ ⎡Q⎤ | 100.
-Proof. rewrite /FromModal /= =><-. by rewrite embed_intuitionistically_2. Qed.
+Global Instance from_modal_affinely_embed φ `(sel : A) P Q :
+  FromModal φ modality_affinely sel P Q →
+  FromModal φ modality_affinely sel ⎡P⎤ ⎡Q⎤ | 100.
+Proof. rewrite /FromModal /= =>HPQ ?. by rewrite -HPQ // embed_affinely_2. Qed.
+Global Instance from_modal_persistently_embed φ `(sel : A) P Q :
+  FromModal φ modality_persistently sel P Q →
+  FromModal φ modality_persistently sel ⎡P⎤ ⎡Q⎤ | 100.
+Proof. rewrite /FromModal /= =>HPQ ?. by rewrite -HPQ // embed_persistently. Qed.
+Global Instance from_modal_intuitionistically_embed φ `(sel : A) P Q :
+  FromModal φ modality_intuitionistically sel P Q →
+  FromModal φ modality_intuitionistically sel ⎡P⎤ ⎡Q⎤ | 100.
+Proof. rewrite /FromModal /= =>HPQ ?. by rewrite -HPQ // embed_intuitionistically_2. Qed.
 
 Global Instance into_wand_embed p q R P Q :
   IntoWand p q R P Q → IntoWand p q ⎡R⎤ ⎡P⎤ ⎡Q⎤.
@@ -139,16 +139,16 @@ Global Instance is_except_0_embed `{!BiEmbedLater PROP PROP'} P :
   IsExcept0 P → IsExcept0 ⎡P⎤.
 Proof. by rewrite /IsExcept0 -embed_except_0=>->. Qed.
 
-Global Instance from_modal_later_embed `{!BiEmbedLater PROP PROP'} `(sel : A) n P Q :
-  FromModal (modality_laterN n) sel P Q →
-  FromModal (modality_laterN n) sel ⎡P⎤ ⎡Q⎤.
-Proof. rewrite /FromModal /= =><-. by rewrite embed_laterN. Qed.
+Global Instance from_modal_later_embed `{!BiEmbedLater PROP PROP'} φ `(sel : A) n P Q :
+  FromModal φ (modality_laterN n) sel P Q →
+  FromModal φ (modality_laterN n) sel ⎡P⎤ ⎡Q⎤.
+Proof. rewrite /FromModal /= =>HPQ ?. by rewrite -HPQ // embed_laterN. Qed.
 
 Global Instance from_modal_plainly_embed
-    `{!BiPlainly PROP, !BiPlainly PROP', !BiEmbedPlainly PROP PROP'} `(sel : A) P Q :
-  FromModal modality_plainly sel P Q →
-  FromModal (PROP2:=PROP') modality_plainly sel ⎡P⎤ ⎡Q⎤ | 100.
-Proof. rewrite /FromModal /= =><-. by rewrite embed_plainly. Qed.
+    `{!BiPlainly PROP, !BiPlainly PROP', !BiEmbedPlainly PROP PROP'} φ `(sel : A) P Q :
+  FromModal φ modality_plainly sel P Q →
+  FromModal φ (PROP2:=PROP') modality_plainly sel ⎡P⎤ ⎡Q⎤ | 100.
+Proof. rewrite /FromModal /= =>HPQ ?. by rewrite -HPQ // embed_plainly. Qed.
 
 Global Instance into_internal_eq_embed
     `{!BiInternalEq PROP, !BiInternalEq PROP', !BiEmbedInternalEq PROP PROP'}

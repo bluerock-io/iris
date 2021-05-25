@@ -1385,7 +1385,7 @@ Local Tactic Notation "iExistDestruct" constr(H)
 (** * Modality introduction *)
 Tactic Notation "iModIntro" uconstr(sel) :=
   iStartProof;
-  notypeclasses refine (tac_modal_intro _ sel _ _ _ _ _ _ _ _ _ _ _ _ _);
+  notypeclasses refine (tac_modal_intro _ _ sel _ _ _ _ _ _ _ _ _ _ _ _ _ _);
     [iSolveTC ||
      fail "iModIntro: the goal is not a modality"
     |iSolveTC ||
@@ -1402,6 +1402,7 @@ Tactic Notation "iModIntro" uconstr(sel) :=
      end
     |pm_reduce; iSolveTC ||
      fail "iModIntro: cannot filter spatial context when goal is not absorbing"
+    |iSolveSideCondition
     |pm_prettify (* reduce redexes created by instantiation *)
      (* subgoal *) ].
 Tactic Notation "iModIntro" := iModIntro _.

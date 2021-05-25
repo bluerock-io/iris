@@ -88,7 +88,7 @@ Global Instance from_forall_plainly {A} P (Φ : A → PROP) name :
 Proof. rewrite /FromForall=> <-. by rewrite plainly_forall. Qed.
 
 Global Instance from_modal_plainly P :
-  FromModal modality_plainly (■ P) (■ P) P | 2.
+  FromModal True modality_plainly (■ P) (■ P) P | 2.
 Proof. by rewrite /FromModal. Qed.
 
 Global Instance into_except_0_plainly `{!BiPlainlyExist PROP} P Q :

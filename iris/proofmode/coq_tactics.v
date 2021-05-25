@@ -1029,14 +1029,15 @@ Section tac_modal_intro.
   Qed.
 
   (** The actual introduction tactic *)
-  Lemma tac_modal_intro {A} (sel : A) Γp Γs n Γp' Γs' Q Q' fi :
-    FromModal M sel Q' Q →
+  Lemma tac_modal_intro {A} φ (sel : A) Γp Γs n Γp' Γs' Q Q' fi :
+    FromModal φ M sel Q' Q →
     IntoModalIntuitionisticEnv M Γp Γp' (modality_intuitionistic_action M) →
     IntoModalSpatialEnv M Γs Γs' (modality_spatial_action M) fi →
     (if fi then Absorbing Q' else TCTrue) →
+    φ →
     envs_entails (Envs Γp' Γs' n) Q → envs_entails (Envs Γp Γs n) Q'.
   Proof.
-    rewrite envs_entails_eq /FromModal !of_envs_eq => HQ' HΓp HΓs ? HQ.
+    rewrite envs_entails_eq /FromModal !of_envs_eq => HQ' HΓp HΓs ? Hφ HQ.
     apply pure_elim_l=> -[???]. assert (envs_wf (Envs Γp' Γs' n)) as Hwf.
     { split; simpl in *.
       - destruct HΓp as [| |????? []| |]; eauto using Enil_wf.
@@ -1060,19 +1061,19 @@ Section tac_modal_intro.
     move: HQ'; rewrite -HQ pure_True // left_id HMp=> HQ' {HQ Hwf HMp}.
     remember (modality_spatial_action M).
     destruct HΓs as [? M|M C Γs ?%TCForall_Forall|? M C Γs Γs' fi []|? M Γs|M Γs]; simpl.
-    - by rewrite -HQ' /= !right_id.
-    - rewrite -HQ' {1}(modality_spatial_forall_big_sep _ _ Γs) //.
+    - by rewrite -HQ' //= !right_id.
+    - rewrite -HQ' // {1}(modality_spatial_forall_big_sep _ _ Γs) //.
       by rewrite modality_sep.
     - destruct fi.
-      + rewrite -(absorbing Q') /bi_absorbingly -HQ' (comm _ True%I).
+      + rewrite -(absorbing Q') /bi_absorbingly -HQ' // (comm _ True%I).
         rewrite -modality_sep -assoc. apply sep_mono_r.
         eauto using modality_spatial_transform.
-      + rewrite -HQ' -modality_sep. apply sep_mono_r.
+      + rewrite -HQ' // -modality_sep. apply sep_mono_r.
         rewrite -(right_id emp%I bi_sep (M _)).
         eauto using modality_spatial_transform.
-    - rewrite -HQ' /= right_id comm -{2}(modality_spatial_clear M) //.
+    - rewrite -HQ' //= right_id comm -{2}(modality_spatial_clear M) //.
       by rewrite (True_intro ([∗] Γs)).
-    - rewrite -HQ' {1}(modality_spatial_id M ([∗] Γs)) //.
+    - rewrite -HQ' // {1}(modality_spatial_id M ([∗] Γs)) //.
       by rewrite -modality_sep.
   Qed.
 End tac_modal_intro.
