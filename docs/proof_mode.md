@@ -240,6 +240,11 @@ Induction
   + `iInduction x as cpat "IH" forall (x1 ... xn) "selpat"` : perform induction,
     generalizing over the Coq level variables `x1 ... xn`, the hypotheses given by
     the selection pattern `selpat`, and the spatial context.
+  + `iInduction x as cpat "IH" using t` : perform induction using the induction
+    scheme `t`. Common examples of induction schemes are `map_ind`, `set_ind_L`,
+    and `gmultiset_ind` for `gmap`, `gset`, and `gmultiset`.
+  + `iInduction x as cpat "IH" using t forall (x1 ... xn) "selpat"` : the above
+    variants combined.
 
 Rewriting / simplification
 --------------------------
