@@ -700,6 +700,11 @@ Lemma big_opL_opMS {A} `{Countable B}
   ([^o mset] x2 ∈ X2, [^o list] k1↦x1 ∈ l1, f k1 x1 x2).
 Proof. repeat setoid_rewrite big_opMS_elements. by rewrite big_opL_opL. Qed.
 
+Lemma big_opM_opL {A} `{Countable K} {B}
+    (f : K → A → nat → B → M) (m1 : gmap K A) (l2 : list B) :
+  ([^o map] k1↦x1 ∈ m1, [^o list] k2↦x2 ∈ l2, f k1 x1 k2 x2) ≡
+  ([^o list] k2↦x2 ∈ l2, [^o map] k1↦x1 ∈ m1, f k1 x1 k2 x2).
+Proof. symmetry. apply big_opL_opM. Qed.
 Lemma big_opM_opM `{Countable K1} {A} `{Countable K2} {B}
     (f : K1 → A → K2 → B → M) (m1 : gmap K1 A) (m2 : gmap K2 B) :
   ([^o map] k1↦x1 ∈ m1, [^o map] k2↦x2 ∈ m2, f k1 x1 k2 x2) ≡
@@ -722,6 +727,16 @@ Proof.
   repeat setoid_rewrite big_opMS_elements. by rewrite big_opL_opL.
 Qed.
 
+Lemma big_opS_opL `{Countable A} {B}
+    (f : A → nat → B → M) (X1 : gset A) (l2 : list B) :
+  ([^o set] x1 ∈ X1, [^o list] k2↦x2 ∈ l2, f x1 k2 x2) ≡
+  ([^o list] k2↦x2 ∈ l2, [^o set] x1 ∈ X1, f x1 k2 x2).
+Proof. symmetry. apply big_opL_opS. Qed.
+Lemma big_opS_opM `{Countable A} `{Countable K} {B}
+    (f : A → K → B → M) (X1 : gset A) (m2 : gmap K B) :
+  ([^o set] x1 ∈ X1, [^o map] k2↦x2 ∈ m2, f x1 k2 x2) ≡
+  ([^o map] k2↦x2 ∈ m2, [^o set] x1 ∈ X1, f x1 k2 x2).
+Proof. symmetry. apply big_opM_opS. Qed.
 Lemma big_opS_opS `{Countable A, Countable B}
     (X : gset A) (Y : gset B) (f : A → B → M) :
   ([^o set] x ∈ X, [^o set] y ∈ Y, f x y) ≡ ([^o set] y ∈ Y, [^o set] x ∈ X, f x y).
@@ -734,6 +749,20 @@ Proof.
   repeat setoid_rewrite big_opMS_elements. by rewrite big_opL_opL.
 Qed.
 
+Lemma big_opMS_opL `{Countable A} {B}
+    (f : A → nat → B → M) (X1 : gmultiset A) (l2 : list B) :
+  ([^o mset] x1 ∈ X1, [^o list] k2↦x2 ∈ l2, f x1 k2 x2) ≡
+  ([^o list] k2↦x2 ∈ l2, [^o mset] x1 ∈ X1, f x1 k2 x2).
+Proof. symmetry. apply big_opL_opMS. Qed.
+Lemma big_opMS_opM `{Countable A} `{Countable K} {B} (f : A → K → B → M)
+    (X1 : gmultiset A) (m2 : gmap K B) :
+  ([^o mset] x1 ∈ X1, [^o map] k2↦x2 ∈ m2, f x1 k2 x2) ≡
+  ([^o map] k2↦x2 ∈ m2, [^o mset] x1 ∈ X1, f x1 k2 x2).
+Proof. symmetry. apply big_opM_opMS. Qed.
+Lemma big_opMS_opS `{Countable A, Countable B}
+    (X : gmultiset A) (Y : gset B) (f : A → B → M) :
+  ([^o mset] x ∈ X, [^o set] y ∈ Y, f x y) ≡ ([^o set] y ∈ Y, [^o mset] x ∈ X, f x y).
+Proof. symmetry. apply big_opS_opMS. Qed.
 Lemma big_opMS_opMS `{Countable A, Countable B}
     (X : gmultiset A) (Y : gmultiset B) (f : A → B → M) :
   ([^o mset] x ∈ X, [^o mset] y ∈ Y, f x y) ≡ ([^o mset] y ∈ Y, [^o mset] x ∈ X, f x y).
