@@ -635,6 +635,10 @@ Section gmultiset.
     intros. by rewrite big_opMS_eq /big_opMS_def gmultiset_elements_singleton /= right_id.
   Qed.
 
+  Lemma big_opMS_insert f X x :
+    ([^o mset] y ∈ {[+ x +]} ⊎ X, f y) ≡ (f x `o` [^o mset] y ∈ X, f y).
+  Proof. intros. rewrite big_opMS_disj_union big_opMS_singleton //. Qed.
+
   Lemma big_opMS_delete f X x :
     x ∈ X → ([^o mset] y ∈ X, f y) ≡ f x `o` [^o mset] y ∈ X ∖ {[+ x +]}, f y.
   Proof.

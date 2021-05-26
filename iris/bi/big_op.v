@@ -180,6 +180,38 @@ Section sep_list.
     ⊢ ([∗ list] k↦x ∈ l, Φ k x) ∧ ([∗ list] k↦x ∈ l, Ψ k x).
   Proof. auto using and_intro, big_sepL_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepL_pure_1 (φ : nat → A → Prop) l :
+    ([∗ list] k↦x ∈ l, ⌜φ k x⌝) ⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
+  Proof.
+    induction l as [|x l IH] using rev_ind.
+    { apply pure_intro=>??. rewrite lookup_nil. done. }
+    rewrite big_sepL_snoc // IH sep_and -pure_and.
+    f_equiv=>-[Hl Hx] k y /lookup_app_Some =>-[Hy|[Hlen Hy]].
+    - by apply Hl.
+    - apply list_lookup_singleton_Some in Hy as [Hk ->].
+      replace k with (length l) by lia. done.
+  Qed.
+  Lemma big_sepL_affinely_pure_2 (φ : nat → A → Prop) l :
+    <affine> ⌜∀ k x, l !! k = Some x → φ k x⌝ ⊢@{PROP} ([∗ list] k↦x ∈ l, <affine> ⌜φ k x⌝).
+  Proof.
+    induction l as [|x l IH] using rev_ind.
+    { rewrite big_sepL_nil. apply affinely_elim_emp. }
+    rewrite big_sepL_snoc // -IH.
+    rewrite -persistent_and_sep_1 -affinely_and -pure_and.
+    f_equiv. f_equiv=>- Hlx. split.
+    - intros k y Hy. apply Hlx. rewrite lookup_app Hy //.
+    - apply Hlx. rewrite lookup_app lookup_ge_None_2 //.
+      rewrite Nat.sub_diag //.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepL_pure `{!BiAffine PROP} (φ : nat → A → Prop) l :
+    ([∗ list] k↦x ∈ l, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_sepL_pure_1.
+    rewrite -(affine_affinely ⌜_⌝).
+    rewrite big_sepL_affinely_pure_2. by setoid_rewrite affinely_elim.
+  Qed.
+
   Lemma big_sepL_persistently `{BiAffine PROP} Φ l :
     <pers> ([∗ list] k↦x ∈ l, Φ k x) ⊣⊢ [∗ list] k↦x ∈ l, <pers> (Φ k x).
   Proof. apply (big_opL_commute _). Qed.
@@ -608,6 +640,43 @@ Section sep_list2.
     ⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∧ ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2).
   Proof. auto using and_intro, big_sepL2_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepL2_pure_1 (φ : nat → A → B → Prop) l1 l2 :
+    ([∗ list] k↦y1;y2 ∈ l1;l2, ⌜φ k y1 y2⌝) ⊢@{PROP}
+      ⌜∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → φ k y1 y2⌝.
+  Proof.
+    rewrite big_sepL2_alt big_sepL_pure_1.
+    rewrite -pure_and. f_equiv=>-[Hlen Hlookup] k y1 y2 Hy1 Hy2.
+    eapply (Hlookup k (y1, y2)).
+    rewrite lookup_zip_with Hy1 /= Hy2 /= //.
+  Qed.
+  Lemma big_sepL2_affinely_pure_2 (φ : nat → A → B → Prop) l1 l2 :
+    length l1 = length l2 →
+    <affine> ⌜∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → φ k y1 y2⌝ ⊢@{PROP}
+    ([∗ list] k↦y1;y2 ∈ l1;l2, <affine> ⌜φ k y1 y2⌝).
+  Proof.
+    intros Hdom. rewrite big_sepL2_alt.
+    rewrite -big_sepL_affinely_pure_2.
+    rewrite affinely_and_r -pure_and. f_equiv. f_equiv=>-Hforall.
+    split; first done.
+    intros k [y1 y2] (? & ? & [= <- <-] & Hy1 & Hy2)%lookup_zip_with_Some.
+    by eapply Hforall.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepL2_pure `{!BiAffine PROP} (φ : nat → A → B → Prop) l1 l2 :
+    ([∗ list] k↦y1;y2 ∈ l1;l2, ⌜φ k y1 y2⌝) ⊣⊢@{PROP}
+      ⌜length l1 = length l2 ∧
+       ∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → φ k y1 y2⌝.
+  Proof.
+    apply (anti_symm (⊢)).
+    { rewrite pure_and. apply and_intro.
+      - apply big_sepL2_length.
+      - apply big_sepL2_pure_1. }
+    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite pure_and -affinely_and_r.
+    apply pure_elim_l=>Hdom.
+    rewrite big_sepL2_affinely_pure_2 //. by setoid_rewrite affinely_elim.
+  Qed.
+
   Lemma big_sepL2_persistently `{BiAffine PROP} Φ l1 l2 :
     <pers> ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2)
     ⊣⊢ [∗ list] k↦y1;y2 ∈ l1;l2, <pers> (Φ k y1 y2).
@@ -824,6 +893,9 @@ Section and_list.
     ([∧ list] k↦y ∈ l1 ++ l2, Φ k y)
     ⊣⊢ ([∧ list] k↦y ∈ l1, Φ k y) ∧ ([∧ list] k↦y ∈ l2, Φ (length l1 + k) y).
   Proof. by rewrite big_opL_app. Qed.
+  Lemma big_andL_snoc Φ l x :
+    ([∧ list] k↦y ∈ l ++ [x], Φ k y) ⊣⊢ ([∧ list] k↦y ∈ l, Φ k y) ∧ Φ (length l) x.
+  Proof. by rewrite big_opL_snoc. Qed.
 
   Lemma big_andL_submseteq (Φ : A → PROP) l1 l2 :
     l1 ⊆+ l2 → ([∧ list] y ∈ l2, Φ y) ⊢ [∧ list] y ∈ l1, Φ y.
@@ -905,6 +977,31 @@ Section and_list.
   Global Instance big_andL_persistent Φ l :
     (∀ k x, Persistent (Φ k x)) → Persistent ([∧ list] k↦x ∈ l, Φ k x).
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
+  Lemma big_andL_pure_1 (φ : nat → A → Prop) l :
+    ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
+  Proof.
+    induction l as [|x l IH] using rev_ind.
+    { apply pure_intro=>??. rewrite lookup_nil. done. }
+    rewrite big_andL_snoc // IH -pure_and.
+    f_equiv=>-[Hl Hx] k y /lookup_app_Some =>-[Hy|[Hlen Hy]].
+    - by apply Hl.
+    - apply list_lookup_singleton_Some in Hy as [Hk ->].
+      replace k with (length l) by lia. done.
+  Qed.
+  Lemma big_andL_pure_2 (φ : nat → A → Prop) l :
+    ⌜∀ k x, l !! k = Some x → φ k x⌝ ⊢@{PROP} ([∧ list] k↦x ∈ l, ⌜φ k x⌝).
+  Proof.
+    rewrite big_andL_forall pure_forall_1. f_equiv=>k.
+    rewrite pure_forall_1. f_equiv=>x. apply pure_impl_1.
+  Qed.
+  Lemma big_andL_pure (φ : nat → A → Prop) l :
+    ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_andL_pure_1.
+    apply big_andL_pure_2.
+  Qed.
+
 End and_list.
 
 Section or_list.
@@ -923,6 +1020,9 @@ Section or_list.
     ([∨ list] k↦y ∈ l1 ++ l2, Φ k y)
     ⊣⊢ ([∨ list] k↦y ∈ l1, Φ k y) ∨ ([∨ list] k↦y ∈ l2, Φ (length l1 + k) y).
   Proof. by rewrite big_opL_app. Qed.
+  Lemma big_orL_snoc Φ l x :
+    ([∨ list] k↦y ∈ l ++ [x], Φ k y) ⊣⊢ ([∨ list] k↦y ∈ l, Φ k y) ∨ Φ (length l) x.
+  Proof. by rewrite big_opL_snoc. Qed.
 
   Lemma big_orL_submseteq (Φ : A → PROP) l1 l2 :
     l1 ⊆+ l2 → ([∨ list] y ∈ l1, Φ y) ⊢ [∨ list] y ∈ l2, Φ y.
@@ -997,6 +1097,15 @@ Section or_list.
       - rewrite IH. apply exist_elim=> k. by rewrite -(exist_intro (S k)). }
     apply exist_elim=> k; apply exist_elim=> x. apply pure_elim_l=> ?.
     by apply: big_orL_lookup.
+  Qed.
+
+  Lemma big_orL_pure (φ : nat → A → Prop) l :
+    ([∨ list] k↦x ∈ l, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜∃ k x, l !! k = Some x ∧ φ k x⌝.
+  Proof.
+    rewrite big_orL_exist.
+    rewrite pure_exist. apply exist_proper=>k.
+    rewrite pure_exist. apply exist_proper=>x.
+    rewrite -pure_and. done.
   Qed.
 
   Lemma big_orL_sep_l P Φ l :
@@ -1181,6 +1290,31 @@ Section map.
     ⊢ ([∗ map] k↦x ∈ m, Φ k x) ∧ ([∗ map] k↦x ∈ m, Ψ k x).
   Proof. auto using and_intro, big_sepM_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepM_pure_1 (φ : K → A → Prop) m :
+    ([∗ map] k↦x ∈ m, ⌜φ k x⌝) ⊢@{PROP} ⌜map_Forall φ m⌝.
+  Proof.
+    induction m as [|k x m ? IH] using map_ind.
+    { apply pure_intro, map_Forall_empty. }
+    rewrite big_sepM_insert // IH sep_and -pure_and.
+    by rewrite -map_Forall_insert.
+  Qed.
+  Lemma big_sepM_affinely_pure_2 (φ : K → A → Prop) m :
+    <affine> ⌜map_Forall φ m⌝ ⊢@{PROP} ([∗ map] k↦x ∈ m, <affine> ⌜φ k x⌝).
+  Proof.
+    induction m as [|k x m ? IH] using map_ind.
+    { rewrite big_sepM_empty. apply affinely_elim_emp. }
+    rewrite big_sepM_insert // -IH.
+    by rewrite -persistent_and_sep_1 -affinely_and -pure_and map_Forall_insert.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepM_pure `{!BiAffine PROP} (φ : K → A → Prop) m :
+    ([∗ map] k↦x ∈ m, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜map_Forall φ m⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_sepM_pure_1.
+    rewrite -(affine_affinely ⌜_⌝).
+    rewrite big_sepM_affinely_pure_2. by setoid_rewrite affinely_elim.
+  Qed.
+
   Lemma big_sepM_persistently `{BiAffine PROP} Φ m :
     (<pers> ([∗ map] k↦x ∈ m, Φ k x)) ⊣⊢ ([∗ map] k↦x ∈ m, <pers> (Φ k x)).
   Proof. apply (big_opM_commute _). Qed.
@@ -1292,6 +1426,7 @@ Section map.
   Global Instance big_sepM_timeless `{!Timeless (emp%I : PROP)} Φ m :
     (∀ k x, Timeless (Φ k x)) → Timeless ([∗ map] k↦x ∈ m, Φ k x).
   Proof. rewrite big_opM_eq. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
+
 End map.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
@@ -1633,6 +1768,45 @@ Section map2.
     ⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ∧ ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2).
   Proof. auto using and_intro, big_sepM2_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepM2_pure_1 (φ : K → A → B → Prop) m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m1;m2, ⌜φ k y1 y2⌝) ⊢@{PROP}
+      ⌜∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → φ k y1 y2⌝.
+  Proof.
+    rewrite big_sepM2_eq /big_sepM2_def.
+    rewrite big_sepM_pure_1 -pure_and.
+    f_equiv=>-[Hdom Hforall] k y1 y2 Hy1 Hy2.
+    eapply (Hforall k (y1, y2)). clear Hforall.
+    apply map_lookup_zip_with_Some. naive_solver.
+  Qed.
+  Lemma big_sepM2_affinely_pure_2 (φ : K → A → B → Prop) m1 m2 :
+    (∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+    <affine> ⌜∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → φ k y1 y2⌝ ⊢@{PROP}
+      ([∗ map] k↦y1;y2 ∈ m1;m2, <affine> ⌜φ k y1 y2⌝).
+  Proof.
+    intros Hdom.
+    rewrite big_sepM2_eq /big_sepM2_def.
+    rewrite -big_sepM_affinely_pure_2.
+    rewrite affinely_and_r -pure_and. f_equiv. f_equiv=>-Hforall.
+    split; first done.
+    intros k [y1 y2] (? & ? & [= <- <-] & Hy1 & Hy2)%map_lookup_zip_with_Some; simpl.
+    by eapply Hforall.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepM2_pure `{!BiAffine PROP} (φ : K → A → B → Prop) m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m1;m2, ⌜φ k y1 y2⌝) ⊣⊢@{PROP}
+      ⌜(∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) ∧
+       (∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → φ k y1 y2)⌝.
+  Proof.
+    apply (anti_symm (⊢)).
+    { rewrite pure_and. apply and_intro.
+      - apply big_sepM2_lookup_iff.
+      - apply big_sepM2_pure_1. }
+    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite pure_and -affinely_and_r.
+    apply pure_elim_l=>Hdom.
+    rewrite big_sepM2_affinely_pure_2 //. by setoid_rewrite affinely_elim.
+  Qed.
+
   Lemma big_sepM2_persistently `{BiAffine PROP} Φ m1 m2 :
     <pers> ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊣⊢ [∗ map] k↦y1;y2 ∈ m1;m2, <pers> (Φ k y1 y2).
@@ -1919,6 +2093,36 @@ Section gset.
     ([∗ set] y ∈ X, Φ y ∧ Ψ y) ⊢ ([∗ set] y ∈ X, Φ y) ∧ ([∗ set] y ∈ X, Ψ y).
   Proof. auto using and_intro, big_sepS_mono, and_elim_l, and_elim_r. Qed.
 
+  Lemma big_sepS_pure_1 (φ : A → Prop) X :
+    ([∗ set] y ∈ X, ⌜φ y⌝) ⊢@{PROP} ⌜set_Forall φ X⌝.
+  Proof.
+    induction X as [|x X ? IH] using set_ind_L.
+    { apply pure_intro, set_Forall_empty. }
+    rewrite big_sepS_insert // IH sep_and -pure_and.
+    f_equiv=>-[Hx HX]. apply set_Forall_union.
+    - apply set_Forall_singleton. done.
+    - done.
+  Qed.
+  Lemma big_sepS_affinely_pure_2 (φ : A → Prop) X :
+    <affine> ⌜set_Forall φ X⌝ ⊢@{PROP} ([∗ set] y ∈ X, <affine> ⌜φ y⌝).
+  Proof.
+    induction X as [|x X ? IH] using set_ind_L.
+    { rewrite big_sepS_empty. apply affinely_elim_emp. }
+    rewrite big_sepS_insert // -IH.
+    rewrite -persistent_and_sep_1 -affinely_and -pure_and.
+    f_equiv. f_equiv=>HX. split.
+    - apply HX. set_solver+.
+    - apply set_Forall_union_inv_2 in HX. done.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepS_pure `{!BiAffine PROP} (φ : A → Prop) X :
+    ([∗ set] y ∈ X, ⌜φ y⌝) ⊣⊢@{PROP} ⌜set_Forall φ X⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_sepS_pure_1.
+    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite big_sepS_affinely_pure_2. by setoid_rewrite affinely_elim.
+  Qed.
+
   Lemma big_sepS_persistently `{BiAffine PROP} Φ X :
     <pers> ([∗ set] y ∈ X, Φ y) ⊣⊢ [∗ set] y ∈ X, <pers> (Φ y).
   Proof. apply (big_opS_commute _). Qed.
@@ -2093,6 +2297,10 @@ Section gmultiset.
   Lemma big_sepMS_singleton Φ x : ([∗ mset] y ∈ {[+ x +]}, Φ y) ⊣⊢ Φ x.
   Proof. apply big_opMS_singleton. Qed.
 
+  Lemma big_sepMS_insert Φ X x :
+    ([∗ mset] y ∈ {[+ x +]} ⊎ X, Φ y) ⊣⊢ (Φ x ∗ [∗ mset] y ∈ X, Φ y).
+  Proof. apply big_opMS_insert. Qed.
+
   Lemma big_sepMS_sep Φ Ψ X :
     ([∗ mset] y ∈ X, Φ y ∗ Ψ y) ⊣⊢ ([∗ mset] y ∈ X, Φ y) ∗ ([∗ mset] y ∈ X, Ψ y).
   Proof. apply big_opMS_op. Qed.
@@ -2114,6 +2322,36 @@ Section gmultiset.
   Lemma big_sepMS_laterN_2 Φ n X :
     ([∗ mset] y ∈ X, ▷^n Φ y) ⊢ ▷^n [∗ mset] y ∈ X, Φ y.
   Proof. by rewrite big_opMS_commute. Qed.
+
+  Lemma big_sepMS_pure_1 (φ : A → Prop) X :
+    ([∗ mset] y ∈ X, ⌜φ y⌝) ⊢@{PROP} ⌜∀ y : A, y ∈ X → φ y⌝.
+  Proof.
+    induction X as [|x X IH] using gmultiset_ind.
+    { apply pure_intro=>??. exfalso. multiset_solver. }
+    rewrite big_sepMS_insert // IH sep_and -pure_and.
+    f_equiv=>-[Hx HX] y /gmultiset_elem_of_disj_union [|].
+    - move=>/gmultiset_elem_of_singleton =>->. done.
+    - eauto.
+  Qed.
+  Lemma big_sepMS_affinely_pure_2 (φ : A → Prop) X :
+    <affine> ⌜∀ y : A, y ∈ X → φ y⌝ ⊢@{PROP} ([∗ mset] y ∈ X, <affine> ⌜φ y⌝).
+  Proof.
+    induction X as [|x X IH] using gmultiset_ind.
+    { rewrite big_sepMS_empty. apply affinely_elim_emp. }
+    rewrite big_sepMS_insert // -IH.
+    rewrite -persistent_and_sep_1 -affinely_and -pure_and.
+    f_equiv. f_equiv=>HX. split.
+    - apply HX. set_solver+.
+    - intros y Hy. apply HX. multiset_solver.
+  Qed.
+  (** The general backwards direction requires [BiAffine] to cover the empty case. *)
+  Lemma big_sepMS_pure `{!BiAffine PROP} (φ : A → Prop) X :
+    ([∗ mset] y ∈ X, ⌜φ y⌝) ⊣⊢@{PROP} ⌜∀ y : A, y ∈ X → φ y⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_sepMS_pure_1.
+    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite big_sepMS_affinely_pure_2. by setoid_rewrite affinely_elim.
+  Qed.
 
   Lemma big_sepMS_persistently `{BiAffine PROP} Φ X :
     <pers> ([∗ mset] y ∈ X, Φ y) ⊣⊢ [∗ mset] y ∈ X, <pers> (Φ y).

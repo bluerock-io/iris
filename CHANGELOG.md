@@ -42,6 +42,10 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Add support for destructing existentials with the intro pattern `[%x ...]`.
   (by Tej Chajed)
 
+**Changes in `bi`:**
+
+* Add lemmas characterizing big-ops over pure predicates (`big_sep*_pure*`).
+
 **Changes in `base_logic`:**
 
 * Add `ghost_map`, a logic-level library for a `gmap K V` with an authoritative
