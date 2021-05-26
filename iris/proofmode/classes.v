@@ -8,7 +8,7 @@ Import bi.
 (** Use this as precondition on "failing" instances of typeclasses that have
 pure preconditions (such as [ElimModal]), if you want a nice error to be shown
 when this instances is picked as part of some proof mode tactic. *)
-Definition pm_error (s : string) := False.
+Inductive pm_error (s : string) := .
 
 Class FromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   from_assumption : □?p P ⊢ Q.
