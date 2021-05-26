@@ -83,6 +83,7 @@ s/\b(auth|view)_(auth|both|update)_frac_(is_op|op_invN|op_inv|inv_L|validN|op_va
 s/\bgset_bij_auth_frac_(\w*)\b/gset_bij_auth_dfrac_\1/g
 s/\bgset_bij_auth_empty_frac_valid\b/gset_bij_auth_empty_dfrac_valid/g
 s/\bbij_both_frac_valid\b/bij_both_dfrac_valid/g
+# big_sepM renames
 s/\bbig_sepM2_lookup_1\b/big_sepM2_lookup_l/g
 s/\bbig_sepM2_lookup_2\b/big_sepM2_lookup_r/g
 EOF
