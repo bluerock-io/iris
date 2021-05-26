@@ -2010,6 +2010,10 @@ Section gset.
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepS_mono. Qed.
 
+  Lemma big_sepS_elements Φ X :
+    ([∗ set] x ∈ X, Φ x) ⊣⊢ ([∗ list] x ∈ elements X, Φ x).
+  Proof. by rewrite big_opS_elements. Qed.
+
   Lemma big_sepS_empty Φ : ([∗ set] x ∈ ∅, Φ x) ⊣⊢ emp.
   Proof. by rewrite big_opS_empty. Qed.
   Lemma big_sepS_empty' P `{!Affine P} Φ : P ⊢ [∗ set] x ∈ ∅, Φ x.
@@ -2446,4 +2450,85 @@ Section gmultiset.
     (∀ x, Timeless (Φ x)) → Timeless ([∗ mset] x ∈ X, Φ x).
   Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
 End gmultiset.
+
+(** Commuting lemmas *)
+Lemma big_sepL_sepL {A B} (Φ : nat → A → nat → B → PROP) (l1 : list A) (l2 : list B) :
+  ([∗ list] k1↦x1 ∈ l1, [∗ list] k2↦x2 ∈ l2, Φ k1 x1 k2 x2) ⊣⊢
+  ([∗ list] k2↦x2 ∈ l2, [∗ list] k1↦x1 ∈ l1, Φ k1 x1 k2 x2).
+Proof. apply big_opL_opL. Qed.
+Lemma big_sepL_sepM {A} `{Countable K} {B}
+    (Φ : nat → A → K → B → PROP) (l1 : list A) (m2 : gmap K B) :
+  ([∗ list] k1↦x1 ∈ l1, [∗ map] k2↦x2 ∈ m2, Φ k1 x1 k2 x2) ⊣⊢
+  ([∗ map] k2↦x2 ∈ m2, [∗ list] k1↦x1 ∈ l1, Φ k1 x1 k2 x2).
+Proof. apply big_opL_opM. Qed.
+Lemma big_sepL_sepS {A} `{Countable B}
+    (Φ : nat → A → B → PROP) (l1 : list A) (X2 : gset B) :
+  ([∗ list] k1↦x1 ∈ l1, [∗ set] x2 ∈ X2, Φ k1 x1 x2) ⊣⊢
+  ([∗ set] x2 ∈ X2, [∗ list] k1↦x1 ∈ l1, Φ k1 x1 x2).
+Proof. apply big_opL_opS. Qed.
+Lemma big_sepL_sepMS {A} `{Countable B}
+    (Φ : nat → A → B → PROP) (l1 : list A) (X2 : gmultiset B) :
+  ([∗ list] k1↦x1 ∈ l1, [∗ mset] x2 ∈ X2, Φ k1 x1 x2) ⊣⊢
+  ([∗ mset] x2 ∈ X2, [∗ list] k1↦x1 ∈ l1, Φ k1 x1 x2).
+Proof. apply big_opL_opMS. Qed.
+
+Lemma big_sepM_sepL `{Countable K} {A} {B}
+    (Φ : K → A → nat → B → PROP) (m1 : gmap K A) (l2 : list B) :
+  ([∗ map] k1↦x1 ∈ m1, [∗ list] k2↦x2 ∈ l2, Φ k1 x1 k2 x2) ⊣⊢
+  ([∗ list] k2↦x2 ∈ l2, [∗ map] k1↦x1 ∈ m1, Φ k1 x1 k2 x2).
+Proof. apply big_opM_opL. Qed.
+Lemma big_sepM_sepM `{Countable K1} {A} `{Countable K2} {B}
+    (Φ : K1 → A → K2 → B → PROP) (m1 : gmap K1 A) (m2 : gmap K2 B) :
+  ([∗ map] k1↦x1 ∈ m1, [∗ map] k2↦x2 ∈ m2, Φ k1 x1 k2 x2) ⊣⊢
+  ([∗ map] k2↦x2 ∈ m2, [∗ map] k1↦x1 ∈ m1, Φ k1 x1 k2 x2).
+Proof. apply big_opM_opM. Qed.
+Lemma big_sepM_sepS `{Countable K} {A} `{Countable B}
+    (Φ : K → A → B → PROP) (m1 : gmap K A) (X2 : gset B) :
+  ([∗ map] k1↦x1 ∈ m1, [∗ set] x2 ∈ X2, Φ k1 x1 x2) ⊣⊢
+  ([∗ set] x2 ∈ X2, [∗ map] k1↦x1 ∈ m1, Φ k1 x1 x2).
+Proof. apply big_opM_opS. Qed.
+Lemma big_sepM_sepMS `{Countable K} {A} `{Countable B} (Φ : K → A → B → PROP)
+    (m1 : gmap K A) (X2 : gmultiset B) :
+  ([∗ map] k1↦x1 ∈ m1, [∗ mset] x2 ∈ X2, Φ k1 x1 x2) ⊣⊢
+  ([∗ mset] x2 ∈ X2, [∗ map] k1↦x1 ∈ m1, Φ k1 x1 x2).
+Proof. apply big_opM_opMS. Qed.
+
+Lemma big_sepS_sepL `{Countable A} {B}
+    (f : A → nat → B → PROP) (X1 : gset A) (l2 : list B) :
+  ([∗ set] x1 ∈ X1, [∗ list] k2↦x2 ∈ l2, f x1 k2 x2) ⊣⊢
+  ([∗ list] k2↦x2 ∈ l2, [∗ set] x1 ∈ X1, f x1 k2 x2).
+Proof. apply big_opS_opL. Qed.
+Lemma big_sepS_sepM `{Countable A} `{Countable K} {B}
+    (f : A → K → B → PROP) (X1 : gset A) (m2 : gmap K B) :
+  ([∗ set] x1 ∈ X1, [∗ map] k2↦x2 ∈ m2, f x1 k2 x2) ⊣⊢
+  ([∗ map] k2↦x2 ∈ m2, [∗ set] x1 ∈ X1, f x1 k2 x2).
+Proof. apply big_opS_opM. Qed.
+Lemma big_sepS_sepS `{Countable A, Countable B}
+    (X : gset A) (Y : gset B) (Φ : A → B → PROP) :
+  ([∗ set] x ∈ X, [∗ set] y ∈ Y, Φ x y) ⊣⊢ ([∗ set] y ∈ Y, [∗ set] x ∈ X, Φ x y).
+Proof. apply big_opS_opS. Qed.
+Lemma big_sepS_sepMS `{Countable A, Countable B}
+    (X : gset A) (Y : gmultiset B) (Φ : A → B → PROP) :
+  ([∗ set] x ∈ X, [∗ mset] y ∈ Y, Φ x y) ⊣⊢ ([∗ mset] y ∈ Y, [∗ set] x ∈ X, Φ x y).
+Proof. apply big_opS_opMS. Qed.
+
+Lemma big_sepMS_sepL `{Countable A} {B}
+    (f : A → nat → B → PROP) (X1 : gmultiset A) (l2 : list B) :
+  ([∗ mset] x1 ∈ X1, [∗ list] k2↦x2 ∈ l2, f x1 k2 x2) ⊣⊢
+  ([∗ list] k2↦x2 ∈ l2, [∗ mset] x1 ∈ X1, f x1 k2 x2).
+Proof. apply big_opMS_opL. Qed.
+Lemma big_sepMS_sepM `{Countable A} `{Countable K} {B} (f : A → K → B → PROP)
+    (X1 : gmultiset A) (m2 : gmap K B) :
+  ([∗ mset] x1 ∈ X1, [∗ map] k2↦x2 ∈ m2, f x1 k2 x2) ⊣⊢
+  ([∗ map] k2↦x2 ∈ m2, [∗ mset] x1 ∈ X1, f x1 k2 x2).
+Proof. apply big_opMS_opM. Qed.
+Lemma big_sepMS_sepS `{Countable A, Countable B}
+    (X : gmultiset A) (Y : gset B) (f : A → B → PROP) :
+  ([∗ mset] x ∈ X, [∗ set] y ∈ Y, f x y) ⊣⊢ ([∗ set] y ∈ Y, [∗ mset] x ∈ X, f x y).
+Proof. apply big_opMS_opS. Qed.
+Lemma big_sepMS_sepMS `{Countable A, Countable B}
+    (X : gmultiset A) (Y : gmultiset B) (Φ : A → B → PROP) :
+  ([∗ mset] x ∈ X, [∗ mset] y ∈ Y, Φ x y) ⊣⊢ ([∗ mset] y ∈ Y, [∗ mset] x ∈ X, Φ x y).
+Proof. apply big_opMS_opMS. Qed.
+
 End big_op.

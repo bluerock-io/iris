@@ -33,6 +33,7 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Add new lemmas `big_sepM2_delete_l` and `big_sepM2_delete_r`.
 * Rename `big_sepM2_lookup_1` → `big_sepM2_lookup_l` and
   `big_sepM2_lookup_2` → `big_sepM2_lookup_r`.
+* Add lemmas for swapping nested big-ops: `big_sep{L,M,S,MS}_sep{L,M,S,MS}`.
 
 **Changes in `proofmode`:**
 
