@@ -216,7 +216,7 @@ Section sep_list.
     <pers> ([∗ list] k↦x ∈ l, Φ k x) ⊣⊢ [∗ list] k↦x ∈ l, <pers> (Φ k x).
   Proof. apply (big_opL_commute _). Qed.
 
-  Lemma big_sepL_intuitionistically_forall Φ l :
+  Lemma big_sepL_intro Φ l :
     □ (∀ k x, ⌜l !! k = Some x⌝ → Φ k x) ⊢ [∗ list] k↦x ∈ l, Φ k x.
   Proof.
     revert Φ. induction l as [|x l IH]=> Φ /=; [by apply (affine _)|].
@@ -234,7 +234,7 @@ Section sep_list.
     intros HΦ. apply (anti_symm _).
     { apply forall_intro=> k; apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepL_lookup. }
-    rewrite -big_sepL_intuitionistically_forall. setoid_rewrite pure_impl_forall.
+    rewrite -big_sepL_intro. setoid_rewrite pure_impl_forall.
     by rewrite intuitionistic_intuitionistically.
   Qed.
 
@@ -243,7 +243,7 @@ Section sep_list.
     □ (∀ k x, ⌜l !! k = Some x⌝ → Φ k x -∗ Ψ k x) -∗
     [∗ list] k↦x ∈ l, Ψ k x.
   Proof.
-    apply wand_intro_l. rewrite big_sepL_intuitionistically_forall -big_sepL_sep.
+    apply wand_intro_l. rewrite big_sepL_intro -big_sepL_sep.
     by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -684,7 +684,7 @@ Section sep_list2.
     by rewrite !big_sepL2_alt persistently_and persistently_pure big_sepL_persistently.
   Qed.
 
-  Lemma big_sepL2_intuitionistically_forall Φ l1 l2 :
+  Lemma big_sepL2_intro Φ l1 l2 :
     length l1 = length l2 →
     □ (∀ k x1 x2, ⌜l1 !! k = Some x1⌝ → ⌜l2 !! k = Some x2⌝ → Φ k x1 x2) ⊢
     [∗ list] k↦x1;x2 ∈ l1;l2, Φ k x1 x2.
@@ -708,7 +708,7 @@ Section sep_list2.
     - apply and_intro; [apply big_sepL2_length|].
       apply forall_intro=> k. apply forall_intro=> x1. apply forall_intro=> x2.
       do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply :big_sepL2_lookup.
-    - apply pure_elim_l=> ?. rewrite -big_sepL2_intuitionistically_forall //.
+    - apply pure_elim_l=> ?. rewrite -big_sepL2_intro //.
       repeat setoid_rewrite pure_impl_forall.
       by rewrite intuitionistic_intuitionistically.
   Qed.
@@ -720,7 +720,7 @@ Section sep_list2.
     [∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2.
   Proof.
     rewrite -(idemp bi_and (big_sepL2 _ _ _)) {1}big_sepL2_length.
-    apply pure_elim_l=> ?. rewrite big_sepL2_intuitionistically_forall //.
+    apply pure_elim_l=> ?. rewrite big_sepL2_intro //.
     apply bi.wand_intro_l. rewrite -big_sepL2_sep. by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -970,6 +970,9 @@ Section and_list.
     - by rewrite (forall_elim 0) (forall_elim x) pure_True // True_impl.
     - rewrite -IH. apply forall_intro=> k; by rewrite (forall_elim (S k)).
   Qed.
+  Lemma big_andL_intro Φ l :
+    (∀ k x, ⌜l !! k = Some x⌝ → Φ k x) ⊢ [∧ list] k↦x ∈ l, Φ k x.
+  Proof. rewrite big_andL_forall //. Qed.
 
   Global Instance big_andL_nil_persistent Φ :
     Persistent ([∧ list] k↦x ∈ [], Φ k x).
@@ -1055,7 +1058,7 @@ Section or_list.
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_or PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
 
-  Lemma big_orL_lookup Φ l i x :
+  Lemma big_orL_intro Φ l i x :
     l !! i = Some x → Φ i x ⊢ ([∨ list] k↦y ∈ l, Φ k y).
   Proof.
     intros. rewrite -(take_drop_middle l i x) // big_orL_app /=.
@@ -1066,7 +1069,7 @@ Section or_list.
   Lemma big_orL_elem_of (Φ : A → PROP) l x :
     x ∈ l → Φ x ⊢ ([∨ list] y ∈ l, Φ y).
   Proof.
-    intros [i ?]%elem_of_list_lookup; by eapply (big_orL_lookup (λ _, Φ)).
+    intros [i ?]%elem_of_list_lookup; by eapply (big_orL_intro (λ _, Φ)).
   Qed.
 
   Lemma big_orL_fmap {B} (f : A → B) (Φ : nat → B → PROP) l :
@@ -1096,7 +1099,7 @@ Section or_list.
       - by rewrite -(exist_intro 0) -(exist_intro x) pure_True // left_id.
       - rewrite IH. apply exist_elim=> k. by rewrite -(exist_intro (S k)). }
     apply exist_elim=> k; apply exist_elim=> x. apply pure_elim_l=> ?.
-    by apply: big_orL_lookup.
+    by apply: big_orL_intro.
   Qed.
 
   Lemma big_orL_pure (φ : nat → A → Prop) l :
@@ -1319,7 +1322,7 @@ Section map.
     (<pers> ([∗ map] k↦x ∈ m, Φ k x)) ⊣⊢ ([∗ map] k↦x ∈ m, <pers> (Φ k x)).
   Proof. apply (big_opM_commute _). Qed.
 
-  Lemma big_sepM_intuitionistically_forall Φ m :
+  Lemma big_sepM_intro Φ m :
     □ (∀ k x, ⌜m !! k = Some x⌝ → Φ k x) ⊢ [∗ map] k↦x ∈ m, Φ k x.
   Proof.
     revert Φ. induction m as [|i x m ? IH] using map_ind=> Φ.
@@ -1340,7 +1343,7 @@ Section map.
     intros. apply (anti_symm _).
     { apply forall_intro=> k; apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepM_lookup. }
-    rewrite -big_sepM_intuitionistically_forall. setoid_rewrite pure_impl_forall.
+    rewrite -big_sepM_intro. setoid_rewrite pure_impl_forall.
     by rewrite intuitionistic_intuitionistically.
   Qed.
 
@@ -1349,7 +1352,7 @@ Section map.
     □ (∀ k x, ⌜m !! k = Some x⌝ → Φ k x -∗ Ψ k x) -∗
     [∗ map] k↦x ∈ m, Ψ k x.
   Proof.
-    apply wand_intro_l. rewrite big_sepM_intuitionistically_forall -big_sepM_sep.
+    apply wand_intro_l. rewrite big_sepM_intro -big_sepM_sep.
     by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -1815,14 +1818,14 @@ Section map2.
          persistently_pure big_sepM_persistently.
   Qed.
 
-  Lemma big_sepM2_intuitionistically_forall Φ m1 m2 :
+  Lemma big_sepM2_intro Φ m1 m2 :
     (∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
     □ (∀ k x1 x2, ⌜m1 !! k = Some x1⌝ → ⌜m2 !! k = Some x2⌝ → Φ k x1 x2) ⊢
     [∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2.
   Proof.
     intros. rewrite big_sepM2_eq /big_sepM2_def.
     apply and_intro; [by apply pure_intro|].
-    rewrite -big_sepM_intuitionistically_forall. f_equiv; f_equiv=> k.
+    rewrite -big_sepM_intro. f_equiv; f_equiv=> k.
     apply forall_intro=> -[x1 x2]. rewrite (forall_elim x1) (forall_elim x2).
     apply impl_intro_l, pure_elim_l.
     intros (?&?&[= <- <-]&?&?)%map_lookup_zip_with_Some.
@@ -1839,7 +1842,7 @@ Section map2.
     - apply and_intro; [apply big_sepM2_lookup_iff|].
       apply forall_intro=> k. apply forall_intro=> x1. apply forall_intro=> x2.
       do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply :big_sepM2_lookup.
-    - apply pure_elim_l=> ?. rewrite -big_sepM2_intuitionistically_forall //.
+    - apply pure_elim_l=> ?. rewrite -big_sepM2_intro //.
       repeat setoid_rewrite pure_impl_forall.
       by rewrite intuitionistic_intuitionistically.
   Qed.
@@ -1851,7 +1854,7 @@ Section map2.
     [∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2.
   Proof.
     rewrite -(idemp bi_and (big_sepM2 _ _ _)) {1}big_sepM2_lookup_iff.
-    apply pure_elim_l=> ?. rewrite big_sepM2_intuitionistically_forall //.
+    apply pure_elim_l=> ?. rewrite big_sepM2_intro //.
     apply bi.wand_intro_l. rewrite -big_sepM2_sep. by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -2019,6 +2022,9 @@ Section gset.
   Lemma big_sepS_empty' P `{!Affine P} Φ : P ⊢ [∗ set] x ∈ ∅, Φ x.
   Proof. rewrite big_sepS_empty. apply: affine. Qed.
 
+  Lemma big_sepS_emp X : ([∗ set] x ∈ X, emp) ⊣⊢@{PROP} emp.
+  Proof. by rewrite big_opS_unit. Qed.
+
   Lemma big_sepS_insert Φ X x :
     x ∉ X → ([∗ set] y ∈ {[ x ]} ∪ X, Φ y) ⊣⊢ (Φ x ∗ [∗ set] y ∈ X, Φ y).
   Proof. apply big_opS_insert. Qed.
@@ -2131,7 +2137,7 @@ Section gset.
     <pers> ([∗ set] y ∈ X, Φ y) ⊣⊢ [∗ set] y ∈ X, <pers> (Φ y).
   Proof. apply (big_opS_commute _). Qed.
 
-  Lemma big_sepS_intuitionistically_forall Φ X :
+  Lemma big_sepS_intro Φ X :
     □ (∀ x, ⌜x ∈ X⌝ → Φ x) ⊢ [∗ set] x ∈ X, Φ x.
   Proof.
     revert Φ. induction X as [|x X ? IH] using set_ind_L=> Φ.
@@ -2150,7 +2156,7 @@ Section gset.
     intros. apply (anti_symm _).
     { apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepS_elem_of. }
-    rewrite -big_sepS_intuitionistically_forall. setoid_rewrite pure_impl_forall.
+    rewrite -big_sepS_intro. setoid_rewrite pure_impl_forall.
     by rewrite intuitionistic_intuitionistically.
   Qed.
 
@@ -2159,7 +2165,7 @@ Section gset.
     □ (∀ x, ⌜x ∈ X⌝ → Φ x -∗ Ψ x) -∗
     [∗ set] x ∈ X, Ψ x.
   Proof.
-    apply wand_intro_l. rewrite big_sepS_intuitionistically_forall -big_sepS_sep.
+    apply wand_intro_l. rewrite big_sepS_intro -big_sepS_sep.
     by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -2361,7 +2367,7 @@ Section gmultiset.
     <pers> ([∗ mset] y ∈ X, Φ y) ⊣⊢ [∗ mset] y ∈ X, <pers> (Φ y).
   Proof. apply (big_opMS_commute _). Qed.
 
-  Lemma big_sepMS_intuitionistically_forall Φ X :
+  Lemma big_sepMS_intro Φ X :
     □ (∀ x, ⌜x ∈ X⌝ → Φ x) ⊢ [∗ mset] x ∈ X, Φ x.
   Proof.
     revert Φ. induction X as [|x X IH] using gmultiset_ind=> Φ.
@@ -2381,7 +2387,7 @@ Section gmultiset.
     intros. apply (anti_symm _).
     { apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepMS_elem_of. }
-    rewrite -big_sepMS_intuitionistically_forall. setoid_rewrite pure_impl_forall.
+    rewrite -big_sepMS_intro. setoid_rewrite pure_impl_forall.
     by rewrite intuitionistic_intuitionistically.
   Qed.
 
@@ -2390,7 +2396,7 @@ Section gmultiset.
     □ (∀ x, ⌜x ∈ X⌝ → Φ x -∗ Ψ x) -∗
     [∗ mset] x ∈ X, Ψ x.
   Proof.
-    apply wand_intro_l. rewrite big_sepMS_intuitionistically_forall -big_sepMS_sep.
+    apply wand_intro_l. rewrite big_sepMS_intro -big_sepMS_sep.
     by setoid_rewrite wand_elim_l.
   Qed.
 

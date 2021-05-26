@@ -486,6 +486,8 @@ Proof. intros ->. apply wand_intro_r. by rewrite left_id. Qed.
 (* A version that works with rewrite, in which bi_emp_valid is unfolded. *)
 Lemma entails_wand' P Q : (P ⊢ Q) → emp ⊢ (P -∗ Q).
 Proof. apply entails_wand. Qed.
+Lemma wand_entails' P Q : (emp ⊢ (P -∗ Q)) → P ⊢ Q.
+Proof. apply wand_entails. Qed.
 
 Lemma equiv_wand_iff P Q : (P ⊣⊢ Q) → ⊢ P ∗-∗ Q.
 Proof. intros ->; apply wand_iff_refl. Qed.

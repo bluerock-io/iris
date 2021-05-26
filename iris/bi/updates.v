@@ -259,8 +259,7 @@ Section fupd_derived.
     E2 ⊆ E1 → P ⊢ |={E1,E2}=> |={E2,E1}=> P.
   Proof.
     intros HE.
-    (* Get an [emp] so we can apply [fupd_mask_subseteq]. *)
-    rewrite -{1}[P](left_id emp%I bi_sep).
+    apply wand_entails', wand_intro_r.
     rewrite fupd_mask_subseteq; last exact: HE.
     rewrite !fupd_frame_r. rewrite left_id. done.
   Qed.
@@ -284,8 +283,7 @@ Section fupd_derived.
     ((|={E2,E1}=> emp) ={E2,E3}=∗ P) -∗ |={E1,E3}=> P.
   Proof.
     intros HE.
-    (* Get an [emp] so we can apply [fupd_mask_subseteq]. *)
-    rewrite -[X in (X -∗ _)](left_id emp%I bi_sep).
+    apply wand_entails', wand_intro_r.
     rewrite {1}(fupd_mask_subseteq E2) //.
     rewrite fupd_frame_r. by rewrite wand_elim_r fupd_trans.
   Qed.
