@@ -42,6 +42,8 @@ Coq 8.11 is no longer supported in this version of Iris.
   https://gitlab.mpi-sws.org/iris/string-ident. (by Tej Chajed)
 * Add support for destructing existentials with the intro pattern `[%x ...]`.
   (by Tej Chajed)
+* `iMod`/`iModIntro` show proper error messages when they fail due to mask
+  mismatches.
 
 **Changes in `bi`:**
 
