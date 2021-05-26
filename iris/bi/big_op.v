@@ -208,7 +208,7 @@ Section sep_list.
     ([∗ list] k↦x ∈ l, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
   Proof.
     apply (anti_symm (⊢)); first by apply big_sepL_pure_1.
-    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite -(affine_affinely ⌜_⌝).
     rewrite big_sepL_affinely_pure_2. by setoid_rewrite affinely_elim.
   Qed.
 
@@ -955,35 +955,6 @@ Section and_list.
     ⊣⊢ ([∧ list] k↦x ∈ l, Φ k x) ∧ ([∧ list] k↦x ∈ l, Ψ k x).
   Proof. by rewrite big_opL_op. Qed.
 
-  Lemma big_andL_pure_1 (φ : nat → A → Prop) l :
-    ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
-  Proof.
-    induction l as [|x l IH] using rev_ind.
-    { apply pure_intro=>??. rewrite lookup_nil. done. }
-    rewrite big_andL_snoc // IH -pure_and.
-    f_equiv=>-[Hl Hx] k y /lookup_app_Some =>-[Hy|[Hlen Hy]].
-    - by apply Hl.
-    - apply list_lookup_singleton_Some in Hy as [Hk ->].
-      replace k with (length l) by lia. done.
-  Qed.
-  Lemma big_andL_pure_2 (φ : nat → A → Prop) l :
-    ⌜∀ k x, l !! k = Some x → φ k x⌝ ⊢@{PROP} ([∧ list] k↦x ∈ l, ⌜φ k x⌝).
-  Proof.
-    induction l as [|x l IH] using rev_ind.
-    { rewrite big_andL_nil. apply True_intro. }
-    rewrite big_andL_snoc // -IH -pure_and.
-    f_equiv=>- Hlx. split.
-    - intros k y Hy. apply Hlx. rewrite lookup_app Hy //.
-    - apply Hlx. rewrite lookup_app lookup_ge_None_2 //.
-      rewrite Nat.sub_diag //.
-  Qed.
-  Lemma big_andL_pure (φ : nat → A → Prop) l :
-    ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
-  Proof.
-    apply (anti_symm (⊢)); first by apply big_andL_pure_1.
-    apply big_andL_pure_2.
-  Qed.
-
   Lemma big_andL_persistently Φ l :
     <pers> ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ [∧ list] k↦x ∈ l, <pers> (Φ k x).
   Proof. apply (big_opL_commute _). Qed.
@@ -1006,6 +977,31 @@ Section and_list.
   Global Instance big_andL_persistent Φ l :
     (∀ k x, Persistent (Φ k x)) → Persistent ([∧ list] k↦x ∈ l, Φ k x).
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
+  Lemma big_andL_pure_1 (φ : nat → A → Prop) l :
+    ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
+  Proof.
+    induction l as [|x l IH] using rev_ind.
+    { apply pure_intro=>??. rewrite lookup_nil. done. }
+    rewrite big_andL_snoc // IH -pure_and.
+    f_equiv=>-[Hl Hx] k y /lookup_app_Some =>-[Hy|[Hlen Hy]].
+    - by apply Hl.
+    - apply list_lookup_singleton_Some in Hy as [Hk ->].
+      replace k with (length l) by lia. done.
+  Qed.
+  Lemma big_andL_pure_2 (φ : nat → A → Prop) l :
+    ⌜∀ k x, l !! k = Some x → φ k x⌝ ⊢@{PROP} ([∧ list] k↦x ∈ l, ⌜φ k x⌝).
+  Proof.
+    rewrite big_andL_forall pure_forall_1. f_equiv=>k.
+    rewrite pure_forall_1. f_equiv=>x. apply pure_impl_1.
+  Qed.
+  Lemma big_andL_pure (φ : nat → A → Prop) l :
+    ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
+  Proof.
+    apply (anti_symm (⊢)); first by apply big_andL_pure_1.
+    apply big_andL_pure_2.
+  Qed.
+
 End and_list.
 
 Section or_list.
@@ -1315,7 +1311,7 @@ Section map.
     ([∗ map] k↦x ∈ m, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜map_Forall φ m⌝.
   Proof.
     apply (anti_symm (⊢)); first by apply big_sepM_pure_1.
-    rewrite -(affine_affinely ⌜_⌝%I).
+    rewrite -(affine_affinely ⌜_⌝).
     rewrite big_sepM_affinely_pure_2. by setoid_rewrite affinely_elim.
   Qed.
 
