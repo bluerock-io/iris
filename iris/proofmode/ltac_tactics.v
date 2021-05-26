@@ -28,7 +28,10 @@ Ltac iSolveTC :=
 (** Tactic used for solving side-conditions arising from TC resolution in [iMod]
 and [iInv]. *)
 Ltac iSolveSideCondition :=
-  split_and?; try solve [ fast_done | solve_ndisj | iSolveTC ].
+  lazymatch goal with
+  | |- pm_error ?err => fail "" err
+  | _ => split_and?; try solve [ fast_done | solve_ndisj | iSolveTC ]
+  end.
 
 (** Used for printing [string]s and [ident]s. *)
 Ltac pretty_ident H :=
@@ -1382,7 +1385,7 @@ Local Tactic Notation "iExistDestruct" constr(H)
 (** * Modality introduction *)
 Tactic Notation "iModIntro" uconstr(sel) :=
   iStartProof;
-  notypeclasses refine (tac_modal_intro _ sel _ _ _ _ _ _ _ _ _ _ _ _ _);
+  notypeclasses refine (tac_modal_intro _ _ sel _ _ _ _ _ _ _ _ _ _ _ _ _ _);
     [iSolveTC ||
      fail "iModIntro: the goal is not a modality"
     |iSolveTC ||
@@ -1399,6 +1402,7 @@ Tactic Notation "iModIntro" uconstr(sel) :=
      end
     |pm_reduce; iSolveTC ||
      fail "iModIntro: cannot filter spatial context when goal is not absorbing"
+    |iSolveSideCondition
     |pm_prettify (* reduce redexes created by instantiation *)
      (* subgoal *) ].
 Tactic Notation "iModIntro" := iModIntro _.

@@ -124,11 +124,17 @@ Global Instance is_except_0_fupd `{!BiFUpd PROP} E1 E2 P :
 Proof. by rewrite /IsExcept0 except_0_fupd. Qed.
 
 Global Instance from_modal_bupd `{!BiBUpd PROP} P :
-  FromModal modality_id (|==> P) (|==> P) P.
+  FromModal True modality_id (|==> P) (|==> P) P.
 Proof. by rewrite /FromModal /= -bupd_intro. Qed.
 Global Instance from_modal_fupd E P `{!BiFUpd PROP} :
-  FromModal modality_id (|={E}=> P) (|={E}=> P) P.
+  FromModal True modality_id (|={E}=> P) (|={E}=> P) P.
 Proof. by rewrite /FromModal /= -fupd_intro. Qed.
+Global Instance from_modal_fupd_wrong_mask E1 E2 P `{!BiFUpd PROP} :
+  FromModal
+        (pm_error "Only non-mask-changing update modalities can be introduced directly.
+Use [iApply fupd_mask_intro] to introduce mask-changing update modalities")
+    modality_id (|={E1,E2}=> P) (|={E1,E2}=> P) P | 100.
+Proof. by intros []. Qed.
 
 Global Instance elim_modal_bupd `{!BiBUpd PROP} p P Q :
   ElimModal True p false (|==> P) P (|==> Q) (|==> Q).
@@ -161,6 +167,13 @@ Proof.
   by rewrite /ElimModal intuitionistically_if_elim
     fupd_frame_r wand_elim_r fupd_trans.
 Qed.
+Global Instance elim_modal_fupd_fupd_wrong_mask `{!BiFUpd PROP} p E0 E1 E2 E3 P Q :
+  ElimModal
+    (pm_error "Goal and eliminated modality must have the same mask.
+Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]")
+    p false
+    (|={E1,E2}=> P) False (|={E0,E3}=> Q) False | 100.
+Proof. intros []. Qed.
 
 Global Instance add_modal_bupd `{!BiBUpd PROP} P Q : AddModal (|==> P) P (|==> Q).
 Proof. by rewrite /AddModal bupd_frame_r wand_elim_r bupd_trans. Qed.

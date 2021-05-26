@@ -5,6 +5,11 @@ From iris.proofmode Require Export ident_name modalities.
 From iris.prelude Require Import options.
 Import bi.
 
+(** Use this as precondition on "failing" instances of typeclasses that have
+pure preconditions (such as [ElimModal]), if you want a nice error to be shown
+when this instances is picked as part of some proof mode tactic. *)
+Inductive pm_error (s : string) := .
+
 Class FromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   from_assumption : □?p P ⊢ Q.
 Global Arguments FromAssumption {_} _ _%I _%I : simpl never.
@@ -91,8 +96,9 @@ Global Arguments IntoPersistent {_} _ _%I _%I : simpl never.
 Global Arguments into_persistent {_} _ _%I _%I {_}.
 Global Hint Mode IntoPersistent + + ! - : typeclass_instances.
 
-(** The [FromModal M sel P Q] class is used by the [iModIntro] tactic to transform
-a goal [P] into a modality [M] and proposition [Q].
+(** The [FromModal M sel P Q] class is used by the [iModIntro] tactic to
+transform a goal [P] into a modality [M] and proposition [Q], under additional
+pure assumptions [φ].
 
 The inputs are [P] and [sel] and the outputs are [M] and [Q].
 
@@ -108,11 +114,11 @@ instance only imposes the proof obligation [P ⊢ N P]. Examples of such
 modalities [N] are [bupd], [fupd], [except_0], [monPred_subjectively] and
 [bi_absorbingly]. *)
 Class FromModal {PROP1 PROP2 : bi} {A}
-    (M : modality PROP1 PROP2) (sel : A) (P : PROP2) (Q : PROP1) :=
-  from_modal : M Q ⊢ P.
-Global Arguments FromModal {_ _ _} _ _%I _%I _%I : simpl never.
-Global Arguments from_modal {_ _ _} _ _ _%I _%I {_}.
-Global Hint Mode FromModal - + - - - ! - : typeclass_instances.
+    (φ : Prop) (M : modality PROP1 PROP2) (sel : A) (P : PROP2) (Q : PROP1) :=
+  from_modal : φ → M Q ⊢ P.
+Global Arguments FromModal {_ _ _} _ _ _%I _%I _%I : simpl never.
+Global Arguments from_modal {_ _ _} _ _ _ _%I _%I {_}.
+Global Hint Mode FromModal - + - - - - ! - : typeclass_instances.
 
 (** The [FromAffinely P Q] class is used to add an [<affine>] modality to the
 proposition [Q].
@@ -640,8 +646,8 @@ Global Instance from_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PRO
 Global Instance into_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (tc_opaque P) Φ := id.
 Global Instance from_modal_tc_opaque {PROP1 PROP2 : bi} {A}
-    M (sel : A) (P : PROP2) (Q : PROP1) :
-  FromModal M sel P Q → FromModal M sel (tc_opaque P) Q := id.
+    φ M (sel : A) (P : PROP2) (Q : PROP1) :
+  FromModal φ M sel P Q → FromModal φ M sel (tc_opaque P) Q := id.
 Global Instance elim_modal_tc_opaque {PROP : bi} φ p p' (P P' Q Q' : PROP) :
   ElimModal φ p p' P P' Q Q' → ElimModal φ p p' (tc_opaque P) P' Q Q' := id.
 Global Instance into_inv_tc_opaque {PROP : bi} (P : PROP) N :

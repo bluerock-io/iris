@@ -205,12 +205,13 @@ Proof. by rewrite /IsExcept0 except_0_later. Qed.
 
 (** FromModal *)
 Global Instance from_modal_later P :
-  FromModal (modality_laterN 1) (▷^1 P) (▷ P) P.
+  FromModal True (modality_laterN 1) (▷^1 P) (▷ P) P.
 Proof. by rewrite /FromModal. Qed.
 Global Instance from_modal_laterN n P :
-  FromModal (modality_laterN n) (▷^n P) (▷^n P) P.
+  FromModal True (modality_laterN n) (▷^n P) (▷^n P) P.
 Proof. by rewrite /FromModal. Qed.
-Global Instance from_modal_except_0 P : FromModal modality_id (◇ P) (◇ P) P.
+Global Instance from_modal_except_0 P :
+  FromModal True modality_id (◇ P) (◇ P) P.
 Proof. by rewrite /FromModal /= -except_0_intro. Qed.
 
 (** IntoExcept0 *)

@@ -17,7 +17,7 @@ Global Instance into_pure_eq {A : ofe} (a b : A) :
 Proof. intros. by rewrite /IntoPure discrete_eq. Qed.
 
 Global Instance from_modal_Next {A : ofe} (x y : A) :
-  FromModal (PROP1:=PROP) (PROP2:=PROP) (modality_laterN 1)
+  FromModal (PROP1:=PROP) (PROP2:=PROP) True (modality_laterN 1)
     (▷^1 (x ≡ y) : PROP)%I (Next x ≡ Next y) (x ≡ y).
 Proof. by rewrite /FromModal /= later_equivI. Qed.
 
