@@ -1471,6 +1471,47 @@ Section map2.
       apply (big_sepM_delete (λ i xx, Φ i xx.1 xx.2) (map_zip m1 m2) i (x1,x2)).
       by rewrite map_lookup_zip_with Hx1 Hx2.
   Qed.
+  Lemma big_sepM2_delete_l Φ m1 m2 i x1 :
+    m1 !! i = Some x1 →
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
+    ⊣⊢ ∃ x2, ⌜m2 !! i = Some x2⌝ ∧
+            (Φ i x1 x2 ∗ [∗ map] k↦y1;y2 ∈ delete i m1;delete i m2, Φ k y1 y2).
+  Proof.
+    intros Hm1. apply (anti_symm _).
+    - rewrite big_sepM2_eq /big_sepM2_def. apply pure_elim_l=> Hm.
+      assert (is_Some (m2 !! i)) as [x2 Hm2].
+      { apply Hm. by econstructor. }
+      rewrite -(exist_intro x2).
+      rewrite (big_sepM_delete _ _ i (x1,x2)) /=;
+        last by rewrite map_lookup_zip_with Hm1 Hm2.
+      rewrite pure_True // left_id.
+      f_equiv. apply and_intro.
+      + apply pure_intro=> k. by rewrite !lookup_delete_is_Some Hm.
+      + by rewrite -map_delete_zip_with.
+    - apply exist_elim=> x2. apply pure_elim_l=> ?.
+      by rewrite -big_sepM2_delete.
+  Qed.
+  Lemma big_sepM2_delete_r Φ m1 m2 i x2 :
+    m2 !! i = Some x2 →
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
+    ⊣⊢ ∃ x1, ⌜m1 !! i = Some x1⌝ ∧
+            (Φ i x1 x2 ∗ [∗ map] k↦y1;y2 ∈ delete i m1;delete i m2, Φ k y1 y2).
+  Proof.
+    intros Hm2. apply (anti_symm _).
+    - rewrite big_sepM2_eq /big_sepM2_def.
+      apply pure_elim_l=> Hm.
+      assert (is_Some (m1 !! i)) as [x1 Hm1].
+      { apply Hm. by econstructor. }
+      rewrite -(exist_intro x1).
+      rewrite (big_sepM_delete _ _ i (x1,x2)) /=;
+        last by rewrite map_lookup_zip_with Hm1 Hm2.
+      rewrite pure_True // left_id.
+      f_equiv. apply and_intro.
+      + apply pure_intro=> k. by rewrite !lookup_delete_is_Some Hm.
+      + by rewrite -map_delete_zip_with.
+    - apply exist_elim=> x1. apply pure_elim_l=> ?.
+      by rewrite -big_sepM2_delete.
+  Qed.
 
   Lemma big_sepM2_insert_delete Φ m1 m2 i x1 x2 :
     ([∗ map] k↦y1;y2 ∈ <[i:=x1]>m1; <[i:=x2]>m2, Φ k y1 y2)
@@ -1524,39 +1565,21 @@ Section map2.
     m1 !! i = Some x1 → m2 !! i = Some x2 →
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ⊢ Φ i x1 x2.
   Proof. intros. rewrite big_sepM2_lookup_acc //. by rewrite sep_elim_l. Qed.
-
-  Lemma big_sepM2_lookup_1 Φ m1 m2 i x1 `{!∀ x2, Absorbing (Φ i x1 x2)} :
+  Lemma big_sepM2_lookup_l Φ m1 m2 i x1 `{!∀ x2, Absorbing (Φ i x1 x2)} :
     m1 !! i = Some x1 →
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊢ ∃ x2, ⌜m2 !! i = Some x2⌝ ∧ Φ i x1 x2.
   Proof.
-    intros Hm1. rewrite big_sepM2_eq /big_sepM2_def.
-    rewrite persistent_and_sep_1.
-    apply wand_elim_l'. apply pure_elim'=>Hm.
-    assert (is_Some (m2 !! i)) as [x2 Hm2].
-    { apply Hm. by econstructor. }
-    apply wand_intro_r. rewrite -(exist_intro x2).
-    rewrite /big_sepM2 (big_sepM_lookup _ _ i (x1,x2));
-      last by rewrite map_lookup_zip_with Hm1 Hm2.
-    rewrite pure_True// sep_elim_r.
-    apply and_intro=>//. by apply pure_intro.
+    intros Hm1. rewrite big_sepM2_delete_l //.
+    f_equiv=> x2. by rewrite sep_elim_l.
   Qed.
-
-  Lemma big_sepM2_lookup_2 Φ m1 m2 i x2 `{!∀ x1, Absorbing (Φ i x1 x2)} :
+  Lemma big_sepM2_lookup_r Φ m1 m2 i x2 `{!∀ x1, Absorbing (Φ i x1 x2)} :
     m2 !! i = Some x2 →
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊢ ∃ x1, ⌜m1 !! i = Some x1⌝ ∧ Φ i x1 x2.
   Proof.
-    intros Hm2. rewrite big_sepM2_eq /big_sepM2_def.
-    rewrite persistent_and_sep_1.
-    apply wand_elim_l'. apply pure_elim'=>Hm.
-    assert (is_Some (m1 !! i)) as [x1 Hm1].
-    { apply Hm. by econstructor. }
-    apply wand_intro_r. rewrite -(exist_intro x1).
-    rewrite /big_sepM2 (big_sepM_lookup _ _ i (x1,x2));
-      last by rewrite map_lookup_zip_with Hm1 Hm2.
-    rewrite pure_True// sep_elim_r.
-    apply and_intro=>//. by apply pure_intro.
+    intros Hm2. rewrite big_sepM2_delete_r //.
+    f_equiv=> x1. by rewrite sep_elim_l.
   Qed.
 
   Lemma big_sepM2_singleton Φ i x1 x2 :
