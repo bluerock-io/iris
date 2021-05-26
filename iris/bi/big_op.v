@@ -1926,6 +1926,35 @@ Section map2.
     [∗ map] k↦y1;y2 ∈ m1;m2, Φ1 k y1 ∗ Φ2 k y2.
   Proof. intros. apply wand_intro_r. by rewrite big_sepM2_sepM. Qed.
 
+ Lemma big_sepM2_union_inv_l (Φ : K → A → B → PROP) m1 m2 m' :
+    m1 ##ₘ m2 →
+    ([∗ map] k↦x;y ∈ (m1 ∪ m2);m', Φ k x y)
+    ⊢ ∃ m1' m2', ⌜m' = m1' ∪ m2'⌝ ∧ ⌜ m1' ##ₘ m2' ⌝ ∧
+                 ([∗ map] k↦x;y ∈ m1;m1', Φ k x y) ∗
+                 ([∗ map] k↦x;y ∈ m2;m2', Φ k x y).
+  Proof.
+    revert m'. induction m1 as [|i x m1 ? IH] using map_ind;
+      intros m' ?; decompose_map_disjoint.
+    { rewrite -(exist_intro ∅) -(exist_intro m') !left_id_L.
+      rewrite !pure_True //; last by apply map_disjoint_empty_l.
+      rewrite big_sepM2_empty !left_id //. }
+    rewrite -insert_union_l big_sepM2_delete_l; last by apply lookup_insert.
+    apply exist_elim=> y. apply pure_elim_l=> ?.
+    rewrite delete_insert; last by apply lookup_union_None.
+    rewrite IH //.
+    rewrite sep_exist_l. eapply exist_elim=> m1'.
+    rewrite sep_exist_l. eapply exist_elim=> m2'.
+    rewrite comm. apply wand_elim_l', pure_elim_l=> Hm'. apply pure_elim_l=> ?.
+    assert ((m1' ∪ m2') !! i = None) as [??]%lookup_union_None.
+    { by rewrite -Hm' lookup_delete. }
+    apply wand_intro_l.
+    rewrite -(exist_intro (<[i:=y]> m1')) -(exist_intro m2'). apply and_intro.
+    { apply pure_intro. by rewrite -insert_union_l -Hm' insert_delete insert_id. }
+    apply and_intro.
+    { apply pure_intro. by apply map_disjoint_insert_l. }
+    by rewrite big_sepM2_insert // -assoc.
+  Qed.
+
   Global Instance big_sepM2_empty_persistent Φ :
     Persistent ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
   Proof. rewrite big_sepM2_empty. apply _. Qed.
@@ -1950,6 +1979,20 @@ Section map2.
     Timeless ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
   Proof. intros. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 End map2.
+
+Lemma big_sepM2_union_inv_r `{Countable K} {A B}
+      (Φ : K → A → B → PROP) (m1 m2 : gmap K B) (m' : gmap K A) :
+  m1 ##ₘ m2 →
+  ([∗ map] k↦x;y ∈ m';(m1 ∪ m2), Φ k x y)
+    ⊢ ∃ m1' m2', ⌜ m' = m1' ∪ m2' ⌝ ∧ ⌜ m1' ##ₘ m2' ⌝ ∧
+               ([∗ map] k↦x;y ∈ m1';m1, Φ k x y) ∗
+               ([∗ map] k↦x;y ∈ m2';m2, Φ k x y).
+Proof.
+  intros Hm. rewrite -(big_sepM2_flip Φ).
+  rewrite (big_sepM2_union_inv_l (λ k (x : B) y, Φ k y x)) //.
+  f_equiv=>n1. f_equiv=>n2. f_equiv.
+  by rewrite -!(big_sepM2_flip Φ).
+Qed.
 
 Lemma big_sepM_sepM2_diag `{Countable K} {A} (Φ : K → A → A → PROP) (m : gmap K A) :
   ([∗ map] k↦y ∈ m, Φ k y y) -∗
