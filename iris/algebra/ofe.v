@@ -604,6 +604,9 @@ Infix "◎" := ccompose (at level 40, left associativity).
 Global Instance ccompose_ne {A B C} :
   NonExpansive2 (@ccompose A B C).
 Proof. intros n ?? Hf g1 g2 Hg x. rewrite /= (Hg x) (Hf (g2 x)) //. Qed.
+Global Instance ccompose_proper {A B C} :
+  Proper ((≡) ==> (≡) ==> (≡)) (@ccompose A B C).
+Proof. apply ne_proper_2; apply _. Qed.
 
 (* Function space maps *)
 Definition ofe_mor_map {A A' B B'} (f : A' -n> A) (g : B -n> B')
