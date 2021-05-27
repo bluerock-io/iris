@@ -27,6 +27,10 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Demote the Camera structure on `list` to `iris_staging` since its composition
   is not very well-behaved.
 * Extend `gmap_view` with lemmas for "big" operations on maps.
+* Typeclasses instances triggering a canonical structure search such as `Equiv`,
+  `Dist`, `Op`, `Valid`, `ValidN`, `Unit`, `PCore` now use an `Hint Extern`
+  based on `refine` instead of `apply`, in order to use Coq's newer unification
+  algorithm.
 
 **Changes in `bi`:**
 
