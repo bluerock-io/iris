@@ -13,9 +13,6 @@ Section test_dist_equiv_mode.
   Lemma list_equiv_lookup_ofe {A : ofe} (l1 l2 : list A) :
     l1 ≡ l2 ↔ ∀ i, l1 !! i ≡ l2 !! i.
   Abort.
-  Lemma list_equiv_lookup_equiv `{Equiv A} (l1 l2 : list A) :
-    l1 ≡ l2 ↔ ∀ i, l1 !! i ≡ l2 !! i.
-  Abort.
 End test_dist_equiv_mode.
 
 (** Make sure that the same [Equivalence] instance is picked for Leibniz OFEs
