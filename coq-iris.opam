@@ -7,7 +7,7 @@ bug-reports: "https://gitlab.mpi-sws.org/iris/iris/issues"
 dev-repo: "git+https://gitlab.mpi-sws.org/iris/iris.git"
 version: "dev"
 
-synopsis: "Iris is a Higher-Order Concurrent Separation Logic Framework with support for interactive proofs"
+synopsis: "A Higher-Order Concurrent Separation Logic Framework with support for interactive proofs"
 description: """
 This package provides the following Coq modules:
 iris.prelude, iris.algebra, iris.si_logic, iris.bi, iris.proofmode, iris.base_logic, iris.program_logic.
