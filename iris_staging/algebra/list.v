@@ -364,7 +364,7 @@ Section properties.
     ✓ x → (l, ε) ~l~> (l ++ [x], {[length l := x]}).
   Proof.
     move => ?.
-    have -> : ({[length l := x]} ≡ {[length l := x]} ⋅ ε) by rewrite right_id.
+    have -> : ({[length l := x]} ≡@{list A} {[length l := x]} ⋅ ε) by rewrite right_id.
     rewrite -list_singletonM_snoc. apply op_local_update => ??.
     rewrite list_singletonM_snoc app_validN cons_validN. split_and? => //; [| constructor].
     by apply cmra_valid_validN.

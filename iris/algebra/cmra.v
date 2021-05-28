@@ -181,12 +181,13 @@ Global Instance: Params (@core) 2 := {}.
 
 (** * CMRAs with a unit element *)
 Class Unit (A : Type) := ε : A.
+Global Hint Mode Unit ! : typeclass_instances.
 Global Arguments ε {_ _}.
 
 Record UcmraMixin A `{Dist A, Equiv A, PCore A, Op A, Valid A, Unit A} := {
   mixin_ucmra_unit_valid : ✓ (ε : A);
-  mixin_ucmra_unit_left_id : LeftId (≡) ε (⋅);
-  mixin_ucmra_pcore_unit : pcore ε ≡ Some ε
+  mixin_ucmra_unit_left_id : LeftId (≡@{A}) ε (⋅);
+  mixin_ucmra_pcore_unit : pcore ε ≡@{option A} Some ε
 }.
 
 Structure ucmra := Ucmra' {
