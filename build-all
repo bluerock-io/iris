@@ -11,14 +11,13 @@ import requests
 
 # Pre-processing: we support setting `PROJECT` to `user:branch` (GitLab MR syntax),
 # which will set `PROJECT_REPO` and `PROJECT_REV` automatically.
-def preprocess_repo_rev(project):
-    var = project.upper()
+def preprocess_repo_rev(var, project):
     if var in os.environ:
         (repo, rev) = os.environ[var].split(':')
         os.environ[var+"_REPO"] = repo + "/" + project
         os.environ[var+"_REV"] = rev
-preprocess_repo_rev('STDPP')
-preprocess_repo_rev('IRIS')
+preprocess_repo_rev('STDPP', 'stdpp')
+preprocess_repo_rev('IRIS', 'iris')
 
 # Check if everything is set
 if not "GITLAB_TOKEN" in os.environ:
