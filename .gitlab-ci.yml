@@ -72,7 +72,8 @@ build-coq.8.12.2:
 build-stdpp.dev-coq.8.13.1:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.13.1   coq-stdpp.dev git git+https://gitlab.mpi-sws.org/iris/stdpp.git#$STDPP_REV"
+    STDPP_REPO: "iris/stdpp"
+    OPAM_PINS: "coq version 8.13.1   git+https://gitlab.mpi-sws.org/$STDPP_REPO#$STDPP_REV"
   except:
   only:
   - triggers
@@ -83,7 +84,8 @@ build-stdpp.dev-coq.8.13.1:
 build-stdpp.dev-coq.8.13.dev:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.13.dev   coq-stdpp.dev git git+https://gitlab.mpi-sws.org/iris/stdpp.git#$STDPP_REV"
+    STDPP_REPO: "iris/stdpp"
+    OPAM_PINS: "coq version 8.13.dev   git+https://gitlab.mpi-sws.org/$STDPP_REPO#$STDPP_REV"
     CI_COQCHK: "1"
   except:
   only:
