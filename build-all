@@ -6,8 +6,21 @@ import requests
 # against a branch of your choice.
 # Set the GITLAB_TOKEN environment variable to a GitLab access token.
 # Set at least one of IRIS_REV or STDPP_REV to control which branches of these projects to build against
-# (default to `master`).
+# (default to default git branch). IRIS_REPO and STDPP_REPO can be used to take branches from forks.
+# Setting IRIS to "user:branch" will use the given branch on that user's fork of Iris, and similar for STDPP.
 
+# Pre-processing: we support setting `PROJECT` to `user:branch` (GitLab MR syntax),
+# which will set `PROJECT_REPO` and `PROJECT_REV` automatically.
+def preprocess_repo_rev(project):
+    var = project.upper()
+    if var in os.environ:
+        (repo, rev) = os.environ[var].split(':')
+        os.environ[var+"_REPO"] = repo + "/" + project
+        os.environ[var+"_REV"] = rev
+preprocess_repo_rev('STDPP')
+preprocess_repo_rev('IRIS')
+
+# Check if everything is set
 if not "GITLAB_TOKEN" in os.environ:
     print("You need to set the GITLAB_TOKEN environment variable to a GitLab access token.")
     print("You can create such tokens at <https://gitlab.mpi-sws.org/profile/personal_access_tokens>.")
