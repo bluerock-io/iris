@@ -5,6 +5,7 @@ license: "BSD-3-Clause"
 homepage: "https://iris-project.org/"
 bug-reports: "https://gitlab.mpi-sws.org/iris/iris/issues"
 dev-repo: "git+https://gitlab.mpi-sws.org/iris/iris.git"
+version: "dev"
 
 synopsis: "Deprecated Iris libraries"
 description: """
