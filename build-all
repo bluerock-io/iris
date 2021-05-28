@@ -18,6 +18,8 @@ def preprocess_repo_rev(var, project):
         os.environ[var+"_REV"] = rev
 preprocess_repo_rev('STDPP', 'stdpp')
 preprocess_repo_rev('IRIS', 'iris')
+preprocess_repo_rev('ORC11', 'orc11')
+preprocess_repo_rev('GPFSL', 'gpfsl')
 
 # Check if everything is set
 if not "GITLAB_TOKEN" in os.environ:
@@ -31,17 +33,18 @@ if not "IRIS_REV" in os.environ:
     sys.exit(1)
 
 GITLAB_TOKEN = os.environ["GITLAB_TOKEN"]
+VARS = ['STDPP_REPO', 'STDPP_REV', 'IRIS_REPO', 'IRIS_REV', 'ORC11_REPO', 'ORC11_REV', 'GPFSL_REPO', 'GPFSL_REV']
 PROJECTS = [
-    { 'name': 'lambda-rust', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'lambda-rust', 'branch': 'masters/weak_mem', 'vars': ['STDPP_REV', 'IRIS_REV', 'ORC11_REV', 'GPFSL_REV'] }, # covers GPFSL and ORC11
-    { 'name': 'examples', 'branch': 'master', 'vars': ['STDPP_REPO', 'STDPP_REV', 'IRIS_REPO', 'IRIS_REV'] },
-    { 'name': 'iron', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'reloc', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'spygame', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'time-credits', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'actris', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'tutorial-popl20', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'tutorial-popl21', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'lambda-rust', 'branch': 'master' },
+    { 'name': 'lambda-rust', 'branch': 'masters/weak_mem' }, # covers GPFSL and ORC11
+    { 'name': 'examples', 'branch': 'master' },
+    { 'name': 'iron', 'branch': 'master' },
+    { 'name': 'reloc', 'branch': 'master' },
+    { 'name': 'spygame', 'branch': 'master' },
+    { 'name': 'time-credits', 'branch': 'master' },
+    { 'name': 'actris', 'branch': 'master' },
+    { 'name': 'tutorial-popl20', 'branch': 'master' },
+    { 'name': 'tutorial-popl21', 'branch': 'master' },
 ]
 
 filter = sys.argv[1] if len(sys.argv) > 1 else ''
@@ -53,7 +56,7 @@ for project in PROJECTS:
         url = "https://gitlab.mpi-sws.org/api/v4/projects/{}/pipeline".format(id)
         json = {
             'ref': project['branch'],
-            'variables': [{ 'key': var, 'value': os.environ[var] } for var in project['vars'] if var in os.environ],
+            'variables': [{ 'key': var, 'value': os.environ[var] } for var in VARS if var in os.environ],
         }
         r = requests.post(url, headers={'PRIVATE-TOKEN': GITLAB_TOKEN}, json=json)
         r.raise_for_status()
