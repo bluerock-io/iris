@@ -15,14 +15,14 @@ if not "GITLAB_TOKEN" in os.environ:
     sys.exit(1)
 if not "IRIS_REV" in os.environ:
     print("Please set IRIS_REV, STDPP_REV, ORC11_REV and GPFSL_REV environment variables to the branch/tag/commit of the respective project that you want to use.")
-    print("Only IRIS_REV is mandatory, the rest defaults to 'master'.")
+    print("Only IRIS_REV is mandatory, the rest defaults to the default git branch.")
     sys.exit(1)
 
 GITLAB_TOKEN = os.environ["GITLAB_TOKEN"]
 PROJECTS = [
     { 'name': 'lambda-rust', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'lambda-rust', 'branch': 'masters/weak_mem', 'vars': ['STDPP_REV', 'IRIS_REV', 'ORC11_REV', 'GPFSL_REV'] }, # covers GPFSL and ORC11
-    { 'name': 'examples', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'examples', 'branch': 'master', 'vars': ['STDPP_REPO', 'STDPP_REV', 'IRIS_REPO', 'IRIS_REV'] },
     { 'name': 'iron', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'reloc', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'spygame', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
@@ -41,7 +41,7 @@ for project in PROJECTS:
         url = "https://gitlab.mpi-sws.org/api/v4/projects/{}/pipeline".format(id)
         json = {
             'ref': project['branch'],
-            'variables': list(map(lambda var: { 'key': var, 'value': os.environ.get(var, "master") }, project['vars'])),
+            'variables': [{ 'key': var, 'value': os.environ[var] } for var in project['vars'] if var in os.environ],
         }
         r = requests.post(url, headers={'PRIVATE-TOKEN': GITLAB_TOKEN}, json=json)
         r.raise_for_status()
