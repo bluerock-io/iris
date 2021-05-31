@@ -230,7 +230,7 @@ Section bupd_derived.
     Lemma bupd_plain P `{!Plain P} : (|==> P) ⊢ P.
     Proof. by rewrite {1}(plain P) bupd_plainly. Qed.
 
-    Lemma bupd_forall {A} (Φ : A → PROP) `{∀ x, Plain (Φ x)} :
+    Lemma bupd_plain_forall {A} (Φ : A → PROP) `{∀ x, Plain (Φ x)} :
       (|==> ∀ x, Φ x) ⊣⊢ (∀ x, |==> Φ x).
     Proof.
       apply (anti_symm _).
