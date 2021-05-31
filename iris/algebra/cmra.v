@@ -251,6 +251,7 @@ Class CmraMorphism {A B : cmra} (f : A → B) := {
   cmra_morphism_pcore x : f <$> pcore x ≡ pcore (f x);
   cmra_morphism_op x y : f (x ⋅ y) ≡ f x ⋅ f y
 }.
+Global Hint Mode CmraMorphism - - ! : typeclass_instances.
 Global Arguments cmra_morphism_validN {_ _} _ {_} _ _ _.
 Global Arguments cmra_morphism_pcore {_ _} _ {_} _.
 Global Arguments cmra_morphism_op {_ _} _ {_} _ _.
@@ -808,6 +809,7 @@ Bind Scope rFunctor_scope with rFunctor.
 Class rFunctorContractive (F : rFunctor) :=
   rFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
     Contractive (@rFunctor_map F A1 _ A2 _ B1 _ B2 _).
+Global Hint Mode rFunctorContractive ! : typeclass_instances.
 
 Definition rFunctor_apply (F: rFunctor) (A: ofe) `{!Cofe A} : cmra :=
   rFunctor_car F A A.
@@ -899,6 +901,7 @@ Bind Scope urFunctor_scope with urFunctor.
 Class urFunctorContractive (F : urFunctor) :=
   urFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
     Contractive (@urFunctor_map F A1 _ A2 _ B1 _ B2 _).
+Global Hint Mode urFunctorContractive ! : typeclass_instances.
 
 Definition urFunctor_apply (F: urFunctor) (A: ofe) `{!Cofe A} : ucmra :=
   urFunctor_car F A A.
