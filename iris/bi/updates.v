@@ -201,9 +201,25 @@ Section bupd_derived.
     - apply bupd_intro.
   Qed.
 
-  Global Instance bupd_homomorphism :
+  Global Instance bupd_sep_homomorphism :
     MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (bupd (PROP:=PROP)).
   Proof. split; [split|]; try apply _; [apply bupd_sep | apply bupd_intro]. Qed.
+
+  Lemma bupd_or P Q : (|==> P) ∨ (|==> Q) ⊢ |==> (P ∨ Q).
+  Proof. apply or_elim; apply bupd_mono; [ apply or_intro_l | apply or_intro_r ]. Qed.
+
+  Global Instance bupd_or_homomorphism :
+    MonoidHomomorphism bi_or bi_or (flip (⊢)) (bupd (PROP:=PROP)).
+  Proof. split; [split|]; try apply _; [apply bupd_or | apply bupd_intro]. Qed.
+
+  Lemma bupd_and P Q : (|==> (P ∧ Q)) ⊢ (|==> P) ∧ (|==> Q).
+  Proof. apply and_intro; apply bupd_mono; [apply and_elim_l | apply and_elim_r]. Qed.
+
+  Lemma bupd_exist A (Φ : A → PROP) : (∃ x : A, |==> Φ x) ⊢ |==> ∃ x : A, Φ x.
+  Proof. apply exist_elim=> a. by rewrite -(exist_intro a). Qed.
+
+  Lemma bupd_forall A (Φ : A → PROP) : (|==> ∀ x : A, Φ x) ⊢ ∀ x : A, |==> Φ x.
+  Proof. apply forall_intro=> a. by rewrite -(forall_elim a). Qed.
 
   Lemma big_sepL_bupd {A} (Φ : nat → A → PROP) l :
     ([∗ list] k↦x ∈ l, |==> Φ k x) ⊢ |==> [∗ list] k↦x ∈ l, Φ k x.
@@ -230,11 +246,11 @@ Section bupd_derived.
     Lemma bupd_plain P `{!Plain P} : (|==> P) ⊢ P.
     Proof. by rewrite {1}(plain P) bupd_plainly. Qed.
 
-    Lemma bupd_forall {A} (Φ : A → PROP) `{∀ x, Plain (Φ x)} :
+    Lemma bupd_plain_forall {A} (Φ : A → PROP) `{∀ x, Plain (Φ x)} :
       (|==> ∀ x, Φ x) ⊣⊢ (∀ x, |==> Φ x).
     Proof.
       apply (anti_symm _).
-      - apply forall_intro=> x. by rewrite (forall_elim x).
+      - apply bupd_forall.
       - rewrite -bupd_intro. apply forall_intro=> x.
         by rewrite (forall_elim x) bupd_plain.
     Qed.
@@ -378,10 +394,29 @@ Section fupd_derived.
     apply fupd_mask_intro_subseteq; set_solver.
   Qed.
 
+  Lemma fupd_or E1 E2 P Q :
+    (|={E1,E2}=> P) ∨ (|={E1,E2}=> Q) ⊢@{PROP}
+    (|={E1,E2}=> (P ∨ Q)).
+  Proof. apply or_elim; apply fupd_mono; [ apply or_intro_l | apply or_intro_r ]. Qed.
+
+  Global Instance fupd_or_homomorphism E :
+    MonoidHomomorphism bi_or bi_or (flip (⊢)) (fupd (PROP:=PROP) E E).
+  Proof. split; [split|]; try apply _; [apply fupd_or | apply fupd_intro]. Qed.
+
+  Lemma fupd_and E1 E2 P Q :
+    (|={E1,E2}=> (P ∧ Q)) ⊢@{PROP} (|={E1,E2}=> P) ∧ (|={E1,E2}=> Q).
+  Proof. apply and_intro; apply fupd_mono; [apply and_elim_l | apply and_elim_r]. Qed.
+
+  Lemma fupd_exist E1 E2 A (Φ : A → PROP) : (∃ x : A, |={E1, E2}=> Φ x) ⊢ |={E1, E2}=> ∃ x : A, Φ x.
+  Proof. apply exist_elim=> a. by rewrite -(exist_intro a). Qed.
+
+  Lemma fupd_forall E1 E2 A (Φ : A → PROP) : (|={E1, E2}=> ∀ x : A, Φ x) ⊢ ∀ x : A, |={E1, E2}=> Φ x.
+  Proof. apply forall_intro=> a. by rewrite -(forall_elim a). Qed.
+
   Lemma fupd_sep E P Q : (|={E}=> P) ∗ (|={E}=> Q) ={E}=∗ P ∗ Q.
   Proof. by rewrite fupd_frame_r fupd_frame_l fupd_trans. Qed.
 
-  Global Instance fupd_homomorphism E :
+  Global Instance fupd_sep_homomorphism E :
     MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (fupd (PROP:=PROP) E E).
   Proof. split; [split|]; try apply _; [apply fupd_sep | apply fupd_intro]. Qed.
 
@@ -536,8 +571,7 @@ Section fupd_derived.
       E2 ⊆ E1 →
       (|={E1,E2}=> ∀ x, Φ x) ⊣⊢ (∀ x, |={E1,E2}=> Φ x).
     Proof.
-      intros. apply (anti_symm _).
-      { apply forall_intro=> x. by rewrite (forall_elim x). }
+      intros. apply (anti_symm _); first apply fupd_forall.
       trans (∀ x, |={E1}=> Φ x)%I.
       { apply forall_mono=> x. by rewrite fupd_plain_mask. }
       rewrite fupd_plain_forall_2. apply fupd_elim.
