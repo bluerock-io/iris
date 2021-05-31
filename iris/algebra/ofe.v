@@ -13,6 +13,7 @@ Set Primitive Projections.
 
 (** Unbundled version *)
 Class Dist A := dist : nat → relation A.
+Global Hint Mode Dist ! : typeclass_instances.
 Global Instance: Params (@dist) 3 := {}.
 Notation "x ≡{ n }≡ y" := (dist n x y)
   (at level 70, n at next level, format "x  ≡{ n }≡  y").

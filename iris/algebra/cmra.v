@@ -47,7 +47,7 @@ Section mixin.
     mixin_cmra_op_ne (x : A) : NonExpansive (op x);
     mixin_cmra_pcore_ne n (x y : A) cx :
       x ≡{n}≡ y → pcore x = Some cx → ∃ cy, pcore y = Some cy ∧ cx ≡{n}≡ cy;
-    mixin_cmra_validN_ne n : Proper (dist n ==> impl) (validN n);
+    mixin_cmra_validN_ne n : Proper (dist (A := A) n ==> impl) (validN n);
     (* valid *)
     mixin_cmra_valid_validN (x : A) : ✓ x ↔ ∀ n, ✓{n} x;
     mixin_cmra_validN_S n (x : A) : ✓{S n} x → ✓{n} x;

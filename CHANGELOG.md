@@ -31,7 +31,7 @@ Coq 8.11 is no longer supported in this version of Iris.
   `Dist`, `Op`, `Valid`, `ValidN`, `Unit`, `PCore` now use an `Hint Extern`
   based on `refine` instead of `apply`, in order to use Coq's newer unification
   algorithm.
-* Set `Hint Mode` for the classes `OfeDiscrete`, `Unit`, `CmraMorphism`,
+* Set `Hint Mode` for the classes `OfeDiscrete`, `Dist`, `Unit`, `CmraMorphism`,
   `rFunctorContractive`, `urFunctorContractive`.
 
 **Changes in `bi`:**
