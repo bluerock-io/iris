@@ -1501,6 +1501,84 @@ Lemma big_sepM_sep_zip `{Countable K} {A B}
   ([∗ map] k↦x ∈ m1, Φ1 k x) ∗ ([∗ map] k↦y ∈ m2, Φ2 k y).
 Proof. apply big_opM_sep_zip. Qed.
 
+Lemma big_sepM_impl_strong `{Countable K} {A B} Φ (Ψ : K → B → PROP) (m1 : gmap K A) (m2 : gmap K B) :
+  ([∗ map] k↦x ∈ m1, Φ k x) -∗
+  □ (∀ (k : K) (y : B),
+    (if m1 !! k is Some x then Φ k x else emp) -∗
+    ⌜m2 !! k = Some y⌝ →
+    Ψ k y) -∗
+  ([∗ map] k↦y ∈ m2, Ψ k y) ∗
+  ([∗ map] k↦x ∈ (filter (λ '(k, hi), m2 !! k = None) m1), Φ k x).
+Proof.
+  revert m1. induction m2 as [|i y m ? IH] using map_ind=> m1.
+  - apply wand_intro_r.
+    rewrite big_sepM_empty left_id.
+    rewrite intuitionistically_elim_emp right_id.
+    rewrite map_filter_id; done.
+  - apply wand_intro_r.
+    rewrite big_sepM_insert; last done.
+    rewrite intuitionistically_sep_dup.
+    rewrite assoc. rewrite (comm _ _ (□ _))%I.
+    rewrite {1}intuitionistically_elim {1}(forall_elim i) {1}(forall_elim y).
+    rewrite lookup_insert pure_True // left_id.
+    destruct (m1 !! i) as [x|] eqn:Hl.
+    + rewrite big_sepM_delete; last apply Hl.
+      rewrite assoc assoc wand_elim_l -assoc -assoc.
+      apply sep_mono_r.
+      specialize (IH (delete i m1)). apply wand_elim_l' in IH.
+      erewrite map_filter_strong_ext_1.
+      * erewrite <- IH.
+        apply sep_mono_r.
+        apply intuitionistically_intro'. rewrite intuitionistically_elim.
+        apply forall_intro=> k. apply forall_intro=> b.
+        rewrite (forall_elim k) (forall_elim b).
+        apply wand_intro_r.
+        apply impl_intro_l, pure_elim_l=> Hi.
+        assert (i ≠ k) by congruence.
+        rewrite lookup_insert_ne // pure_True // left_id.
+        rewrite lookup_delete_ne // wand_elim_l //.
+      * intros j x'. destruct (decide (i = j)).
+        { simplify_eq. rewrite lookup_delete lookup_insert. naive_solver. }
+        rewrite lookup_delete_ne // lookup_insert_ne //.
+    + rewrite left_id -assoc.
+      apply sep_mono_r.
+      specialize (IH m1). apply wand_elim_l' in IH.
+      erewrite map_filter_strong_ext_1.
+      * erewrite <- IH.
+        apply sep_mono_r.
+        apply intuitionistically_intro'. rewrite intuitionistically_elim.
+        apply forall_intro=> k. apply forall_intro=> b.
+        rewrite (forall_elim k) (forall_elim b).
+        apply wand_intro_r.
+        apply impl_intro_l, pure_elim_l=> ?.
+        rewrite lookup_insert_ne; last congruence.
+        rewrite pure_True // left_id // wand_elim_l //.
+      * intros i' x'. simpl.
+        destruct (decide (i = i')) as [?|neq]; first naive_solver.
+        by rewrite lookup_insert_ne.
+Qed.
+
+Lemma big_sepM_impl_dom_subseteq `{Countable K} {A B}
+    Φ (Ψ : K → B → PROP) (m1 : gmap K A) (m2 : gmap K B) :
+  dom (gset _) m2 ⊆ dom _ m1 →
+  ([∗ map] k↦x ∈ m1, Φ k x) -∗
+  □ (∀ (k : K) (x : A) (y : B),
+      ⌜m1 !! k = Some x⌝ → ⌜m2 !! k = Some y⌝ → Φ k x -∗ Ψ k y) -∗
+  ([∗ map] k↦y ∈ m2, Ψ k y) ∗
+  ([∗ map] k↦x ∈ (filter (λ '(k, _), m2 !! k = None) m1), Φ k x).
+Proof.
+  intros Hsub. rewrite big_sepM_impl_strong.
+  apply wand_mono; last done.
+  apply intuitionistically_intro'. rewrite intuitionistically_elim.
+  apply forall_intro=> k. apply forall_intro=> y.
+  apply wand_intro_r, impl_intro_l, pure_elim_l=> Hlm2.
+  destruct (m1 !! k) as [x|] eqn:Hlm1.
+  - rewrite (forall_elim k) (forall_elim x) (forall_elim y).
+    do 2 rewrite pure_True // left_id //. apply wand_elim_l.
+  - apply elem_of_dom_2 in Hlm2. apply not_elem_of_dom in Hlm1.
+    set_solver.
+Qed.
+
 Section and_map.
   Context `{Countable K} {A : Type}.
   Implicit Types m : gmap K A.
