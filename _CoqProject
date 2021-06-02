@@ -28,7 +28,6 @@ iris/algebra/view.v
 iris/algebra/auth.v
 iris/algebra/gmap.v
 iris/algebra/ofe.v
-iris/algebra/dra.v
 iris/algebra/cofe_solver.v
 iris/algebra/agree.v
 iris/algebra/excl.v
