@@ -1,15 +1,36 @@
+(**
+This file formalizes the STS construction from the original Iris paper (POPL15).
+
+DISCLAIMER: The definition of STSs is included in the Iris development for
+historical purposes. If you plan to mechanize an Iris proof in Coq, it is
+usually better to use a more direct encoding of the ghost state you need as a
+resource algebra (camera). STSs are very painful to use in Coq, and they are
+therefore barely used in practice.
+
+The type [stsT] describes state-transition systems: a type of states, a type of
+tokens, a step relation between states, and a token assignment function. Then
+[sts_resR sts], for [sts: stsT], is the resource algebra of "STS resources",
+which can be fragments ("we are in one of these states", where the set of states
+needs to be closed under transitions performed without the locally owned
+tokens), or authoritative ("we are exactly in this state").
+
+The construction is performed via an intermediate internal type, [sts.car]. The
+reason for this intermediate step is that composition of two STS resources is
+defined only if their token sets are disjoint and the state sets are not
+disjoint (i.e., they have at least one element in common). This condition is not
+decidable, so we cannot use the usual approach (used e.g. in [gset_disj]) of
+just composing those pairs to a dedicated "invalid" element. Instead, [sts_res]
+consists of an [sts.car] element (fragment or authoritative), together with a
+[Prop] defining whether this element is valid. That way we can "defer" the
+validity check from composition to RA validity.
+*)
+
 From stdpp Require Export propset.
 From iris.algebra Require Export cmra updates.
 From iris.prelude Require Import options.
 Local Arguments valid _ _ !_ /.
 Local Arguments op _ _ !_ !_ /.
 Local Arguments core _ _ !_ /.
-
-(** DISCLAIMER: The definition of STSs is included in the Iris development for
-historical purposes. If you plan to mechanize an Iris proof in Coq, it is
-usually better to use a more direct encoding of the ghost state you need as a
-resource algebra (camera). STSs are very painful to use in Coq, and they are
-therefore barely used in practice. *)
 
 (** * Definition of STSs *)
 Module sts.
