@@ -1,7 +1,7 @@
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   one_shotG0 : one_shotG Σ
   Φ : val → iProp Σ
   N : namespace
@@ -20,7 +20,7 @@
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   one_shotG0 : one_shotG Σ
   Φ : val → iProp Σ
   N : namespace

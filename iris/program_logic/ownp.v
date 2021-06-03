@@ -14,13 +14,13 @@ a more interesting notion of ownership, such as the standard heap with disjoint
 union.
 *)
 
-Class ownPG (Λ : language) (Σ : gFunctors) := OwnPG {
-  ownP_invG : invG Σ;
+Class ownPGS (Λ : language) (Σ : gFunctors) := OwnPGS {
+  ownP_invG : invGS Σ;
   ownP_inG :> inG Σ (excl_authR (stateO Λ));
   ownP_name : gname;
 }.
 
-Global Instance ownPG_irisG `{!ownPG Λ Σ} : irisG Λ Σ := {
+Global Instance ownPG_irisGS `{!ownPGS Λ Σ} : irisGS Λ Σ := {
   iris_invG := ownP_invG;
   state_interp σ _ κs _ := own ownP_name (●E σ)%I;
   fork_post _ := True%I;
@@ -33,23 +33,23 @@ Definition ownPΣ (Λ : language) : gFunctors :=
   #[invΣ;
     GFunctor (excl_authR (stateO Λ))].
 
-Class ownPPreG (Λ : language) (Σ : gFunctors) : Set := IrisPreG {
-  ownPPre_invG :> invPreG Σ;
+Class ownPGpreS (Λ : language) (Σ : gFunctors) : Set := {
+  ownPPre_invG :> invGpreS Σ;
   ownPPre_state_inG :> inG Σ (excl_authR (stateO Λ))
 }.
 
-Global Instance subG_ownPΣ {Λ Σ} : subG (ownPΣ Λ) Σ → ownPPreG Λ Σ.
+Global Instance subG_ownPΣ {Λ Σ} : subG (ownPΣ Λ) Σ → ownPGpreS Λ Σ.
 Proof. solve_inG. Qed.
 
 (** Ownership *)
-Definition ownP `{!ownPG Λ Σ} (σ : state Λ) : iProp Σ :=
+Definition ownP `{!ownPGS Λ Σ} (σ : state Λ) : iProp Σ :=
   own ownP_name (◯E σ).
 Typeclasses Opaque ownP.
 Global Instance: Params (@ownP) 3 := {}.
 
 (* Adequacy *)
-Theorem ownP_adequacy Σ `{!ownPPreG Λ Σ} s e σ φ :
-  (∀ `{!ownPG Λ Σ}, ownP σ ⊢ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
+Theorem ownP_adequacy Σ `{!ownPGpreS Λ Σ} s e σ φ :
+  (∀ `{!ownPGS Λ Σ}, ownP σ ⊢ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
   adequate s e σ (λ v _, φ v).
 Proof.
   intros Hwp. apply (wp_adequacy Σ _).
@@ -58,11 +58,11 @@ Proof.
     first by apply excl_auth_valid.
   iModIntro. iExists (λ σ κs, own γσ (●E σ))%I, (λ _, True%I).
   iFrame "Hσ".
-  iApply (Hwp (OwnPG _ _ _ _ γσ)). rewrite /ownP. iFrame.
+  iApply (Hwp (OwnPGS _ _ _ _ γσ)). rewrite /ownP. iFrame.
 Qed.
 
-Theorem ownP_invariance Σ `{!ownPPreG Λ Σ} s e σ1 t2 σ2 φ :
-  (∀ `{!ownPG Λ Σ},
+Theorem ownP_invariance Σ `{!ownPGpreS Λ Σ} s e σ1 t2 σ2 φ :
+  (∀ `{!ownPGS Λ Σ},
       ownP σ1 ={⊤}=∗ WP e @ s; ⊤ {{ _, True }} ∗
       |={⊤,∅}=> ∃ σ', ownP σ' ∧ ⌜φ σ'⌝) →
   rtc erased_step ([e], σ1) (t2, σ2) →
@@ -74,7 +74,7 @@ Proof.
     first by apply auth_both_valid_discrete.
   iExists (λ σ κs' _, own γσ (●E σ))%I, (λ _, True%I).
   iFrame "Hσ".
-  iMod (Hwp (OwnPG _ _ _ _ γσ) with "[Hσf]") as "[$ H]";
+  iMod (Hwp (OwnPGS _ _ _ _ γσ) with "[Hσf]") as "[$ H]";
     first by rewrite /ownP; iFrame.
   iIntros "!> Hσ". iExists ∅. iMod "H" as (σ2') "[Hσf %]". rewrite /ownP.
   iDestruct (own_valid_2 with "Hσ Hσf")
@@ -84,7 +84,7 @@ Qed.
 
 (** Lifting *)
 Section lifting.
-  Context `{!ownPG Λ Σ}.
+  Context `{!ownPGS Λ Σ}.
   Implicit Types s : stuckness.
   Implicit Types e : expr Λ.
   Implicit Types Φ : val Λ → iProp Σ.
@@ -209,7 +209,7 @@ End lifting.
 
 Section ectx_lifting.
   Import ectx_language.
-  Context {Λ : ectxLanguage} `{!ownPG Λ Σ} {Hinh : Inhabited (state Λ)}.
+  Context {Λ : ectxLanguage} `{!ownPGS Λ Σ} {Hinh : Inhabited (state Λ)}.
   Implicit Types s : stuckness.
   Implicit Types Φ : val Λ → iProp Σ.
   Implicit Types e : expr Λ.

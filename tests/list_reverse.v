@@ -8,7 +8,7 @@ Set Default Proof Using "Type".
 Unset Mangle Names.
 
 Section list_reverse.
-Context `{!heapG Σ}.
+Context `{!heapGS Σ}.
 Implicit Types l : loc.
 
 Fixpoint is_list (hd : val) (xs : list val) : iProp Σ :=

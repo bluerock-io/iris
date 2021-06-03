@@ -7,7 +7,7 @@ Definition nondet_bool : val :=
   λ: <>, let: "l" := ref #true in Fork ("l" <- #false);; !"l".
 
 Section proof.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   Lemma nondet_bool_spec : {{{ True }}} nondet_bool #() {{{ (b : bool), RET #b; True }}}.
   Proof.

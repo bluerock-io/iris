@@ -1,7 +1,7 @@
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   N : namespace
@@ -15,7 +15,7 @@
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   N : namespace
@@ -31,7 +31,7 @@
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   γ : gname
@@ -43,7 +43,7 @@
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   γ : gname
@@ -61,7 +61,7 @@
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   γ : gname
@@ -80,7 +80,7 @@
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   t : na_inv_pool_name
@@ -101,7 +101,7 @@
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   t : na_inv_pool_name
@@ -115,7 +115,7 @@
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   t : na_inv_pool_name
@@ -146,7 +146,7 @@ Tactic failure: iInv: invariant "H2" not found.
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   inG0 : inG Σ fracR
@@ -160,7 +160,7 @@ Tactic failure: iInv: invariant "H2" not found.
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   inG0 : inG Σ fracR
@@ -175,7 +175,7 @@ Tactic failure: iInv: invariant "H2" not found.
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   I : biIndex
   N : namespace
   E : coPset
@@ -191,7 +191,7 @@ Tactic failure: iInv: invariant "H2" not found.
 1 goal
   
   Σ : gFunctors
-  invG0 : invG Σ
+  invGS0 : invGS Σ
   I : biIndex
   N : namespace
   E : coPset

@@ -5,17 +5,17 @@ From iris.base_logic.lib Require Export own.
 From iris.prelude Require Import options.
 
 (** All definitions in this file are internal to [fancy_updates] with the
-exception of what's in the [invG] module. The module [invG] is thus exported in
+exception of what's in the [invGS] module. The module [invGS] is thus exported in
 [fancy_updates], which [wsat] is only imported. *)
-Module invG.
-  Class invPreG (Σ : gFunctors) : Set := InvPreG {
-    inv_inPreG :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
-    enabled_inPreG :> inG Σ coPset_disjR;
-    disabled_inPreG :> inG Σ (gset_disjR positive);
+Module invGS.
+  Class invGpreS (Σ : gFunctors) : Set := InvGpreS {
+    invGpreS_inv :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
+    invGpreS_enabled :> inG Σ coPset_disjR;
+    invGpreS_disabled :> inG Σ (gset_disjR positive);
   }.
 
-  Class invG (Σ : gFunctors) : Set := InvG {
-    inv_inG :> invPreG Σ;
+  Class invGS (Σ : gFunctors) : Set := InvG {
+    inv_inG :> invGpreS Σ;
     invariant_name : gname;
     enabled_name : gname;
     disabled_name : gname;
@@ -26,36 +26,36 @@ Module invG.
       GFunctor coPset_disjR;
       GFunctor (gset_disjR positive)].
 
-  Global Instance subG_invΣ {Σ} : subG invΣ Σ → invPreG Σ.
+  Global Instance subG_invΣ {Σ} : subG invΣ Σ → invGpreS Σ.
   Proof. solve_inG. Qed.
-End invG.
-Import invG.
+End invGS.
+Import invGS.
 
 Definition invariant_unfold {Σ} (P : iProp Σ) : later (iProp Σ) :=
   Next P.
-Definition ownI `{!invG Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
+Definition ownI `{!invGS Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
   own invariant_name (gmap_view_frag i DfracDiscarded (invariant_unfold P)).
 Typeclasses Opaque ownI.
 Global Instance: Params (@invariant_unfold) 1 := {}.
 Global Instance: Params (@ownI) 3 := {}.
 
-Definition ownE `{!invG Σ} (E : coPset) : iProp Σ :=
+Definition ownE `{!invGS Σ} (E : coPset) : iProp Σ :=
   own enabled_name (CoPset E).
 Typeclasses Opaque ownE.
 Global Instance: Params (@ownE) 3 := {}.
 
-Definition ownD `{!invG Σ} (E : gset positive) : iProp Σ :=
+Definition ownD `{!invGS Σ} (E : gset positive) : iProp Σ :=
   own disabled_name (GSet E).
 Typeclasses Opaque ownD.
 Global Instance: Params (@ownD) 3 := {}.
 
-Definition wsat `{!invG Σ} : iProp Σ :=
+Definition wsat `{!invGS Σ} : iProp Σ :=
   locked (∃ I : gmap positive (iProp Σ),
     own invariant_name (gmap_view_auth 1 (invariant_unfold <$> I)) ∗
     [∗ map] i ↦ Q ∈ I, ▷ Q ∗ ownD {[i]} ∨ ownE {[i]})%I.
 
 Section wsat.
-Context `{!invG Σ}.
+Context `{!invGS Σ}.
 Implicit Types P : iProp Σ.
 
 (* Invariants *)
@@ -182,7 +182,7 @@ Qed.
 End wsat.
 
 (* Allocation of an initial world *)
-Lemma wsat_alloc `{!invPreG Σ} : ⊢ |==> ∃ _ : invG Σ, wsat ∗ ownE ⊤.
+Lemma wsat_alloc `{!invGpreS Σ} : ⊢ |==> ∃ _ : invGS Σ, wsat ∗ ownE ⊤.
 Proof.
   iIntros.
   iMod (own_alloc (gmap_view_auth 1 ∅)) as (γI) "HI";

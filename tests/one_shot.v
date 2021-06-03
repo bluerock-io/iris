@@ -38,7 +38,7 @@ Proof. solve_inG. Qed.
 
 Section proof.
 Local Set Default Proof Using "Type*".
-Context `{!heapG Σ, !one_shotG Σ}.
+Context `{!heapGS Σ, !one_shotG Σ}.
 
 Definition one_shot_inv (γ : gname) (l : loc) : iProp Σ :=
   (l ↦ NONEV ∗ own γ Pending ∨ ∃ n : Z, l ↦ SOMEV #n ∗ own γ (Shot n))%I.
@@ -109,7 +109,7 @@ Definition client : expr :=
   (Fst "ff" #5 ||| let: "check" := Snd "ff" #() in "check" #()).
 
 Section client.
-  Context `{!heapG Σ, !one_shotG Σ, !spawnG Σ}.
+  Context `{!heapGS Σ, !one_shotG Σ, !spawnG Σ}.
 
   Lemma client_safe : ⊢ WP client {{ _, True }}.
   Proof using Type*.

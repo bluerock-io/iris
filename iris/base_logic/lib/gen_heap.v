@@ -11,7 +11,7 @@ Import uPred.
 (** This file provides a generic mechanism for a language-level point-to
 connective [l ↦{dq} v] reflecting the physical heap.  This library is designed to
 be used as a singleton (i.e., with only a single instance existing in any
-proof), with the [gen_heapG] typeclass providing the ghost names of that unique
+proof), with the [gen_heapGS] typeclass providing the ghost names of that unique
 instance.  That way, [mapsto] does not need an explicit [gname] parameter.
 This mechanism can be plugged into a language and related to the physical heap
 by using [gen_heap_interp σ] in the state interpretation of the weakest
@@ -65,18 +65,18 @@ these can be matched up with the invariant namespaces. *)
 
 (** The CMRAs we need, and the global ghost names we are using. *)
 
-Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heap_preG_inG :> ghost_mapG Σ L V;
-  gen_meta_preG_inG :> ghost_mapG Σ L gname;
-  gen_meta_data_preG_inG :> inG Σ (reservation_mapR (agreeR positiveO));
+Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
+  gen_heapGpreS_heap :> ghost_mapG Σ L V;
+  gen_heapGpreS_meta :> ghost_mapG Σ L gname;
+  gen_heapGpreS_meta_data :> inG Σ (reservation_mapR (agreeR positiveO));
 }.
 
-Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
-  gen_heap_inG :> gen_heapPreG L V Σ;
+Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
+  gen_heap_inG :> gen_heapGpreS L V Σ;
   gen_heap_name : gname;
   gen_meta_name : gname
 }.
-Global Arguments GenHeapG L V Σ {_ _ _} _ _.
+Global Arguments GenHeapGS L V Σ {_ _ _} _ _.
 Global Arguments gen_heap_name {L V Σ _ _} _ : assert.
 Global Arguments gen_meta_name {L V Σ _ _} _ : assert.
 
@@ -86,12 +86,12 @@ Definition gen_heapΣ (L V : Type) `{Countable L} : gFunctors := #[
   GFunctor (reservation_mapR (agreeR positiveO))
 ].
 
-Global Instance subG_gen_heapPreG {Σ L V} `{Countable L} :
-  subG (gen_heapΣ L V) Σ → gen_heapPreG L V Σ.
+Global Instance subG_gen_heapGpreS {Σ L V} `{Countable L} :
+  subG (gen_heapΣ L V) Σ → gen_heapGpreS L V Σ.
 Proof. solve_inG. Qed.
 
 Section definitions.
-  Context `{Countable L, hG : !gen_heapG L V Σ}.
+  Context `{Countable L, hG : !gen_heapGS L V Σ}.
 
   Definition gen_heap_interp (σ : gmap L V) : iProp Σ := ∃ m : gmap L gname,
     (* The [⊆] is used to avoid assigning ghost information to the locations in
@@ -135,7 +135,7 @@ Local Notation "l ↦ v" := (mapsto l (DfracOwn 1) v)
   (at level 20, format "l  ↦  v") : bi_scope.
 
 Section gen_heap.
-  Context {L V} `{Countable L, !gen_heapG L V Σ}.
+  Context {L V} `{Countable L, !gen_heapGS L V Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : V → iProp Σ.
   Implicit Types σ : gmap L V.
@@ -290,28 +290,28 @@ End gen_heap.
 
 (** This variant of [gen_heap_init] should only be used when absolutely needed.
 The key difference to [gen_heap_init] is that the [inG] instances in the new
-[gen_heapG] instance are related to the original [gen_heapPreG] instance,
+[gen_heapGS] instance are related to the original [gen_heapGpreS] instance,
 whereas [gen_heap_init] forgets about that relation. *)
-Lemma gen_heap_init_names `{Countable L, !gen_heapPreG L V Σ} σ :
+Lemma gen_heap_init_names `{Countable L, !gen_heapGpreS L V Σ} σ :
   ⊢ |==> ∃ γh γm : gname,
-    let hG := GenHeapG L V Σ γh γm in
+    let hG := GenHeapGS L V Σ γh γm in
     gen_heap_interp σ ∗ ([∗ map] l ↦ v ∈ σ, l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ, meta_token l ⊤).
 Proof.
   iMod (ghost_map_alloc_empty (K:=L) (V:=V)) as (γh) "Hh".
   iMod (ghost_map_alloc_empty (K:=L) (V:=gname)) as (γm) "Hm".
   iExists γh, γm.
-  iAssert (gen_heap_interp (hG:=GenHeapG _ _ _ γh γm) ∅) with "[Hh Hm]" as "Hinterp".
+  iAssert (gen_heap_interp (hG:=GenHeapGS _ _ _ γh γm) ∅) with "[Hh Hm]" as "Hinterp".
   { iExists ∅; simpl. iFrame "Hh Hm". by rewrite dom_empty_L. }
   iMod (gen_heap_alloc_big with "Hinterp") as "(Hinterp & $ & $)".
   { apply map_disjoint_empty_r. }
   rewrite right_id_L. done.
 Qed.
 
-Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
-  ⊢ |==> ∃ _ : gen_heapG L V Σ,
+Lemma gen_heap_init `{Countable L, !gen_heapGpreS L V Σ} σ :
+  ⊢ |==> ∃ _ : gen_heapGS L V Σ,
     gen_heap_interp σ ∗ ([∗ map] l ↦ v ∈ σ, l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ, meta_token l ⊤).
 Proof.
   iMod (gen_heap_init_names σ) as (γh γm) "Hinit".
-  iExists (GenHeapG _ _ _ γh γm).
+  iExists (GenHeapGS _ _ _ γh γm).
   done.
 Qed.

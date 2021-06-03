@@ -64,6 +64,9 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Generalize the soundness lemma of the base logic `step_fupdN_soundness`.
   It applies even if invariants stay open accross an arbitrary number of laters.
   (by Jacques-Henri Jourdan)
+* Rename those `*G` typeclasses that must be global singletons to `*GS`, and
+  their corresponding `preG` class to `GpreS`. Affects `invG`, `irisG`,
+  `gen_heapG`, `inv_heapG`, `proph_mapG`, `ownPG`, `heapG`.
 
 **Changes in `program_logic`:**
 
@@ -105,6 +108,9 @@ s/\bbig_sepM2_lookup_2\b/big_sepM2_lookup_r/g
 s/\bbig_sep(L|L2|M|M2|S)_intuitionistically_forall\b/big_sep\1_intro/g
 s/\bbig_orL_lookup\b/big_orL_intro/g
 s/\bbupd_forall\b/bupd_plain_forall/g
+# "global singleton" rename
+s/\b(inv|iris|(gen|inv)_heap|(Gen|Inv)Heap|proph_map|ProphMap|[oO]wnP|[hH]eap)G\b/\1GS/g
+s/\b([iI]nv|iris|(gen|inv)_heap|(Gen|Inv)Heap|proph_map|ProphMap|[oO]wnP|[hH]eap)PreG\b/\1GpreS/g
 EOF
 ```
 

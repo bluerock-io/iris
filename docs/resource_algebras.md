@@ -7,7 +7,8 @@ that when dealing with higher-order ghost state -- see "Camera functors" below.)
 
 In our proofs, we always keep the `Σ` universally quantified to enable composition of proofs.
 Each proof just assumes that some particular resource algebras are contained in that global list.
-This is expressed via the `inG Σ R` typeclass, which roughly says that `R ∈ Σ`.
+This is expressed via the `inG Σ R` typeclass, which roughly says that `R ∈ Σ`
+("`R` is in the `G`lobal list of RAs `Σ` -- hence the `G`).
 
 Libraries typically bundle the `inG` they need in a `libG` typeclass, so they do
 not have to expose to clients what exactly their resource algebras are. For
@@ -112,46 +113,50 @@ Proof. apply (heap_adequacy clientΣ)=> ?. apply client_safe. Qed.
 Some Iris modules involve a form of "global state".  For example, defining the
 `↦` for HeapLang involves a piece of ghost state that matches the current
 physical heap.  The `gname` of that ghost state must be picked once when the
-proof starts, and then globally known everywhere.  Hence `gen_heapG`, the type
+proof starts, and then globally known everywhere.  Hence `gen_heapGS`, the type
 class for the generalized heap module, bundles the usual `inG` assumptions
 together with the `gname`:
 ```coq
-Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heap_preG_inG :> inG Σ (authR (gen_heapUR L V))
+Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
+  gen_heapGpreS_heap :> ghost_mapG Σ L V;
 }.
-Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heap_inG :> gen_heapPreG L V Σ;
-  gen_heap_name : gname
+Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
+  gen_heap_inG :> gen_heapGpreS L V Σ;
+  gen_heap_name : gname;
 }.
 ```
+The trailing `S` here is for "singleton", because the idea is that only one
+instance of `gen_heapGS` ever exists. This is important, since two instances
+might have different `gname`s, so `↦` based on these two distinct instances
+would be incompatible with each other.
 
-The `gen_heapPreG` typeclass (without the singleton data) is relevant for
-initialization, i.e., to create an instance of `gen_heapG`. This is happening as
+The `gen_heapGpreS` typeclass (without the singleton data) is relevant for
+initialization, i.e., to create an instance of `gen_heapGS`. This is happening as
 part of [`heap_adequacy`](iris_heap_lang/adequacy.v) using the
-initialization lemma for `gen_heapG` from
+initialization lemma for `gen_heapGS` from
 [`gen_heap_init`](iris/base_logic/lib/gen_heap.v):
 ```coq
-Lemma gen_heap_init `{gen_heapPreG L V Σ} σ :
-  (|==> ∃ _ : gen_heapG L V Σ, gen_heap_ctx σ)%I.
+Lemma gen_heap_init `{gen_heapGpreS L V Σ} σ :
+  (|==> ∃ _ : gen_heapGS L V Σ, gen_heap_ctx σ)%I.
 ```
 These lemmas themselves only make assumptions the way normal modules (those
-without global state) do. Just like in the normal case, `somethingPreG` type
+without global state) do. Just like in the normal case, `somethingGpreS` type
 classes have an `Instance` showing that a `subG` is enough to instantiate them:
 ```coq
-Instance subG_gen_heapPreG {Σ L V} `{Countable L} :
-  subG (gen_heapΣ L V) Σ → gen_heapPreG L V Σ.
+Global Instance subG_gen_heapGpreS {Σ L V} `{Countable L} :
+  subG (gen_heapΣ L V) Σ → gen_heapGpreS L V Σ.
 Proof. solve_inG. Qed.
 ```
-The initialization lemma then shows that the `somethingPreG` type class is
-enough to create an instance of the main `somethingG` class *below a view
+The initialization lemma then shows that the `somethingGpreS` type class is
+enough to create an instance of the main `somethingGS` class *below a view
 shift*.  This is written with an existential quantifier in the lemma because the
 statement after the view shift (`gen_heap_ctx σ` in this case) depends on having
-an instance of `gen_heapG` in the context.
+an instance of `gen_heapGS` in the context.
 
 Given that these global ghost state instances are singletons, they must be
-assumed explicitly everywhere.  Bundling `heapG` in a module type class like
-`one_shotG` would lose track of the fact that there exists just one `heapG`
-instance that is shared by everyone.
+assumed explicitly everywhere.  Bundling `heapGS` in a (non-singleton) module
+type class like `one_shotG` would lose track of the fact that there exists just
+one `heapGS` instance that is shared by everyone.
 
 ## Advanced topic: Camera functors and higher-order ghost state
 

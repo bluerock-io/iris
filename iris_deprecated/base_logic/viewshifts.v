@@ -9,7 +9,7 @@ From iris.proofmode Require Import tactics.
 From iris.base_logic.lib Require Export invariants.
 From iris.prelude Require Import options.
 
-Definition vs `{!invG Σ} (E1 E2 : coPset) (P Q : iProp Σ) : iProp Σ :=
+Definition vs `{!invGS Σ} (E1 E2 : coPset) (P Q : iProp Σ) : iProp Σ :=
   □ (P -∗ |={E1,E2}=> Q).
 Global Arguments vs {_ _} _ _ _%I _%I.
 
@@ -29,7 +29,7 @@ Notation "P ={ E }=> Q" := (P ={E}=> Q)%I
    format "P  ={ E }=>  Q") : stdpp_scope.
 
 Section vs.
-Context `{!invG Σ}.
+Context `{!invGS Σ}.
 Implicit Types P Q R : iProp Σ.
 Implicit Types N : namespace.
 

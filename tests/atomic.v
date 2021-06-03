@@ -6,7 +6,7 @@ Set Default Proof Using "Type".
 Unset Mangle Names.
 
 Section tests.
-  Context `{!heapG Σ} {aheap: atomic_heap Σ}.
+  Context `{!heapGS Σ} {aheap: atomic_heap Σ}.
   Import atomic_heap.notation.
 
   (* FIXME: removing the `val` type annotation breaks printing. *)
@@ -20,7 +20,7 @@ End tests.
 
 (* Test if we get reasonable error messages with non-laterable assertions in the context. *)
 Section error.
-  Context `{!heapG Σ} {aheap: atomic_heap Σ}.
+  Context `{!heapGS Σ} {aheap: atomic_heap Σ}.
   Import atomic_heap.notation.
 
   Check "non_laterable".
@@ -37,7 +37,7 @@ End error.
 (* Test if AWP and the AU obtained from AWP print. *)
 Check "printing".
 Section printing.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   Definition code : expr := #().
 

@@ -55,7 +55,7 @@ preconditions, in sort of `CPS` style, so that they can be applied easier when
 proving client code. A version of [list_reverse] in that style can be found in
 the file [theories/tests/list_reverse.v]. *)
 Section list_reverse.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
   Notation iProp := (iProp Σ).
   Implicit Types l : loc.
 
@@ -109,7 +109,7 @@ under max can be found in [theories/heap_lang/lib/counter.v]. *)
 update modalities (which we did not cover in the paper). Normally we use these
 mask changing update modalities directly in our proofs, but in this file we use
 the first prove the rule as a lemma, and then use that. *)
-Lemma wp_inv_open `{!irisG Λ Σ} N E P e Φ :
+Lemma wp_inv_open `{!irisGS Λ Σ} N E P e Φ :
   nclose N ⊆ E → Atomic WeaklyAtomic e →
   inv N P ∗ (▷ P -∗ WP e @ E ∖ ↑N {{ v, ▷ P ∗ Φ v }}) ⊢ WP e @ E {{ Φ }}.
 Proof.
@@ -190,7 +190,7 @@ Global Instance subG_counterΣ {Σ} : subG counterΣ Σ → counterG Σ.
 Proof. intros [?%subG_inG _]%subG_inv. split; apply _. Qed.
 
 Section counter_proof.
-  Context `{!heapG Σ, !counterG Σ}.
+  Context `{!heapGS Σ, !counterG Σ}.
   Implicit Types l : loc.
 
   Definition I (γ : gname) (l : loc) : iProp Σ :=

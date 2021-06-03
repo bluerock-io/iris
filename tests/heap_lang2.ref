@@ -1,14 +1,14 @@
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   P, Q : iProp Σ
   ============================
   P ={⊤}=∗ Q
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   fun1, fun2, fun3 : expr
   ============================
   --------------------------------------∗
@@ -20,7 +20,7 @@
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   fun1, fun2, fun3 : expr
   ============================
   {{{ True }}}

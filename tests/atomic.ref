@@ -1,7 +1,7 @@
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   aheap : atomic_heap Σ
   Q : iProp Σ
   l : loc
@@ -23,14 +23,14 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   P : val → iProp Σ
   ============================
   ⊢ <<< ∀ x : val, P x >>> code @ ⊤ <<< ∃ y : val, P y, RET #() >>>
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   P : val → iProp Σ
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -41,7 +41,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   P : val → iProp Σ
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -55,14 +55,14 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   ============================
   ⊢ <<< ∀ x : val, l ↦ x >>> code @ ⊤ <<< l ↦ x, RET #() >>>
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -73,7 +73,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -86,14 +86,14 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   ============================
   ⊢ <<< l ↦ #() >>> code @ ⊤ <<< ∃ y : val, l ↦ y, RET #() >>>
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -104,7 +104,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -118,14 +118,14 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   ============================
   ⊢ <<< l ↦ #() >>> code @ ⊤ <<< l ↦ #(), RET #() >>>
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -136,7 +136,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -151,7 +151,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   ============================
   ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x >>>
@@ -160,7 +160,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -172,7 +172,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   ============================
   ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
@@ -181,7 +181,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -193,7 +193,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   ============================
   ⊢ <<< ∀ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
@@ -203,7 +203,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -217,7 +217,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   ============================
   ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
@@ -226,7 +226,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
@@ -238,7 +238,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   x : val
   ============================
@@ -248,7 +248,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   x : val
   Φ : language.val heap_lang → iProp Σ
@@ -261,7 +261,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   x : val
   ============================
@@ -271,7 +271,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   x : val
   Φ : language.val heap_lang → iProp Σ
@@ -284,7 +284,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   xx, yyyy : val
   ============================
@@ -294,7 +294,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   xx, yyyy : val
   Φ : language.val heap_lang → iProp Σ
@@ -307,7 +307,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   xx, yyyy : val
   ============================
@@ -318,7 +318,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   l : loc
   xx, yyyy : val
   Φ : language.val heap_lang → iProp Σ
@@ -334,7 +334,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   P : val → iProp Σ
   Φ : language.val heap_lang → iProp Σ
   ============================

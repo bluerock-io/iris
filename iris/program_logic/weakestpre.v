@@ -7,8 +7,8 @@ From iris.bi Require Export weakestpre.
 From iris.prelude Require Import options.
 Import uPred.
 
-Class irisG (Λ : language) (Σ : gFunctors) := IrisG {
-  iris_invG :> invG Σ;
+Class irisGS (Λ : language) (Σ : gFunctors) := IrisG {
+  iris_invG :> invGS Σ;
 
   (** The state interpretation is an invariant that should hold in
   between each step of reduction. Here [Λstate] is the global state,
@@ -47,7 +47,7 @@ Class irisG (Λ : language) (Σ : gFunctors) := IrisG {
 }.
 Global Opaque iris_invG.
 
-Definition wp_pre `{!irisG Λ Σ} (s : stuckness)
+Definition wp_pre `{!irisGS Λ Σ} (s : stuckness)
     (wp : coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ) :
     coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ := λ E e1 Φ,
   match to_val e1 with
@@ -62,7 +62,7 @@ Definition wp_pre `{!irisG Λ Σ} (s : stuckness)
          [∗ list] i ↦ ef ∈ efs, wp ⊤ ef fork_post
   end%I.
 
-Local Instance wp_pre_contractive `{!irisG Λ Σ} s : Contractive (wp_pre s).
+Local Instance wp_pre_contractive `{!irisGS Λ Σ} s : Contractive (wp_pre s).
 Proof.
   rewrite /wp_pre /= => n wp wp' Hwp E e1 Φ.
   do 24 (f_contractive || f_equiv).
@@ -73,17 +73,17 @@ Proof.
   - by rewrite -IH.
 Qed.
 
-Definition wp_def `{!irisG Λ Σ} : Wp Λ (iProp Σ) stuckness :=
+Definition wp_def `{!irisGS Λ Σ} : Wp Λ (iProp Σ) stuckness :=
   λ s : stuckness, fixpoint (wp_pre s).
 Definition wp_aux : seal (@wp_def). Proof. by eexists. Qed.
 Definition wp' := wp_aux.(unseal).
 Global Arguments wp' {Λ Σ _}.
 Global Existing Instance wp'.
-Lemma wp_eq `{!irisG Λ Σ} : wp = @wp_def Λ Σ _.
+Lemma wp_eq `{!irisGS Λ Σ} : wp = @wp_def Λ Σ _.
 Proof. rewrite -wp_aux.(seal_eq) //. Qed.
 
 Section wp.
-Context `{!irisG Λ Σ}.
+Context `{!irisGS Λ Σ}.
 Implicit Types s : stuckness.
 Implicit Types P : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
@@ -358,7 +358,7 @@ End wp.
 
 (** Proofmode class instances *)
 Section proofmode_classes.
-  Context `{!irisG Λ Σ}.
+  Context `{!irisGS Λ Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val Λ → iProp Σ.
 

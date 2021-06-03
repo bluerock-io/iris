@@ -178,7 +178,7 @@ Section tests.
 End tests.
 
 Section tests_iprop.
-  Context {I : biIndex} `{!invG Σ}.
+  Context {I : biIndex} `{!invGS Σ}.
 
   Local Notation monPred := (monPred I (iPropI Σ)).
   Implicit Types P Q R : monPred.

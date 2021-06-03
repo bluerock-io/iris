@@ -8,7 +8,7 @@ Set Default Proof Using "Type".
 Unset Mangle Names.
 
 Section printing_tests.
-  Context `{!heapG Σ}.
+  Context `{!heapGS Σ}.
 
   Lemma vs_print (P Q : iProp Σ) :
     P ={⊤}=∗ Q.

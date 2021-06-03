@@ -1,7 +1,7 @@
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   hd, acc : val
   xs, ys : list val
   Φ : val → iPropI Σ
@@ -15,7 +15,7 @@
 1 goal
   
   Σ : gFunctors
-  heapG0 : heapG Σ
+  heapGS0 : heapGS Σ
   acc : val
   ys : list val
   Φ : val → iPropI Σ

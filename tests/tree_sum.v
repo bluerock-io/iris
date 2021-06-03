@@ -8,7 +8,7 @@ Inductive tree :=
   | leaf : Z → tree
   | node : tree → tree → tree.
 
-Fixpoint is_tree `{!heapG Σ} (v : val) (t : tree) : iProp Σ :=
+Fixpoint is_tree `{!heapGS Σ} (v : val) (t : tree) : iProp Σ :=
   match t with
   | leaf n => ⌜v = InjLV #n⌝
   | node tl tr =>
@@ -34,7 +34,7 @@ Definition sum' : val := λ: "t",
   sum_loop "t" "l";;
   !"l".
 
-Lemma sum_loop_wp `{!heapG Σ} v t l (n : Z) :
+Lemma sum_loop_wp `{!heapGS Σ} v t l (n : Z) :
   [[{ l ↦ #n ∗ is_tree v t }]]
     sum_loop v #l
   [[{ RET #(); l ↦ #(sum t + n) ∗ is_tree v t }]].
@@ -52,7 +52,7 @@ Proof.
     iExists ll, lr, vl, vr. by iFrame.
 Qed.
 
-Lemma sum_wp `{!heapG Σ} v t :
+Lemma sum_wp `{!heapGS Σ} v t :
   [[{ is_tree v t }]] sum' v [[{ RET #(sum t); is_tree v t }]].
 Proof.
   iIntros (Φ) "Ht HΦ". rewrite /sum' /=.

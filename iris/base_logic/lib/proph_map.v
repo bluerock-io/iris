@@ -8,12 +8,12 @@ Local Notation proph_map P V := (gmap P (list V)).
 Definition proph_val_list (P V : Type) := list (P * V).
 
 (** The CMRA we need. *)
-Class proph_mapPreG (P V : Type) (Σ : gFunctors) `{Countable P} := {
-  proph_map_preG_inG :> ghost_mapG Σ P (list V)
+Class proph_mapGpreS (P V : Type) (Σ : gFunctors) `{Countable P} := {
+  proph_map_GpreS_inG :> ghost_mapG Σ P (list V)
 }.
 
-Class proph_mapG (P V : Type) (Σ : gFunctors) `{Countable P} := ProphMapG {
-  proph_map_inG :> proph_mapPreG P V Σ;
+Class proph_mapGS (P V : Type) (Σ : gFunctors) `{Countable P} := ProphMapGS {
+  proph_map_inG :> proph_mapGpreS P V Σ;
   proph_map_name : gname
 }.
 Global Arguments proph_map_name {_ _ _ _ _} _ : assert.
@@ -21,12 +21,12 @@ Global Arguments proph_map_name {_ _ _ _ _} _ : assert.
 Definition proph_mapΣ (P V : Type) `{Countable P} : gFunctors :=
   #[ghost_mapΣ P (list V)].
 
-Global Instance subG_proph_mapPreG {Σ P V} `{Countable P} :
-  subG (proph_mapΣ P V) Σ → proph_mapPreG P V Σ.
+Global Instance subG_proph_mapGpreS {Σ P V} `{Countable P} :
+  subG (proph_mapΣ P V) Σ → proph_mapGpreS P V Σ.
 Proof. solve_inG. Qed.
 
 Section definitions.
-  Context `{pG : proph_mapG P V Σ}.
+  Context `{pG : proph_mapGS P V Σ}.
   Implicit Types pvs : proph_val_list P V.
   Implicit Types R : proph_map P V.
   Implicit Types p : P.
@@ -72,16 +72,16 @@ Section list_resolves.
   Qed.
 End list_resolves.
 
-Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
-  ⊢ |==> ∃ _ : proph_mapG P V PVS, proph_map_interp pvs ps.
+Lemma proph_map_init `{Countable P, !proph_mapGpreS P V PVS} pvs ps :
+  ⊢ |==> ∃ _ : proph_mapGS P V PVS, proph_map_interp pvs ps.
 Proof.
   iMod (ghost_map_alloc_empty) as (γ) "Hh".
-  iModIntro. iExists (ProphMapG P V PVS _ _ _ γ), ∅. iSplit; last by iFrame.
+  iModIntro. iExists (ProphMapGS P V PVS _ _ _ γ), ∅. iSplit; last by iFrame.
   iPureIntro. done.
 Qed.
 
 Section proph_map.
-  Context `{proph_mapG P V Σ}.
+  Context `{proph_mapGS P V Σ}.
   Implicit Types p : P.
   Implicit Types v : V.
   Implicit Types vs : list V.
