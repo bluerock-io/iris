@@ -151,7 +151,7 @@ Module interp_monad.
   Proof. by inversion 1. Qed.
 
   Lemma mret_inv {A} (v: A) s v' s' :
-    mret v s = (inl v', s') → v = v' ∧ s = s'.
+    mret (M := InterpretM) v s = (inl v', s') → v = v' ∧ s = s'.
   Proof. by inversion 1. Qed.
 
   Lemma interp_bind_inv A B (x: InterpretM A) (f: A → InterpretM B) r s s' :
