@@ -24,6 +24,7 @@ variables:
 .template: &template
   <<: *only_branches
   stage: build
+  interruptible: true
   tags:
   - fp
   script:
@@ -51,6 +52,7 @@ build-coq.dev:
 
 build-coq.8.13.2:
   <<: *template
+  interruptible: false
   variables:
     OPAM_PINS: "coq version 8.13.2"
     DENY_WARNINGS: "1"
