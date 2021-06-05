@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 # do further test/analysis on a branch (usually an MR).
 # Set the GITLAB_TOKEN environment variable to a GitLab access token.
 # Set at least one of IRIS_REV or STDPP_REV to control which branches of these
-# projects to build against (default to default git branch). IRIS_REPO and
+# projects to build against (defaults to default git branch). IRIS_REPO and
 # STDPP_REPO can be used to take branches from forks. Setting IRIS to
 # "user:branch" will use the given branch on that user's fork of Iris, and
 # similar for STDPP.

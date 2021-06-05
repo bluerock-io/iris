@@ -80,28 +80,29 @@ regular `make -jN` before submitting an MR.
 
 ## How to test effects on reverse dependencies
 
-The `iris-bot` script makes it easy tot est the effect of a branch on reverse
+The `iris-bot` script makes it easy to test the effect of a branch on reverse
 dependencies. It can start tests ensuring they all still build, and it can do
 comparative timing runs.
 
+If you have suitable permissions, you can trigger these builds yourself.
 But first, you need to do some setup: you need to create a GitLab access token
 and set the `GITLAB_TOKEN` environment variable to it. Go to
 <https://gitlab.mpi-sws.org/-/profile/personal_access_tokens>, pick a suitable
 name (such as "iris-bot"), select the "api" scope, and then click "Create
 personal access token". Copy the value it shows and store it in some suitable
-place, you will not be able to retrieve this value from GitLab in the future!
+place; you will not be able to retrieve this value from GitLab in the future!
 For example, you could create a `.env` file in your Iris clone containing:
 ```
 export GITLAB_TOKEN=<your token here>
 ```
 Then you can easily get the token back into the environment via `. .env`.
 
-Once that setup is done, you can now use `iris-bot`.
-Set at least one of `IRIS_REV` or `STDPP_REV` to control which branches of these
-projects to build against (default to default git branch). `IRIS_REPO` and
-`STDPP_REPO` can be used to take branches from forks. Setting `IRIS` to
-"user:branch" will use the given branch on that user's fork of Iris, and
-similar for `STDPP`
+Once that setup is done, you can now use `iris-bot`. Set at least one of
+`IRIS_REV` or `STDPP_REV` to control which branches of these projects to build
+against (they default to the default git branch). `IRIS_REPO` and `STDPP_REPO`
+can be used to control the repository in which the branch is situated. Setting
+`IRIS` to "user:branch" will use the given branch on that user's fork of Iris,
+and similar for `STDPP`.
 
 Supported commands:
 - `./iris-bot build [$filter]`: Builds all reverse dependencies against the
@@ -116,7 +117,7 @@ Examples:
   against `myname/mybranch` from the main Iris repository.
 - `IRIS=user:branch ./iris-bot build examples` builds the [examples] against
   the `branch` in `user`'s fork of Iris.
-- `IRIS_REV=myname/mybranch ./iris-bot time examples` measure the timing impact
+- `IRIS_REV=myname/mybranch ./iris-bot time examples` measures the timing impact
   of `myname/mybranch` from the main Iris repository on the [examples].
 
 [examples]: https://gitlab.mpi-sws.org/iris/examples
