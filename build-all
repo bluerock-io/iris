@@ -9,17 +9,23 @@ import requests
 # (default to default git branch). IRIS_REPO and STDPP_REPO can be used to take branches from forks.
 # Setting IRIS to "user:branch" will use the given branch on that user's fork of Iris, and similar for STDPP.
 
-# Pre-processing: we support setting `PROJECT` to `user:branch` (GitLab MR syntax),
-# which will set `PROJECT_REPO` and `PROJECT_REV` automatically.
-def preprocess_repo_rev(var, project):
+# Pre-processing for variables: you can set 'PROJECT' to 'user:branch',
+# or set 'PROJECT_REPO' and 'PROJECT_REV' automatically.
+PROJECT_VARS = ['STDPP', 'IRIS', 'ORC11', 'GPFSL']
+GITLAB_VARS = []
+
+for var in PROJECT_VARS:
     if var in os.environ:
         (repo, rev) = os.environ[var].split(':')
-        os.environ[var+"_REPO"] = repo + "/" + project
-        os.environ[var+"_REV"] = rev
-preprocess_repo_rev('STDPP', 'stdpp')
-preprocess_repo_rev('IRIS', 'iris')
-preprocess_repo_rev('ORC11', 'orc11')
-preprocess_repo_rev('GPFSL', 'gpfsl')
+        repo = repo + "/" + var.lower()
+    else:
+        repo = os.environ.get(var+"_REPO")
+        rev = os.environ.get(var+"_REV")
+    # Add them to GITLAB_VARS
+    if repo is not None:
+        GITLAB_VARS.append({ 'key': var+"_REPO", 'value': repo })
+    if rev is not None:
+        GITLAB_VARS.append({ 'key': var+"_REV", 'value': rev })
 
 # Check if everything is set
 if not "GITLAB_TOKEN" in os.environ:
@@ -27,7 +33,7 @@ if not "GITLAB_TOKEN" in os.environ:
     print("You can create such tokens at <https://gitlab.mpi-sws.org/profile/personal_access_tokens>.")
     print("Make sure you grant access to the 'api' scope.")
     sys.exit(1)
-if not "IRIS_REV" in os.environ:
+if not "IRIS_REV" in os.environ and not "IRIS" in os.environ:
     print("Please set IRIS_REV, STDPP_REV, ORC11_REV and GPFSL_REV environment variables to the branch/tag/commit of the respective project that you want to use.")
     print("Only IRIS_REV is mandatory, the rest defaults to the default git branch.")
     sys.exit(1)
@@ -56,7 +62,7 @@ for project in PROJECTS:
         url = "https://gitlab.mpi-sws.org/api/v4/projects/{}/pipeline".format(id)
         json = {
             'ref': project['branch'],
-            'variables': [{ 'key': var, 'value': os.environ[var] } for var in VARS if var in os.environ],
+            'variables': GITLAB_VARS,
         }
         r = requests.post(url, headers={'PRIVATE-TOKEN': GITLAB_TOKEN}, json=json)
         r.raise_for_status()
