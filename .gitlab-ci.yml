@@ -24,6 +24,7 @@ variables:
 .template: &template
   <<: *only_branches
   stage: build
+  interruptible: true
   tags:
   - fp
   script:
@@ -51,6 +52,7 @@ build-coq.dev:
 
 build-coq.8.13.2:
   <<: *template
+  interruptible: false
   variables:
     OPAM_PINS: "coq version 8.13.2"
     DENY_WARNINGS: "1"
@@ -69,7 +71,7 @@ build-coq.8.12.2:
 
 # Nightly job with a known-to-work Coq version
 # (so failures must be caused by std++)
-build-stdpp.dev-coq.8.13.1:
+trigger-stdpp.dev-coq.8.13.1:
   <<: *template
   variables:
     STDPP_REPO: "iris/stdpp"
@@ -81,7 +83,7 @@ build-stdpp.dev-coq.8.13.1:
   - api
 
 # Nightly job with latest Coq beta branch
-build-stdpp.dev-coq.8.13.dev:
+trigger-stdpp.dev-coq.8.13.dev:
   <<: *template
   variables:
     STDPP_REPO: "iris/stdpp"
