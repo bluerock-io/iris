@@ -78,50 +78,45 @@ same by pinning `coq-iris` to your Iris checkout.)
 Note that `./make-package` will never run the test suite, so please always do a
 regular `make -jN` before submitting an MR.
 
-## How to measure the timing effect on a reverse dependency
+## How to test effects on reverse dependencies
 
-So say you did a change in Iris, and want to know how it affects [lambda-rust]
-or the [examples].  To do this, check out the respective project and change its
-`.gitlab-ci.yml` to contain only one build job, which should look like
+The `iris-bot` script makes it easy tot est the effect of a branch on reverse
+dependencies. It can start tests ensuring they all still build, and it can do
+comparative timing runs.
+
+But first, you need to do some setup: you need to create a GitLab access token
+and set the `GITLAB_TOKEN` environment variable to it. Go to
+<https://gitlab.mpi-sws.org/-/profile/personal_access_tokens>, pick a suitable
+name (such as "iris-bot"), select the "api" scope, and then click "Create
+personal access token". Copy the value it shows and store it in some suitable
+place, you will not be able to retrieve this value from GitLab in the future!
+For example, you could create a `.env` file in your Iris clone containing:
 ```
-build-iris.dev:
-  <<: *template
-  variables:
-    OPAM_PINS: "coq version 8.12.0   git+https://gitlab.mpi-sws.org/iris/iris.git#yourname/feature"
-  tags:
-  - fp-timing
+export GITLAB_TOKEN=<your token here>
 ```
-You will have to adjust this a bit: you should use the same Coq version as
-whatever the master branch uses for its timing job, which you can determine by
-checking its `.gitlab-ci.yml`.  You will also have to adjust the Iris branch
-being used, which is determined after the `#` in `OPAM_PINS`.  If the repo you
-are testing does not need HeapLang, you can remove the `coq-iris-heap-lang` part
-of `OPAM_PINS`.  If you are in doubt, ask on Mattermost *before* pushing your
-branch.  Please double-check that the job name is `build-iris.dev` to avoid
-polluting the caches of regular CI builds!  This way, you are going to share the
-cache with the nightly builds, which is fine.
+Then you can easily get the token back into the environment via `. .env`.
 
-Once you are confident with your CI configuration, push this to a new branch
-whose name starts with `ci/`.  It should usually be of the form
-`ci/yourname/feature`.  You should see a pipeline running in GitLab with just a
-single job, and you can follow its progress there.
+Once that setup is done, you can now use `iris-bot`.
+Set at least one of `IRIS_REV` or `STDPP_REV` to control which branches of these
+projects to build against (default to default git branch). `IRIS_REPO` and
+`STDPP_REPO` can be used to take branches from forks. Setting `IRIS` to
+"user:branch" will use the given branch on that user's fork of Iris, and
+similar for `STDPP`
 
-When the job is done, you should be able to see it as a single dot on our
-[statistics server][coq-speed] after selecting the right project and branch.
-Click on "Coq-Speed" on the top-left corner to switch to another dashboard, and
-select "Coq-Compare".  Now you can select the project and the two measurements
-you want to compare, which would be the SHA of the commit you just created as
-"Commit 2", and the SHA of its parent as "Commit 1".  Don't forget to also
-select the right configuration for both of them.  The "Grouping" is a regular
-expression that you can use to switch between per-file, per-directory and
-per-project grouping of the measurements.
+Supported commands:
+- `./iris-bot build [$filter]`: Builds all reverse dependencies against the
+  given branches. The optional `filter` argument only builds projects whose
+  names contains that string.
+- `./iris-bot time $project`: Measure the impact of this branch on the build
+  time of the given reverse dependency. Only Iris branches are supported for
+  now.
 
-If you changed your Iris branch and want to make another measurement, *do not*
-just "Retry" the CI job.  That will lead to an error, because you would end up
-with two measurements for the same commit.  Instead, create an empty commit in
-your branch of the to-be-measured project (`git commit --allow-empty -m
-"rerun"`), and push that.
+Examples:
+- `IRIS_REV=myname/mybranch ./iris-bot build` builds *all* reverse dependencies
+  against `myname/mybranch` from the main Iris repository.
+- `IRIS=user:branch ./iris-bot build examples` builds the [examples] against
+  the `branch` in `user`'s fork of Iris.
+- `IRIS_REV=myname/mybranch ./iris-bot time examples` measure the timing impact
+  of `myname/mybranch` from the main Iris repository on the [examples].
 
-[lambda-rust]: https://gitlab.mpi-sws.org/iris/lambda-rust
 [examples]: https://gitlab.mpi-sws.org/iris/examples
-[coq-speed]: https://coq-speed.mpi-sws.org
