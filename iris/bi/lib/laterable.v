@@ -90,7 +90,7 @@ Section instances.
   (** A wrapper to obtain a weaker, laterable form of any assertion.
      Alternatively: the modality corresponding to [Laterable].
      The ◇ is required to make [make_laterable_intro'] hold.
-   TODO: Can we define [Laterable] in terms of this? *)
+   TODO: Define [Laterable] in terms of this (see [laterable_alt] below). *)
   Definition make_laterable (Q : PROP) : PROP :=
     ∃ P, ▷ P ∗ □ (▷ P -∗ ◇ Q).
 
@@ -189,6 +189,14 @@ Section instances.
       + apply make_laterable_mono, make_laterable_elim.
       + apply make_laterable_except_0.
     - iApply make_laterable_intro'.
+  Qed.
+
+  Lemma laterable_alt Q :
+    Laterable Q ↔ (Q -∗ make_laterable Q).
+  Proof.
+    split.
+    - intros ?. apply make_laterable_intro'. done.
+    - intros ?. done.
   Qed.
 
   (** * Proofmode integration *)
