@@ -27,9 +27,9 @@ Section error.
   Lemma non_laterable (P : iProp Σ) (l : loc) :
     P -∗ WP !#l {{ _, True }}.
   Proof.
-    iIntros "HP". wp_apply load_spec. Fail iAuIntro.
+    iIntros "HP". wp_apply load_spec. iAuIntro. Show.
   Restart.
-    iIntros "HP". Fail awp_apply load_spec.
+    iIntros "HP". awp_apply load_spec. Show.
   Abort.
 End error.
 

@@ -438,19 +438,45 @@ Section lemmas.
 
 End lemmas.
 
-(** ProofMode support for atomic updates *)
+(** ProofMode support for atomic updates. *)
 Section proof_mode.
   Context `{BiFUpd PROP} {TA TB : tele}.
   Implicit Types (α : TA → PROP) (β Φ : TA → TB → PROP) (P : PROP).
 
-  Lemma tac_aupd_intro Γp Γs n α β Eo Ei Φ P :
-    Timeless (PROP:=PROP) emp →
+  (** We'd like to use the [iModIntro] machinery to transform the context into
+  smoething all-laterable, but we cannot actually use [iModIntro] on
+  [make_laterable]for that since we need to first make the context laterable,
+  then apply coinduction, and then introduce the modality (the last two steps
+  happen inside [aupd_intro]). We instead we define a dummy modality that also
+  uses [MIEnvTransform IntoLaterable] and use that to pre-process the goal. *)
+  Local Definition make_laterable_id (P : PROP) := P.
+
+  Local Lemma modality_make_laterable_id_mixin :
+    modality_mixin make_laterable_id MIEnvId (MIEnvTransform IntoLaterable).
+  Proof.
+    split; simpl; eauto.
+    - intros P Q ?. rewrite (into_laterable P). done.
+  Qed.
+
+  Local Definition modality_make_laterable_id :=
+    Modality _ modality_make_laterable_id_mixin.
+
+  Global Instance from_modal_make_laterable P :
+    FromModal True modality_make_laterable_id (make_laterable_id P) (make_laterable_id P) P.
+  Proof. by rewrite /FromModal. Qed.
+
+  Local Lemma make_laterable_id_elim P :
+    make_laterable_id P -∗ P.
+  Proof. done. Qed.
+
+  (** We need PROP to be affine as otherwise [emp] is not [Laterable]. *)
+  Lemma tac_aupd_intro `{!BiAffine PROP} Γp Γs n α β Eo Ei Φ P :
     TCForall Laterable (env_to_list Γs) →
     P = env_to_prop Γs →
     envs_entails (Envs Γp Γs n) (atomic_acc Eo Ei α P β Φ) →
     envs_entails (Envs Γp Γs n) (atomic_update Eo Ei α β Φ).
   Proof.
-    intros ? HΓs ->. rewrite envs_entails_eq of_envs_eq' /atomic_acc /=.
+    intros HΓs ->. rewrite envs_entails_eq of_envs_eq' /atomic_acc /=.
     setoid_rewrite env_to_prop_sound =>HAU.
     apply aupd_intro; [apply _..|]. done.
   Qed.
@@ -458,10 +484,13 @@ End proof_mode.
 
 (** * Now the coq-level tactics *)
 
+(** This tactic makes the context laterable. *)
+Local Ltac iMakeLaterable :=
+  iApply make_laterable_id_elim; iModIntro.
+
 Tactic Notation "iAuIntro" :=
-  iStartProof; eapply tac_aupd_intro; [
-    iSolveTC || fail "iAuIntro: emp is not timeless"
-  | iSolveTC || fail "iAuIntro: not all spatial assumptions are laterable"
+  iMakeLaterable; eapply tac_aupd_intro; [
+    iSolveTC || fail "bug in iMakeLaterable: context not laterable"
   | (* P = ...: make the P pretty *) pm_reflexivity
   | (* the new proof mode goal *) ].
 
@@ -477,4 +506,4 @@ Tactic Notation "iAaccIntro" "with" constr(sel) :=
   end.
 
 (* From here on, prevent TC search from implicitly unfolding these. *)
-Typeclasses Opaque atomic_acc atomic_update.
+Typeclasses Opaque atomic_acc atomic_update make_laterable_id.
