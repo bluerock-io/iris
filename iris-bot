@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import sys, os, subprocess
-import requests
+import requests, argparse
 from datetime import datetime, timezone
 
 ################################################################################
@@ -62,10 +62,6 @@ if not "iris" in BUILD_BRANCHES:
     print("Only IRIS_REV is mandatory, the rest defaults to the default git branch.")
     sys.exit(1)
 
-# Things Pythonr eally should have...
-def list_get(l, i, default=None):
-    return l[i] if len(l) > i else default
-
 # Useful helpers
 def trigger_build(project, branch, vars):
     id = "iris%2F{}".format(project)
@@ -79,7 +75,7 @@ def trigger_build(project, branch, vars):
     return r.json()['web_url']
 
 # The commands
-def build():
+def build(args):
     # Convert BUILD_BRANCHES into suitable dictionary
     vars = {}
     for project in BUILD_BRANCHES.keys():
@@ -88,14 +84,13 @@ def build():
         vars[var+"_REPO"] = repo
         vars[var+"_REV"] = rev
     # Loop over all projects, and trigger build.
-    filter = list_get(sys.argv, 2, '')
     for (name, project) in PROJECTS.items():
-        if filter in name:
+        if args.filter in name:
             print("Triggering build for {}...".format(name))
             pipeline_url = trigger_build(project['name'], project['branch'], vars)
             print("    Pipeline running at {}".format(pipeline_url))
 
-def time():
+def time(args):
     # Make sure only 'iris' variables are set.
     for project in BUILD_BRANCHES.keys():
         if project != 'iris':
@@ -103,9 +98,9 @@ def time():
             sys.exit(1)
     (iris_repo, iris_rev) = BUILD_BRANCHES['iris']
     # Get project to test and ensure it supports timing
-    project_name = list_get(sys.argv, 2)
-    if project_name is None or project_name not in PROJECTS:
-        print("ERROR: a specific project must be used for timing")
+    project_name = args.project
+    if project_name not in PROJECTS:
+        print("ERROR: no such project: {}".format(project_name))
         sys.exit(1)
     project = PROJECTS[project_name]
     if not project.get('timing'):
@@ -138,11 +133,18 @@ def time():
     print("    Once done, timing comparison will be available at https://coq-speed.mpi-sws.org/d/1QE_dqjiz/coq-compare?orgId=1&var-project={}&var-branch1=@hoc&var-config1={}&var-branch2=@hoc&var-config2={}".format(project['name'], id+"-base", id+"-test"))
 
 # Dispatch
-command = list_get(sys.argv, 1, '')
-if command == 'build':
-    build()
-elif command == 'time':
-    time()
-else:
-    print("ERROR: unsupported or no command")
-    sys.exit(1)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Iris CI utility')
+    subparsers = parser.add_subparsers(required=True, title='iris-bot command to execute', description='see "$command -h" for help', metavar="command")
+
+    parser_build = subparsers.add_parser('build', help='Build many reverse dependencies against an Iris branch')
+    parser_build.set_defaults(func=build)
+    parser_build.add_argument('filter', nargs='?', default='', help='(optional) restrict build to projects matching the filter')
+
+    parser_time = subparsers.add_parser('time', help='Time one reverse dependency against an Iris branch')
+    parser_time.add_argument("project", help="the project to measure the time of")
+    parser_time.set_defaults(func=time)
+
+    # Parse, and dispatch to sub-command
+    args = parser.parse_args()
+    args.func(args)
