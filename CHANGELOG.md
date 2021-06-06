@@ -56,6 +56,8 @@ Coq 8.11 is no longer supported in this version of Iris.
 **Changes in `bi`:**
 
 * Add lemmas characterizing big-ops over pure predicates (`big_sep*_pure*`).
+* Move `BiAffine`, `BiPositive`, `BiLöb`, and `BiPureForall` from
+  `bi.derived_connectives` to `bi.extensions`.
 
 **Changes in `base_logic`:**
 
