@@ -74,7 +74,7 @@ Section definition.
   Proof.
     constructor.
     - iIntros (P1 P2) "#HP12". iIntros ([]) "AU".
-      iApply (make_laterable_wand with "[] AU").
+      iApply (make_laterable_intuitionistic_wand with "[] AU").
       iIntros "!> AA". iApply (atomic_acc_wand with "[HP12] AA").
       iSplit; last by eauto. iApply "HP12".
     - intros ??. solve_proper.
@@ -255,7 +255,7 @@ Section lemmas.
     iIntros (Heo) "HAU".
     iApply (greatest_fixpoint_coind _ (λ _, atomic_update_def Eo1 Ei α β Φ)); last done.
     iIntros "!> *". rewrite {1}/atomic_update_def /= greatest_fixpoint_unfold.
-    iApply make_laterable_wand. iIntros "!>".
+    iApply make_laterable_intuitionistic_wand. iIntros "!>".
     iApply atomic_acc_mask_weaken. done.
   Qed.
 
@@ -266,7 +266,7 @@ Section lemmas.
   Proof using Type*.
     rewrite atomic_update_eq {1}/atomic_update_def /=. iIntros "HUpd".
     iPoseProof (greatest_fixpoint_unfold_1 with "HUpd") as "HUpd".
-    iApply make_laterable_elim. done.
+    iDestruct (make_laterable_elim with "HUpd") as ">?". done.
   Qed.
 
   (* This lets you eliminate atomic updates with iMod. *)
@@ -300,7 +300,7 @@ Section lemmas.
     rewrite atomic_update_eq {1}/atomic_update_def /=.
     iIntros (??? HAU) "[#HP HQ]".
     iApply (greatest_fixpoint_coind _ (λ _, Q)); last done. iIntros "!>" ([]) "HQ".
-    iApply (make_laterable_intro Q with "[] HQ"). iIntros "!> >HQ".
+    iApply (make_laterable_intro Q with "[] HQ"). iIntros "!> HQ".
     iApply HAU. by iFrame.
   Qed.
 

@@ -9,6 +9,18 @@ Global Arguments Laterable {_} _%I : simpl never.
 Global Arguments laterable {_} _%I {_}.
 Global Hint Mode Laterable + ! : typeclass_instances.
 
+(** Proofmode class for turning [P] into a laterable [Q].
+    Well be the identity if [P] already is laterable, and add
+    [make_laterable] otherwise. *)
+Class IntoLaterable {PROP : bi} (P Q : PROP) : Prop := {
+  into_laterable : P ⊢ Q;
+  into_laterable_result_laterable : Laterable Q;
+}.
+Global Arguments IntoLaterable {_} P%I Q%I.
+Global Arguments into_laterable {_} P%I Q%I {_}.
+Global Arguments into_laterable_result_laterable {_} P%I Q%I {_}.
+Global Hint Mode IntoLaterable + ! - : typeclass_instances.
+
 Section instances.
   Context {PROP : bi}.
   Implicit Types P : PROP.
@@ -75,10 +87,12 @@ Section instances.
     Laterable ([∗] Ps).
   Proof. induction 2; simpl; apply _. Qed.
 
-  (* A wrapper to obtain a weaker, laterable form of any assertion.
-     Alternatively: the modality corresponding to [Laterable]. *)
+  (** A wrapper to obtain a weaker, laterable form of any assertion.
+     Alternatively: the modality corresponding to [Laterable].
+     The ◇ is required to make [make_laterable_intro'] hold.
+   TODO: Can we define [Laterable] in terms of this? *)
   Definition make_laterable (Q : PROP) : PROP :=
-    ∃ P, ▷ P ∗ □ (▷ P -∗ Q).
+    ∃ P, ▷ P ∗ □ (▷ P -∗ ◇ Q).
 
   Global Instance make_laterable_ne : NonExpansive make_laterable.
   Proof. solve_proper. Qed.
@@ -93,6 +107,25 @@ Section instances.
     (Q1 ⊢ Q2) → (make_laterable Q1 ⊢ make_laterable Q2).
   Proof. by intros ->. Qed.
 
+  Lemma make_laterable_except_0 Q :
+    make_laterable (◇ Q) -∗ make_laterable Q.
+  Proof.
+    iIntros "(%P & HP & #HPQ)". iExists P. iFrame.
+    iIntros "!# HP". iMod ("HPQ" with "HP"). done.
+  Qed.
+
+  Lemma make_laterable_sep Q1 Q2 :
+    make_laterable Q1 ∗ make_laterable Q2 -∗ make_laterable (Q1 ∗ Q2).
+  Proof.
+    iIntros "[HQ1 HQ2]".
+    iDestruct "HQ1" as (P1) "[HP1 #HQ1]".
+    iDestruct "HQ2" as (P2) "[HP2 #HQ2]".
+    iExists (P1 ∗ P2)%I. iFrame. iIntros "!# [HP1 HP2]".
+    iDestruct ("HQ1" with "HP1") as ">$".
+    iDestruct ("HQ2" with "HP2") as ">$".
+    done.
+  Qed.
+
   (** A stronger version of [make_laterable_mono] that lets us keep laterable
   resources. We cannot keep arbitrary resources since that would let us "frame
   in" non-laterable things. *)
@@ -100,10 +133,20 @@ Section instances.
     make_laterable (Q1 -∗ Q2) -∗ (make_laterable Q1 -∗ make_laterable Q2).
   Proof.
     iIntros "HQ HQ1".
-    iDestruct "HQ" as (Q1') "[HQ1' #HQ]".
-    iDestruct "HQ1" as (P) "[HP #HQ1]".
-    iExists (Q1' ∗ P)%I. iFrame. iIntros "!> [HQ1' HP]".
-    iApply ("HQ" with "HQ1'"). iApply "HQ1". done.
+    iDestruct (make_laterable_sep with "[$HQ $HQ1 //]") as "HQ".
+    iApply make_laterable_mono; last done.
+    by rewrite bi.wand_elim_l.
+  Qed.
+
+  (** A variant of the above for keeping arbitrary intuitionistic resources.
+      Sadly, this is not implied by the above for non-affine BIs. *)
+  Lemma make_laterable_intuitionistic_wand Q1 Q2 :
+    □ (Q1 -∗ Q2) -∗ (make_laterable Q1 -∗ make_laterable Q2).
+  Proof.
+    iIntros "#HQ HQ1". iDestruct "HQ1" as (P) "[HP #HQ1]".
+    iExists P. iFrame. iIntros "!> HP".
+    iDestruct ("HQ1" with "HP") as "{HQ1} >HQ1".
+    iModIntro. iApply "HQ". done.
   Qed.
 
   Global Instance make_laterable_laterable Q :
@@ -114,7 +157,7 @@ Section instances.
   Qed.
 
   Lemma make_laterable_elim Q :
-    make_laterable Q -∗ Q.
+    make_laterable Q -∗ ◇ Q.
   Proof.
     iIntros "HQ". iDestruct "HQ" as (P) "[HP #HQ]". by iApply "HQ".
   Qed.
@@ -123,12 +166,57 @@ Section instances.
       that persistent assertions can be kept unchanged. *)
   Lemma make_laterable_intro P Q :
     Laterable P →
-    □ (◇ P -∗ Q) -∗ P -∗ make_laterable Q.
+    □ (P -∗ Q) -∗ P -∗ make_laterable Q.
   Proof.
     iIntros (?) "#HQ HP".
     iDestruct (laterable with "HP") as (P') "[HP' #HPi]". iExists P'.
-    iFrame. iIntros "!> HP'". iApply "HQ". iApply "HPi". done.
+    iFrame. iIntros "!> HP'".
+    iDestruct ("HPi" with "HP'") as ">HP". iModIntro.
+    iApply "HQ". done.
   Qed.
+  Lemma make_laterable_intro' Q :
+    Laterable Q →
+    Q -∗ make_laterable Q.
+  Proof.
+    intros ?. iApply make_laterable_intro. iIntros "!# $".
+  Qed.
+
+  Lemma make_laterable_idemp Q :
+    make_laterable (make_laterable Q) ⊣⊢ make_laterable Q.
+  Proof.
+    apply (anti_symm (⊢)).
+    - trans (make_laterable (◇ Q)).
+      + apply make_laterable_mono, make_laterable_elim.
+      + apply make_laterable_except_0.
+    - iApply make_laterable_intro'.
+  Qed.
+
+  (** * Proofmode integration *)
+  Global Instance into_laterable_laterable P :
+    Laterable P →
+    IntoLaterable P P.
+  Proof. intros ?. constructor; done. Qed.
+
+  Global Instance into_laterable_fallback P :
+    IntoLaterable P (▷ P) | 100.
+  Proof. constructor; last by apply _. apply bi.later_intro. Qed.
+
+  (** We need PROP to be affine as otherwise [emp] is not [Laterable]. *)
+  Lemma modality_make_laterable_mixin `{!BiAffine PROP} :
+    modality_mixin make_laterable MIEnvId (MIEnvTransform IntoLaterable).
+  Proof.
+    split; simpl; eauto using make_laterable_intro', make_laterable_mono,
+      make_laterable_sep with typeclass_instances.
+    - intros P Q ?. rewrite (into_laterable P).
+      apply make_laterable_intro'. eapply (into_laterable_result_laterable P), _.
+  Qed.
+
+  Definition modality_make_laterable `{!BiAffine PROP} :=
+    Modality _ modality_make_laterable_mixin.
+
+  Global Instance from_modal_make_laterable `{!BiAffine PROP} P :
+    FromModal True modality_make_laterable (make_laterable P) (make_laterable P) P.
+  Proof. by rewrite /FromModal. Qed.
 
 End instances.
 
