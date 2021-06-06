@@ -135,7 +135,7 @@ def time(args):
 # Dispatch
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Iris CI utility')
-    subparsers = parser.add_subparsers(required=True, title='iris-bot command to execute', description='see "$command -h" for help', metavar="command")
+    subparsers = parser.add_subparsers(required=True, title='iris-bot command to execute', description='see "$command -h" for help', metavar="$command")
 
     parser_build = subparsers.add_parser('build', help='Build many reverse dependencies against an Iris branch')
     parser_build.set_defaults(func=build)
