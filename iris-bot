@@ -26,7 +26,7 @@ PROJECTS = {
     'lambda-rust': { 'name': 'lambda-rust', 'branch': 'master', 'timing': True },
     'lambda-rust-weak': { 'name': 'lambda-rust', 'branch': 'masters/weak_mem' }, # covers GPFSL and ORC11
     'examples': { 'name': 'examples', 'branch': 'master', 'timing': True },
-    'iron': { 'name': 'iron', 'branch': 'master' },
+    'iron': { 'name': 'iron', 'branch': 'master', 'timing': True },
     'reloc': { 'name': 'reloc', 'branch': 'master' },
     'spygame': { 'name': 'spygame', 'branch': 'master' },
     'time-credits': { 'name': 'time-credits', 'branch': 'master' },
@@ -115,7 +115,7 @@ def time(args):
     subprocess.run(["git", "fetch", "-q", "origin", "master"], check=True)
     base_commit = subprocess.run(["git", "merge-base", test_commit, "origin/master"], check=True, stdout=subprocess.PIPE).stdout.decode().strip()
     # Trigger the builds
-    print("Triggering timing builds for {} base commit ({}) and test commit ({}) with ad-hoc ID {}...".format(project_name, base_commit[:8], test_commit[:8], id))
+    print("Triggering timing builds for {} with Iris base commit {} and test commit {} using ad-hoc ID {}...".format(project_name, base_commit[:8], test_commit[:8], id))
     vars = {
         'IRIS_REPO': iris_repo,
         'IRIS_REV': base_commit,
