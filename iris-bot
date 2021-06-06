@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
     parser_time = subparsers.add_parser('time', help='Time one reverse dependency against an Iris branch')
     parser_time.add_argument("project", help="the project to measure the time of")
-    parser_time.add_argument("--test-branch", help="use different branch on project for the test build (in case the project requires changes to still build)")
+    parser_time.add_argument("--test-rev", help="use different revision on project for the test build (in case the project requires changes to still build)")
     parser_time.set_defaults(func=time)
 
     # Parse, and dispatch to sub-command
