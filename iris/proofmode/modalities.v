@@ -178,8 +178,8 @@ Section modality1.
 End modality1.
 
 (** The identity modality [modality_id] can be used in combination with
-[FromModal modality_id] to support introduction for modalities that enjoy
-[P ⊢ M P]. This is done by defining an instance [FromModal modality_id (M P) P],
+[FromModal True modality_id] to support introduction for modalities that enjoy
+[P ⊢ M P]. This is done by defining an instance [FromModal True modality_id (M P) P],
 which will instruct [iModIntro] to introduce the modality without modifying the
 proof mode context. Examples of such modalities are [bupd], [fupd], [except_0],
 [monPred_subjectively] and [bi_absorbingly]. *)

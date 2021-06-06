@@ -51,7 +51,8 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Add support for destructing existentials with the intro pattern `[%x ...]`.
   (by Tej Chajed)
 * `iMod`/`iModIntro` show proper error messages when they fail due to mask
-  mismatches.
+  mismatches. To support this, the proofmode typeclass `FromModal` now takes an
+  additional pure precondition.
 
 **Changes in `bi`:**
 

@@ -96,7 +96,7 @@ Global Arguments IntoPersistent {_} _ _%I _%I : simpl never.
 Global Arguments into_persistent {_} _ _%I _%I {_}.
 Global Hint Mode IntoPersistent + + ! - : typeclass_instances.
 
-(** The [FromModal M sel P Q] class is used by the [iModIntro] tactic to
+(** The [FromModal φ M sel P Q] class is used by the [iModIntro] tactic to
 transform a goal [P] into a modality [M] and proposition [Q], under additional
 pure assumptions [φ].
 
@@ -109,7 +109,7 @@ or embedding, respectively. In case there is no need to specify the modality to
 introduce, [sel] should be an evar.
 
 For modalities [N] that do not need to augment the proof mode environment, one
-can define an instance [FromModal modality_id (N P) P]. Defining such an
+can define an instance [FromModal True modality_id (N P) P]. Defining such an
 instance only imposes the proof obligation [P ⊢ N P]. Examples of such
 modalities [N] are [bupd], [fupd], [except_0], [monPred_subjectively] and
 [bi_absorbingly]. *)
