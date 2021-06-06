@@ -72,7 +72,7 @@ def trigger_build(project, branch, vars):
     }
     r = requests.post(url, headers={'PRIVATE-TOKEN': GITLAB_TOKEN}, json=json)
     r.raise_for_status()
-    return r.json()['web_url']
+    return r.json()
 
 # The commands
 def build(args):
@@ -87,7 +87,7 @@ def build(args):
     for (name, project) in PROJECTS.items():
         if args.filter in name:
             print("Triggering build for {}...".format(name))
-            pipeline_url = trigger_build(project['name'], project['branch'], vars)
+            pipeline_url = trigger_build(project['name'], project['branch'], vars)['web_url']
             print("    Pipeline running at {}".format(pipeline_url))
 
 def time(args):
@@ -121,20 +121,20 @@ def time(args):
         'IRIS_REV': base_commit,
         'TIMING_AD_HOC_ID': id+"-base",
     }
-    base_pipeline_url = trigger_build(project['name'], project['branch'], vars)
-    print("    Base pipeline running at {}".format(base_pipeline_url))
+    base_pipeline = trigger_build(project['name'], project['branch'], vars)
+    print("    Base pipeline running at {}".format(base_pipeline['web_url']))
     vars = {
         'IRIS_REPO': iris_repo,
         'IRIS_REV': test_commit,
         'TIMING_AD_HOC_ID': id+"-test",
     }
     if args.test_branch is None:
-        test_pipeline_url = trigger_build(project['name'], project['branch'], vars)
-        print("    Test pipeline running at {}".format(test_pipeline_url))
+        test_pipeline = trigger_build(project['name'], project['branch'], vars)
+        print("    Test pipeline running at {}".format(test_pipeline['web_url']))
     else:
-        test_pipeline_url = trigger_build(project['name'], args.test_branch, vars)
-        print("    Test pipeline (on non-standard branch {}) running at {}".format(args.test_branch, test_pipeline_url))
-    print("    Once done, timing comparison will be available at https://coq-speed.mpi-sws.org/d/1QE_dqjiz/coq-compare?orgId=1&var-project={}&var-branch1=@hoc&var-config1={}&var-branch2=@hoc&var-config2={}".format(project['name'], id+"-base", id+"-test"))
+        test_pipeline = trigger_build(project['name'], args.test_branch, vars)
+        print("    Test pipeline (on non-standard branch {}) running at {}".format(args.test_branch, test_pipeline['web_url']))
+    print("    Once done, timing comparison will be available at https://coq-speed.mpi-sws.org/d/1QE_dqjiz/coq-compare?orgId=1&var-project={}&var-branch1=@hoc&var-commit1={}&var-config1={}&var-branch2=@hoc&var-commit2={}&var-config2={}".format(project['name'], base_pipeline['sha'], id+"-base", test_pipeline['sha'], id+"-test"))
 
 # Dispatch
 if __name__ == "__main__":
