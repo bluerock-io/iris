@@ -128,8 +128,12 @@ def time(args):
         'IRIS_REV': test_commit,
         'TIMING_AD_HOC_ID': id+"-test",
     }
-    test_pipeline_url = trigger_build(project['name'], project['branch'], vars)
-    print("    Test pipeline running at {}".format(test_pipeline_url))
+    if args.test_branch is None:
+        test_pipeline_url = trigger_build(project['name'], project['branch'], vars)
+        print("    Test pipeline running at {}".format(test_pipeline_url))
+    else:
+        test_pipeline_url = trigger_build(project['name'], args.test_branch, vars)
+        print("    Test pipeline (on non-standard branch {}) running at {}".format(args.test_branch, test_pipeline_url))
     print("    Once done, timing comparison will be available at https://coq-speed.mpi-sws.org/d/1QE_dqjiz/coq-compare?orgId=1&var-project={}&var-branch1=@hoc&var-config1={}&var-branch2=@hoc&var-config2={}".format(project['name'], id+"-base", id+"-test"))
 
 # Dispatch
@@ -143,6 +147,7 @@ if __name__ == "__main__":
 
     parser_time = subparsers.add_parser('time', help='Time one reverse dependency against an Iris branch')
     parser_time.add_argument("project", help="the project to measure the time of")
+    parser_time.add_argument("--test-branch", help="use different branch on project for the test build (in case the project requires changes to still build)")
     parser_time.set_defaults(func=time)
 
     # Parse, and dispatch to sub-command
