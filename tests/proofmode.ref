@@ -383,6 +383,18 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   default emp mP
   
+1 goal
+  
+  PROP : bi
+  H : BiAffine PROP
+  P, Q : PROP
+  H0 : Laterable Q
+  ============================
+  "HP" : ▷ P
+  "HQ" : Q
+  --------------------------------------∗
+  ▷ P ∗ Q
+  
 "elim_mod_accessor"
      : string
 1 goal
