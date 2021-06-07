@@ -39,12 +39,12 @@ Section max_prefix_list.
 
   Global Instance mono_list_lb_core_id (m : max_prefix_list A) : CoreId m := _.
 
-  Global Lemma to_max_prefix_list_valid l : ✓ to_max_prefix_list l.
+  Lemma to_max_prefix_list_valid l : ✓ to_max_prefix_list l.
   Proof.
     intros i. rewrite /to_max_prefix_list lookup_fmap.
     by destruct (map_seq 0 l !! i).
   Qed.
-  Global Lemma to_max_prefix_list_validN n l : ✓{n} to_max_prefix_list l.
+  Lemma to_max_prefix_list_validN n l : ✓{n} to_max_prefix_list l.
   Proof. apply cmra_valid_validN, to_max_prefix_list_valid. Qed.
 
   Local Lemma to_max_prefix_list_app l1 l2 :
