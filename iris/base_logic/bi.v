@@ -1,4 +1,4 @@
-From iris.bi Require Export derived_connectives updates internal_eq plainly.
+From iris.bi Require Export derived_connectives extensions updates internal_eq plainly.
 From iris.base_logic Require Export upred.
 From iris.prelude Require Import options.
 Import uPred_primitive.

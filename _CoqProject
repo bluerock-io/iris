@@ -58,6 +58,7 @@ iris/si_logic/bi.v
 iris/bi/notation.v
 iris/bi/interface.v
 iris/bi/derived_connectives.v
+iris/bi/extensions.v
 iris/bi/derived_laws.v
 iris/bi/derived_laws_later.v
 iris/bi/plainly.v
