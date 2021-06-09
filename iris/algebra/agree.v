@@ -121,7 +121,7 @@ Proof.
 Qed.
 Local Instance agree_op_ne : NonExpansive2 (@op (agree A) _).
 Proof. by intros n x1 x2 Hx y1 y2 Hy; rewrite Hy !(comm _ _ y2) Hx. Qed.
-Local Instance agree_op_proper : Proper ((≡) ==> (≡) ==> (≡)) op := ne_proper_2 _.
+Local Instance agree_op_proper : Proper ((≡) ==> (≡) ==> (≡)) (op (A := agree A)) := ne_proper_2 _.
 
 Lemma agree_included x y : x ≼ y ↔ y ≡ x ⋅ y.
 Proof.

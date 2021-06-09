@@ -110,6 +110,7 @@ Global Hint Mode Discrete + ! : typeclass_instances.
 Global Instance: Params (@Discrete) 1 := {}.
 
 Class OfeDiscrete (A : ofe) := ofe_discrete_discrete (x : A) :> Discrete x.
+Global Hint Mode OfeDiscrete ! : typeclass_instances.
 
 (** OFEs with a completion *)
 Record chain (A : ofe) := {
