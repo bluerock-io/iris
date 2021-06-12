@@ -107,11 +107,13 @@ Qed.
 Global Arguments gmapO _ {_ _} _.
 
 (** Non-expansiveness of higher-order map functions and big-ops *)
-Lemma merge_ne `{Countable K} {A B C : ofe} (f g : option A → option B → option C)
-    `{!DiagNone f, !DiagNone g} n :
-  ((dist n) ==> (dist n) ==> (dist n))%signature f g →
-  ((dist n) ==> (dist n) ==> (dist n))%signature (merge (M:=gmap K) f) (merge g).
-Proof. by intros Hf ?? Hm1 ?? Hm2 i; rewrite !lookup_merge //; apply Hf. Qed.
+Global Instance merge_ne `{Countable K} {A B C : ofe} n :
+  Proper (((dist (A:=option A) n) ==> (dist (A:=option B) n) ==> (dist (A:=option C) n)) ==>
+   (dist n) ==> (dist n) ==> (dist n)) (merge (M:=gmap K)).
+Proof.
+  intros ?? Hf ?? Hm1 ?? Hm2 i. rewrite !lookup_merge.
+  destruct (Hm1 i), (Hm2 i); try apply Hf; by constructor.
+Qed.
 Global Instance union_with_proper `{Countable K} {A : ofe} n :
   Proper (((dist n) ==> (dist n) ==> (dist n)) ==>
           (dist n) ==> (dist n) ==>(dist n)) (union_with (M:=gmap K A)).
@@ -157,7 +159,7 @@ Local Instance gmap_validN_instance : ValidN (gmap K A) := λ n m, ∀ i, ✓{n}
 Lemma gmap_op m1 m2 : m1 ⋅ m2 = merge op m1 m2.
 Proof. done. Qed.
 Lemma lookup_op m1 m2 i : (m1 ⋅ m2) !! i = m1 !! i ⋅ m2 !! i.
-Proof. by apply lookup_merge. Qed.
+Proof. rewrite lookup_merge. by destruct (m1 !! i), (m2 !! i). Qed.
 Lemma lookup_core m i : core m !! i = core (m !! i).
 Proof. by apply lookup_omap. Qed.
 
