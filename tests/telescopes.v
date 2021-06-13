@@ -32,7 +32,7 @@ Section basic_tests.
   Lemma test_pure_tforall `{!BiPureForall PROP} {TT : tele} (φ : TT → Prop) :
     (∀.. x, ⌜ φ x ⌝) -∗ ∀.. x, ⌜ φ x ⌝ : PROP.
   Proof. iIntros (H) "!%". done. Qed.
-  Lemma test_pure_tforall_persistent {TT : tele} (Φ : TT → PROP) :
+  Lemma test_pure_tforall_persistent `{!BiPersistentlyForall PROP} {TT : tele} (Φ : TT → PROP) :
     (∀.. x, <pers> (Φ x)) -∗ <pers> ∀.. x, Φ x.
   Proof. iIntros "#H !>" (x). done. Qed.
   Lemma test_pure_texists_intuitionistic {TT : tele} (Φ : TT → PROP) :

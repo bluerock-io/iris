@@ -72,14 +72,15 @@ Section tests.
     iIntros "H HP". by iApply "H".
   Qed.
 
-  Lemma test_objectively P Q : <obj> emp -∗ <obj> P -∗ <obj> Q -∗ <obj> (P ∗ Q).
+  Lemma test_objectively `{!BiPersistentlyForall PROP} P Q :
+    <obj> emp -∗ <obj> P -∗ <obj> Q -∗ <obj> (P ∗ Q).
   Proof. iIntros "#? HP HQ". iModIntro. by iSplitL "HP". Qed.
 
-  Lemma test_objectively_absorbing P Q R `{!Absorbing P} :
+  Lemma test_objectively_absorbing `{!BiPersistentlyForall PROP} P Q R `{!Absorbing P} :
     <obj> emp -∗ <obj> P -∗ <obj> Q -∗ R -∗ <obj> (P ∗ Q).
   Proof. iIntros "#? HP HQ HR". iModIntro. by iSplitL "HP". Qed.
 
-  Lemma test_objectively_affine P Q R `{!Affine R} :
+  Lemma test_objectively_affine `{!BiPersistentlyForall PROP} P Q R `{!Affine R} :
     <obj> emp -∗ <obj> P -∗ <obj> Q -∗ R -∗ <obj> (P ∗ Q).
   Proof. iIntros "#? HP HQ HR". iModIntro. by iSplitL "HP". Qed.
 

@@ -71,7 +71,7 @@ Section telescopes.
   Global Instance bi_tforall_absorbing Ψ :
     (∀ x, Absorbing (Ψ x)) → Absorbing (∀.. x, Ψ x).
   Proof. rewrite bi_tforall_forall. apply _. Qed.
-  Global Instance bi_tforall_persistent Ψ :
+  Global Instance bi_tforall_persistent `{!BiPersistentlyForall PROP} Ψ :
     (∀ x, Persistent (Ψ x)) → Persistent (∀.. x, Ψ x).
   Proof. rewrite bi_tforall_forall. apply _. Qed.
 

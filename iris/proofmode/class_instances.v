@@ -937,7 +937,7 @@ Proof. rewrite /IntoForall=> HP. by rewrite HP affinely_forall. Qed.
 Global Instance into_forall_intuitionistically {A} P (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (□ P) (λ a, □ (Φ a))%I.
 Proof. rewrite /IntoForall=> HP. by rewrite HP intuitionistically_forall. Qed.
-Global Instance into_forall_persistently {A} P (Φ : A → PROP) :
+Global Instance into_forall_persistently `{!BiPersistentlyForall PROP} {A} P (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (<pers> P) (λ a, <pers> (Φ a))%I.
 Proof. rewrite /IntoForall=> HP. by rewrite HP persistently_forall. Qed.
 
@@ -1003,13 +1003,15 @@ Proof.
   - by rewrite (into_pure P) -pure_wand_forall wand_elim_l.
 Qed.
 
-Global Instance from_forall_intuitionistically `{BiAffine PROP} {A} P (Φ : A → PROP) name :
+Global Instance from_forall_intuitionistically `{!BiAffine PROP, !BiPersistentlyForall PROP}
+    {A} P (Φ : A → PROP) name :
   FromForall P Φ name → FromForall (□ P) (λ a, □ (Φ a))%I name.
 Proof.
   rewrite /FromForall=> <-. setoid_rewrite intuitionistically_into_persistently.
   by rewrite persistently_forall.
 Qed.
-Global Instance from_forall_persistently {A} P (Φ : A → PROP) name :
+Global Instance from_forall_persistently `{!BiPersistentlyForall PROP}
+    {A} P (Φ : A → PROP) name :
   FromForall P Φ name → FromForall (<pers> P) (λ a, <pers> (Φ a))%I name.
 Proof. rewrite /FromForall=> <-. by rewrite persistently_forall. Qed.
 

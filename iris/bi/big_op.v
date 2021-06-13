@@ -249,8 +249,11 @@ Section sep_list.
     intros HΦ. apply (anti_symm _).
     { apply forall_intro=> k; apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepL_lookup. }
-    rewrite -big_sepL_intro. setoid_rewrite pure_impl_forall.
-    by rewrite intuitionistic_intuitionistically.
+    revert Φ HΦ. induction l as [|x l IH]=> Φ HΦ /=.
+    { apply: affine. }
+    rewrite -persistent_and_sep_1. apply and_intro.
+    - rewrite (forall_elim 0) (forall_elim x) pure_True // True_impl. done.
+    - rewrite -IH. apply forall_intro => k. by rewrite (forall_elim (S k)).
   Qed.
 
   Lemma big_sepL_impl Φ Ψ l :
@@ -725,13 +728,18 @@ Section sep_list2.
       ⌜length l1 = length l2⌝
       ∧ (∀ k x1 x2, ⌜l1 !! k = Some x1⌝ → ⌜l2 !! k = Some x2⌝ → Φ k x1 x2).
   Proof.
-    intros. apply (anti_symm _).
-    - apply and_intro; [apply big_sepL2_length|].
+    intros HΦ. apply (anti_symm _).
+    { apply and_intro; [apply big_sepL2_length|].
       apply forall_intro=> k. apply forall_intro=> x1. apply forall_intro=> x2.
-      do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply :big_sepL2_lookup.
-    - apply pure_elim_l=> ?. rewrite -big_sepL2_intro //.
-      repeat setoid_rewrite pure_impl_forall.
-      by rewrite intuitionistic_intuitionistically.
+      do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply :big_sepL2_lookup. }
+    apply pure_elim_l=> Hlen.
+    revert l2 Φ HΦ Hlen. induction l1 as [|x1 l1 IH]=> -[|x2 l2] Φ HΦ Hlen; simplify_eq/=.
+    { by apply (affine _). }
+    rewrite -persistent_and_sep_1. apply and_intro.
+    - rewrite (forall_elim 0) (forall_elim x1) (forall_elim x2).
+      by rewrite !pure_True // !True_impl.
+    - rewrite -IH //.
+      by apply forall_intro=> k; by rewrite (forall_elim (S k)).
   Qed.
 
   Lemma big_sepL2_impl Φ Ψ l1 l2 :
@@ -1414,11 +1422,18 @@ Section sep_map.
     (∀ k x, Persistent (Φ k x)) →
     ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ (∀ k x, ⌜m !! k = Some x⌝ → Φ k x).
   Proof.
-    intros. apply (anti_symm _).
+    intros HΦ. apply (anti_symm _).
     { apply forall_intro=> k; apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepM_lookup. }
-    rewrite -big_sepM_intro. setoid_rewrite pure_impl_forall.
-    by rewrite intuitionistic_intuitionistically.
+    revert Φ HΦ. induction m as [|i x m ? IH] using map_ind=> Φ HΦ.
+    { rewrite big_sepM_empty. apply: affine. }
+    rewrite big_sepM_insert // -persistent_and_sep_1. apply and_intro.
+    - rewrite (forall_elim i) (forall_elim x) lookup_insert.
+      by rewrite pure_True // True_impl.
+    - rewrite -IH. apply forall_mono=> k; apply forall_mono=> y.
+      apply impl_intro_l, pure_elim_l=> ?.
+      rewrite lookup_insert_ne; last by intros ?; simplify_map_eq.
+      by rewrite pure_True // True_impl.
   Qed.
 
   Lemma big_sepM_impl Φ Ψ m :
@@ -2172,12 +2187,16 @@ Section map2.
       ∧ (∀ k x1 x2, ⌜m1 !! k = Some x1⌝ → ⌜m2 !! k = Some x2⌝ → Φ k x1 x2).
   Proof.
     intros. apply (anti_symm _).
-    - apply and_intro; [apply big_sepM2_lookup_iff|].
+    { apply and_intro; [apply big_sepM2_lookup_iff|].
       apply forall_intro=> k. apply forall_intro=> x1. apply forall_intro=> x2.
-      do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply :big_sepM2_lookup.
-    - apply pure_elim_l=> ?. rewrite -big_sepM2_intro //.
-      repeat setoid_rewrite pure_impl_forall.
-      by rewrite intuitionistic_intuitionistically.
+      do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply: big_sepM2_lookup. }
+    apply pure_elim_l=> Hdom. rewrite big_sepM2_eq /big_sepM2_def.
+    apply and_intro; [by apply pure_intro|].
+    rewrite big_sepM_forall. f_equiv=> k.
+    apply forall_intro=> -[x1 x2]. rewrite (forall_elim x1) (forall_elim x2).
+    apply impl_intro_l, pure_elim_l.
+    intros (?&?&[= <- <-]&?&?)%map_lookup_zip_with_Some.
+    by rewrite !pure_True // !True_impl.
   Qed.
 
   Lemma big_sepM2_impl Φ Ψ m1 m2 :
@@ -2561,13 +2580,19 @@ Section gset.
   Qed.
 
   Lemma big_sepS_forall `{BiAffine PROP} Φ X :
-    (∀ x, Persistent (Φ x)) → ([∗ set] x ∈ X, Φ x) ⊣⊢ (∀ x, ⌜x ∈ X⌝ → Φ x).
+    (∀ x, Persistent (Φ x)) →
+    ([∗ set] x ∈ X, Φ x) ⊣⊢ (∀ x, ⌜x ∈ X⌝ → Φ x).
   Proof.
-    intros. apply (anti_symm _).
+    intros HΦ. apply (anti_symm _).
     { apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepS_elem_of. }
-    rewrite -big_sepS_intro. setoid_rewrite pure_impl_forall.
-    by rewrite intuitionistic_intuitionistically.
+    revert Φ HΦ. induction X as [|x X ? IH] using set_ind_L=> Φ HΦ.
+    { rewrite big_sepS_empty. apply: affine. }
+    rewrite big_sepS_insert // -persistent_and_sep_1. apply and_intro.
+    - rewrite (forall_elim x) pure_True ?True_impl; last set_solver. done.
+    - rewrite -IH. apply forall_mono=> y.
+      apply impl_intro_l, pure_elim_l=> ?.
+      by rewrite pure_True ?True_impl; last set_solver.
   Qed.
 
   Lemma big_sepS_impl Φ Ψ X :
@@ -2800,13 +2825,20 @@ Section gmultiset.
   Qed.
 
   Lemma big_sepMS_forall `{BiAffine PROP} Φ X :
-    (∀ x, Persistent (Φ x)) → ([∗ mset] x ∈ X, Φ x) ⊣⊢ (∀ x, ⌜x ∈ X⌝ → Φ x).
+    (∀ x, Persistent (Φ x)) →
+    ([∗ mset] x ∈ X, Φ x) ⊣⊢ (∀ x, ⌜x ∈ X⌝ → Φ x).
   Proof.
-    intros. apply (anti_symm _).
+    intros HΦ. apply (anti_symm _).
     { apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepMS_elem_of. }
-    rewrite -big_sepMS_intro. setoid_rewrite pure_impl_forall.
-    by rewrite intuitionistic_intuitionistically.
+    revert Φ HΦ. induction X as [|x X IH] using gmultiset_ind=> Φ HΦ.
+    { rewrite big_sepMS_empty. apply: affine. }
+    rewrite big_sepMS_disj_union.
+    rewrite big_sepMS_singleton -persistent_and_sep_1. apply and_intro.
+    - rewrite (forall_elim x) pure_True ?True_impl; last multiset_solver. done.
+    - rewrite -IH. apply forall_mono=> y.
+      apply impl_intro_l, pure_elim_l=> ?.
+      by rewrite pure_True ?True_impl; last multiset_solver.
   Qed.
 
   Lemma big_sepMS_impl Φ Ψ X :

@@ -56,7 +56,16 @@ Proof.
     + apply forall_intro=>[[]].
     + etrans; first exact: persistently_forall_2.
       apply persistently_mono. exact: pure_intro.
-  - exact: @persistently_forall_2.
+  - (* ((<pers> P) ∧ (<pers> Q)) ⊢ <pers> (P ∧ Q) (ADMISSIBLE) *)
+    intros P Q.
+    trans (uPred_forall (M:=M) (λ b : bool, uPred_persistently (if b then P else Q))).
+    + apply forall_intro=>[[]].
+      * apply and_elim_l.
+      * apply and_elim_r.
+    + etrans; first exact: persistently_forall_2.
+      apply persistently_mono. apply and_intro.
+      * etrans; first apply (forall_elim true). done.
+      * etrans; first apply (forall_elim false). done.
   - exact: @persistently_exist_1.
   - (* <pers> P ∗ Q ⊢ <pers> P (ADMISSIBLE) *)
     intros. etrans; first exact: sep_comm'.
@@ -89,12 +98,6 @@ Canonical Structure uPredI (M : ucmra) : bi :=
      bi_bi_mixin := uPred_bi_mixin M;
      bi_bi_later_mixin := uPred_bi_later_mixin M |}.
 
-Global Instance uPred_pure_forall M : BiPureForall (uPredI M).
-Proof. exact: @pure_forall_2. Qed.
-
-Global Instance uPred_later_contractive {M} : BiLaterContractive (uPredI M).
-Proof. apply later_contractive. Qed.
-
 Lemma uPred_internal_eq_mixin M : BiInternalEqMixin (uPredI M) (@uPred_internal_eq M).
 Proof.
   split.
@@ -118,7 +121,6 @@ Proof.
   - exact: plainly_elim_persistently.
   - exact: plainly_idemp_2.
   - exact: @plainly_forall_2.
-  - exact: persistently_impl_plainly.
   - exact: plainly_impl_plainly.
   - (* P ⊢ ■ emp (ADMISSIBLE) *)
     intros P.
@@ -137,9 +139,6 @@ Qed.
 Global Instance uPred_plainly M : BiPlainly (uPredI M) :=
   {| bi_plainly_mixin := uPred_plainly_mixin M |}.
 
-Global Instance uPred_prop_ext M : BiPropExt (uPredI M).
-Proof. exact: prop_ext_2. Qed.
-
 Lemma uPred_bupd_mixin M : BiBUpdMixin (uPredI M) uPred_bupd.
 Proof.
   split.
@@ -151,9 +150,6 @@ Proof.
 Qed.
 Global Instance uPred_bi_bupd M : BiBUpd (uPredI M) := {| bi_bupd_mixin := uPred_bupd_mixin M |}.
 
-Global Instance uPred_bi_bupd_plainly M : BiBUpdPlainly (uPredI M).
-Proof. exact: bupd_plainly. Qed.
-
 (** extra BI instances *)
 
 Global Instance uPred_affine M : BiAffine (uPredI M) | 0.
@@ -162,8 +158,26 @@ Proof. intros P. exact: pure_intro. Qed.
 many lemmas that have [BiAffine] as a premise. *)
 Global Hint Immediate uPred_affine : core.
 
+Global Instance uPred_persistently_forall M : BiPersistentlyForall (uPredI M).
+Proof. exact: @persistently_forall_2. Qed.
+
+Global Instance uPred_pure_forall M : BiPureForall (uPredI M).
+Proof. exact: @pure_forall_2. Qed.
+
+Global Instance uPred_later_contractive {M} : BiLaterContractive (uPredI M).
+Proof. apply later_contractive. Qed.
+
+Global Instance uPred_persistently_impl_plainly M : BiPersistentlyImplPlainly (uPredI M).
+Proof. exact: persistently_impl_plainly. Qed.
+
 Global Instance uPred_plainly_exist_1 M : BiPlainlyExist (uPredI M).
 Proof. exact: @plainly_exist_1. Qed.
+
+Global Instance uPred_prop_ext M : BiPropExt (uPredI M).
+Proof. exact: prop_ext_2. Qed.
+
+Global Instance uPred_bi_bupd_plainly M : BiBUpdPlainly (uPredI M).
+Proof. exact: bupd_plainly. Qed.
 
 (** Re-state/export lemmas about Iris-specific primitive connectives (own, valid) *)
 

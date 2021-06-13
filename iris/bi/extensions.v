@@ -28,6 +28,13 @@ Global Arguments löb_weak {_ _} _ _.
 Notation BiLaterContractive PROP :=
   (Contractive (bi_later (PROP:=PROP))) (only parsing).
 
+(** The class [BiPersistentlyForall] states that universal quantification
+commutes with the persistently modality. The reverse direction of the entailment
+described by this type class is derivable, so it is not included. *)
+Class BiPersistentlyForall (PROP : bi) :=
+  persistently_forall_2 : ∀ {A} (Ψ : A → PROP), (∀ a, <pers> (Ψ a)) ⊢ <pers> (∀ a, Ψ a).
+Global Hint Mode BiPersistentlyForall ! : typeclass_instances.
+
 (** The class [BiPureForall] states that universal quantification commutes with
 the embedding of pure propositions. The reverse direction of the entailment
 described by this type class is derivable, so it is not included.
@@ -36,3 +43,4 @@ An instance of [BiPureForall] itself is derivable if we assume excluded middle
 in Coq, see the lemma [bi_pure_forall_em] in [derived_laws]. *)
 Class BiPureForall (PROP : bi) :=
   pure_forall_2 : ∀ {A} (φ : A → Prop), (∀ a, ⌜ φ a ⌝) ⊢@{PROP} ⌜ ∀ a, φ a ⌝.
+Global Hint Mode BiPureForall ! : typeclass_instances.
