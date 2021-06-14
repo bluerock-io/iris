@@ -136,23 +136,32 @@ Ltac parse s :=
   | intro_pat => constr:([s])
   | list string =>
      lazymatch eval vm_compute in (mjoin <$> mapM parse s) with
-     | Some ?pats => pats | _ => fail "intro_pat.parse: cannot parse" s
+     | Some ?pats => pats
+     | _ => fail "intro_pat.parse: cannot parse" s "as an introduction pattern"
      end
   | string =>
      lazymatch eval vm_compute in (parse s) with
-     | Some ?pats => pats | _ => fail "intro_pat.parse: cannot parse" s
+     | Some ?pats => pats
+     | _ => fail "intro_pat.parse: cannot parse" s "as an introduction pattern"
      end
   | ident => constr:([IIdent s])
-  | ?X => fail "intro_pat.parse:" s "has unexpected type" X
+  | ?X => fail "intro_pat.parse: the term" s
+     "is expected to be an introduction pattern"
+     "(usually a string),"
+     "but has unexpected type" X
   end.
 Ltac parse_one s :=
   lazymatch type of s with
   | intro_pat => s
   | string =>
      lazymatch eval vm_compute in (parse s) with
-     | Some [?pat] => pat | _ => fail "intro_pat.parse_one: cannot parse" s
+     | Some [?pat] => pat
+     | _ => fail "intro_pat.parse_one: cannot parse" s "as an introduction pattern"
      end
-  | ?X => fail "intro_pat.parse_one:" s "has unexpected type" X
+  | ?X => fail "intro_pat.parse_one: the term" s
+     "is expected to be an introduction pattern"
+     "(usually a string),"
+     "but has unexpected type" X
   end.
 End intro_pat.
 
@@ -176,5 +185,8 @@ Ltac intro_pat_intuitionistic p :=
      eval cbv in (forallb intro_pat_intuitionistic pat)
   | ident => false
   | bool => p
-  | ?X => fail "intro_pat_intuitionistic:" p "has unexpected type" X
+  | ?X => fail "intro_pat_intuitionistic: the term" p
+     "is expected to be an introduction pattern"
+     "(usually a string),"
+     "but has unexpected type" X
   end.
