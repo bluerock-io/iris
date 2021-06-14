@@ -39,5 +39,6 @@ Ltac parse s :=
      lazymatch eval vm_compute in (parse s) with
      | Some ?pats => pats | _ => fail "invalid sel_pat" s
      end
+  | ?X => fail "sel_pat.parse:" s "has unexpected type" X
   end.
 End sel_pat.
