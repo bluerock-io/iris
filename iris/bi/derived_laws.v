@@ -1431,8 +1431,18 @@ Proof. by rewrite -(persistent_persistently P) persistently_and_sep_assoc. Qed.
 Lemma impl_wand_2 P `{!Persistent P} Q : (P -∗ Q) ⊢ P → Q.
 Proof. apply impl_intro_l. by rewrite persistent_and_sep_1 wand_elim_r. Qed.
 
+(** We don't have a [Intuitionistic] typeclass, but if we did, this
+would be its only field. *)
+Lemma intuitionistic P `{!Persistent P, !Affine P} : P ⊢ □ P.
+Proof. rewrite intuitionistic_intuitionistically. done. Qed.
+
 Section persistent_bi_absorbing.
   Context `{BiAffine PROP}.
+
+  Lemma intuitionistically_intro P Q `{!Persistent P} : (P ⊢ Q) → P ⊢ □ Q.
+  Proof.
+    intros HP. rewrite (persistent P) HP intuitionistically_into_persistently //.
+  Qed.
 
   Lemma persistent_and_sep P Q `{HPQ : !TCOr (Persistent P) (Persistent Q)} :
     P ∧ Q ⊣⊢ P ∗ Q.
