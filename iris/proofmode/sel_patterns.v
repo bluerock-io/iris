@@ -37,7 +37,12 @@ Ltac parse s :=
   | list string => eval vm_compute in (SelIdent ∘ INamed <$> s)
   | string =>
      lazymatch eval vm_compute in (parse s) with
-     | Some ?pats => pats | _ => fail "invalid sel_pat" s
+     | Some ?pats => pats
+     | _ => fail "sel_pat.parse: cannot parse" s "as a selection pattern"
      end
+  | ?X => fail "sel_pat.parse: the term" s
+     "is expected to be a selection pattern"
+     "(usually a string),"
+     "but has unexpected type" X
   end.
 End sel_pat.

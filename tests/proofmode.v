@@ -1435,6 +1435,20 @@ Proof.
   Fail iIntros "!>".
 Abort.
 
+Check "iRevert_wrong_sel_pat".
+Lemma iRevert_wrong_sel_pat (n m : nat) (P Q : nat → PROP) :
+  ⌜ n = m ⌝ -∗ P n -∗ P m.
+Proof.
+  Fail iRevert n.
+Abort.
+
+Check "iInduction_wrong_sel_pat".
+Lemma iInduction_wrong_sel_pat (n m : nat) (P Q : nat → PROP) :
+  ⌜ n = m ⌝ -∗ P n -∗ P m.
+Proof.
+  Fail iInduction n as [|n] "IH" forall m.
+Abort.
+
 End error_tests.
 
 Section pure_name_tests.
