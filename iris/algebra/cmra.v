@@ -341,13 +341,13 @@ Proof. rewrite !cmra_valid_validN; eauto using cmra_validN_op_r. Qed.
 
 (** ** Core *)
 Lemma cmra_pcore_l' x cx : pcore x ≡ Some cx → cx ⋅ x ≡ x.
-Proof. intros (cx'&?&->)%equiv_Some_inv_r'. by apply cmra_pcore_l. Qed.
+Proof. intros (cx'&?&<-)%Some_equiv_eq. by apply cmra_pcore_l. Qed.
 Lemma cmra_pcore_r x cx : pcore x = Some cx → x ⋅ cx ≡ x.
 Proof. intros. rewrite comm. by apply cmra_pcore_l. Qed.
 Lemma cmra_pcore_r' x cx : pcore x ≡ Some cx → x ⋅ cx ≡ x.
-Proof. intros (cx'&?&->)%equiv_Some_inv_r'. by apply cmra_pcore_r. Qed.
+Proof. intros (cx'&?&<-)%Some_equiv_eq. by apply cmra_pcore_r. Qed.
 Lemma cmra_pcore_idemp' x cx : pcore x ≡ Some cx → pcore cx ≡ Some cx.
-Proof. intros (cx'&?&->)%equiv_Some_inv_r'. eauto using cmra_pcore_idemp. Qed.
+Proof. intros (cx'&?&<-)%Some_equiv_eq. eauto using cmra_pcore_idemp. Qed.
 Lemma cmra_pcore_dup x cx : pcore x = Some cx → cx ≡ cx ⋅ cx.
 Proof. intros; symmetry; eauto using cmra_pcore_r', cmra_pcore_idemp. Qed.
 Lemma cmra_pcore_dup' x cx : pcore x ≡ Some cx → cx ≡ cx ⋅ cx.
@@ -412,9 +412,9 @@ Proof. rewrite (comm op); apply cmra_included_l. Qed.
 Lemma cmra_pcore_mono' x y cx :
   x ≼ y → pcore x ≡ Some cx → ∃ cy, pcore y = Some cy ∧ cx ≼ cy.
 Proof.
-  intros ? (cx'&?&Hcx)%equiv_Some_inv_r'.
+  intros ? (cx'&?&Hcx)%Some_equiv_eq.
   destruct (cmra_pcore_mono x y cx') as (cy&->&?); auto.
-  exists cy; by rewrite Hcx.
+  exists cy; by rewrite -Hcx.
 Qed.
 Lemma cmra_pcore_monoN' n x y cx :
   x ≼{n} y → pcore x ≡{n}≡ Some cx → ∃ cy, pcore y = Some cy ∧ cx ≼{n} cy.
@@ -1126,7 +1126,7 @@ Section prod.
   Lemma prod_pcore_Some' (x cx : A * B) :
     pcore x ≡ Some cx ↔ pcore (x.1) ≡ Some (cx.1) ∧ pcore (x.2) ≡ Some (cx.2).
   Proof.
-    split; [by intros (cx'&[-> ->]%prod_pcore_Some&->)%equiv_Some_inv_r'|].
+    split; [by intros (cx'&[-> ->]%prod_pcore_Some&<-)%Some_equiv_eq|].
     rewrite {3}/pcore /prod_pcore_instance. (* TODO: use setoid rewrite *)
     intros [Hx1 Hx2]; inversion_clear Hx1; simpl; inversion_clear Hx2.
     by constructor.

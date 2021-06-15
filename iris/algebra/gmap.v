@@ -299,7 +299,7 @@ Proof. apply omap_singleton_Some. Qed.
 Lemma singleton_core' (i : K) (x : A) cx :
   pcore x ≡ Some cx → core {[ i := x ]} ≡@{gmap K A} {[ i := cx ]}.
 Proof.
-  intros (cx'&?&->)%equiv_Some_inv_r'. by rewrite (singleton_core _ _ cx').
+  intros (cx'&?&<-)%Some_equiv_eq. by rewrite (singleton_core _ _ cx').
 Qed.
 Lemma singleton_core_total `{!CmraTotal A} (i : K) (x : A) :
   core {[ i := x ]} =@{gmap K A} {[ i := core x ]}.
