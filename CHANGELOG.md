@@ -33,6 +33,8 @@ Coq 8.11 is no longer supported in this version of Iris.
   algorithm.
 * Set `Hint Mode` for the classes `OfeDiscrete`, `Unit`, `CmraMorphism`,
   `rFunctorContractive`, `urFunctorContractive`.
+* Add `max_prefix_list` RA on lists whose composition is only defined when one
+  operand is a prefix of the other. The result is the longer list.
 
 **Changes in `bi`:**
 

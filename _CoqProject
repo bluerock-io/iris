@@ -46,6 +46,7 @@ iris/algebra/proofmode_classes.v
 iris/algebra/ufrac.v
 iris/algebra/reservation_map.v
 iris/algebra/dyn_reservation_map.v
+iris/algebra/max_prefix_list.v
 iris/algebra/lib/excl_auth.v
 iris/algebra/lib/frac_auth.v
 iris/algebra/lib/ufrac_auth.v
@@ -170,7 +171,6 @@ iris_heap_lang/lib/arith.v
 iris_heap_lang/lib/array.v
 
 iris_staging/algebra/list.v
-iris_staging/algebra/max_prefix_list.v
 iris_staging/algebra/mono_list.v
 iris_staging/base_logic/algebra.v
 iris_staging/base_logic/mono_list.v
