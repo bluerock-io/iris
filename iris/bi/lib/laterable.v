@@ -13,6 +13,9 @@ Global Hint Mode Laterable + ! : typeclass_instances.
     Well be the identity if [P] already is laterable, and add
     [make_laterable] otherwise. *)
 Class IntoLaterable {PROP : bi} (P Q : PROP) : Prop := {
+  (** This is non-standard; usually we would just demand
+      [P ⊢ make_laterable Q]. However, we need these stronger properties for
+      the [make_laterable_id] hack in [atomic.v]. *)
   into_laterable : P ⊢ Q;
   into_laterable_result_laterable : Laterable Q;
 }.
@@ -55,6 +58,10 @@ Section instances.
     iIntros "!> >_". done.
   Qed.
 
+  (** This instance, together with the one below, can lead to massive
+      backtracking, but only when searching for [Laterable]. In the future, it
+      should be rewritten using [Hint Immediate] or [Hint Cut], where the latter
+      is preferred once we figure out how to use it. *)
   Global Instance persistent_laterable `{!BiAffine PROP} P :
     Persistent P → Laterable P.
   Proof.
@@ -199,7 +206,11 @@ Section instances.
     - intros ?. done.
   Qed.
 
-  (** * Proofmode integration *)
+  (** * Proofmode integration
+
+      We integrate [make_laterable] with [iModIntro]. All non-laterable
+      hypotheses have a ▷ added in front of them to ensure a laterable context.
+  *)
   Global Instance into_laterable_laterable P :
     Laterable P →
     IntoLaterable P P.
