@@ -1,6 +1,6 @@
-(* This file is still experimental. See its tracking issue
-https://gitlab.mpi-sws.org/iris/iris/-/issues/415 for details on remaining
-issues before stabilization. *)
+(** Defines an RA on lists whose composition is only defined when one operand is
+a prefix of the other. The result is the longer list.
+In particular, the core is the identity function for all elements. *)
 From iris.algebra Require Export agree list gmap updates.
 From iris.algebra Require Import local_updates proofmode_classes.
 From iris.prelude Require Import options.
