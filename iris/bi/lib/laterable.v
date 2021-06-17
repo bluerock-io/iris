@@ -89,7 +89,7 @@ Section instances.
   Qed.
 
   Global Instance big_sepL_laterable Ps :
-    Timeless (PROP:=PROP) emp →
+    Laterable (PROP:=PROP) emp →
     TCForall Laterable Ps →
     Laterable ([∗] Ps).
   Proof. induction 2; simpl; apply _. Qed.
@@ -195,7 +195,7 @@ Section instances.
     - trans (make_laterable (◇ Q)).
       + apply make_laterable_mono, make_laterable_elim.
       + apply make_laterable_except_0.
-    - iApply make_laterable_intro'.
+    - apply make_laterable_intro', _.
   Qed.
 
   Lemma laterable_alt Q :
@@ -220,20 +220,19 @@ Section instances.
     IntoLaterable P (▷ P) | 100.
   Proof. constructor; last by apply _. apply bi.later_intro. Qed.
 
-  (** We need PROP to be affine as otherwise [emp] is not [Laterable]. *)
-  Lemma modality_make_laterable_mixin `{!BiAffine PROP} :
+  Lemma modality_make_laterable_mixin `{!Timeless (PROP:=PROP) emp} :
     modality_mixin make_laterable MIEnvId (MIEnvTransform IntoLaterable).
   Proof.
     split; simpl; eauto using make_laterable_intro', make_laterable_mono,
-      make_laterable_sep with typeclass_instances.
+      make_laterable_sep, intuitionistic_laterable with typeclass_instances.
     - intros P Q ?. rewrite (into_laterable P).
       apply make_laterable_intro'. eapply (into_laterable_result_laterable P), _.
   Qed.
 
-  Definition modality_make_laterable `{!BiAffine PROP} :=
+  Definition modality_make_laterable `{!Timeless (PROP:=PROP) emp} :=
     Modality _ modality_make_laterable_mixin.
 
-  Global Instance from_modal_make_laterable `{!BiAffine PROP} P :
+  Global Instance from_modal_make_laterable `{!Timeless (PROP:=PROP) emp} P :
     FromModal True modality_make_laterable (make_laterable P) (make_laterable P) P.
   Proof. by rewrite /FromModal. Qed.
 

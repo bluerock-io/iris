@@ -449,13 +449,18 @@ Section proof_mode.
   then apply coinduction, and then introduce the modality (the last two steps
   happen inside [aupd_intro]). We instead we define a dummy modality [make_laterable_id] that also
   uses [MIEnvTransform IntoLaterable] and use that to pre-process the goal. *)
-  Local Definition make_laterable_id (P : PROP) := P.
+  Local Definition make_laterable_id_def (P : PROP) := P.
+  Local Definition make_laterable_id_aux : seal make_laterable_id_def.
+  Proof. by eexists. Qed.
+  Local Definition make_laterable_id := make_laterable_id_aux.(unseal).
+  Local Definition make_laterable_id_eq : make_laterable_id = make_laterable_id_def :=
+    make_laterable_id_aux.(seal_eq).
 
   Local Lemma modality_make_laterable_id_mixin :
     modality_mixin make_laterable_id MIEnvId (MIEnvTransform IntoLaterable).
   Proof.
-    split; simpl; eauto.
-    - intros P Q ?. rewrite (into_laterable P). done.
+    rewrite make_laterable_id_eq. split; simpl; eauto.
+    intros P Q ?. rewrite (into_laterable P). done.
   Qed.
 
   Local Definition modality_make_laterable_id :=
@@ -467,16 +472,16 @@ Section proof_mode.
 
   Local Lemma make_laterable_id_elim P :
     make_laterable_id P -∗ P.
-  Proof. done. Qed.
+  Proof. rewrite make_laterable_id_eq. done. Qed.
 
-  (** We need [PROP] to be affine as otherwise [emp] is not [Laterable]. *)
-  Lemma tac_aupd_intro `{!BiAffine PROP} Γp Γs n α β Eo Ei Φ P :
+  Lemma tac_aupd_intro Γp Γs n α β Eo Ei Φ P :
+    Laterable (PROP:=PROP) emp →
     TCForall Laterable (env_to_list Γs) →
     P = env_to_prop Γs →
     envs_entails (Envs Γp Γs n) (atomic_acc Eo Ei α P β Φ) →
     envs_entails (Envs Γp Γs n) (atomic_update Eo Ei α β Φ).
   Proof.
-    intros HΓs ->. rewrite envs_entails_eq of_envs_eq' /atomic_acc /=.
+    intros ? HΓs ->. rewrite envs_entails_eq of_envs_eq' /atomic_acc /=.
     setoid_rewrite env_to_prop_sound =>HAU.
     apply aupd_intro; [apply _..|]. done.
   Qed.
@@ -489,8 +494,9 @@ Local Ltac iMakeLaterable :=
   iApply make_laterable_id_elim; iModIntro.
 
 Tactic Notation "iAuIntro" :=
-  iMakeLaterable; eapply tac_aupd_intro; [
-    iSolveTC || fail "bug in iMakeLaterable: context not laterable"
+  iMakeLaterable; notypeclasses refine (tac_aupd_intro _ _ _ _ _ _ _ _ _ _ _ _ _); [
+    iSolveTC || fail "iAuIntro: emp not laterable"
+  | iSolveTC || fail "iAuIntro: context not laterable; this should not happen, please report a bug"
   | (* P = ...: make the P pretty *) pm_reflexivity
   | (* the new proof mode goal *) ].
 
@@ -506,4 +512,4 @@ Tactic Notation "iAaccIntro" "with" constr(sel) :=
   end.
 
 (* From here on, prevent TC search from implicitly unfolding these. *)
-Typeclasses Opaque atomic_acc atomic_update make_laterable_id.
+Typeclasses Opaque atomic_acc atomic_update.

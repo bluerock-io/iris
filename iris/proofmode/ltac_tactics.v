@@ -2623,7 +2623,7 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
      not have this issue. *)
   notypeclasses refine (tac_löb _ IH _ _ _ _);
     [iSolveTC || fail "iLöb: no 'BiLöb' instance found"
-    |reflexivity || fail "iLöb: spatial context not empty, this should not happen"
+    |reflexivity || fail "iLöb: spatial context not empty; this should not happen, please report a bug"
     |pm_reduce;
      lazymatch goal with
      | |- False =>
