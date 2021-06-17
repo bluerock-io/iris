@@ -444,10 +444,10 @@ Section proof_mode.
   Implicit Types (α : TA → PROP) (β Φ : TA → TB → PROP) (P : PROP).
 
   (** We'd like to use the [iModIntro] machinery to transform the context into
-  smoething all-laterable, but we cannot actually use [iModIntro] on
-  [make_laterable]for that since we need to first make the context laterable,
+  something all-laterable, but we cannot actually use [iModIntro] on
+  [make_laterable] for that since we need to first make the context laterable,
   then apply coinduction, and then introduce the modality (the last two steps
-  happen inside [aupd_intro]). We instead we define a dummy modality that also
+  happen inside [aupd_intro]). We instead we define a dummy modality [make_laterable_id] that also
   uses [MIEnvTransform IntoLaterable] and use that to pre-process the goal. *)
   Local Definition make_laterable_id (P : PROP) := P.
 
@@ -469,7 +469,7 @@ Section proof_mode.
     make_laterable_id P -∗ P.
   Proof. done. Qed.
 
-  (** We need PROP to be affine as otherwise [emp] is not [Laterable]. *)
+  (** We need [PROP] to be affine as otherwise [emp] is not [Laterable]. *)
   Lemma tac_aupd_intro `{!BiAffine PROP} Γp Γs n α β Eo Ei Φ P :
     TCForall Laterable (env_to_list Γs) →
     P = env_to_prop Γs →
