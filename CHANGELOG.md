@@ -51,6 +51,11 @@ Coq 8.11 is no longer supported in this version of Iris.
   value type, instead of a language. This requires extra type annotations or
   explicit coercions in a few cases, in particular `WP v {{ Φ }}` must now be
   written `WP (of_val v) {{ Φ }}`.
+* Improve `make_laterable`:
+  - Adjust definition such that `Laterable P` iff `P ⊢ make_laterable `.
+    As a consequence, `make_laterable_elim` got weaker: elimination now requires
+    an except-0 modality (`make_laterable P -∗ ◇ P`).
+  - Add `iModIntro` support for `make_laterable`.
 
 **Changes in `proofmode`:**
 
