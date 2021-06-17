@@ -10,8 +10,8 @@ Global Arguments laterable {_} _%I {_}.
 Global Hint Mode Laterable + ! : typeclass_instances.
 
 (** Proofmode class for turning [P] into a laterable [Q].
-    Well be the identity if [P] already is laterable, and add
-    [make_laterable] otherwise. *)
+    Will be the identity if [P] already is laterable, and add
+    [▷] otherwise. *)
 Class IntoLaterable {PROP : bi} (P Q : PROP) : Prop := {
   (** This is non-standard; usually we would just demand
       [P ⊢ make_laterable Q]. However, we need these stronger properties for
@@ -224,9 +224,9 @@ Section instances.
     modality_mixin make_laterable MIEnvId (MIEnvTransform IntoLaterable).
   Proof.
     split; simpl; eauto using make_laterable_intro', make_laterable_mono,
-      make_laterable_sep, intuitionistic_laterable with typeclass_instances.
-    - intros P Q ?. rewrite (into_laterable P).
-      apply make_laterable_intro'. eapply (into_laterable_result_laterable P), _.
+      make_laterable_sep, intuitionistic_laterable with typeclass_instances; [].
+    intros P Q ?. rewrite (into_laterable P).
+    apply make_laterable_intro'. eapply (into_laterable_result_laterable P), _.
   Qed.
 
   Definition modality_make_laterable `{!Timeless (PROP:=PROP) emp} :=
