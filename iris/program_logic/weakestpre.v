@@ -361,6 +361,8 @@ Section proofmode_classes.
   Context `{!irisGS Λ Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val Λ → iProp Σ.
+  Implicit Types v : val Λ.
+  Implicit Types e : expr Λ.
 
   Global Instance frame_wp p s E e R Φ Ψ :
     (∀ v, Frame p R (Φ v) (Ψ v)) →
