@@ -10,6 +10,9 @@ Section test_dist_equiv_mode.
   Lemma list_dist_lookup {A : ofe} n (l1 l2 : list A) :
     l1 ≡{n}≡ l2 ↔ ∀ i, l1 !! i ≡{n}≡ l2 !! i.
   Abort.
+  (* analogous test for [Equiv] and https://github.com/coq/coq/issues/14441.
+  From https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/700#note_69303. *)
+
   Lemma list_equiv_lookup_ofe {A : ofe} (l1 l2 : list A) :
     l1 ≡ l2 ↔ ∀ i, l1 !! i ≡ l2 !! i.
   Abort.
@@ -24,9 +27,10 @@ Section test_dist_equiv_mode.
     l1 ≡ l2 ↔ ∀ i, l1 !! i ≡ l2 !! i.
   Abort.
 
-  (* fails *)
-  Fail Lemma list_equiv_lookup_equiv `{Equiv A} (l1 l2 : list A) :
-    l1 ≡ l2 ↔ ∀ i, l1 !! i ≡ l2 !! i.
+  (* fails due to https://github.com/coq/coq/issues/14441; commented out, hoping
+  for a fix in Coq. *)
+  (* Fail Lemma list_equiv_lookup_equiv `{Equiv A} (l1 l2 : list A) :
+    l1 ≡ l2 ↔ ∀ i, l1 !! i ≡ l2 !! i. *)
 End test_dist_equiv_mode.
 
 (** Make sure that the same [Equivalence] instance is picked for Leibniz OFEs
