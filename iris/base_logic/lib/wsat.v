@@ -6,7 +6,7 @@ From iris.prelude Require Import options.
 
 (** All definitions in this file are internal to [fancy_updates] with the
 exception of what's in the [invGS] module. The module [invGS] is thus exported in
-[fancy_updates], which [wsat] is only imported. *)
+[fancy_updates], where [wsat] is only imported. *)
 Module invGS.
   Class invGpreS (Σ : gFunctors) : Set := InvGpreS {
     invGpreS_inv :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));

@@ -259,7 +259,7 @@ Section lemmas.
     iApply atomic_acc_mask_weaken. done.
   Qed.
 
-  (** The ellimination form: an atomic accessor *)
+  (** The elimination form: an atomic accessor *)
   Lemma aupd_aacc  Eo Ei α β Φ :
     atomic_update Eo Ei α β Φ -∗
     atomic_acc Eo Ei α (atomic_update Eo Ei α β Φ) β Φ.
