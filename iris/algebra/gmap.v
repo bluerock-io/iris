@@ -66,7 +66,7 @@ Proof.
     [by constructor|by apply lookup_ne].
 Qed.
 Global Instance alter_ne (f : A → A) (k : K) n :
-  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (alter f k).
+  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (alter (M := gmap K A) f k).
 Proof. intros ? m m' Hm k'. by apply partial_alter_ne; [solve_proper|..]. Qed.
 
 Global Instance gmap_empty_discrete : Discrete (∅ : gmap K A).
