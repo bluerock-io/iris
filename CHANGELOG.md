@@ -44,6 +44,11 @@ Coq 8.11 is no longer supported in this version of Iris.
   `big_sep{L,L2,M,M2,S}_intro`, and `big_orL_lookup` → `big_orL_intro`.
 * Rename `bupd_forall` to `bupd_plain_forall`, and add
   `{bupd,fupd}_{and,or,forall,exist}`.
+* Decouple `Wp` and `Twp` typeclasses from the `program_logic.language`
+  interface. The typeclasses are now parameterized over an expression and a
+  value type, instead of a language. This requires extra type annotations or
+  explicit coercions in a few cases, in particular `WP v {{ Φ }}` must now be
+  written `WP (of_val v) {{ Φ }}`.
 
 **Changes in `proofmode`:**
 
