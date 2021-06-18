@@ -1,4 +1,5 @@
 From iris.algebra Require Export ofe.
+From iris.bi Require Export weakestpre.
 From iris.prelude Require Import options.
 
 Section language_mixin.
@@ -28,12 +29,7 @@ Structure language := Language {
   language_mixin : LanguageMixin of_val to_val prim_step
 }.
 
-Declare Scope expr_scope.
-Delimit Scope expr_scope with E.
 Bind Scope expr_scope with expr.
-
-Declare Scope val_scope.
-Delimit Scope val_scope with V.
 Bind Scope val_scope with val.
 
 Global Arguments Language {_ _ _ _ _ _ _} _.
@@ -62,6 +58,9 @@ Global Instance language_ctx_id Λ : LanguageCtx (@id (expr Λ)).
 Proof. constructor; naive_solver. Qed.
 
 Inductive atomicity := StronglyAtomic | WeaklyAtomic.
+
+Definition stuckness_to_atomicity (s : stuckness) : atomicity :=
+  if s is MaybeStuck then StronglyAtomic else WeaklyAtomic.
 
 Section language.
   Context {Λ : language}.

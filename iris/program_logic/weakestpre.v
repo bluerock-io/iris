@@ -73,7 +73,7 @@ Proof.
   - by rewrite -IH.
 Qed.
 
-Definition wp_def `{!irisGS Λ Σ} : Wp Λ (iProp Σ) stuckness :=
+Definition wp_def `{!irisGS Λ Σ} : Wp (iProp Σ) (expr Λ) (val Λ) stuckness :=
   λ s : stuckness, fixpoint (wp_pre s).
 Definition wp_aux : seal (@wp_def). Proof. by eexists. Qed.
 Definition wp' := wp_aux.(unseal).

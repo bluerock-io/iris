@@ -1,7 +1,14 @@
+(** Shared notation file for WP connectives. *)
+
 From stdpp Require Export coPset.
 From iris.bi Require Import interface derived_connectives.
-From iris.program_logic Require Import language.
 From iris.prelude Require Import options.
+
+Declare Scope expr_scope.
+Delimit Scope expr_scope with E.
+
+Declare Scope val_scope.
+Delimit Scope val_scope with V.
 
 Inductive stuckness := NotStuck | MaybeStuck.
 
@@ -14,9 +21,6 @@ Global Instance stuckness_le : SqSubsetEq stuckness := stuckness_leb.
 Global Instance stuckness_le_po : PreOrder stuckness_le.
 Proof. split; by repeat intros []. Qed.
 
-Definition stuckness_to_atomicity (s : stuckness) : atomicity :=
-  if s is MaybeStuck then StronglyAtomic else WeaklyAtomic.
-
 (** Weakest preconditions [WP e @ s ; E {{ Φ }}] have an additional argument [s]
 of arbitrary type [A], that can be chosen by the one instantiating the [Wp] type
 class. This argument can be used for e.g. the stuckness bit (as in Iris) or
@@ -28,15 +32,15 @@ and [s] to be [NotStuck] or [MaybeStuck].  This will fail to typecheck if [A] is
 not [stuckness].  If we ever want to use the notation [WP e @ E {{ Φ }}] with a
 different [A], the plan is to generalize the notation to use [Inhabited] instead
 to pick a default value depending on [A]. *)
-Class Wp (Λ : language) (PROP A : Type) :=
-  wp : A → coPset → expr Λ → (val Λ → PROP) → PROP.
-Global Arguments wp {_ _ _ _} _ _ _%E _%I.
-Global Instance: Params (@wp) 7 := {}.
+Class Wp (PROP EXPR VAL A : Type) :=
+  wp : A → coPset → EXPR → (VAL → PROP) → PROP.
+Global Arguments wp {_ _ _ _ _} _ _ _%E _%I.
+Global Instance: Params (@wp) 8 := {}.
 
-Class Twp (Λ : language) (PROP A : Type) :=
-  twp : A → coPset → expr Λ → (val Λ → PROP) → PROP.
-Global Arguments twp {_ _ _ _} _ _ _%E _%I.
-Global Instance: Params (@twp) 7 := {}.
+Class Twp (PROP EXPR VAL A : Type) :=
+  twp : A → coPset → EXPR → (VAL → PROP) → PROP.
+Global Arguments twp {_ _ _ _ _} _ _ _%E _%I.
+Global Instance: Params (@twp) 8 := {}.
 
 (** Notations for partial weakest preconditions *)
 (** Notations without binder -- only parsing because they overlap with the
