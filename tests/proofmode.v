@@ -1,3 +1,4 @@
+From iris.bi Require Import laterable.
 From iris.proofmode Require Import tactics intro_patterns.
 Set Default Proof Using "Type".
 
@@ -1077,6 +1078,13 @@ Lemma test_iDestruct_and_fupd `{BiFUpd PROP} (P Q : PROP) E1 E2 :
   (|={E1, E2}=> P ∧ Q) ⊢ |={E1, E2}=> P.
 Proof.
   iIntros "[P _]". done.
+Qed.
+
+Lemma test_iModIntro_make_laterable `{BiAffine PROP} (P Q : PROP) :
+  Laterable Q →
+  P -∗ Q -∗ make_laterable (▷ P ∗ Q).
+Proof.
+  iIntros (?) "HP HQ". iModIntro. Show. by iFrame.
 Qed.
 
 End tests.

@@ -74,7 +74,7 @@ Section definition.
   Proof.
     constructor.
     - iIntros (P1 P2) "#HP12". iIntros ([]) "AU".
-      iApply (make_laterable_wand with "[] AU").
+      iApply (make_laterable_intuitionistic_wand with "[] AU").
       iIntros "!> AA". iApply (atomic_acc_wand with "[HP12] AA").
       iSplit; last by eauto. iApply "HP12".
     - intros ??. solve_proper.
@@ -255,7 +255,7 @@ Section lemmas.
     iIntros (Heo) "HAU".
     iApply (greatest_fixpoint_coind _ (λ _, atomic_update_def Eo1 Ei α β Φ)); last done.
     iIntros "!> *". rewrite {1}/atomic_update_def /= greatest_fixpoint_unfold.
-    iApply make_laterable_wand. iIntros "!>".
+    iApply make_laterable_intuitionistic_wand. iIntros "!>".
     iApply atomic_acc_mask_weaken. done.
   Qed.
 
@@ -266,7 +266,7 @@ Section lemmas.
   Proof using Type*.
     rewrite atomic_update_eq {1}/atomic_update_def /=. iIntros "HUpd".
     iPoseProof (greatest_fixpoint_unfold_1 with "HUpd") as "HUpd".
-    iApply make_laterable_elim. done.
+    iDestruct (make_laterable_elim with "HUpd") as ">?". done.
   Qed.
 
   (* This lets you eliminate atomic updates with iMod. *)
@@ -300,7 +300,7 @@ Section lemmas.
     rewrite atomic_update_eq {1}/atomic_update_def /=.
     iIntros (??? HAU) "[#HP HQ]".
     iApply (greatest_fixpoint_coind _ (λ _, Q)); last done. iIntros "!>" ([]) "HQ".
-    iApply (make_laterable_intro Q with "[] HQ"). iIntros "!> >HQ".
+    iApply (make_laterable_intro Q with "[] HQ"). iIntros "!> HQ".
     iApply HAU. by iFrame.
   Qed.
 
@@ -438,13 +438,44 @@ Section lemmas.
 
 End lemmas.
 
-(** ProofMode support for atomic updates *)
+(** ProofMode support for atomic updates. *)
 Section proof_mode.
   Context `{BiFUpd PROP} {TA TB : tele}.
   Implicit Types (α : TA → PROP) (β Φ : TA → TB → PROP) (P : PROP).
 
+  (** We'd like to use the [iModIntro] machinery to transform the context into
+  something all-laterable, but we cannot actually use [iModIntro] on
+  [make_laterable] for that since we need to first make the context laterable,
+  then apply coinduction, and then introduce the modality (the last two steps
+  happen inside [aupd_intro]). We instead we define a dummy modality [make_laterable_id] that also
+  uses [MIEnvTransform IntoLaterable] and use that to pre-process the goal. *)
+  Local Definition make_laterable_id_def (P : PROP) := P.
+  Local Definition make_laterable_id_aux : seal make_laterable_id_def.
+  Proof. by eexists. Qed.
+  Local Definition make_laterable_id := make_laterable_id_aux.(unseal).
+  Local Definition make_laterable_id_eq : make_laterable_id = make_laterable_id_def :=
+    make_laterable_id_aux.(seal_eq).
+
+  Local Lemma modality_make_laterable_id_mixin :
+    modality_mixin make_laterable_id MIEnvId (MIEnvTransform IntoLaterable).
+  Proof.
+    rewrite make_laterable_id_eq. split; simpl; eauto.
+    intros P Q ?. rewrite (into_laterable P). done.
+  Qed.
+
+  Local Definition modality_make_laterable_id :=
+    Modality _ modality_make_laterable_id_mixin.
+
+  Global Instance from_modal_make_laterable P :
+    FromModal True modality_make_laterable_id (make_laterable_id P) (make_laterable_id P) P.
+  Proof. by rewrite /FromModal. Qed.
+
+  Local Lemma make_laterable_id_elim P :
+    make_laterable_id P -∗ P.
+  Proof. rewrite make_laterable_id_eq. done. Qed.
+
   Lemma tac_aupd_intro Γp Γs n α β Eo Ei Φ P :
-    Timeless (PROP:=PROP) emp →
+    Laterable (PROP:=PROP) emp →
     TCForall Laterable (env_to_list Γs) →
     P = env_to_prop Γs →
     envs_entails (Envs Γp Γs n) (atomic_acc Eo Ei α P β Φ) →
@@ -458,10 +489,14 @@ End proof_mode.
 
 (** * Now the coq-level tactics *)
 
+(** This tactic makes the context laterable. *)
+Local Ltac iMakeLaterable :=
+  iApply make_laterable_id_elim; iModIntro.
+
 Tactic Notation "iAuIntro" :=
-  iStartProof; eapply tac_aupd_intro; [
-    iSolveTC || fail "iAuIntro: emp is not timeless"
-  | iSolveTC || fail "iAuIntro: not all spatial assumptions are laterable"
+  iMakeLaterable; notypeclasses refine (tac_aupd_intro _ _ _ _ _ _ _ _ _ _ _ _ _); [
+    iSolveTC || fail "iAuIntro: emp not laterable"
+  | iSolveTC || fail "iAuIntro: context not laterable; this should not happen, please report a bug"
   | (* P = ...: make the P pretty *) pm_reflexivity
   | (* the new proof mode goal *) ].
 
