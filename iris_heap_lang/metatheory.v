@@ -1,16 +1,24 @@
-From stdpp Require Import gmap.
+From stdpp Require Import gmap stringmap.
 From iris.heap_lang Require Export lang.
 From iris.prelude Require Import options.
 
 (* This file contains some metatheory about the heap_lang language,
   which is not needed for verifying programs. *)
 
-(* Closed expressions and values. *)
-Fixpoint is_closed_expr (X : list string) (e : expr) : bool :=
+(* Lifting `Insert` on strings to binders. *)
+Local Definition set_binder_insert (x : binder) (X : stringset) : stringset :=
+  match x with
+  | BAnon => X
+  | BNamed f => {[f]} ∪ X
+  end.
+
+(* Check if expression [e] is closed w.r.t. the set [X] of variable names,
+   and that all the values in [e] are closed *)
+Fixpoint is_closed_expr (X : stringset) (e : expr) : bool :=
   match e with
   | Val v => is_closed_val v
   | Var x => bool_decide (x ∈ X)
-  | Rec f x e => is_closed_expr (f :b: x :b: X) e
+  | Rec f x e => is_closed_expr (set_binder_insert f (set_binder_insert x X)) e
   | UnOp _ e | Fst e | Snd e | InjL e | InjR e | Fork e | Free e | Load e =>
      is_closed_expr X e
   | App e1 e2 | BinOp _ e1 e2 | Pair e1 e2 | AllocN e1 e2 | Store e1 e2 | Xchg e1 e2 | FAA e1 e2 =>
@@ -22,19 +30,58 @@ Fixpoint is_closed_expr (X : list string) (e : expr) : bool :=
 with is_closed_val (v : val) : bool :=
   match v with
   | LitV _ => true
-  | RecV f x e => is_closed_expr (f :b: x :b: []) e
+  | RecV f x e => is_closed_expr (set_binder_insert f (set_binder_insert x ∅)) e
   | PairV v1 v2 => is_closed_val v1 && is_closed_val v2
   | InjLV v | InjRV v => is_closed_val v
   end.
 
+(* Parallel substitution *)
+Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
+  match e with
+  | Val _ => e
+  | Var y => if vs !! y is Some v then Val v else Var y
+  | Rec f y e => Rec f y (subst_map (binder_delete y (binder_delete f vs)) e)
+  | App e1 e2 => App (subst_map vs e1) (subst_map vs e2)
+  | UnOp op e => UnOp op (subst_map vs e)
+  | BinOp op e1 e2 => BinOp op (subst_map vs e1) (subst_map vs e2)
+  | If e0 e1 e2 => If (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
+  | Pair e1 e2 => Pair (subst_map vs e1) (subst_map vs e2)
+  | Fst e => Fst (subst_map vs e)
+  | Snd e => Snd (subst_map vs e)
+  | InjL e => InjL (subst_map vs e)
+  | InjR e => InjR (subst_map vs e)
+  | Case e0 e1 e2 => Case (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
+  | Fork e => Fork (subst_map vs e)
+  | AllocN e1 e2 => AllocN (subst_map vs e1) (subst_map vs e2)
+  | Free e => Free (subst_map vs e)
+  | Load e => Load (subst_map vs e)
+  | Store e1 e2 => Store (subst_map vs e1) (subst_map vs e2)
+  | Xchg e1 e2 => Xchg (subst_map vs e1) (subst_map vs e2)
+  | CmpXchg e0 e1 e2 => CmpXchg (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
+  | FAA e1 e2 => FAA (subst_map vs e1) (subst_map vs e2)
+  | NewProph => NewProph
+  | Resolve e0 e1 e2 => Resolve (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
+  end.
+
+(* Properties *)
+Local Instance SetUnfoldElemOf_insert_binder x y X Q :
+  SetUnfoldElemOf y X Q →
+  SetUnfoldElemOf y (set_binder_insert x X) (Q ∨ BNamed y = x).
+Proof.
+  intros H1. constructor.
+  destruct x as [|x]; set_solver.
+Qed.
+
 Lemma is_closed_weaken X Y e : is_closed_expr X e → X ⊆ Y → is_closed_expr Y e.
-Proof. revert X Y; induction e; naive_solver (eauto; set_solver). Qed.
+Proof.
+  revert X Y; induction e; naive_solver (eauto; set_solver).
+Qed.
 
-Lemma is_closed_weaken_nil X e : is_closed_expr [] e → is_closed_expr X e.
-Proof. intros. by apply is_closed_weaken with [], list_subseteq_nil. Qed.
+Lemma is_closed_weaken_empty X e : is_closed_expr ∅ e → is_closed_expr X e.
+Proof. intros. by apply is_closed_weaken with ∅, empty_subseteq. Qed.
 
-Lemma is_closed_subst X e x v :
-  is_closed_val v → is_closed_expr (x :: X) e → is_closed_expr X (subst x v e).
+Lemma is_closed_subst X e y v :
+  is_closed_val v → is_closed_expr ({[y]} ∪ X) e → is_closed_expr X (subst y v e).
 Proof.
   intros Hv. revert X.
   induction e=> X /= ?; destruct_and?; split_and?; simplify_option_eq;
@@ -43,24 +90,24 @@ Proof.
     end; eauto using is_closed_weaken with set_solver.
 Qed.
 Lemma is_closed_subst' X e x v :
-  is_closed_val v → is_closed_expr (x :b: X) e → is_closed_expr X (subst' x v e).
+  is_closed_val v → is_closed_expr (set_binder_insert x X) e → is_closed_expr X (subst' x v e).
 Proof. destruct x; eauto using is_closed_subst. Qed.
 
-(* Substitution *)
 Lemma subst_is_closed X e x es : is_closed_expr X e → x ∉ X → subst x es e = e.
 Proof.
-  revert X. induction e=> X /=; rewrite ?bool_decide_spec ?andb_True=> ??;
+  revert X. induction e=> X /=;
+   rewrite ?bool_decide_spec ?andb_True=> ??;
     repeat case_decide; simplify_eq/=; f_equal; intuition eauto with set_solver.
 Qed.
 
-Lemma subst_is_closed_nil e x v : is_closed_expr [] e → subst x v e = e.
-Proof. intros. apply subst_is_closed with []; set_solver. Qed.
+Lemma subst_is_closed_empty e x v : is_closed_expr ∅ e → subst x v e = e.
+Proof. intros. apply subst_is_closed with (∅:stringset); set_solver. Qed.
 
 Lemma subst_subst e x v v' :
   subst x v (subst x v' e) = subst x v' e.
 Proof.
   intros. induction e; simpl; try (f_equal; by auto);
-    simplify_option_eq; auto using subst_is_closed_nil with f_equal.
+    simplify_option_eq; auto using subst_is_closed_empty with f_equal.
 Qed.
 Lemma subst_subst' e x v v' :
   subst' x v (subst' x v' e) = subst' x v' e.
@@ -70,7 +117,7 @@ Lemma subst_subst_ne e x y v v' :
   x ≠ y → subst x v (subst y v' e) = subst y v' (subst x v e).
 Proof.
   intros. induction e; simpl; try (f_equal; by auto);
-    simplify_option_eq; auto using eq_sym, subst_is_closed_nil with f_equal.
+    simplify_option_eq; auto using eq_sym, subst_is_closed_empty with f_equal.
 Qed.
 Lemma subst_subst_ne' e x y v v' :
   x ≠ y → subst' x v (subst' y v' e) = subst' y v' (subst' x v e).
@@ -122,10 +169,10 @@ Qed.
 
 (* The stepping relation preserves closedness *)
 Lemma head_step_is_closed e1 σ1 obs e2 σ2 es :
-  is_closed_expr [] e1 →
+  is_closed_expr ∅ e1 →
   map_Forall (λ _ v, from_option is_closed_val true v) σ1.(heap) →
   head_step e1 σ1 obs e2 σ2 es →
-  is_closed_expr [] e2 ∧ Forall (is_closed_expr []) es ∧
+  is_closed_expr ∅ e2 ∧ Forall (is_closed_expr ∅) es ∧
   map_Forall (λ _ v, from_option is_closed_val true v) σ2.(heap).
 Proof.
   intros Cl1 Clσ1 STEP.
@@ -141,32 +188,6 @@ Proof.
   - case_match; try apply map_Forall_insert_2; by naive_solver.
 Qed.
 
-Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
-  match e with
-  | Val _ => e
-  | Var y => if vs !! y is Some v then Val v else Var y
-  | Rec f y e => Rec f y (subst_map (binder_delete y (binder_delete f vs)) e)
-  | App e1 e2 => App (subst_map vs e1) (subst_map vs e2)
-  | UnOp op e => UnOp op (subst_map vs e)
-  | BinOp op e1 e2 => BinOp op (subst_map vs e1) (subst_map vs e2)
-  | If e0 e1 e2 => If (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
-  | Pair e1 e2 => Pair (subst_map vs e1) (subst_map vs e2)
-  | Fst e => Fst (subst_map vs e)
-  | Snd e => Snd (subst_map vs e)
-  | InjL e => InjL (subst_map vs e)
-  | InjR e => InjR (subst_map vs e)
-  | Case e0 e1 e2 => Case (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
-  | Fork e => Fork (subst_map vs e)
-  | AllocN e1 e2 => AllocN (subst_map vs e1) (subst_map vs e2)
-  | Free e => Free (subst_map vs e)
-  | Load e => Load (subst_map vs e)
-  | Store e1 e2 => Store (subst_map vs e1) (subst_map vs e2)
-  | Xchg e1 e2 => Xchg (subst_map vs e1) (subst_map vs e2)
-  | CmpXchg e0 e1 e2 => CmpXchg (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
-  | FAA e1 e2 => FAA (subst_map vs e1) (subst_map vs e2)
-  | NewProph => NewProph
-  | Resolve e0 e1 e2 => Resolve (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
-  end.
 
 Lemma subst_map_empty e : subst_map ∅ e = e.
 Proof.
@@ -216,7 +237,6 @@ Proof.
   by rewrite subst_map_binder_insert_2 !binder_delete_empty subst_map_empty.
 Qed.
 
-(* subst_map on closed expressions *)
 Lemma subst_map_is_closed X e vs :
   is_closed_expr X e →
   (∀ x, x ∈ X → vs !! x = None) →
@@ -227,8 +247,16 @@ Proof.
     x ∈ x2 :b: x1 :b: X →
     binder_delete x1 (binder_delete x2 vs) !! x = None).
   { intros x x1 x2 X vs ??. rewrite !lookup_binder_delete_None. set_solver. }
-  induction e=> X vs /= ? HX; repeat case_match; naive_solver eauto with f_equal.
+  induction e as [| |f x e IHe | | | | | | | | | | | | | | | | | | | |]=> X vs /= ? HX.
+  3:{ f_equal. eapply IHe; eauto.
+      intros x0 Hx0.
+      rewrite !lookup_binder_delete_None.
+      set_solver. }
+  all: repeat case_match; naive_solver eauto with f_equal.
 Qed.
 
-Lemma subst_map_is_closed_nil e vs : is_closed_expr [] e → subst_map vs e = e.
-Proof. intros. apply subst_map_is_closed with []; set_solver. Qed.
+Lemma subst_map_is_closed_empty e vs : is_closed_expr ∅ e → subst_map vs e = e.
+Proof.
+  intros.
+  apply subst_map_is_closed with ∅; try setoid_rewrite elem_of_empty; set_solver.
+Qed.
