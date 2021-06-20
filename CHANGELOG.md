@@ -33,13 +33,9 @@ Coq 8.11 is no longer supported in this version of Iris.
   algorithm.
 * Set `Hint Mode` for the classes `OfeDiscrete`, `Dist`, `Unit`, `CmraMorphism`,
   `rFunctorContractive`, `urFunctorContractive`.
-* Also set `Hint Mode` for the stdpp class `Equiv`.
-  This might require few spurious type annotations until
-  https://github.com/coq/coq/issues/14441 is fixed.
-  This `Hint Mode` is not in stdpp due to Coq bugs
-  https://github.com/coq/coq/issues/5735 and
-  https://github.com/coq/coq/issues/9058, only fixed in Coq >= 8.12, which stdpp
-  supports and Iris does not.
+* Set `Hint Mode` for the stdpp class `Equiv`. This might require few spurious
+  type annotations until
+  [Coq bug #14441](https://github.com/coq/coq/issues/14441) is fixed.
 * Add `max_prefix_list` RA on lists whose composition is only defined when one
   operand is a prefix of the other. The result is the longer list.
 
