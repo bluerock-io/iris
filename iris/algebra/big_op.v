@@ -171,7 +171,8 @@ Section list.
     ([^o list] k ↦ y ∈ l1, f k y) ≡ ([^o list] k ↦ y ∈ l2, g k y).
   Proof.
     intros Hl Hf. apply big_opL_gen_proper_2; try (apply _ || done).
-    intros k. assert (l1 !! k ≡ l2 !! k) as Hlk by (by f_equiv).
+    (* FIXME (Coq #14441) unnecessary type annotation *)
+    intros k. assert (l1 !! k ≡@{option A} l2 !! k) as Hlk by (by f_equiv).
     destruct (l1 !! k) eqn:?, (l2 !! k) eqn:?; inversion Hlk; naive_solver.
   Qed.
 
@@ -324,7 +325,8 @@ Section gmap.
     ([^o map] k ↦ y ∈ m1, f k y) ≡ ([^o map] k ↦ y ∈ m2, g k y).
   Proof.
     intros Hl Hf. apply big_opM_gen_proper_2; try (apply _ || done).
-    intros k. assert (m1 !! k ≡ m2 !! k) as Hlk by (by f_equiv).
+    (* FIXME (Coq #14441) unnecessary type annotation *)
+    intros k. assert (m1 !! k ≡@{option A} m2 !! k) as Hlk by (by f_equiv).
     destruct (m1 !! k) eqn:?, (m2 !! k) eqn:?; inversion Hlk; naive_solver.
   Qed.
 
