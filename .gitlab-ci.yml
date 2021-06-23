@@ -50,6 +50,13 @@ build-coq.dev:
     OPAM_PINS: "coq-core.dev git git+https://github.com/coq/coq#$COQ_REV   coq-stdlib.dev git git+https://github.com/coq/coq#$COQ_REV   coq.dev git git+https://github.com/coq/coq#$COQ_REV"
     MANGLE_NAMES: "1"
 
+build-coq.8.14.dev:
+  <<: *template
+  variables:
+    OPAM_PINS: "coq version 8.14.dev"
+    MANGLE_NAMES: "1"
+    DENY_WARNINGS: "1"
+
 build-coq.8.13.2:
   <<: *template
   interruptible: false
@@ -83,11 +90,11 @@ trigger-stdpp.dev-coq.8.13.1:
   - api
 
 # Nightly job with latest Coq beta branch
-trigger-stdpp.dev-coq.8.13.dev:
+trigger-stdpp.dev-coq.8.14.dev:
   <<: *template
   variables:
     STDPP_REPO: "iris/stdpp"
-    OPAM_PINS: "coq version 8.13.dev   git+https://gitlab.mpi-sws.org/$STDPP_REPO#$STDPP_REV"
+    OPAM_PINS: "coq version 8.14.dev   git+https://gitlab.mpi-sws.org/$STDPP_REPO#$STDPP_REV"
     CI_COQCHK: "1"
   except:
   only:
