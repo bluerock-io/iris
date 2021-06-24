@@ -81,7 +81,7 @@ Inductive un_op : Set :=
 Inductive bin_op : Set :=
   (** We use "quot" and "rem" instead of "div" and "mod" to
       better match the behavior of 'real' languages:
-      -30/-4 == 7. ("div" would return 8.) *)
+      e.g., in Rust, -30/-4 == 7. ("div" would return 8.) *)
   | PlusOp | MinusOp | MultOp | QuotOp | RemOp (* Arithmetic *)
   | AndOp | OrOp | XorOp (* Bitwise *)
   | ShiftLOp | ShiftROp (* Shifts *)
