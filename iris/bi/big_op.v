@@ -2071,6 +2071,14 @@ Section gset.
   Lemma big_sepS_insert Φ X x :
     x ∉ X → ([∗ set] y ∈ {[ x ]} ∪ X, Φ y) ⊣⊢ (Φ x ∗ [∗ set] y ∈ X, Φ y).
   Proof. apply big_opS_insert. Qed.
+  Lemma big_sepS_insert_2 `{!BiAffine PROP} Φ X x :
+    (Φ x ∗ [∗ set] y ∈ X, Φ y) ⊢ ([∗ set] y ∈ {[ x ]} ∪ X, Φ y).
+  Proof.
+    destruct (decide (x ∈ X)).
+    - rewrite bi.sep_elim_r. replace ({[x]} ∪ X) with X by set_solver.
+      done.
+    - rewrite -big_sepS_insert //.
+  Qed.
 
   Lemma big_sepS_fn_insert {B} (Ψ : A → B → PROP) f X x b :
     x ∉ X →
