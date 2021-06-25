@@ -2090,6 +2090,14 @@ Section gset.
   Lemma big_sepS_delete Φ X x :
     x ∈ X → ([∗ set] y ∈ X, Φ y) ⊣⊢ Φ x ∗ [∗ set] y ∈ X ∖ {[ x ]}, Φ y.
   Proof. apply big_opS_delete. Qed.
+  Lemma big_sepS_delete_2 `{!BiAffine PROP} Φ X x :
+    Φ x ∗ ([∗ set] y ∈ X ∖ {[ x ]}, Φ y) ⊢ [∗ set] y ∈ X, Φ y.
+  Proof.
+    destruct (decide (x ∈ X)).
+    - rewrite -big_sepS_delete //.
+    - replace (X ∖ {[x]}) with X by set_solver.
+      rewrite bi.sep_elim_r. done.
+  Qed.
 
   Lemma big_sepS_elem_of Φ X x `{!Absorbing (Φ x)} :
     x ∈ X → ([∗ set] y ∈ X, Φ y) ⊢ Φ x.
