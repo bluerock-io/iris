@@ -1191,7 +1191,7 @@ Section map.
     { destruct Ha; try apply _. }
     rewrite big_sepM_delete // assoc.
     rewrite (sep_elim_l (Φ i x)) -big_sepM_insert ?lookup_delete //.
-    by rewrite insert_delete.
+    by rewrite insert_delete_insert.
   Qed.
 
   Lemma big_sepM_lookup_acc Φ m i x :
@@ -1231,7 +1231,7 @@ Section map.
       (Φ i x' -∗ Φ i x) -∗ ([∗ map] k↦y ∈ m, Φ k y).
   Proof.
     intros ?. apply wand_intro_l.
-    rewrite -insert_delete big_sepM_insert ?lookup_delete //.
+    rewrite -insert_delete_insert big_sepM_insert ?lookup_delete //.
     by rewrite assoc wand_elim_l -big_sepM_delete.
   Qed.
 
@@ -1242,7 +1242,7 @@ Section map.
   Proof.
     intros ?. apply wand_intro_l.
     rewrite {1}big_sepM_delete //; rewrite assoc wand_elim_l.
-    rewrite -insert_delete big_sepM_insert ?lookup_delete //.
+    rewrite -insert_delete_insert big_sepM_insert ?lookup_delete //.
   Qed.
 
   Lemma big_sepM_insert_acc Φ m i x :
@@ -1252,7 +1252,7 @@ Section map.
   Proof.
     intros ?. rewrite {1}big_sepM_delete //. apply sep_mono; [done|].
     apply forall_intro=> x'.
-    rewrite -insert_delete big_sepM_insert ?lookup_delete //.
+    rewrite -insert_delete_insert big_sepM_insert ?lookup_delete //.
     by apply wand_intro_l.
   Qed.
 
@@ -1655,7 +1655,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ <[i:=x1]>m1; <[i:=x2]>m2, Φ k y1 y2)
     ⊣⊢ Φ i x1 x2 ∗ [∗ map] k↦y1;y2 ∈ delete i m1;delete i m2, Φ k y1 y2.
   Proof.
-    rewrite -(insert_delete m1) -(insert_delete m2).
+    rewrite -(insert_delete_insert m1) -(insert_delete_insert m2).
     apply big_sepM2_insert; by rewrite lookup_delete.
   Qed.
 
@@ -1667,7 +1667,7 @@ Section map2.
   Proof.
     intros ??. rewrite {1}big_sepM2_delete //. apply sep_mono; [done|].
     apply forall_intro=> x1'. apply forall_intro=> x2'.
-    rewrite -(insert_delete m1) -(insert_delete m2) big_sepM2_insert ?lookup_delete //.
+    rewrite -(insert_delete_insert m1) -(insert_delete_insert m2) big_sepM2_insert ?lookup_delete //.
     by apply wand_intro_l.
   Qed.
 
@@ -1952,7 +1952,7 @@ Section map2.
     { by rewrite -Hm' lookup_delete. }
     apply wand_intro_l.
     rewrite -(exist_intro (<[i:=y]> m1')) -(exist_intro m2'). apply and_intro.
-    { apply pure_intro. by rewrite -insert_union_l -Hm' insert_delete insert_id. }
+    { apply pure_intro. by rewrite -insert_union_l -Hm' insert_delete. }
     apply and_intro.
     { apply pure_intro. by apply map_disjoint_insert_l. }
     by rewrite big_sepM2_insert // -assoc.

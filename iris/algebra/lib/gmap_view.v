@@ -370,7 +370,7 @@ Section lemmas.
   Proof.
     rewrite gmap_view_delete.
     rewrite (gmap_view_alloc _ k (DfracOwn 1) v') //; last by rewrite lookup_delete.
-    rewrite insert_delete //.
+    rewrite insert_delete_insert //.
   Qed.
 
   Lemma gmap_view_update_big m m0 m1 :

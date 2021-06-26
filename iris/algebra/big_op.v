@@ -254,7 +254,7 @@ Lemma big_opM_delete `{Countable K} {B} (f : K → B → M) (m : gmap K B) i x :
   ([^o map] k↦y ∈ m, f k y) ≡ f i x `o` [^o map] k↦y ∈ delete i m, f k y.
 Proof.
   intros. rewrite -big_opM_insert ?lookup_delete //.
-  by rewrite insert_delete insert_id.
+  by rewrite insert_delete.
 Qed.
 
 Section gmap.
@@ -379,14 +379,14 @@ Section gmap.
   Lemma big_opM_insert_delete `{Countable K} {B} (f : K → B → M) (m : gmap K B) i x :
     ([^o map] k↦y ∈ <[i:=x]> m, f k y) ≡ f i x `o` [^o map] k↦y ∈ delete i m, f k y.
   Proof.
-    rewrite -insert_delete big_opM_insert; first done. by rewrite lookup_delete.
+    rewrite -insert_delete_insert big_opM_insert; first done. by rewrite lookup_delete.
   Qed.
 
   Lemma big_opM_insert_override (f : K → A → M) m i x x' :
     m !! i = Some x → f i x ≡ f i x' →
     ([^o map] k↦y ∈ <[i:=x']> m, f k y) ≡ ([^o map] k↦y ∈ m, f k y).
   Proof.
-    intros ? Hx. rewrite -insert_delete big_opM_insert ?lookup_delete //.
+    intros ? Hx. rewrite -insert_delete_insert big_opM_insert ?lookup_delete //.
     by rewrite -Hx -big_opM_delete.
   Qed.
 
