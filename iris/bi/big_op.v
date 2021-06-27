@@ -731,7 +731,7 @@ Section sep_list2.
     intros HΦ. apply (anti_symm _).
     { apply and_intro; [apply big_sepL2_length|].
       apply forall_intro=> k. apply forall_intro=> x1. apply forall_intro=> x2.
-      do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply :big_sepL2_lookup. }
+      do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply: big_sepL2_lookup. }
     apply pure_elim_l=> Hlen.
     revert l2 Φ HΦ Hlen. induction l1 as [|x1 l1 IH]=> -[|x2 l2] Φ HΦ Hlen; simplify_eq/=.
     { by apply (affine _). }
