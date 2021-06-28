@@ -1182,7 +1182,7 @@ Section map.
   Proof. apply big_opM_insert_delete. Qed.
 
   Lemma big_sepM_insert_2 Φ m i x :
-    TCOr (∀ x, Affine (Φ i x)) (Absorbing (Φ i x)) →
+    TCOr (∀ y, Affine (Φ i y)) (Absorbing (Φ i x)) →
     Φ i x -∗ ([∗ map] k↦y ∈ m, Φ k y) -∗ [∗ map] k↦y ∈ <[i:=x]> m, Φ k y.
   Proof.
     intros Ha. apply wand_intro_r. destruct (m !! i) as [y|] eqn:Hi; last first.
@@ -2071,14 +2071,6 @@ Section gset.
   Lemma big_sepS_insert Φ X x :
     x ∉ X → ([∗ set] y ∈ {[ x ]} ∪ X, Φ y) ⊣⊢ (Φ x ∗ [∗ set] y ∈ X, Φ y).
   Proof. apply big_opS_insert. Qed.
-  Lemma big_sepS_insert_2 `{!BiAffine PROP} Φ X x :
-    (Φ x ∗ [∗ set] y ∈ X, Φ y) ⊢ ([∗ set] y ∈ {[ x ]} ∪ X, Φ y).
-  Proof.
-    destruct (decide (x ∈ X)).
-    - rewrite bi.sep_elim_r. replace ({[x]} ∪ X) with X by set_solver.
-      done.
-    - rewrite -big_sepS_insert //.
-  Qed.
 
   Lemma big_sepS_fn_insert {B} (Ψ : A → B → PROP) f X x b :
     x ∉ X →
@@ -2098,13 +2090,29 @@ Section gset.
   Lemma big_sepS_delete Φ X x :
     x ∈ X → ([∗ set] y ∈ X, Φ y) ⊣⊢ Φ x ∗ [∗ set] y ∈ X ∖ {[ x ]}, Φ y.
   Proof. apply big_opS_delete. Qed.
-  Lemma big_sepS_delete_2 `{!BiAffine PROP} Φ X x :
-    Φ x ∗ ([∗ set] y ∈ X ∖ {[ x ]}, Φ y) ⊢ [∗ set] y ∈ X, Φ y.
+
+  Lemma big_sepS_insert_2 Φ X x :
+    TCOr (Affine (Φ x)) (Absorbing (Φ x)) →
+    Φ x -∗ ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ {[ x ]} ∪ X, Φ y).
   Proof.
-    destruct (decide (x ∈ X)).
-    - rewrite -big_sepS_delete //.
-    - replace (X ∖ {[x]}) with X by set_solver.
-      rewrite bi.sep_elim_r. done.
+    intros Haff. apply wand_intro_r. destruct (decide (x ∈ X)); last first.
+    { rewrite -big_sepS_insert //. }
+    rewrite big_sepS_delete // assoc.
+    rewrite (sep_elim_l (Φ x)) -big_sepS_insert; last set_solver.
+    rewrite -union_difference_singleton_L //.
+    replace ({[x]} ∪ X) with X by set_solver.
+    auto.
+  Qed.
+
+  Lemma big_sepS_delete_2 Φ X x :
+    Affine (Φ x) →
+    Φ x -∗ ([∗ set] y ∈ X ∖ {[ x ]}, Φ y) -∗ [∗ set] y ∈ X, Φ y.
+  Proof.
+    intros Haff. apply wand_intro_r. destruct (decide (x ∈ X)).
+    { rewrite -big_sepS_delete //. }
+    rewrite sep_elim_r.
+    replace (X ∖ {[x]}) with X by set_solver.
+    auto.
   Qed.
 
   Lemma big_sepS_elem_of Φ X x `{!Absorbing (Φ x)} :
