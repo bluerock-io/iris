@@ -2091,7 +2091,7 @@ Section gset.
     x ∈ X → ([∗ set] y ∈ X, Φ y) ⊣⊢ Φ x ∗ [∗ set] y ∈ X ∖ {[ x ]}, Φ y.
   Proof. apply big_opS_delete. Qed.
 
-  Lemma big_sepS_insert_2 Φ X x :
+  Lemma big_sepS_insert_2 {Φ X} x :
     TCOr (Affine (Φ x)) (Absorbing (Φ x)) →
     Φ x -∗ ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ {[ x ]} ∪ X, Φ y).
   Proof.
@@ -2104,7 +2104,7 @@ Section gset.
     auto.
   Qed.
 
-  Lemma big_sepS_delete_2 Φ X x :
+  Lemma big_sepS_delete_2 {Φ X} x :
     Affine (Φ x) →
     Φ x -∗ ([∗ set] y ∈ X ∖ {[ x ]}, Φ y) -∗ [∗ set] y ∈ X, Φ y.
   Proof.
