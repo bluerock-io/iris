@@ -311,6 +311,92 @@ Section embed.
   End plainly.
 End embed.
 
+(** Transitive embedding: this constructs an embedding of [PROP1] into [PROP3]
+  by combining the embeddings of [PROP1] into [PROP2] and [PROP2] into [PROP3].
+  Note that declaring these instances globally can make TC search ambiguous or
+  diverging. These are only defined so that a user can conveniently use them to
+  manually combine embeddings. *)
+Section transitive_embedding.
+  Context `{BE1: BiEmbed PROP1 PROP2} `{BE2: BiEmbed PROP2 PROP3}.
+
+  Local Instance embed_embed : Embed PROP1 PROP3 :=
+    λ P, embed (embed P).
+
+  Local Ltac unfold_embed := rewrite /embed /bi_embed_embed /= /embed_embed /=.
+
+  Local Instance embed_embed_mono :
+    Proper ((⊢) ==> (⊢)) (@embed PROP1 PROP3 _).
+  Proof. intros ?? PQ. unfold_embed. by rewrite PQ. Qed.
+
+  Local Instance embed_embed_ne : NonExpansive (@embed PROP1 PROP3 _).
+  Proof. unfold_embed. solve_proper. Qed.
+
+  Definition embed_embedding_mixin :
+    BiEmbedMixin PROP1 PROP3 embed_embed.
+  Proof.
+    split; try apply _; unfold_embed.
+    - intros P. rewrite embed_emp_valid. by apply BE1.
+    - intros PROP' IN P Q. rewrite embed_interal_inj; by apply BE1.
+    - rewrite -bi_embed_mixin_emp_2; [|apply BE1]. apply BE2.
+    - intros P Q. rewrite -embed_impl. apply embed_mono, BE1.
+    - intros A Φ. rewrite -embed_forall. apply embed_mono, BE1.
+    - intros A Φ. rewrite -embed_exist. apply embed_mono, BE1.
+    - intros P Q. rewrite -embed_sep. apply embed_proper, BE1.
+    - intros P Q. rewrite -embed_wand. apply embed_mono, BE1.
+    - intros P. rewrite -embed_persistently. apply embed_proper, BE1.
+  Qed.
+
+  Local Instance embed_bi_embed : BiEmbed PROP1 PROP3 :=
+    {| bi_embed_mixin := embed_embedding_mixin |}.
+
+  Definition embed_embed_emp
+    `{@BiEmbedEmp _ _ BE1} `{@BiEmbedEmp _ _ BE2} :
+    BiEmbedEmp PROP1 PROP3.
+  Proof.
+    rewrite /BiEmbedEmp. unfold_embed.
+    rewrite -embed_emp. apply embed_mono. by apply embed_emp_1.
+  Qed.
+  Definition embed_embed_later
+    `{@BiEmbedLater _ _ BE1} `{@BiEmbedLater _ _ BE2} :
+    BiEmbedLater PROP1 PROP3.
+  Proof.
+    rewrite /BiEmbedLater => P. unfold_embed.
+    rewrite -embed_later. apply embed_proper. by apply embed_later.
+  Qed.
+  Definition embed_embed_internal_eq
+    `{BiInternalEq PROP1} `{BiInternalEq PROP2} `{BiInternalEq PROP3}
+    `{@BiEmbedInternalEq _ _ BE1 _ _} `{@BiEmbedInternalEq _ _ BE2 _ _} :
+    BiEmbedInternalEq PROP1 PROP3.
+  Proof.
+    rewrite /BiEmbedInternalEq => ???. unfold_embed.
+    rewrite -embed_internal_eq. apply embed_mono. by apply embed_internal_eq_1.
+  Qed.
+  Definition embed_embed_bupd
+    `{BiBUpd PROP1} `{BiBUpd PROP2} `{BiBUpd PROP3}
+    `{@BiEmbedBUpd _ _ BE1 _ _} `{@BiEmbedBUpd _ _ BE2 _ _} :
+    BiEmbedBUpd PROP1 PROP3.
+  Proof.
+    rewrite /BiEmbedBUpd => P. unfold_embed.
+    rewrite -embed_bupd. apply embed_proper. by apply embed_bupd.
+  Qed.
+  Definition embed_embed_fupd
+    `{BiFUpd PROP1} `{BiFUpd PROP2} `{BiFUpd PROP3}
+    `{@BiEmbedFUpd _ _ BE1 _ _} `{@BiEmbedFUpd _ _ BE2 _ _} :
+    BiEmbedFUpd PROP1 PROP3.
+  Proof.
+    rewrite /BiEmbedFUpd => ?? P. unfold_embed.
+    rewrite -embed_fupd. apply embed_proper. by apply embed_fupd.
+  Qed.
+  Definition embed_embed_plainly
+    `{BiPlainly PROP1} `{BiPlainly PROP2} `{BiPlainly PROP3}
+    `{@BiEmbedPlainly _ _ BE1 _ _} `{@BiEmbedPlainly _ _ BE2 _ _} :
+    BiEmbedPlainly PROP1 PROP3.
+  Proof.
+    rewrite /BiEmbedPlainly => P. unfold_embed.
+    rewrite -embed_plainly. apply embed_proper. by apply embed_plainly.
+  Qed.
+End transitive_embedding.
+
 (* Not defined using an ordinary [Instance] because the default
 [class_apply @bi_embed_plainly] shelves the [BiPlainly] premise, making proof
 search for the other premises fail. See the proof of [monPred_objectively_plain]
