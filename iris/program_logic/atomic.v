@@ -143,7 +143,7 @@ Section lemmas.
     rewrite ->!tele_app_bind. iApply "HΦ".
   Qed.
 
-  (* Sequential triples with a persistent precondition and no initial quantifier
+  (** Sequential triples with a persistent precondition and no initial quantifier
   are atomic. *)
   Lemma persistent_seq_wp_atomic e Eo (α : [tele] → iProp) (β : [tele] → TB → iProp)
         (f : [tele] → TB → val Λ) {HP : Persistent (α [tele_arg])} :
@@ -158,8 +158,19 @@ Section lemmas.
     rewrite ->!tele_app_bind. done.
   Qed.
 
-  (* We can open invariants around atomic triples.
-     (Just for demonstration purposes; we always use [iInv] in proofs.) *)
+  (** The polarity of [Eo] is the opposite of what one might expect: if you have
+      an atomic triple with some mask, you can always *shrink* that mask. *)
+  Lemma wp_atomic_mask e Eo1 Eo2 α β f :
+    Eo2 ⊆ Eo1 →
+    atomic_wp e Eo1 α β f -∗
+    atomic_wp e Eo2 α β f.
+  Proof.
+    intros ?. iIntros "Hwp" (Φ) "AU". iApply "Hwp".
+    iApply atomic_update_mask_weaken; done.
+  Qed.
+
+  (** We can open invariants around atomic triples.
+      (Just for demonstration purposes; we always use [iInv] in proofs.) *)
   Lemma wp_atomic_inv e Eo α β f N I :
     ↑N ⊆ Eo →
     atomic_wp e Eo (λ.. x, ▷ I ∗ α x) (λ.. x y, ▷ I ∗ β x y) f -∗
