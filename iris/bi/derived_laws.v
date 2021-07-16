@@ -613,6 +613,13 @@ Proof.
   - apply wand_intro_l, wand_elim_l', pure_elim'=> Hφ.
     apply wand_intro_l. rewrite (forall_elim Hφ) comm. by apply absorbing.
 Qed.
+Lemma decide_bi_True φ `{!Decision φ} (P : PROP) :
+  (if decide φ then P else True) ⊣⊢ (⌜φ⌝ → P).
+Proof.
+  destruct (decide _).
+  - by rewrite pure_True // True_impl.
+  - by rewrite (pure_False φ) // False_impl.
+Qed.
 
 (* Properties of the affinely modality *)
 Global Instance affinely_ne : NonExpansive (@bi_affinely PROP).
