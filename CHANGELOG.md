@@ -74,6 +74,8 @@ Coq 8.11 is no longer supported in this version of Iris.
 * `iMod`/`iModIntro` show proper error messages when they fail due to mask
   mismatches. To support this, the proofmode typeclass `FromModal` now takes an
   additional pure precondition.
+* Fix performance of `iFrame` in logics without `BiAffine`. (by Paolo G.
+  Giarrusso, BedRock Systems)
 
 **Changes in `bi`:**
 
