@@ -6,7 +6,7 @@ Import bi.
 (** Least and greatest fixpoint of a monotone function, defined entirely inside
     the logic.  *)
 Class BiMonoPred {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) := {
-  bi_mono_pred Φ Ψ : ⊢ <pers> (∀ x, Φ x -∗ Ψ x) → ∀ x, F Φ x -∗ F Ψ x;
+  bi_mono_pred Φ Ψ : □ (∀ x, Φ x -∗ Ψ x) -∗ ∀ x, F Φ x -∗ F Ψ x;
   bi_mono_pred_ne Φ : NonExpansive Φ → NonExpansive (F Φ)
 }.
 Global Arguments bi_mono_pred {_ _ _ _} _ _.
