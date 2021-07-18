@@ -14,12 +14,12 @@ Local Existing Instance bi_mono_pred_ne.
 
 Definition bi_least_fixpoint {PROP : bi} {A : ofe}
     (F : (A → PROP) → (A → PROP)) (x : A) : PROP :=
-  tc_opaque (∀ Φ : A -n> PROP, <pers> (∀ x, F Φ x -∗ Φ x) → Φ x)%I.
+  tc_opaque (∀ Φ : A -n> PROP, □ (∀ x, F Φ x -∗ Φ x) -∗ Φ x)%I.
 Global Arguments bi_least_fixpoint : simpl never.
 
 Definition bi_greatest_fixpoint {PROP : bi} {A : ofe}
     (F : (A → PROP) → (A → PROP)) (x : A) : PROP :=
-  tc_opaque (∃ Φ : A -n> PROP, <pers> (∀ x, Φ x -∗ F Φ x) ∧ Φ x)%I.
+  tc_opaque (∃ Φ : A -n> PROP, □ (∀ x, Φ x -∗ F Φ x) ∗ Φ x)%I.
 Global Arguments bi_greatest_fixpoint : simpl never.
 
 Global Instance least_fixpoint_ne {PROP : bi} {A : ofe} n :
