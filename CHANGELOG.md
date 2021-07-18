@@ -77,6 +77,8 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Add lemmas characterizing big-ops over pure predicates (`big_sep*_pure*`).
 * Move `BiAffine`, `BiPositive`, `BiLöb`, and `BiPureForall` from
   `bi.derived_connectives` to `bi.extensions`.
+* Strengthen `persistent_fractional` to support propositions that are persistent
+  and either affine or absorbing. (by Paolo G. Giarrusso, BedRock Systems)
 
 **Changes in `base_logic`:**
 

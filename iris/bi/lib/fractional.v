@@ -65,8 +65,8 @@ Section fractional.
   Proof. intros. apply bi.wand_intro_r. by rewrite -(fractional_half P). Qed.
 
   (** Fractional and logical connectives *)
-  Global Instance persistent_fractional P :
-    Persistent P → Absorbing P → Fractional (λ _, P).
+  Global Instance persistent_fractional (P : PROP) :
+    Persistent P → TCOr (Affine P) (Absorbing P) → Fractional (λ _, P).
   Proof. intros ?? q q'. apply: bi.persistent_sep_dup. Qed.
 
   Global Instance fractional_sep Φ Ψ :
