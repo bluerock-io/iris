@@ -15,7 +15,7 @@ iris.prelude, iris.algebra, iris.si_logic, iris.bi, iris.proofmode, iris.base_lo
 
 depends: [
   "coq" { (>= "8.12" & < "8.15~") | (= "dev") }
-  "coq-stdpp" { (= "dev.2021-07-15.3.0a6ff58a") | (= "dev") }
+  "coq-stdpp" { (= "dev.2021-07-19.0.30283fa0") | (= "dev") }
 ]
 
 build: ["./make-package" "iris" "-j%{jobs}%"]
