@@ -36,7 +36,7 @@ Notation "'[^' o 'list]' x ∈ l , P" := (big_opL o (λ _ x, P) l)
    format "[^ o  list]  x  ∈  l ,  P") : stdpp_scope.
 
 Definition big_opM_def `{Monoid M o} `{Countable K} {A} (f : K → A → M)
-  (m : gmap K A) : M := big_opL o (λ _, curry f) (map_to_list m).
+  (m : gmap K A) : M := big_opL o (λ _, uncurry f) (map_to_list m).
 Definition big_opM_aux : seal (@big_opM_def). Proof. by eexists. Qed.
 Definition big_opM := big_opM_aux.(unseal).
 Global Arguments big_opM {M} o {_ K _ _ A} _ _.

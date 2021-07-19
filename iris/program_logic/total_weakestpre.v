@@ -45,7 +45,7 @@ Qed.
 Definition twp_pre' `{!irisGS Λ Σ} (s : stuckness) :
   (prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ) →
   prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ :=
-    curry3 ∘ twp_pre s ∘ uncurry3.
+    uncurry3 ∘ twp_pre s ∘ curry3.
 
 Local Instance twp_pre_mono' `{!irisGS Λ Σ} s : BiMonoPred (twp_pre' s).
 Proof.
@@ -54,7 +54,7 @@ Proof.
     iApply twp_pre_mono. iIntros "!>" (E e Φ). iApply ("H" $! (E,e,Φ)).
   - intros wp Hwp n [[E1 e1] Φ1] [[E2 e2] Φ2]
       [[?%leibniz_equiv ?%leibniz_equiv] ?]; simplify_eq/=.
-    rewrite /uncurry3 /twp_pre. do 26 (f_equiv || done). by apply pair_ne.
+    rewrite /curry3 /twp_pre. do 26 (f_equiv || done). by apply pair_ne.
 Qed.
 
 Definition twp_def `{!irisGS Λ Σ} : Twp (iProp Σ) (expr Λ) (val Λ) stuckness
@@ -83,7 +83,7 @@ Lemma twp_ind s Ψ :
   ∀ e E Φ, WP e @ s; E [{ Φ }] -∗ Ψ E e Φ.
 Proof.
   iIntros (HΨ). iIntros "#IH" (e E Φ) "H". rewrite twp_eq.
-  set (Ψ' := curry3 Ψ :
+  set (Ψ' := uncurry3 Ψ :
     prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ).
   assert (NonExpansive Ψ').
   { intros n [[E1 e1] Φ1] [[E2 e2] Φ2]
