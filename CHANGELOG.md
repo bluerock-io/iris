@@ -108,6 +108,8 @@ Coq 8.11 is no longer supported in this version of Iris.
      to ignore the new step counter.
   (by Jacques-Henri Jourdan)
 * Remove `wp_frame_wand_l`; add `wp_frame_wand` as more symmetric replacement.
+* Swap the polarity of the mask in logically atomic triples, so that it matches
+  regular `WP` masks.
 
 **Changes in `heap_lang`:**
 
