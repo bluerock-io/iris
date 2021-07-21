@@ -660,10 +660,7 @@ Section product.
   Context {A B : ofe}.
 
   Local Instance prod_dist : Dist (A * B) := λ n, prod_relation (dist n) (dist n).
-  Global Instance pair_ne :
-    NonExpansive2 (@pair A B) := _.
-  Global Instance fst_ne : NonExpansive (@fst A B) := _.
-  Global Instance snd_ne : NonExpansive (@snd A B) := _.
+
   Definition prod_ofe_mixin : OfeMixin (A * B).
   Proof.
     split.
@@ -691,6 +688,36 @@ Section product.
 End product.
 
 Global Arguments prodO : clear implicits.
+
+(** Below we make [prod_dist] type class opaque, so we first lift all
+instances *)
+Global Instance pair_ne {A B : ofe} : NonExpansive2 (@pair A B) := _.
+Global Instance pair_dist_inj {A B : ofe} n :
+  Inj2 (≡{n}≡) (≡{n}≡) (≡{n}≡) (@pair A B) := _.
+Global Instance fst_ne {A B : ofe} : NonExpansive (@fst A B) := _.
+Global Instance snd_ne {A B : ofe} : NonExpansive (@snd A B) := _.
+
+Global Instance curry_ne {A B C : ofe} n :
+  Proper (((≡{n}@{A*B}≡) ==> (≡{n}@{C}≡)) ==>
+          (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) curry := _.
+Global Instance uncurry_ne {A B C : ofe} n :
+  Proper (((≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) ==>
+          (≡{n}@{A*B}≡) ==> (≡{n}@{C}≡)) uncurry := _.
+
+Global Instance curry3_ne {A B C D : ofe} n :
+  Proper (((≡{n}@{A*B*C}≡) ==> (≡{n}@{D}≡)) ==>
+          (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) curry3 := _.
+Global Instance uncurry3_ne {A B C D : ofe} n :
+  Proper (((≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) ==>
+          (≡{n}@{A*B*C}≡) ==> (≡{n}@{D}≡)) uncurry3 := _.
+
+Global Instance curry4_ne {A B C D E : ofe} n :
+  Proper (((≡{n}@{A*B*C*D}≡) ==> (≡{n}@{E}≡)) ==>
+          (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) curry4 := _.
+Global Instance uncurry4_ne {A B C D E : ofe} n :
+  Proper (((≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) ==>
+          (≡{n}@{A*B*C*D}≡) ==> (≡{n}@{E}≡)) uncurry4 := _.
+
 Typeclasses Opaque prod_dist.
 
 Global Instance prod_map_ne {A A' B B' : ofe} n :
