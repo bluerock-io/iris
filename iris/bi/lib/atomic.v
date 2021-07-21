@@ -73,7 +73,7 @@ Section definition.
   Local Instance atomic_update_pre_mono : BiMonoPred atomic_update_pre.
   Proof.
     constructor.
-    - iIntros (P1 P2) "#HP12". iIntros ([]) "AU".
+    - iIntros (P1 P2 ??) "#HP12". iIntros ([]) "AU".
       iApply (make_laterable_intuitionistic_wand with "[] AU").
       iIntros "!> AA". iApply (atomic_acc_wand with "[HP12] AA").
       iSplit; last by eauto. iApply "HP12".

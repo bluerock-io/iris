@@ -17,7 +17,7 @@ Global Instance bi_rtc_pre_mono `{!BiInternalEq PROP}
   BiMonoPred (bi_rtc_pre R x).
 Proof.
   constructor; [|solve_proper].
-  iIntros (rec1 rec2) "#H". iIntros (x1) "[Hrec | Hrec]".
+  iIntros (rec1 rec2 ??) "#H". iIntros (x1) "[Hrec | Hrec]".
   { by iLeft. }
   iRight.
   iDestruct "Hrec" as (x') "[HP Hrec]".
