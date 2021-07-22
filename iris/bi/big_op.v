@@ -974,12 +974,14 @@ Section and_list.
     (∀ k x, ⌜l !! k = Some x⌝ → Φ k x) ⊢ [∧ list] k↦x ∈ l, Φ k x.
   Proof. rewrite big_andL_forall //. Qed.
 
-  Global Instance big_andL_nil_persistent Φ :
-    Persistent ([∧ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_andL_persistent Φ l :
-    (∀ k x, Persistent (Φ k x)) → Persistent ([∧ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+  Lemma big_andL_impl Φ Ψ m :
+    ([∧ list] k↦x ∈ m, Φ k x) ∧
+    (∀ k x, ⌜m !! k = Some x⌝ → Φ k x → Ψ k x) -∗
+    [∧ list] k↦x ∈ m, Ψ k x.
+  Proof.
+    rewrite -big_andL_forall -big_andL_and.
+    by setoid_rewrite bi.impl_elim_r.
+  Qed.
 
   Lemma big_andL_pure_1 (φ : nat → A → Prop) l :
     ([∧ list] k↦x ∈ l, ⌜φ k x⌝) ⊢@{PROP} ⌜∀ k x, l !! k = Some x → φ k x⌝.
@@ -1005,6 +1007,26 @@ Section and_list.
     apply big_andL_pure_2.
   Qed.
 
+  Lemma big_andL_later Φ l :
+    ▷ ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ ([∧ list] k↦x ∈ l, ▷ Φ k x).
+  Proof. apply (big_opL_commute _). Qed.
+  Lemma big_andL_laterN Φ n l :
+    ▷^n ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ ([∧ list] k↦x ∈ l, ▷^n Φ k x).
+  Proof. apply (big_opL_commute _). Qed.
+
+  Global Instance big_andL_nil_persistent Φ :
+    Persistent ([∧ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_andL_persistent Φ l :
+    (∀ k x, Persistent (Φ k x)) → Persistent ([∧ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
+  Global Instance big_andL_nil_timeless Φ :
+    Timeless ([∧ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_andL_timeless Φ l :
+    (∀ k x, Timeless (Φ k x)) → Timeless ([∧ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
 End and_list.
 
 Section or_list.
@@ -1122,11 +1144,27 @@ Section or_list.
     ([∨ list] k↦x ∈ l, Φ k x) ∗ Q ⊣⊢ ([∨ list] k↦x ∈ l, Φ k x ∗ Q).
   Proof. setoid_rewrite (comm bi_sep). apply big_orL_sep_l. Qed.
 
+  Lemma big_orL_later Φ l :
+    l ≠ [] →
+    ▷ ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ ([∨ list] k↦x ∈ l, ▷ Φ k x).
+  Proof. apply (big_opL_commute1 _). Qed.
+  Lemma big_orL_laterN Φ n l :
+    l ≠ [] →
+    ▷^n ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ ([∨ list] k↦x ∈ l, ▷^n Φ k x).
+  Proof. apply (big_opL_commute1 _). Qed.
+
   Global Instance big_orL_nil_persistent Φ :
     Persistent ([∨ list] k↦x ∈ [], Φ k x).
   Proof. simpl; apply _. Qed.
   Global Instance big_orL_persistent Φ l :
     (∀ k x, Persistent (Φ k x)) → Persistent ([∨ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
+  Global Instance big_orL_nil_timeless Φ :
+    Timeless ([∨ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_orL_timeless Φ l :
+    (∀ k x, Timeless (Φ k x)) → Timeless ([∨ list] k↦x ∈ l, Φ k x).
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
 End or_list.
 
