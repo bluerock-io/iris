@@ -59,7 +59,7 @@ Coq 8.11 is no longer supported in this version of Iris.
     As a consequence, `make_laterable_elim` got weaker: elimination now requires
     an except-0 modality (`make_laterable P -∗ ◇ P`).
   - Add `iModIntro` support for `make_laterable`.
-* Improvements to `bi_mono_pred`:
+* Improvements to `BiMonoPred`:
   - Use `□`/`-∗` instead of `<pers>`/`→`.
   - Strengthen to ensure that functions for recursive calls are non-expansive.
 
