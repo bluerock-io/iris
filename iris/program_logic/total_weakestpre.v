@@ -50,7 +50,7 @@ Definition twp_pre' `{!irisGS Λ Σ} (s : stuckness) :
 Local Instance twp_pre_mono' `{!irisGS Λ Σ} s : BiMonoPred (twp_pre' s).
 Proof.
   constructor.
-  - iIntros (wp1 wp2) "#H"; iIntros ([[E e1] Φ]); iRevert (E e1 Φ).
+  - iIntros (wp1 wp2 ??) "#H"; iIntros ([[E e1] Φ]); iRevert (E e1 Φ).
     iApply twp_pre_mono. iIntros "!>" (E e Φ). iApply ("H" $! (E,e,Φ)).
   - intros wp Hwp n [[E1 e1] Φ1] [[E2 e2] Φ2]
       [[?%leibniz_equiv ?%leibniz_equiv] ?]; simplify_eq/=.

@@ -27,7 +27,7 @@ Qed.
 
 Local Instance twptp_pre_mono' : BiMonoPred twptp_pre.
 Proof.
-  constructor; first apply twptp_pre_mono.
+  constructor; first (intros ????; apply twptp_pre_mono).
   intros wp Hwp n t1 t2 ?%(discrete_iff _ _)%leibniz_equiv; solve_proper.
 Qed.
 
