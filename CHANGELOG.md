@@ -38,6 +38,7 @@ Coq 8.11 is no longer supported in this version of Iris.
   [Coq bug #14441](https://github.com/coq/coq/issues/14441) is fixed.
 * Add `max_prefix_list` RA on lists whose composition is only defined when one
   operand is a prefix of the other. The result is the longer list.
+* Add `NonExpansive` instances for `curry` and friends.
 
 **Changes in `bi`:**
 
