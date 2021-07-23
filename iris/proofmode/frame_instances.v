@@ -68,13 +68,15 @@ Global Instance make_embed_default `{BiEmbed PROP PROP'} P :
 Proof. by rewrite /MakeEmbed. Qed.
 
 Global Instance frame_embed `{BiEmbed PROP PROP'} p P Q (Q' : PROP') R :
-  Frame p R P Q → MakeEmbed Q Q' → Frame p ⎡R⎤ ⎡P⎤ Q' | 2. (* Same prio as default. *)
+  Frame p R P Q → MakeEmbed Q Q' →
+  Frame p ⎡R⎤ ⎡P⎤ Q' | 2. (* Same prio as default. *)
 Proof.
   rewrite /Frame /MakeEmbed => <- <-.
   rewrite embed_sep embed_intuitionistically_if_2 => //.
 Qed.
 Global Instance frame_pure_embed `{BiEmbed PROP PROP'} p P Q (Q' : PROP') φ :
-  Frame p ⌜φ⌝ P Q → MakeEmbed Q Q' → Frame p ⌜φ⌝ ⎡P⎤ Q' | 2. (* Same prio as default. *)
+  Frame p ⌜φ⌝ P Q → MakeEmbed Q Q' →
+  Frame p ⌜φ⌝ ⎡P⎤ Q' | 2. (* Same prio as default. *)
 Proof. rewrite /Frame /MakeEmbed -embed_pure. apply (frame_embed p P Q). Qed.
 
 Global Instance make_sep_emp_l P : KnownLMakeSep emp P P.
@@ -213,7 +215,8 @@ Proof. by rewrite /MakeAffinely. Qed.
 
 Global Instance frame_affinely p R P Q Q' :
   TCOr (TCEq p true) (Affine R) →
-  Frame p R P Q → MakeAffinely Q Q' → Frame p R (<affine> P) Q'. (* Default prio > 1 *)
+  Frame p R P Q → MakeAffinely Q Q' →
+  Frame p R (<affine> P) Q'. (* Default prio > 1 *)
 Proof.
   rewrite /Frame /MakeAffinely=> -[->|?] <- <- /=;
     by rewrite -{1}(affine_affinely (_ R)) affinely_sep_2.
@@ -236,7 +239,8 @@ Global Instance make_intuitionistically_default P :
 Proof. by rewrite /MakeIntuitionistically. Qed.
 
 Global Instance frame_intuitionistically R P Q Q' :
-  Frame true R P Q → MakeIntuitionistically Q Q' → Frame true R (□ P) Q' | 2. (* Same prio as default. *)
+  Frame true R P Q → MakeIntuitionistically Q Q' →
+  Frame true R (□ P) Q' | 2. (* Same prio as default. *)
 Proof.
   rewrite /Frame /MakeIntuitionistically=> <- <- /=.
   rewrite -intuitionistically_sep_2 intuitionistically_idemp //.
@@ -253,7 +257,8 @@ Global Instance make_absorbingly_default P : MakeAbsorbingly P (<absorb> P) | 10
 Proof. by rewrite /MakeAbsorbingly. Qed.
 
 Global Instance frame_absorbingly p R P Q Q' :
-  Frame p R P Q → MakeAbsorbingly Q Q' → Frame p R (<absorb> P) Q' | 2. (* Same prio as default. *)
+  Frame p R P Q → MakeAbsorbingly Q Q' →
+  Frame p R (<absorb> P) Q' | 2. (* Same prio as default. *)
 Proof.
   rewrite /Frame /MakeAbsorbingly=> <- <- /=. by rewrite absorbingly_sep_r.
 Qed.
@@ -270,7 +275,8 @@ Global Instance make_persistently_default P :
 Proof. by rewrite /MakePersistently. Qed.
 
 Global Instance frame_persistently R P Q Q' :
-  Frame true R P Q → MakePersistently Q Q' → Frame true R (<pers> P) Q' | 2. (* Same prio as default. *)
+  Frame true R P Q → MakePersistently Q Q' →
+  Frame true R (<pers> P) Q' | 2. (* Same prio as default. *)
 Proof.
   rewrite /Frame /MakePersistently=> <- <- /=.
   rewrite -persistently_and_intuitionistically_sep_l.
@@ -311,7 +317,8 @@ Qed.
 Global Instance frame_eq_embed `{!BiEmbed PROP PROP', !BiInternalEq PROP,
     !BiInternalEq PROP', !BiEmbedInternalEq PROP PROP'}
     p P Q (Q' : PROP') {A : ofe} (a b : A) :
-  Frame p (a ≡ b) P Q → MakeEmbed Q Q' → Frame p (a ≡ b) ⎡P⎤ Q'. (* Default prio > 1 *)
+  Frame p (a ≡ b) P Q → MakeEmbed Q Q' →
+  Frame p (a ≡ b) ⎡P⎤ Q'. (* Default prio > 1 *)
 Proof. rewrite /Frame /MakeEmbed -embed_internal_eq. apply (frame_embed p P Q). Qed.
 
 Global Instance make_laterN_true n : @KnownMakeLaterN PROP n True True | 0.
@@ -324,14 +331,16 @@ Proof. by rewrite /MakeLaterN. Qed.
 
 Global Instance frame_later p R R' P Q Q' :
   TCNoBackTrack (MaybeIntoLaterN true 1 R' R) →
-  Frame p R P Q → MakeLaterN 1 Q Q' → Frame p R' (▷ P) Q'. (* Default prio > 1 *)
+  Frame p R P Q → MakeLaterN 1 Q Q' →
+  Frame p R' (▷ P) Q'. (* Default prio > 1 *)
 Proof.
   rewrite /Frame /MakeLaterN /MaybeIntoLaterN=>-[->] <- <-.
   by rewrite later_intuitionistically_if_2 later_sep.
 Qed.
 Global Instance frame_laterN p n R R' P Q Q' :
   TCNoBackTrack (MaybeIntoLaterN true n R' R) →
-  Frame p R P Q → MakeLaterN n Q Q' → Frame p R' (▷^n P) Q'. (* Default prio > 1 *)
+  Frame p R P Q → MakeLaterN n Q Q' →
+  Frame p R' (▷^n P) Q'. (* Default prio > 1 *)
 Proof.
   rewrite /Frame /MakeLaterN /MaybeIntoLaterN=>-[->] <- <-.
   by rewrite laterN_intuitionistically_if_2 laterN_sep.
@@ -350,7 +359,8 @@ Global Instance make_except_0_default P : MakeExcept0 P (◇ P) | 100.
 Proof. by rewrite /MakeExcept0. Qed.
 
 Global Instance frame_except_0 p R P Q Q' :
-  Frame p R P Q → MakeExcept0 Q Q' → Frame p R (◇ P) Q' | 2. (* Same prio as default *)
+  Frame p R P Q → MakeExcept0 Q Q' →
+  Frame p R (◇ P) Q' | 2. (* Same prio as default *)
 Proof.
   rewrite /Frame /MakeExcept0=><- <-.
   by rewrite except_0_sep -(except_0_intro (□?p R)).
