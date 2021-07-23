@@ -364,7 +364,7 @@ Qed.
 
 (* Framing. *)
 Global Instance frame_monPred_at_enter p i 𝓡 P 𝓠 :
-  FrameMonPredAt p i 𝓡 P 𝓠 → Frame p 𝓡 (P i) 𝓠.
+  FrameMonPredAt p i 𝓡 P 𝓠 → Frame p 𝓡 (P i) 𝓠 | 2.
 Proof. intros. done. Qed.
 Global Instance frame_monPred_at_here p P i j :
   IsBiIndexRel i j → FrameMonPredAt p j (P i) P emp | 0.

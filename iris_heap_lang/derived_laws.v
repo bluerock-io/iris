@@ -73,7 +73,7 @@ Qed.
 
 Global Instance array_cons_frame l dq v vs R Q :
   Frame false R (l ↦{dq} v ∗ (l +ₗ 1) ↦∗{dq} vs) Q →
-  Frame false R (l ↦∗{dq} (v :: vs)) Q.
+  Frame false R (l ↦∗{dq} (v :: vs)) Q | 2.
 Proof. by rewrite /Frame array_cons. Qed.
 
 Lemma update_array l dq vs off v :
