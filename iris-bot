@@ -128,7 +128,7 @@ def time(args):
         'IRIS_REV': test_commit,
         'TIMING_AD_HOC_ID': id+"-test",
     }
-    if args.test_branch is None:
+    if args.test_rev is None:
         test_pipeline = trigger_build(project['name'], project['branch'], vars)
         print("    Test pipeline running at {}".format(test_pipeline['web_url']))
     else:
