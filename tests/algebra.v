@@ -68,3 +68,16 @@ Definition auth_check {A : ucmra} :
   auth A = authO A := eq_refl.
 Definition gmap_view_check {K : Type} `{Countable K} {V : ofe} :
   gmap_view K V = gmap_viewO K V := eq_refl.
+
+Lemma uncurry_ne_test {A B C : ofe} (f : A → B → C) :
+  (∀ n, Proper (dist n ==> dist n ==> dist n) f) →
+  NonExpansive (uncurry f).
+Proof. apply _. Qed.
+Lemma uncurry3_ne_test {A B C D : ofe} (f : A → B → C → D) :
+  (∀ n, Proper (dist n ==> dist n ==> dist n ==> dist n) f) →
+  NonExpansive (uncurry3 f).
+Proof. apply _. Qed.
+Lemma uncurry4_ne_test {A B C D E : ofe} (f : A → B → C → D → E) :
+  (∀ n, Proper (dist n ==> dist n ==> dist n ==> dist n ==> dist n) f) →
+  NonExpansive (uncurry4 f).
+Proof. apply _. Qed.
