@@ -70,27 +70,21 @@ Definition gmap_view_check {K : Type} `{Countable K} {V : ofe} :
   gmap_view K V = gmap_viewO K V := eq_refl.
 
 Lemma uncurry_ne_test {A B C : ofe} (f : A → B → C) :
-  (∀ n, Proper (dist n ==> dist n ==> dist n) f) →
-  NonExpansive (uncurry f).
+  NonExpansive2 f → NonExpansive (uncurry f).
 Proof. apply _. Qed.
 Lemma uncurry3_ne_test {A B C D : ofe} (f : A → B → C → D) :
-  (∀ n, Proper (dist n ==> dist n ==> dist n ==> dist n) f) →
-  NonExpansive (uncurry3 f).
+  NonExpansive3 f → NonExpansive (uncurry3 f).
 Proof. apply _. Qed.
 Lemma uncurry4_ne_test {A B C D E : ofe} (f : A → B → C → D → E) :
-  (∀ n, Proper (dist n ==> dist n ==> dist n ==> dist n ==> dist n) f) →
-  NonExpansive (uncurry4 f).
+  NonExpansive4 f → NonExpansive (uncurry4 f).
 Proof. apply _. Qed.
 
 Lemma curry_ne_test {A B C : ofe} (f : A * B → C) :
-  NonExpansive f →
-  ∀ n, Proper (dist n ==> dist n ==> dist n) (curry f).
+  NonExpansive f → NonExpansive2 (curry f).
 Proof. apply _. Qed.
 Lemma curry3_ne_test {A B C D : ofe} (f : A * B * C → D) :
-  NonExpansive f →
-  ∀ n, Proper (dist n ==> dist n ==> dist n ==> dist n) (curry3 f).
+  NonExpansive f → NonExpansive3 (curry3 f).
 Proof. apply _. Qed.
 Lemma curry4_ne_test {A B C D E : ofe} (f : A * B * C * D → E) :
-  NonExpansive f →
-  ∀ n, Proper (dist n ==> dist n ==> dist n ==> dist n ==> dist n) (curry4 f).
+  NonExpansive f → NonExpansive4 (curry4 f).
 Proof. apply _. Qed.
