@@ -78,7 +78,8 @@ Coq 8.11 is no longer supported in this version of Iris.
   To adjust your code if you use such logics and define `Frame` instances,
   ensure these instances to have priority at least 2: they should have either at
   least 2 (non-dependent) premises, or an explicit priority.
-  References: docs for `frame_here_absorbing` and
+  References: docs for `frame_here_absorbing` in
+  [iris/proofmode/frame_instances.v](iris/proofmode/frame_instances.v) and
   https://coq.inria.fr/refman/addendum/type-classes.html#coq:cmd.Instance. (by
   Paolo G. Giarrusso, BedRock Systems)
 
