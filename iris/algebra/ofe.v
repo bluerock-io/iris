@@ -28,6 +28,10 @@ Global Hint Extern 0 (_ ≡{_}≡ _) => reflexivity : core.
 Global Hint Extern 0 (_ ≡{_}≡ _) => symmetry; assumption : core.
 Notation NonExpansive f := (∀ n, Proper (dist n ==> dist n) f).
 Notation NonExpansive2 f := (∀ n, Proper (dist n ==> dist n ==> dist n) f).
+Notation NonExpansive3 f :=
+  (∀ n, Proper (dist n ==> dist n ==> dist n ==> dist n) f).
+Notation NonExpansive4 f :=
+  (∀ n, Proper (dist n ==> dist n ==> dist n ==> dist n ==> dist n) f).
 
 Tactic Notation "ofe_subst" ident(x) :=
   repeat match goal with
@@ -614,9 +618,9 @@ Proof. apply ne_proper_2; apply _. Qed.
 (* Function space maps *)
 Definition ofe_mor_map {A A' B B'} (f : A' -n> A) (g : B -n> B')
   (h : A -n> B) : A' -n> B' := g ◎ h ◎ f.
-Global Instance ofe_mor_map_ne {A A' B B'} n :
-  Proper (dist n ==> dist n ==> dist n ==> dist n) (@ofe_mor_map A A' B B').
-Proof. intros ??? ??? ???. by repeat apply ccompose_ne. Qed.
+Global Instance ofe_mor_map_ne {A A' B B'} :
+  NonExpansive3 (@ofe_mor_map A A' B B').
+Proof. intros n ??? ??? ???. by repeat apply ccompose_ne. Qed.
 
 Definition ofe_morO_map {A A' B B'} (f : A' -n> A) (g : B -n> B') :
   (A -n> B) -n> (A' -n>  B') := OfeMor (ofe_mor_map f g).
