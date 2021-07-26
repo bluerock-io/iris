@@ -2,6 +2,7 @@ From iris.algebra Require Import frac.
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic Require Import base_logic.
 From iris.base_logic.lib Require Import invariants cancelable_invariants na_invariants.
+From iris.prelude Require Import options.
 
 Unset Mangle Names.
 
@@ -30,7 +31,7 @@ Section base_logic_tests.
     iExists (S j + z1), z2.
     iNext.
     iApply ("H3" $! _ 0 with "[$]").
-    - iSplit. done. iApply "H2". iLeft. iApply "H2". by iRight.
+    - iSplit; first done. iApply "H2". iLeft. iApply "H2". by iRight.
     - done.
   Qed.
 

@@ -3,7 +3,7 @@ From iris.program_logic Require Export weakestpre total_weakestpre.
 From iris.heap_lang Require Import lang adequacy proofmode notation.
 (* Import lang *again*. This used to break notation. *)
 From iris.heap_lang Require Import lang.
-Set Default Proof Using "Type".
+From iris.prelude Require Import options.
 
 Unset Mangle Names.
 
@@ -196,7 +196,7 @@ Section tests.
     val_is_unboxed v →
     l ↦ v -∗ WP CmpXchg #l v v {{ _, True }}.
   Proof.
-    iIntros (?) "?". wp_cmpxchg as ? | ?. done. done.
+    iIntros (?) "?". wp_cmpxchg as ? | ?; done.
   Qed.
 
   Lemma wp_xchg l (v₁ v₂ : val) :
@@ -478,5 +478,6 @@ Section error_tests.
   Abort.
 End error_tests.
 
+(* Test a closed proof *)
 Lemma heap_e_adequate σ : adequate NotStuck heap_e σ (λ v _, v = #2).
 Proof. eapply (heap_adequacy heapΣ)=> ?. iIntros "_". by iApply heap_e_spec. Qed.

@@ -1,5 +1,6 @@
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic.lib Require Import invariants.
+From iris.prelude Require Import options.
 
 Unset Mangle Names.
 

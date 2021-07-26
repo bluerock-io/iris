@@ -1,7 +1,6 @@
 From iris.program_logic Require Export weakestpre total_weakestpre.
 From iris.heap_lang Require Import lang adequacy proofmode notation.
-From iris.heap_lang Require Import lang.
-Set Default Proof Using "Type".
+From iris.prelude Require Import options.
 
 Section tests.
   Context `{!heapGS Σ}.
@@ -16,7 +15,14 @@ Section tests.
   Proof.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
     wp_cmpxchg_suc. iIntros "!>" (ws ->) "Hp". eauto with iFrame.
-  Restart.
+  Qed.
+
+  Lemma test_resolve1' E (l : loc) (n : Z) (p : proph_id) (vs : list (val * val)) (v : val) :
+    l ↦ #n -∗
+    proph p vs -∗
+    WP Resolve (CmpXchg #l #n (#n + #1)) #p v @ E
+      {{ v, ⌜v = (#n, #true)%V⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}.
+  Proof.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve_cmpxchg_suc with "[$Hp $Hl]"); first by left.
     iIntros "Hpost". iDestruct "Hpost" as (ws ->) "Hp". eauto with iFrame.
   Qed.

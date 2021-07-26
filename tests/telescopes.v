@@ -1,6 +1,6 @@
 From stdpp Require Import coPset namespaces.
 From iris.proofmode Require Import tactics.
-Set Default Proof Using "Type".
+From iris.prelude Require Import options.
 
 Unset Mangle Names.
 

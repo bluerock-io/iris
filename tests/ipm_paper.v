@@ -7,7 +7,7 @@ From iris.proofmode Require Import tactics.
 From iris.base_logic Require Import base_logic.
 From iris.deprecated.program_logic Require Import hoare.
 From iris.heap_lang Require Import proofmode notation.
-Set Default Proof Using "Type".
+From iris.prelude Require Import options.
 
 Unset Mangle Names.
 
@@ -23,7 +23,9 @@ Section demo.
     intros [HP [HΨ HR]].
     destruct HΨ as [x HΨ].
     exists x.
-    split. assumption. assumption.
+    split.
+    -  assumption.
+    -  assumption.
   Qed.
 
   (* The version in IPM *)
@@ -34,7 +36,9 @@ Section demo.
     iIntros "[HP [HΨ HR]]".
     iDestruct "HΨ" as (x) "HΨ".
     iExists x. Show.
-    iSplitL "HΨ". Show. iAssumption. Show. iAssumption.
+    iSplitL "HΨ".
+    - Show. iAssumption.
+    - Show. iAssumption.
   Qed.
 
   (* The short version in IPM, as in the paper *)
@@ -174,7 +178,7 @@ Section M.
   Global Instance frag_core_id n : CoreId (Frag n).
   Proof. by constructor. Qed.
   Lemma auth_frag_valid j n : ✓ (Auth n ⋅ Frag j) → j ≤ n.
-  Proof. simpl. case_decide. done. by intros []. Qed.
+  Proof. simpl. case_decide; first done. by intros []. Qed.
   Lemma auth_frag_op (j n : nat) : j ≤ n → Auth n = Auth n ⋅ Frag j.
   Proof. intros. by rewrite /= decide_True. Qed.
 

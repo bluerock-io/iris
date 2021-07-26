@@ -1,7 +1,7 @@
 From iris.proofmode Require Import string_ident.
 From Coq Require Import Strings.String.
 From stdpp Require Import base.
-Open Scope string.
+Local Open Scope string.
 
 Lemma test_basic_ident : ∀ (n:nat), n = n.
 Proof.

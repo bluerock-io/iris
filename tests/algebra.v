@@ -1,5 +1,6 @@
 From iris.algebra Require Import auth excl lib.gmap_view.
 From iris.base_logic.lib Require Import invariants.
+From iris.prelude Require Import options.
 
 Section test_dist_equiv_mode.
   (* check that the mode for [Dist] does not trigger https://github.com/coq/coq/issues/14441.

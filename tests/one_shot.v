@@ -5,7 +5,7 @@ From iris.deprecated.program_logic Require Import hoare.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import assert proofmode notation adequacy.
 From iris.heap_lang.lib Require Import par.
-Set Default Proof Using "Type".
+From iris.prelude Require Import options.
 
 (** This is the introductory example from the "Iris from the Ground Up" journal
 paper. *)
@@ -76,8 +76,12 @@ Proof.
     iAssert (one_shot_inv γ l ∗ (⌜v = NONEV⌝ ∨ ∃ n : Z,
       ⌜v = SOMEV #n⌝ ∗ own γ (Shot n)))%I with "[Hl Hv]" as "[Hinv #Hv]".
     { iDestruct "Hv" as "[[% ?]|Hv]"; last iDestruct "Hv" as (m) "[% ?]"; subst.
-      + Show. iSplit. iLeft; by iSplitL "Hl". eauto.
-      + iSplit. iRight; iExists m; by iSplitL "Hl". eauto. }
+      + Show. iSplit.
+        * iLeft; by iSplitL "Hl".
+        * eauto.
+      + iSplit.
+        * iRight; iExists m; by iSplitL "Hl".
+        * eauto. }
     iSplitL "Hinv"; first by eauto.
     iModIntro. wp_pures. iIntros "!> !>". wp_lam.
     iDestruct "Hv" as "[%|Hv]"; last iDestruct "Hv" as (m) "[% Hγ']";

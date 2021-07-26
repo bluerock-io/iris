@@ -1,6 +1,6 @@
 From iris.bi Require Import laterable.
 From iris.proofmode Require Import tactics intro_patterns.
-Set Default Proof Using "Type".
+From iris.prelude Require Import options.
 
 Unset Mangle Names.
 
@@ -28,7 +28,7 @@ Proof.
   (* should remove the disjunction "H" *)
   iDestruct "H" as "[#?|#?]"; last by iLeft. Show.
   (* should keep the disjunction "H" because it is instantiated *)
-  iDestruct ("H2" $! 10) as "[%|%]". done. done.
+  iDestruct ("H2" $! 10) as "[%|%]"; done.
 Qed.
 
 Lemma demo_2 P1 P2 P3 P4 Q (P5 : nat → PROP) `{!Affine P4, !Absorbing P2} :
@@ -46,7 +46,7 @@ Proof.
   (* split takes a list of hypotheses just for the LHS *)
   iSplitL "H3".
   - iFrame "H3". iRight. auto.
-  - iSplitL "HQ". iAssumption. by iSplitL "H1".
+  - iSplitL "HQ"; first iAssumption. by iSplitL "H1".
 Qed.
 
 Lemma demo_3 P1 P2 P3 :
@@ -719,7 +719,11 @@ Proof. iIntros "#HPQ HQ !>". iNext. by iRewrite "HPQ" in "HQ". Qed.
 
 Lemma test_iAlways P Q R :
   □ P -∗ <pers> Q → R -∗ <pers> <affine> <affine> P ∗ □ Q.
-Proof. iIntros "#HP #HQ HR". iSplitL. iModIntro. done. iModIntro. done. Qed.
+Proof.
+  iIntros "#HP #HQ HR". iSplitL.
+  - iModIntro. done.
+  - iModIntro. done.
+Qed.
 
 (* A bunch of test cases from #127 to establish that tactics behave the same on
 `⌜ φ ⌝ → P` and `∀ _ : φ, P` *)
@@ -731,7 +735,7 @@ Lemma test_forall_nondep_2 (φ : Prop) :
 Proof. iIntros (Hφ) "Hφ". iSpecialize ("Hφ" with "[% //]"). done. Qed.
 Lemma test_forall_nondep_3 (φ : Prop) :
   φ → (∀ _ : φ, False : PROP) -∗ False.
-Proof. iIntros (Hφ) "Hφ". unshelve iSpecialize ("Hφ" $! _). done. done. Qed.
+Proof. iIntros (Hφ) "Hφ". unshelve iSpecialize ("Hφ" $! _); done. Qed.
 Lemma test_forall_nondep_4 (φ : Prop) :
   φ → (∀ _ : φ, False : PROP) -∗ False.
 Proof. iIntros (Hφ) "Hφ". iSpecialize ("Hφ" $! Hφ); done. Qed.
@@ -744,7 +748,7 @@ Lemma test_pure_impl_2 (φ : Prop) :
 Proof. iIntros (Hφ) "Hφ". iSpecialize ("Hφ" with "[% //]"). done. Qed.
 Lemma test_pure_impl_3 (φ : Prop) :
   φ → (⌜φ⌝ → False : PROP) -∗ False.
-Proof. iIntros (Hφ) "Hφ". unshelve iSpecialize ("Hφ" $! _). done. done. Qed.
+Proof. iIntros (Hφ) "Hφ". unshelve iSpecialize ("Hφ" $! _); done. Qed.
 Lemma test_pure_impl_4 (φ : Prop) :
   φ → (⌜φ⌝ → False : PROP) -∗ False.
 Proof. iIntros (Hφ) "Hφ". iSpecialize ("Hφ" $! Hφ). done. Qed.
@@ -901,24 +905,32 @@ Qed.
 Lemma iFrame_with_evar_r P Q :
   ∃ R, (P -∗ Q -∗ P ∗ R) ∧ R = Q.
 Proof.
-  eexists. split. iIntros "HP HQ". iFrame. iApply "HQ". done.
+  eexists. split.
+  - iIntros "HP HQ". iFrame. iApply "HQ".
+  - done.
 Qed.
 Lemma iFrame_with_evar_l P Q :
   ∃ R, (P -∗ Q -∗ R ∗ P) ∧ R = Q.
 Proof.
-  eexists. split. iIntros "HP HQ". Fail iFrame "HQ".
-  iSplitR "HP"; iAssumption. done.
+  eexists. split.
+  - iIntros "HP HQ". Fail iFrame "HQ".
+    iSplitR "HP"; iAssumption.
+  - done.
 Qed.
 Lemma iFrame_with_evar_persistent P Q :
   ∃ R, (P -∗ □ Q -∗ P ∗ R ∗ Q) ∧ R = emp%I.
 Proof.
-  eexists. split. iIntros "HP #HQ". iFrame "HQ HP". iEmpIntro. done.
+  eexists. split.
+  - iIntros "HP #HQ". iFrame "HQ HP". iEmpIntro.
+  - done.
 Qed.
 
 Lemma test_iAccu P Q R S :
   ∃ PP, (□P -∗ Q -∗ R -∗ S -∗ PP) ∧ PP = (Q ∗ R ∗ S)%I.
 Proof.
-  eexists. split. iIntros "#? ? ? ?". iAccu. done.
+  eexists. split.
+  - iIntros "#? ? ? ?". iAccu.
+  - done.
 Qed.
 
 Lemma test_iAssumption_evar P : ∃ R, (R ⊢ P) ∧ R = P.
