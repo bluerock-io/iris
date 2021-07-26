@@ -63,7 +63,7 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Improvements to `BiMonoPred`:
   - Use `□`/`-∗` instead of `<pers>`/`→`.
   - Strengthen to ensure that functions for recursive calls are non-expansive.
-* Add `big_andM` with lemmas similar to `big_andL`.
+* Add `big_andM` (big conjunction on finite maps) with lemmas similar to `big_andL`.
 
 **Changes in `proofmode`:**
 
