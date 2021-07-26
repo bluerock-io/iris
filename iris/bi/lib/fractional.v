@@ -181,7 +181,7 @@ Section fractional.
   Global Instance frame_fractional p R r Φ P q RES:
     AsFractional R Φ r → AsFractional P Φ q →
     FrameFractionalHyps p R Φ RES r q →
-    Frame p R P RES.
+    Frame p R P RES. (* No explicit priority, as default prio > [frame_here]'s 1. *)
   Proof.
     rewrite /Frame=>-[HR _][->?]H.
     revert H HR=>-[Q q0 q0' r0|Q q0 q0' r0|q0].
