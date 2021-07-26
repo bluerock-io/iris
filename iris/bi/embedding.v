@@ -317,3 +317,62 @@ search for the other premises fail. See the proof of [monPred_objectively_plain]
 for an example where it would fail with a regular [Instance].*)
 Global Hint Extern 4 (Plain _) =>
   notypeclasses refine (embed_plain _ _) : typeclass_instances.
+
+(** Transitive embedding: this constructs an embedding of [PROP1] into [PROP3]
+by combining the embeddings of [PROP1] into [PROP2] and [PROP2] into [PROP3].
+Note that declaring these instances globally can make TC search ambiguous or
+diverging. These are only defined so that a user can conveniently use them to
+manually combine embeddings. *)
+Section embed_embed.
+  Context `{BiEmbed PROP1 PROP2, BiEmbed PROP2 PROP3}.
+
+  Local Instance embed_embed : Embed PROP1 PROP3 := λ P, ⎡ ⎡ P ⎤ ⎤%I.
+
+  Lemma embed_embedding_mixin : BiEmbedMixin PROP1 PROP3 embed_embed.
+  Proof.
+    split; unfold embed, embed_embed.
+    - solve_proper.
+    - solve_proper.
+    - intros P. by rewrite !embed_emp_valid.
+    - intros PROP' ? P Q. by rewrite !embed_interal_inj.
+    - by rewrite -!embed_emp_2.
+    - intros P Q. by rewrite -!embed_impl.
+    - intros A Φ. by rewrite -!embed_forall.
+    - intros A Φ. by rewrite -!embed_exist.
+    - intros P Q. by rewrite -!embed_sep.
+    - intros P Q. by rewrite -!embed_wand.
+    - intros P. by rewrite -!embed_persistently.
+  Qed.
+  Local Instance embed_bi_embed : BiEmbed PROP1 PROP3 :=
+    {| bi_embed_mixin := embed_embedding_mixin |}.
+
+  Lemma embed_embed_alt (P : PROP1) : ⎡ P ⎤ ⊣⊢@{PROP3} ⎡ ⎡ P ⎤ ⎤.
+  Proof. done. Qed.
+
+  Lemma embed_embed_emp :
+    BiEmbedEmp PROP1 PROP2 → BiEmbedEmp PROP2 PROP3 →
+    BiEmbedEmp PROP1 PROP3.
+  Proof. rewrite /BiEmbedEmp !embed_embed_alt. by intros -> ->. Qed.
+  Lemma embed_embed_later :
+    BiEmbedLater PROP1 PROP2 → BiEmbedLater PROP2 PROP3 →
+    BiEmbedLater PROP1 PROP3.
+  Proof. intros ?? P. by rewrite !embed_embed_alt !embed_later. Qed.
+  Lemma embed_embed_internal_eq
+      `{!BiInternalEq PROP1, !BiInternalEq PROP2, !BiInternalEq PROP3} :
+    BiEmbedInternalEq PROP1 PROP2 → BiEmbedInternalEq PROP2 PROP3 →
+    BiEmbedInternalEq PROP1 PROP3.
+  Proof. intros ?? A x y. by rewrite !embed_embed_alt !embed_internal_eq. Qed.
+  Lemma embed_embed_bupd `{!BiBUpd PROP1, !BiBUpd PROP2, !BiBUpd PROP3} :
+    BiEmbedBUpd PROP1 PROP2 → BiEmbedBUpd PROP2 PROP3 →
+    BiEmbedBUpd PROP1 PROP3.
+  Proof. intros ?? P. by rewrite !embed_embed_alt !embed_bupd. Qed.
+  Lemma embed_embed_fupd `{!BiFUpd PROP1, !BiFUpd PROP2, !BiFUpd PROP3} :
+    BiEmbedFUpd PROP1 PROP2 → BiEmbedFUpd PROP2 PROP3 →
+    BiEmbedFUpd PROP1 PROP3.
+  Proof. intros ?? E1 E2 P. by rewrite !embed_embed_alt !embed_fupd. Qed.
+  Lemma embed_embed_plainly
+      `{!BiPlainly PROP1, !BiPlainly PROP2, !BiPlainly PROP3} :
+    BiEmbedPlainly PROP1 PROP2 → BiEmbedPlainly PROP2 PROP3 →
+    BiEmbedPlainly PROP1 PROP3.
+  Proof. intros ?? P. by rewrite !embed_embed_alt !embed_plainly. Qed.
+End embed_embed.

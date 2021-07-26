@@ -64,6 +64,10 @@ Coq 8.11 is no longer supported in this version of Iris.
   - Use `□`/`-∗` instead of `<pers>`/`→`.
   - Strengthen to ensure that functions for recursive calls are non-expansive.
 * Add `big_andM` (big conjunction on finite maps) with lemmas similar to `big_andL`.
+* Add transitive embedding that constructs an embedding of `PROP1` into `PROP3`
+  by combining the embeddings of `PROP1` into `PROP2` and `PROP2` into `PROP3`.
+  This construct is *not* declared as an instance to avoid TC search divergence.
+  (by Hai Dang, BedRock Systems)
 
 **Changes in `proofmode`:**
 
