@@ -1,5 +1,4 @@
-(* Test yet another way of importing heap_lang modules that used to break
-printing *)
+(* Test another way of importing heap_lang modules that used to break printing *)
 From iris.proofmode Require Import tactics.
 From iris.heap_lang Require Export primitive_laws notation.
 From iris.heap_lang Require Import proofmode notation.
