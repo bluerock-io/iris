@@ -67,6 +67,7 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Add transitive embedding that constructs an embedding of `PROP1` into `PROP3`
   by combining the embeddings of `PROP1` into `PROP2` and `PROP2` into `PROP3`.
   This construct is *not* declared as an instance to avoid TC search divergence.
+  (by Hai Dang, BedRock Systems)
 
 **Changes in `proofmode`:**
 
