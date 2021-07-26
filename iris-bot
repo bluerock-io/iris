@@ -132,8 +132,8 @@ def time(args):
         test_pipeline = trigger_build(project['name'], project['branch'], vars)
         print("    Test pipeline running at {}".format(test_pipeline['web_url']))
     else:
-        test_pipeline = trigger_build(project['name'], args.test_branch, vars)
-        print("    Test pipeline (on non-standard branch {}) running at {}".format(args.test_branch, test_pipeline['web_url']))
+        test_pipeline = trigger_build(project['name'], args.test_rev, vars)
+        print("    Test pipeline (on non-standard branch {}) running at {}".format(args.test_rev, test_pipeline['web_url']))
     print("    Once done, timing comparison will be available at https://coq-speed.mpi-sws.org/d/1QE_dqjiz/coq-compare?orgId=1&var-project={}&var-branch1=@hoc&var-commit1={}&var-config1={}&var-branch2=@hoc&var-commit2={}&var-config2={}".format(project['name'], base_pipeline['sha'], id+"-base", test_pipeline['sha'], id+"-test"))
 
 # Dispatch
