@@ -27,6 +27,9 @@ Notation "'[∨]' Ps" := (big_opL bi_or (λ _ x, x) Ps%I) : bi_scope.
 Notation "'[∗' 'map]' k ↦ x ∈ m , P" := (big_opM bi_sep (λ k x, P%I) m) : bi_scope.
 Notation "'[∗' 'map]' x ∈ m , P" := (big_opM bi_sep (λ _ x, P%I) m) : bi_scope.
 
+Notation "'[∧' 'map]' k ↦ x ∈ m , P" := (big_opM bi_and (λ k x, P) m) : bi_scope.
+Notation "'[∧' 'map]' x ∈ m , P" := (big_opM bi_and (λ _ x, P) m) : bi_scope.
+
 Notation "'[∗' 'set]' x ∈ X , P" := (big_opS bi_sep (λ x, P%I) X) : bi_scope.
 
 Notation "'[∗' 'mset]' x ∈ X , P" := (big_opMS bi_sep (λ x, P%I) X) : bi_scope.
@@ -1170,7 +1173,7 @@ Section or_list.
 End or_list.
 
 (** ** Big ops over finite maps *)
-Section map.
+Section sep_map.
   Context `{Countable K} {A : Type}.
   Implicit Types m : gmap K A.
   Implicit Types Φ Ψ : K → A → PROP.
@@ -1473,7 +1476,7 @@ Section map.
     (∀ k x, Timeless (Φ k x)) → Timeless ([∗ map] k↦x ∈ m, Φ k x).
   Proof. rewrite big_opM_eq. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
 
-End map.
+End sep_map.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
 Lemma big_sepM_sep_zip_with `{Countable K} {A B C}
@@ -1492,6 +1495,197 @@ Lemma big_sepM_sep_zip `{Countable K} {A B}
   ([∗ map] k↦xy ∈ map_zip m1 m2, Φ1 k xy.1 ∗ Φ2 k xy.2) ⊣⊢
   ([∗ map] k↦x ∈ m1, Φ1 k x) ∗ ([∗ map] k↦y ∈ m2, Φ2 k y).
 Proof. apply big_opM_sep_zip. Qed.
+
+Section and_map.
+  Context `{Countable K} {A : Type}.
+  Implicit Types m : gmap K A.
+  Implicit Types Φ Ψ : K → A → PROP.
+
+  Lemma big_andM_subseteq Φ m1 m2 :
+    m2 ⊆ m1 → ([∧ map] k ↦ x ∈ m1, Φ k x) ⊢ [∧ map] k ↦ x ∈ m2, Φ k x.
+  Proof. rewrite big_opM_eq. intros. by apply big_andL_submseteq, map_to_list_submseteq. Qed.
+
+  (** The lemmas [big_andM_mono], [big_andM_ne] and [big_andM_proper] are more
+  generic than the instances as they also give [l !! k = Some y] in the premise. *)
+  Lemma big_andM_mono Φ Ψ m :
+    (∀ k x, m !! k = Some x → Φ k x ⊢ Ψ k x) →
+    ([∧ map] k ↦ x ∈ m, Φ k x) ⊢ [∧ map] k ↦ x ∈ m, Ψ k x.
+  Proof. apply big_opM_gen_proper; apply _ || auto. Qed.
+  Lemma big_andM_ne Φ Ψ m n :
+    (∀ k x, m !! k = Some x → Φ k x ≡{n}≡ Ψ k x) →
+    ([∧ map] k ↦ x ∈ m, Φ k x)%I ≡{n}≡ ([∧ map] k ↦ x ∈ m, Ψ k x)%I.
+  Proof. apply big_opM_ne. Qed.
+  Lemma big_andM_proper Φ Ψ m :
+    (∀ k x, m !! k = Some x → Φ k x ⊣⊢ Ψ k x) →
+    ([∧ map] k ↦ x ∈ m, Φ k x) ⊣⊢ ([∧ map] k ↦ x ∈ m, Ψ k x).
+  Proof. apply big_opM_proper. Qed.
+
+  (** No need to declare instances for non-expansiveness and properness, we
+  get both from the generic [big_opM] instances. *)
+  Global Instance big_andM_mono' :
+    Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
+           (big_opM (@bi_and PROP) (K:=K) (A:=A)).
+  Proof. intros f g Hf m ? <-. apply big_andM_mono; intros; apply Hf. Qed.
+
+  Lemma big_andM_empty Φ : ([∧ map] k↦x ∈ ∅, Φ k x) ⊣⊢ True.
+  Proof. by rewrite big_opM_empty. Qed.
+  Lemma big_andM_empty' P Φ : P ⊢ [∧ map] k↦x ∈ ∅, Φ k x.
+  Proof. rewrite big_andM_empty. apply: True_intro. Qed.
+
+  Lemma big_andM_insert Φ m i x :
+    m !! i = None →
+    ([∧ map] k↦y ∈ <[i:=x]> m, Φ k y) ⊣⊢ Φ i x ∧ [∧ map] k↦y ∈ m, Φ k y.
+  Proof. apply big_opM_insert. Qed.
+
+  Lemma big_andM_delete Φ m i x :
+    m !! i = Some x →
+    ([∧ map] k↦y ∈ m, Φ k y) ⊣⊢ Φ i x ∧ [∧ map] k↦y ∈ delete i m, Φ k y.
+  Proof. apply big_opM_delete. Qed.
+
+  Lemma big_andM_insert_delete Φ m i x :
+    ([∧ map] k↦y ∈ <[i:=x]> m, Φ k y) ⊣⊢ Φ i x ∧ [∧ map] k↦y ∈ delete i m, Φ k y.
+  Proof. apply big_opM_insert_delete. Qed.
+
+  Lemma big_andM_insert_2 Φ m i x :
+    Φ i x ∧ ([∧ map] k↦y ∈ m, Φ k y) -∗ [∧ map] k↦y ∈ <[i:=x]> m, Φ k y.
+  Proof.
+    rewrite big_andM_insert_delete.
+    destruct (m !! i) eqn:Hi; [ | by rewrite delete_notin ].
+    rewrite big_andM_delete //. apply and_mono_r, and_elim_r.
+  Qed.
+
+  Lemma big_andM_lookup Φ m i x :
+    m !! i = Some x → ([∧ map] k↦y ∈ m, Φ k y) ⊢ Φ i x.
+  Proof.
+    intros. rewrite -(insert_id m i x) // big_andM_insert_delete. apply and_elim_l.
+  Qed.
+
+  Lemma big_andM_lookup_dom (Φ : K → PROP) m i :
+    is_Some (m !! i) → ([∧ map] k↦_ ∈ m, Φ k) ⊢ Φ i.
+  Proof. intros [x ?]. by eapply (big_andM_lookup (λ i x, Φ i)). Qed.
+
+  Lemma big_andM_singleton Φ i x : ([∧ map] k↦y ∈ {[i:=x]}, Φ k y) ⊣⊢ Φ i x.
+  Proof. by rewrite big_opM_singleton. Qed.
+
+  Lemma big_andM_fmap {B} (f : A → B) (Φ : K → B → PROP) m :
+    ([∧ map] k↦y ∈ f <$> m, Φ k y) ⊣⊢ ([∧ map] k↦y ∈ m, Φ k (f y)).
+  Proof. by rewrite big_opM_fmap. Qed.
+
+  Lemma big_andM_omap {B} (f : A → option B) (Φ : K → B → PROP) m :
+    ([∧ map] k↦y ∈ omap f m, Φ k y) ⊣⊢ ([∧ map] k↦y ∈ m, from_option (Φ k) True (f y)).
+  Proof. by rewrite big_opM_omap. Qed.
+
+  Lemma big_andM_fn_insert {B} (Ψ : K → A → B → PROP) (f : K → B) m i x b :
+    m !! i = None →
+       ([∧ map] k↦y ∈ <[i:=x]> m, Ψ k y (<[i:=b]> f k))
+    ⊣⊢ (Ψ i x b ∧ [∧ map] k↦y ∈ m, Ψ k y (f k)).
+  Proof. apply big_opM_fn_insert. Qed.
+
+  Lemma big_andM_fn_insert' (Φ : K → PROP) m i x P :
+    m !! i = None →
+    ([∧ map] k↦y ∈ <[i:=x]> m, <[i:=P]> Φ k) ⊣⊢ (P ∧ [∧ map] k↦y ∈ m, Φ k).
+  Proof. apply big_opM_fn_insert'. Qed.
+
+  Lemma big_andM_filter' (φ : K * A → Prop) `{∀ kx, Decision (φ kx)} Φ m :
+    ([∧ map] k ↦ x ∈ filter φ m, Φ k x) ⊣⊢
+    ([∧ map] k ↦ x ∈ m, if decide (φ (k, x)) then Φ k x else True).
+  Proof. apply: big_opM_filter'. Qed.
+
+  Lemma big_andM_filter (φ : K * A → Prop) `{∀ kx, Decision (φ kx)} Φ m :
+    ([∧ map] k ↦ x ∈ filter φ m, Φ k x) ⊣⊢
+    ([∧ map] k ↦ x ∈ m, ⌜φ (k, x)⌝ → Φ k x).
+  Proof. setoid_rewrite <-decide_bi_True. apply big_andM_filter'. Qed.
+
+  Lemma big_andM_union Φ m1 m2 :
+    m1 ##ₘ m2 →
+    ([∧ map] k↦y ∈ m1 ∪ m2, Φ k y)
+    ⊣⊢ ([∧ map] k↦y ∈ m1, Φ k y) ∧ ([∧ map] k↦y ∈ m2, Φ k y).
+  Proof. apply big_opM_union. Qed.
+
+  Lemma big_andM_and Φ Ψ m :
+    ([∧ map] k↦x ∈ m, Φ k x ∧ Ψ k x)
+    ⊣⊢ ([∧ map] k↦x ∈ m, Φ k x) ∧ ([∧ map] k↦x ∈ m, Ψ k x).
+  Proof. apply big_opM_op. Qed.
+
+  Lemma big_andM_persistently Φ m :
+    <pers> ([∧ map] k↦x ∈ m, Φ k x) ⊣⊢ ([∧ map] k↦x ∈ m, <pers> (Φ k x)).
+  Proof. apply (big_opM_commute _). Qed.
+
+  Lemma big_andM_intro Φ m :
+    (∀ k x, ⌜m !! k = Some x⌝ → Φ k x) ⊢ [∧ map] k↦x ∈ m, Φ k x.
+  Proof.
+    revert Φ. induction m as [|i x m ? IH] using map_ind=> Φ.
+    { rewrite big_andM_empty. apply: True_intro. }
+    rewrite big_andM_insert //. apply and_intro.
+    - rewrite (forall_elim i) (forall_elim x) lookup_insert.
+      by rewrite pure_True // True_impl.
+    - rewrite -IH. apply forall_intro=> k. apply forall_intro=> x'.
+      rewrite (forall_elim k) (forall_elim x').
+      apply impl_intro_l, pure_elim_l=> ?.
+      rewrite lookup_insert_ne; last by intros ?; simplify_map_eq.
+      by rewrite pure_True // True_impl.
+  Qed.
+
+  Lemma big_andM_forall Φ m :
+    ([∧ map] k↦x ∈ m, Φ k x) ⊣⊢ (∀ k x, ⌜m !! k = Some x⌝ → Φ k x).
+  Proof.
+    intros. apply (anti_symm _); [| by rewrite -big_andM_intro].
+    apply forall_intro=> k; apply forall_intro=> x.
+    apply impl_intro_l, pure_elim_l=> ?; by apply: big_andM_lookup.
+  Qed.
+
+  Lemma big_andM_impl Φ Ψ m :
+    ([∧ map] k↦x ∈ m, Φ k x) ∧
+    (∀ k x, ⌜m !! k = Some x⌝ → Φ k x → Ψ k x) -∗
+    [∧ map] k↦x ∈ m, Ψ k x.
+  Proof.
+    rewrite -big_andM_forall -big_andM_and.
+    by setoid_rewrite bi.impl_elim_r.
+  Qed.
+
+  Lemma big_andM_pure_1 (φ : K → A → Prop) m :
+    ([∧ map] k↦x ∈ m, ⌜φ k x⌝) ⊢@{PROP} ⌜map_Forall φ m⌝.
+  Proof.
+    induction m as [|k x m ? IH] using map_ind.
+    { apply pure_intro, map_Forall_empty. }
+    rewrite big_andM_insert // IH -pure_and.
+    by rewrite -map_Forall_insert.
+  Qed.
+
+  Lemma big_andM_pure_2 (φ : K → A → Prop) m :
+    ⌜map_Forall φ m⌝ ⊢@{PROP} ([∧ map] k↦x ∈ m, ⌜φ k x⌝).
+  Proof.
+    rewrite big_andM_forall pure_forall_1. f_equiv=>k.
+    rewrite pure_forall_1. f_equiv=>x. apply pure_impl_1.
+  Qed.
+
+  Lemma big_andM_pure (φ : K → A → Prop) m :
+    ([∧ map] k↦x ∈ m, ⌜φ k x⌝) ⊣⊢@{PROP} ⌜map_Forall φ m⌝.
+  Proof.
+    apply (anti_symm (⊢)); [ by apply big_andM_pure_1 | by apply big_andM_pure_2].
+  Qed.
+
+  Lemma big_andM_later Φ m :
+    ▷ ([∧ map] k↦x ∈ m, Φ k x) ⊣⊢ ([∧ map] k↦x ∈ m, ▷ Φ k x).
+  Proof. apply (big_opM_commute _). Qed.
+  Lemma big_andM_laterN Φ n m :
+    ▷^n ([∧ map] k↦x ∈ m, Φ k x) ⊣⊢ ([∧ map] k↦x ∈ m, ▷^n Φ k x).
+  Proof. apply (big_opM_commute _). Qed.
+
+  Global Instance big_andM_empty_persistent Φ :
+    Persistent ([∧ map] k↦x ∈ ∅, Φ k x).
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
+  Global Instance big_andM_persistent Φ m :
+    (∀ k x, Persistent (Φ k x)) → Persistent ([∧ map] k↦x ∈ m, Φ k x).
+  Proof. rewrite big_opM_eq. intros. apply big_andL_persistent=> _ [??]; apply _. Qed.
+
+  Global Instance big_andM_empty_timeless Φ :
+    Timeless ([∧ map] k↦x ∈ ∅, Φ k x).
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty /=. apply _. Qed.
+  Global Instance big_andM_timeless Φ m :
+    (∀ k x, Timeless (Φ k x)) → Timeless ([∧ map] k↦x ∈ m, Φ k x).
+  Proof. rewrite big_opM_eq. intros. apply big_andL_timeless=> _ [??]; apply _. Qed.
+End and_map.
 
 (** ** Big ops over two maps *)
 Lemma big_sepM2_alt `{Countable K} {A B} (Φ : K → A → B → PROP) m1 m2 :
