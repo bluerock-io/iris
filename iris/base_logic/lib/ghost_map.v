@@ -2,7 +2,7 @@
 ownership of the entire heap, and a "points-to-like" proposition for (mutable,
 fractional, or persistent read-only) ownership of individual elements. *)
 From iris.bi.lib Require Import fractional.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.algebra Require Import gmap_view.
 From iris.algebra Require Export dfrac.
 From iris.base_logic.lib Require Export own.

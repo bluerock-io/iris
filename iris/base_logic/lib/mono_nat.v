@@ -7,7 +7,7 @@ The key rules are [mono_nat_lb_own_valid], which asserts that an auth at [n] and
 a lower-bound at [m] imply that [m ≤ n], and [mono_nat_update], which allows to
 increase the auth element. At any time the auth nat can be "snapshotted" with
 [mono_nat_get_lb] to produce a persistent lower-bound proposition. *)
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.algebra.lib Require Import mono_nat.
 From iris.bi.lib Require Import fractional.
 From iris.base_logic.lib Require Export own.

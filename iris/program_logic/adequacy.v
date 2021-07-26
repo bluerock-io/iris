@@ -1,5 +1,5 @@
 From iris.algebra Require Import gmap auth agree gset coPset.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.base_logic.lib Require Import wsat.
 From iris.program_logic Require Export weakestpre.
 From iris.prelude Require Import options.

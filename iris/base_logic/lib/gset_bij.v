@@ -23,7 +23,7 @@ This library is a logical, ownership-based wrapper around [gset_bij]. *)
 From iris.algebra.lib Require Import gset_bij.
 From iris.bi.lib Require Import fractional.
 From iris.base_logic.lib Require Import own.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.prelude Require Import options.
 
 (* The uCMRA we need. *)

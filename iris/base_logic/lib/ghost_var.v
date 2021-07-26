@@ -2,7 +2,7 @@
 Can be mutated when fully owned. *)
 From iris.algebra Require Import frac_agree.
 From iris.bi.lib Require Import fractional.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.base_logic.lib Require Export own.
 From iris.prelude Require Import options.
 

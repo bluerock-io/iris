@@ -1,7 +1,7 @@
 (** This file provides a construction to lift a PROP-level binary relation to
 its reflexive transitive closure. *)
 From iris.bi.lib Require Export fixpoint.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.prelude Require Import options.
 
 (* The sections add extra BI assumptions, which is only picked up with "Type"*. *)

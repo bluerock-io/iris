@@ -1,7 +1,7 @@
 From stdpp Require Import namespaces.
 From iris.bi Require Import telescopes.
 From iris.bi.lib Require Export atomic.
-From iris.proofmode Require Import tactics classes.
+From iris.proofmode Require Import proofmode classes.
 From iris.program_logic Require Export weakestpre.
 From iris.base_logic Require Import invariants.
 From iris.prelude Require Import options.
