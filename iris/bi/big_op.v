@@ -95,10 +95,11 @@ Section sep_list.
     ([∗ list] k↦y ∈ l ++ [x], Φ k y) ⊣⊢ ([∗ list] k↦y ∈ l, Φ k y) ∗ Φ (length l) x.
   Proof. by rewrite big_opL_snoc. Qed.
 
-  Lemma big_sepL_submseteq `{BiAffine PROP} (Φ : A → PROP) l1 l2 :
+  Lemma big_sepL_submseteq (Φ : A → PROP) `{!∀ x, Affine (Φ x)} l1 l2 :
     l1 ⊆+ l2 → ([∗ list] y ∈ l2, Φ y) ⊢ [∗ list] y ∈ l1, Φ y.
   Proof.
-    intros [l ->]%submseteq_Permutation. by rewrite big_sepL_app sep_elim_l.
+    intros [l ->]%submseteq_Permutation. rewrite big_sepL_app.
+    induction l as [|x l IH]; simpl; [by rewrite right_id|by rewrite sep_elim_r].
   Qed.
 
   (** The lemmas [big_sepL_mono], [big_sepL_ne] and [big_sepL_proper] are more
@@ -1174,9 +1175,13 @@ Section map.
   Implicit Types m : gmap K A.
   Implicit Types Φ Ψ : K → A → PROP.
 
-  Lemma big_sepM_subseteq `{BiAffine PROP} Φ m1 m2 :
+  Lemma big_sepM_subseteq Φ `{!∀ k x, Affine (Φ k x)} m1 m2 :
     m2 ⊆ m1 → ([∗ map] k ↦ x ∈ m1, Φ k x) ⊢ [∗ map] k ↦ x ∈ m2, Φ k x.
-  Proof. rewrite big_opM_eq. intros. by apply big_sepL_submseteq, map_to_list_submseteq. Qed.
+  Proof.
+    assert (∀ kx, Affine (uncurry Φ kx)) by (intros []; apply _).
+    rewrite big_opM_eq. intros.
+    by apply (big_sepL_submseteq _), map_to_list_submseteq.
+  Qed.
 
   (** The lemmas [big_sepM_mono], [big_sepM_ne] and [big_sepM_proper] are more
   generic than the instances as they also give [l !! k = Some y] in the premise. *)
@@ -2069,9 +2074,11 @@ Section gset.
   Implicit Types X : gset A.
   Implicit Types Φ : A → PROP.
 
-  Lemma big_sepS_subseteq `{BiAffine PROP} Φ X Y :
+  Lemma big_sepS_subseteq Φ `{!∀ x, Affine (Φ x)} X Y :
     Y ⊆ X → ([∗ set] x ∈ X, Φ x) ⊢ [∗ set] x ∈ Y, Φ x.
-  Proof. rewrite big_opS_eq. intros. by apply big_sepL_submseteq, elements_submseteq. Qed.
+  Proof.
+    rewrite big_opS_eq. intros. by apply big_sepL_submseteq, elements_submseteq.
+  Qed.
 
   (** The lemmas [big_sepS_mono], [big_sepS_ne] and [big_sepS_proper] are more
   generic than the instances as they also give [x ∈ X] in the premise. *)
@@ -2357,7 +2364,7 @@ Section gmultiset.
   Implicit Types X : gmultiset A.
   Implicit Types Φ : A → PROP.
 
-  Lemma big_sepMS_subseteq `{BiAffine PROP} Φ X Y :
+  Lemma big_sepMS_subseteq Φ `{!∀ x, Affine (Φ x)} X Y :
     Y ⊆ X → ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ Y, Φ x.
   Proof.
     intros. rewrite big_opMS_eq.
