@@ -140,6 +140,7 @@ iris/proofmode/frame_instances.v
 iris/proofmode/monpred.v
 iris/proofmode/modalities.v
 iris/proofmode/modality_instances.v
+iris/proofmode/proofmode.v
 
 iris_heap_lang/locations.v
 iris_heap_lang/lang.v

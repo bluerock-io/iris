@@ -1,8 +1,4 @@
-From iris.proofmode Require Export ltac_tactics.
-(* This [Require Import] is not a no-op: it exports typeclass instances from
-these files. *)
-From iris.proofmode Require Import class_instances class_instances_later
-  class_instances_updates class_instances_embedding
-  class_instances_plainly class_instances_internal_eq.
-From iris.proofmode Require Import frame_instances modality_instances.
+(* This file is *deprecated*. It exists just to give people some time to adjust their code.
+Directly import [iris.proofmode.proofmode] instead. *)
+From iris.proofmode Require Export proofmode.
 From iris.prelude Require Import options.
