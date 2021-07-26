@@ -36,10 +36,10 @@ a feature branch instead.
 [jung]: https://gitlab.mpi-sws.org/jung
 [iris]: https://gitlab.mpi-sws.org/iris/iris
 
-We prefer small and self-contained merge requests that add a single features
+We prefer small and self-contained merge requests that add a single feature
 over merge requests that add arbitrary collections of lemmas. Small merge
 requests are easier to review, and will typically be merged more quickly
-(because it avoids that the whole merge request will be blocked on a single
+(because it avoids blocking the whole merge request on a single
 discussion).
 
 ## How to update the std++ dependency
