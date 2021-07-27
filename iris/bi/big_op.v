@@ -1178,6 +1178,11 @@ Section sep_map.
   Implicit Types m : gmap K A.
   Implicit Types Φ Ψ : K → A → PROP.
 
+  (* We place the [Affine] instance after [m1] and [m2], so that
+     manually instantiating [m1] or [m2] in [iApply] does not also
+     implicitly instantiate the [Affine] instance. If it gets
+     instantiated too early, [Φ] is not known, and typeclass inference
+     fails. *)
   Lemma big_sepM_subseteq Φ m1 m2 `{!∀ k x, Affine (Φ k x)} :
     m2 ⊆ m1 → ([∗ map] k ↦ x ∈ m1, Φ k x) ⊢ [∗ map] k ↦ x ∈ m2, Φ k x.
   Proof.
@@ -2268,6 +2273,8 @@ Section gset.
   Implicit Types X : gset A.
   Implicit Types Φ : A → PROP.
 
+  (* See comment above [big_sepM_subseteq] as for why the [Affine]
+     instance is placed late. *)
   Lemma big_sepS_subseteq Φ X Y `{!∀ x, Affine (Φ x)} :
     Y ⊆ X → ([∗ set] x ∈ X, Φ x) ⊢ [∗ set] x ∈ Y, Φ x.
   Proof.
@@ -2558,6 +2565,8 @@ Section gmultiset.
   Implicit Types X : gmultiset A.
   Implicit Types Φ : A → PROP.
 
+  (* See comment above [big_sepM_subseteq] as for why the [Affine]
+     instance is placed late. *)
   Lemma big_sepMS_subseteq Φ X Y `{!∀ x, Affine (Φ x)} :
     Y ⊆ X → ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ Y, Φ x.
   Proof.
