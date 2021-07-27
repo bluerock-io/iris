@@ -381,7 +381,7 @@ Section lemmas.
     intros Hdom%eq_sym. revert m1 Hdom.
     induction m0 as [|k v m0 Hnotdom IH] using map_ind; intros m1 Hdom.
     { rewrite dom_empty_L in Hdom.
-      apply dom_empty_inv_L in Hdom as ->.
+      apply dom_empty_iff_L in Hdom as ->.
       rewrite left_id_L big_opM_empty. done. }
     rewrite dom_insert_L in Hdom.
     assert (k ∈ dom (gset K) m1) as Hindom by set_solver.

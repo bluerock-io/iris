@@ -1801,13 +1801,13 @@ Section map2.
   Lemma big_sepM2_empty_l m1 Φ : ([∗ map] k↦y1;y2 ∈ m1; ∅, Φ k y1 y2) ⊢ ⌜m1 = ∅⌝.
   Proof.
     rewrite big_sepM2_dom dom_empty_L.
-    apply pure_mono, dom_empty_inv_L.
+    apply pure_mono, dom_empty_iff_L.
   Qed.
 
   Lemma big_sepM2_empty_r m2 Φ : ([∗ map] k↦y1;y2 ∈ ∅; m2, Φ k y1 y2) ⊢ ⌜m2 = ∅⌝.
   Proof.
     rewrite big_sepM2_dom dom_empty_L.
-    apply pure_mono=>?. eapply (dom_empty_inv_L (D:=gset K)). eauto.
+    apply pure_mono=>?. eapply (dom_empty_iff_L (D:=gset K)). eauto.
   Qed.
 
   Lemma big_sepM2_insert Φ m1 m2 i x1 x2 :
