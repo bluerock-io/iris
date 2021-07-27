@@ -44,9 +44,8 @@
   WP let: "val1" := fun1 #() in
      let: "val2" := fun2 "val1" in
      let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
-  {{ _,
-     long_post
-     ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}
+  {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
+     long_post ∗ long_post }}
   
 1 goal
   
@@ -61,10 +60,8 @@
      WP let: "val1" := v in
         let: "val2" := fun2 "val1" in
         let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
-     {{ _,
-        long_post
-        ∗ long_post
-          ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }} }}
+     {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
+        long_post ∗ long_post }} }}
   
 1 goal
   
@@ -83,9 +80,8 @@
      let: "val2" := fun2 "val1" in
      let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
   @ E_long
-  {{ _,
-     long_post
-     ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}
+  {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
+     long_post ∗ long_post }}
   
 1 goal
   
@@ -107,10 +103,8 @@
         let: "val2" := fun2 "val1" in
         let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
      @ E_long
-     {{ _,
-        long_post
-        ∗ long_post
-          ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }} }}
+     {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
+        long_post ∗ long_post }} }}
   
 1 goal
   
@@ -127,18 +121,13 @@
   WP ! #l1
   @ E_long ∖ ↑N
   {{ v,
-     |={E_long ∖ ↑N}=> ▷ True
-                       ∗ WP let: "val1" := v in
-                            let: "val2" := fun2 "val1" in
-                            let: "v" := fun3 "v" in
-                            if: "v" = "v" then "v" else "v"
-                         @ E_long
-                         {{ _,
-                            long_post
-                            ∗ long_post
-                              ∗ long_post
-                                ∗ long_post
-                                  ∗ long_post ∗ long_post ∗ long_post }} }}
+     |={E_long ∖ ↑N}=> ▷ True ∗
+       WP let: "val1" := v in
+          let: "val2" := fun2 "val1" in
+          let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
+       @ E_long
+       {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
+          long_post ∗ long_post }} }}
   
 1 goal
   
@@ -162,8 +151,8 @@
     let: "val1" := fun1 #() in
     let: "val2" := fun2 "val1" in
     let: "val3" := fun3 "val2" in if: "val1" = "val2" then "val" else "val3"
-  @ E_mask_is_long_too {{{ (x y : val) (z : Z), RET 
-  (x, y, #z); True }}}
+  @ E_mask_is_long_too
+  {{{ (x y : val) (z : Z), RET (x, y, #z); True }}}
 1 goal
   
   Σ : gFunctors
@@ -176,5 +165,6 @@
     let: "val1" := fun1 #() in
     let: "val2" := fun2 "val1" in
     let: "val3" := fun3 "val2" in if: "val1" = "val2" then "val" else "val3"
-  @ E_mask_is_long_too {{{ (x y : val) (z : Z), RET 
-  (x, y, #z); long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}}
+  @ E_mask_is_long_too
+  {{{ (x y : val) (z : Z), RET (x, y, #z); long_post ∗ long_post ∗
+      long_post ∗ long_post ∗ long_post }}}

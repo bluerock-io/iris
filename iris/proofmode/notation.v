@@ -19,15 +19,15 @@ Notation "Γ '_' : P" := (Esnoc Γ (IAnon _) P%I)
 Notation "Γ '--------------------------------------' □ Δ '--------------------------------------' ∗ Q" :=
   (envs_entails (Envs Γ Δ _) Q%I)
   (at level 1, Q at level 200, left associativity,
-  format "Γ '--------------------------------------' □ '//' Δ '--------------------------------------' ∗ '//' Q '//'", only printing) :
+  format "Γ '--------------------------------------' □ '//' Δ '--------------------------------------' ∗ '//' '[' Q ']' '//'", only printing) :
   stdpp_scope.
 Notation "Δ '--------------------------------------' ∗ Q" :=
   (envs_entails (Envs Enil Δ _) Q%I)
   (at level 1, Q at level 200, left associativity,
-  format "Δ '--------------------------------------' ∗ '//' Q '//'", only printing) : stdpp_scope.
+  format "Δ '--------------------------------------' ∗ '//' '[' Q ']' '//'", only printing) : stdpp_scope.
 Notation "Γ '--------------------------------------' □ Q" :=
   (envs_entails (Envs Γ Enil _) Q%I)
   (at level 1, Q at level 200, left associativity,
-  format "Γ '--------------------------------------' □ '//' Q '//'", only printing)  : stdpp_scope.
+  format "Γ '--------------------------------------' □ '//' '[' Q ']' '//'", only printing)  : stdpp_scope.
 Notation "'--------------------------------------' ∗ Q" := (envs_entails (Envs Enil Enil _) Q%I)
-  (at level 1, Q at level 200, format "'--------------------------------------' ∗ '//' Q '//'", only printing) : stdpp_scope.
+  (at level 1, Q at level 200, format "'--------------------------------------' ∗ '//' '[' Q ']' '//'", only printing) : stdpp_scope.
