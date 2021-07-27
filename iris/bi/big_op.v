@@ -1178,7 +1178,7 @@ Section sep_map.
   Implicit Types m : gmap K A.
   Implicit Types Φ Ψ : K → A → PROP.
 
-  Lemma big_sepM_subseteq Φ `{!∀ k x, Affine (Φ k x)} m1 m2 :
+  Lemma big_sepM_subseteq Φ m1 m2 `{!∀ k x, Affine (Φ k x)} :
     m2 ⊆ m1 → ([∗ map] k ↦ x ∈ m1, Φ k x) ⊢ [∗ map] k ↦ x ∈ m2, Φ k x.
   Proof.
     assert (∀ kx, Affine (uncurry Φ kx)) by (intros []; apply _).
@@ -2268,7 +2268,7 @@ Section gset.
   Implicit Types X : gset A.
   Implicit Types Φ : A → PROP.
 
-  Lemma big_sepS_subseteq Φ `{!∀ x, Affine (Φ x)} X Y :
+  Lemma big_sepS_subseteq Φ X Y `{!∀ x, Affine (Φ x)} :
     Y ⊆ X → ([∗ set] x ∈ X, Φ x) ⊢ [∗ set] x ∈ Y, Φ x.
   Proof.
     rewrite big_opS_eq. intros. by apply big_sepL_submseteq, elements_submseteq.
@@ -2558,7 +2558,7 @@ Section gmultiset.
   Implicit Types X : gmultiset A.
   Implicit Types Φ : A → PROP.
 
-  Lemma big_sepMS_subseteq Φ `{!∀ x, Affine (Φ x)} X Y :
+  Lemma big_sepMS_subseteq Φ X Y `{!∀ x, Affine (Φ x)} :
     Y ⊆ X → ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ Y, Φ x.
   Proof.
     intros. rewrite big_opMS_eq.
