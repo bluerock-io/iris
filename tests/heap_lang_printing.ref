@@ -26,11 +26,12 @@
   ============================
   --------------------------------------∗
   WP fun1 #()
-  {{ v, WP let: "val1" := v in
-           let: "val2" := fun2 "val1" in
-           let: "val3" := fun3 "val2" in
-           if: "val1" = "val2" then "val" else "val3" 
-        {{ _, True }} }}
+  {{ v,
+     WP let: "val1" := v in
+        let: "val2" := fun2 "val1" in
+        let: "val3" := fun3 "val2" in
+        if: "val1" = "val2" then "val" else "val3"
+     {{ _, True }} }}
   
 1 goal
   
@@ -43,9 +44,9 @@
   WP let: "val1" := fun1 #() in
      let: "val2" := fun2 "val1" in
      let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
-  {{ _, long_post
-        ∗ long_post
-          ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}
+  {{ _,
+     long_post
+     ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}
   
 1 goal
   
@@ -56,12 +57,14 @@
   ============================
   --------------------------------------∗
   WP fun1 #()
-  {{ v, WP let: "val1" := v in
-           let: "val2" := fun2 "val1" in
-           let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
-        {{ _, long_post
-              ∗ long_post
-                ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }} }}
+  {{ v,
+     WP let: "val1" := v in
+        let: "val2" := fun2 "val1" in
+        let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
+     {{ _,
+        long_post
+        ∗ long_post
+          ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }} }}
   
 1 goal
   
@@ -79,10 +82,10 @@
   WP let: "val1" := ! #l1 in
      let: "val2" := fun2 "val1" in
      let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
-  @ E_long {{ _, long_post
-                 ∗ long_post
-                   ∗ long_post
-                     ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}
+  @ E_long
+  {{ _,
+     long_post
+     ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}
   
 1 goal
   
@@ -98,14 +101,16 @@
   "Hinv" : inv N True
   --------------------------------------∗
   WP ! #l1
-  @ E_long {{ v, WP let: "val1" := v in
-                    let: "val2" := fun2 "val1" in
-                    let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
-                 @ E_long {{ _, long_post
-                                ∗ long_post
-                                  ∗ long_post
-                                    ∗ long_post
-                                      ∗ long_post ∗ long_post ∗ long_post }} }}
+  @ E_long
+  {{ v,
+     WP let: "val1" := v in
+        let: "val2" := fun2 "val1" in
+        let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
+     @ E_long
+     {{ _,
+        long_post
+        ∗ long_post
+          ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }} }}
   
 1 goal
   
@@ -120,26 +125,20 @@
   ============================
   --------------------------------------∗
   WP ! #l1
-  @ E_long ∖ ↑N {{ v, |={E_long ∖ ↑N}=> ▷ True
-                                        ∗ WP let: "val1" := 
-                                             v in
-                                             let: "val2" := 
-                                             fun2 "val1" in
-                                             let: "v" := 
-                                             fun3 "v" in
-                                             if: "v" = "v" then "v" else "v"
-                                          @ E_long {{ _, 
-                                                 long_post
-                                                 ∗ 
-                                                 long_post
-                                                 ∗ 
-                                                 long_post
-                                                 ∗ 
-                                                 long_post
-                                                 ∗ 
-                                                 long_post
-                                                 ∗ 
-                                                 long_post ∗ long_post }} }}
+  @ E_long ∖ ↑N
+  {{ v,
+     |={E_long ∖ ↑N}=> ▷ True
+                       ∗ WP let: "val1" := v in
+                            let: "val2" := fun2 "val1" in
+                            let: "v" := fun3 "v" in
+                            if: "v" = "v" then "v" else "v"
+                         @ E_long
+                         {{ _,
+                            long_post
+                            ∗ long_post
+                              ∗ long_post
+                                ∗ long_post
+                                  ∗ long_post ∗ long_post ∗ long_post }} }}
   
 1 goal
   

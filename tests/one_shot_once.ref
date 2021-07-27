@@ -39,5 +39,6 @@
                     match: InjRV #m with
                       InjL <> => #()
                     | InjR <> => assert: InjRV #m = "y'"
-                    end {{ _, True }}
+                    end
+                 {{ _, True }}
   

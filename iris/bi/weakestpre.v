@@ -56,24 +56,28 @@ Notation "'WP' e {{ Φ } }" := (wp NotStuck ⊤ e%E Φ)
 Notation "'WP' e ? {{ Φ } }" := (wp MaybeStuck ⊤ e%E Φ)
   (at level 20, e, Φ at level 200, only parsing) : bi_scope.
 
-(** Notations with binder.  The indentation for the inner format block is chosen
-such that *if* one has a single-character mask (e.g. [E]), the second line
-should align with the binder(s) on the first line. *)
+(** Notations with binder. *)
+(** The general approach we use for all these complex notations: an outer '[hv'
+to switch bwteen "horizontal mode" where it all fits on one line, and "vertical
+mode" where each '/' becomes a line break. Then, as appropriate, nested boxes
+('['...']') for things like preconditions and postconditions such that they are
+maximally horizontal and suitably indented inside the parentheses that surround
+them. *)
 Notation "'WP' e @ s ; E {{ v , Q } }" := (wp s E e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[          ' @  s ;  E  {{  v ,  Q  } } ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' @  '[' s ;  '/' E  ']' '/' {{  '[' v ,  '/' Q  ']' } } ']'") : bi_scope.
 Notation "'WP' e @ E {{ v , Q } }" := (wp NotStuck E e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[       ' @  E  {{  v ,  Q  } } ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' @  E  '/' {{  '[' v ,  '/' Q  ']' } } ']'") : bi_scope.
 Notation "'WP' e @ E ? {{ v , Q } }" := (wp MaybeStuck E e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[        ' @  E  ? {{  v ,  Q  } } ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' @  E  '/' ? {{  '[' v ,  '/' Q  ']' } } ']'") : bi_scope.
 Notation "'WP' e {{ v , Q } }" := (wp NotStuck ⊤ e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[   ' {{  v ,  Q  } } ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' {{  '[' v ,  '/' Q  ']' } } ']'") : bi_scope.
 Notation "'WP' e ? {{ v , Q } }" := (wp MaybeStuck ⊤ e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[    ' ? {{  v ,  Q  } } ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' ? {{  '[' v ,  '/' Q  ']' } } ']'") : bi_scope.
 
 (* Texan triples *)
 Notation "'{{{' P } } } e @ s ; E {{{ x .. y , 'RET' pat ; Q } } }" :=
@@ -159,24 +163,22 @@ Notation "'WP' e [{ Φ } ]" := (twp NotStuck ⊤ e%E Φ)
 Notation "'WP' e ? [{ Φ } ]" := (twp MaybeStuck ⊤ e%E Φ)
   (at level 20, e, Φ at level 200, only parsing) : bi_scope.
 
-(** Notations with binder.  The indentation for the inner format block is chosen
-such that *if* one has a single-character mask (e.g. [E]), the second line
-should align with the binder(s) on the first line. *)
+(** Notations with binder. *)
 Notation "'WP' e @ s ; E [{ v , Q } ]" := (twp s E e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[          ' @  s ;  E  [{  v ,  Q  } ] ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' @  '[' s ;  '/' E  ']' '/' [{  '[' v ,  '/' Q  ']' } ] ']'") : bi_scope.
 Notation "'WP' e @ E [{ v , Q } ]" := (twp NotStuck E e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[       ' @  E  [{  v ,  Q  } ] ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' @  E  '/' [{  '[' v ,  '/' Q  ']' } ] ']'") : bi_scope.
 Notation "'WP' e @ E ? [{ v , Q } ]" := (twp MaybeStuck E e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[        ' @  E  ? [{  v ,  Q  } ] ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' @  E  '/' ? [{  '[' v ,  '/' Q  ']' } ] ']'") : bi_scope.
 Notation "'WP' e [{ v , Q } ]" := (twp NotStuck ⊤ e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[   ' [{  v ,  Q  } ] ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' [{  '[' v ,  '/' Q  ']' } ] ']'") : bi_scope.
 Notation "'WP' e ? [{ v , Q } ]" := (twp MaybeStuck ⊤ e%E (λ v, Q))
   (at level 20, e, Q at level 200,
-   format "'[' 'WP'  e  '/' '[    ' ? [{  v ,  Q  } ] ']' ']'") : bi_scope.
+   format "'[hv' 'WP'  e  '/' ? [{  '[' v ,  '/' Q  ']' } ] ']'") : bi_scope.
 
 (* Texan triples *)
 Notation "'[[{' P } ] ] e @ s ; E [[{ x .. y , 'RET' pat ; Q } ] ]" :=

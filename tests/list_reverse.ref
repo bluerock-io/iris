@@ -29,5 +29,6 @@
        let: "tmp1" := Fst ! "l" in
        let: "tmp2" := Snd ! "l" in
        "l" <- ("tmp1", acc);; rev "tmp2" (InjLV #())
-     end [{ v, Φ v }]
+     end
+  [{ v, Φ v }]
   
