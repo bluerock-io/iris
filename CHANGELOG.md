@@ -157,7 +157,7 @@ s/\b(inv|iris|(gen|inv)_heap|(Gen|Inv)Heap|proph_map|ProphMap|[oO]wnP|[hH]eap)G\
 s/\b([iI]nv|iris|(gen|inv)_heap|(Gen|Inv)Heap|proph_map|ProphMap|[oO]wnP|[hH]eap)PreG\b/\1GpreS/g
 # iris.proofmode.tactics → iris.proofmode.proofmode
 s/\bproofmode\.tactics\b/proofmode.proofmode/
-s/(From iris\.proofmode Require (Import|Export).*)\btactics\b/\1proofmode/
+s/(From +iris\.proofmode +Require +(Import|Export).*)\btactics\b/\1proofmode/
 EOF
 ```
 
