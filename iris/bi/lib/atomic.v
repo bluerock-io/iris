@@ -1,7 +1,7 @@
 From stdpp Require Import coPset namespaces.
 From iris.bi Require Export bi updates laterable.
 From iris.bi.lib Require Import fixpoint.
-From iris.proofmode Require Import coq_tactics tactics reduction.
+From iris.proofmode Require Import coq_tactics proofmode reduction.
 From iris.prelude Require Import options.
 
 (** Conveniently split a conjunction on both assumption and conclusion. *)

@@ -87,6 +87,9 @@ Coq 8.11 is no longer supported in this version of Iris.
   [iris/proofmode/frame_instances.v](iris/proofmode/frame_instances.v) and
   https://coq.inria.fr/refman/addendum/type-classes.html#coq:cmd.Instance. (by
   Paolo G. Giarrusso, BedRock Systems)
+* Rename the main entry point module for the proofmode from
+  `iris.proofmode.tactics` to `iris.proofmode.proofmode`. Under normal
+  circumstances, this should be the only proofmode file you need to import.
 
 **Changes in `bi`:**
 
@@ -152,6 +155,9 @@ s/\bbupd_forall\b/bupd_plain_forall/g
 # "global singleton" rename
 s/\b(inv|iris|(gen|inv)_heap|(Gen|Inv)Heap|proph_map|ProphMap|[oO]wnP|[hH]eap)G\b/\1GS/g
 s/\b([iI]nv|iris|(gen|inv)_heap|(Gen|Inv)Heap|proph_map|ProphMap|[oO]wnP|[hH]eap)PreG\b/\1GpreS/g
+# iris.proofmode.tactics → iris.proofmode.proofmode
+s/\bproofmode\.tactics\b/proofmode.proofmode/
+s/(From iris\.proofmode Require (Import|Export).*)\btactics\b/\1proofmode/
 EOF
 ```
 

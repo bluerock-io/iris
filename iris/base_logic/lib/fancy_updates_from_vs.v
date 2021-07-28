@@ -2,7 +2,7 @@
 view shift, and that the laws of the fancy update can be derived from the
 laws of the view shift. *)
 From stdpp Require Export coPset.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.base_logic Require Export base_logic.
 From iris.prelude Require Import options.
 

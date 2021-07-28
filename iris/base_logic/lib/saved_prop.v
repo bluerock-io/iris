@@ -1,6 +1,6 @@
 From stdpp Require Import gmap.
 From iris.algebra Require Import agree.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.base_logic Require Export own.
 From iris.prelude Require Import options.
 Import uPred.

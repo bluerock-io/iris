@@ -1,5 +1,5 @@
 From iris.algebra Require Import auth.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.program_logic Require Export weakestpre adequacy.
 From iris.heap_lang Require Import proofmode notation.
 From iris.prelude Require Import options.

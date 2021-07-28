@@ -1,6 +1,6 @@
 From iris.algebra Require Import gmap auth agree gset coPset list.
 From iris.bi Require Import big_op fixpoint.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.program_logic Require Export total_weakestpre adequacy.
 From iris.prelude Require Import options.
 Import uPred.

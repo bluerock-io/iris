@@ -1,5 +1,5 @@
 From iris.bi Require Import fixpoint big_op.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.program_logic Require Export weakestpre.
 From iris.prelude Require Import options.
 Import uPred.

@@ -1,7 +1,7 @@
 (** This file proves the basic laws of the HeapLang program logic by applying
 the Iris lifting lemmas. *)
 
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.bi.lib Require Import fractional.
 From iris.base_logic.lib Require Export gen_heap proph_map gen_inv_heap.
 From iris.program_logic Require Export weakestpre total_weakestpre.

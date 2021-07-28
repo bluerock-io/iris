@@ -2,7 +2,7 @@ From stdpp Require Export namespaces.
 From iris.algebra Require Import reservation_map agree frac.
 From iris.algebra Require Export dfrac.
 From iris.bi.lib Require Import fractional.
-From iris.proofmode Require Import tactics.
+From iris.proofmode Require Import proofmode.
 From iris.base_logic.lib Require Export own.
 From iris.base_logic.lib Require Import ghost_map.
 From iris.prelude Require Import options.
