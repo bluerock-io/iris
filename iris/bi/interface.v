@@ -104,8 +104,8 @@ Section bi_mixin.
     (* The laws of a "frame" (https://ncatlab.org/nlab/show/frame, not to be
     confused with separation logic terminology): commuting with finite
     conjunction and infinite disjunction.
-    The null-ary case, [True ⊢ <pers> True], is derivable from the other laws
-    ([persistently_True]). *)
+    The null-ary case, [persistently_True : True ⊢ <pers> True], is derivable from the
+    other laws. *)
     bi_mixin_persistently_and_2 (P Q : PROP) :
       ((<pers> P) ∧ (<pers> Q)) ⊢ <pers> (P ∧ Q);
     bi_mixin_persistently_exist_1 {A} (Ψ : A → PROP) :

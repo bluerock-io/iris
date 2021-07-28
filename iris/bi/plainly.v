@@ -25,7 +25,7 @@ Record BiPlainlyMixin (PROP : bi) `(Plainly PROP) := {
 
   (* The following law and [persistently_impl_plainly] below are very similar,
      and indeed they hold not just for persistently and plainly, but for any
-     modality defined as `M P n x := ∀ y, R x y → P n y`. *)
+     modality defined as [M P n x := ∀ y, R x y → P n y]. *)
   bi_plainly_mixin_plainly_impl_plainly (P Q : PROP) :
     (■ P → ■ Q) ⊢ ■ (■ P → Q);
 
