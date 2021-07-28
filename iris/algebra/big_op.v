@@ -411,7 +411,7 @@ Section gmap.
     induction m as [|k v m ? IH] using map_ind.
     { by rewrite map_filter_empty !big_opM_empty. }
     destruct (decide (φ (k, v))).
-    - rewrite map_filter_insert //.
+    - rewrite map_filter_insert_True //.
       assert (filter φ m !! k = None) by (apply map_filter_lookup_None; eauto).
       by rewrite !big_opM_insert // decide_True // IH.
     - rewrite map_filter_insert_not' //; last by congruence.
