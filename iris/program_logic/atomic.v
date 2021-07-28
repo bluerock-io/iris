@@ -42,7 +42,7 @@ Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v 
                         ) .. )
   )
   (at level 20, E, α, β, v at level 200, x1 binder, xn binder, y1 binder, yn binder,
-   format "'[hv' '<<<'  ∀  x1  ..  xn ,  α  '>>>'  '/  ' e  @  E  '/' '[    ' '<<<'  ∃  y1  ..  yn ,  β ,  '/' 'RET'  v  '>>>' ']' ']'")
+   format "'[hv' '<<<'  '[' ∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
   : bi_scope.
 
 Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
@@ -62,7 +62,7 @@ Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
                         ) .. )
   )
   (at level 20, E, α, β, v at level 200, x1 binder, xn binder,
-   format "'[hv' '<<<'  ∀  x1  ..  xn ,  α  '>>>'  '/  ' e  @  E  '/' '[    ' '<<<'  β ,  '/' 'RET'  v  '>>>' ']' ']'")
+   format "'[hv' '<<<'  '[' ∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β ,  '/' 'RET'  v  ']' '>>>' ']'")
   : bi_scope.
 
 Notation "'<<<' α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
@@ -79,7 +79,7 @@ Notation "'<<<' α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
                          (λ y1, .. (λ yn, v%V) .. ))
   )
   (at level 20, E, α, β, v at level 200, y1 binder, yn binder,
-   format "'[hv' '<<<'  α  '>>>'  '/  ' e  @  E  '/' '[    ' '<<<'  ∃  y1  ..  yn ,  β ,  '/' 'RET'  v  '>>>' ']' ']'")
+   format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
   : bi_scope.
 
 Notation "'<<<' α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
@@ -92,7 +92,7 @@ Notation "'<<<' α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
              (tele_app (TT:=TeleO) $ tele_app (TT:=TeleO) v%V)
   )
   (at level 20, E, α, β, v at level 200,
-   format "'[hv' '<<<'  α  '>>>'  '/  ' e  @  E  '/' '[    ' '<<<'  β ,  '/' 'RET'  v  '>>>' ']' ']'")
+   format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β ,  '/' 'RET'  v  ']' '>>>' ']'")
   : bi_scope.
 
 (** Theory *)

@@ -34,9 +34,7 @@ Context (vs_persistent_intro_r : ∀ E1 E2 P Q R,
 Definition fupd (E1 E2 : coPset) (P : uPred M) : uPred M :=
   ∃ R, R ∗ vs E1 E2 R P.
 
-Notation "|={ E1 , E2 }=> Q" := (fupd E1 E2 Q)
-  (at level 99, E1, E2 at level 50, Q at level 200,
-   format "|={ E1 , E2 }=>  Q") : bi_scope.
+Notation "|={ E1 , E2 }=> Q" := (fupd E1 E2 Q) : bi_scope.
 
 Global Instance fupd_ne E1 E2 : NonExpansive (@fupd E1 E2).
 Proof. solve_proper. Qed.

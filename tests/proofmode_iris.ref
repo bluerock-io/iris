@@ -95,8 +95,8 @@
   "Hown1" : na_own t E1
   "Hown2" : na_own t (E2 ∖ ↑N)
   --------------------------------------∗
-  |={⊤}=> (▷ <pers> P ∗ na_own t (E2 ∖ ↑N))
-          ∗ (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
+  |={⊤}=> (▷ <pers> P ∗ na_own t (E2 ∖ ↑N)) ∗
+    (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
   
 1 goal
   
@@ -110,8 +110,8 @@
   P : iProp Σ
   ============================
   ↑N ⊆ E2
-  → na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2
-    ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P
+  → na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2 ={⊤}=∗ 
+    na_own t E1 ∗ na_own t E2 ∗ ▷ P
 1 goal
   
   Σ : gFunctors

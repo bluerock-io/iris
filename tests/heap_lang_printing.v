@@ -27,24 +27,32 @@ Section printing_tests.
        if: "val1" = "val2" then "val" else "val3"  {{ _, True }}.
   Proof.
     iIntros "_". Show.
+    wp_bind (fun1 #()). Show.
   Abort.
 
-  Lemma wp_print_long_expr (fun1 fun2 fun3 : expr) Φ :
+  Lemma wp_print_long_expr (fun1 fun2 fun3 : expr) long_post :
     True -∗ WP let: "val1" := fun1 #() in
        let: "val2" := fun2 "val1" in
        let: "v" := fun3 "v" in
-       if: "v" = "v" then "v" else "v"  {{ Φ }}.
+       if: "v" = "v" then "v" else "v"
+    {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}.
   Proof.
     iIntros "_". Show.
+    wp_bind (fun1 #()). Show.
   Abort.
 
-  Lemma wp_print_long_expr (fun1 fun2 fun3 : expr) Φ E :
-    True -∗ WP let: "val1" := fun1 #() in
+  Lemma wp_print_long_expr (l1 : loc) (fun2 fun3 : expr) long_post N E_long :
+    ↑N ⊆ E_long →
+    inv N True -∗ WP let: "val1" := ! #l1 in
        let: "val2" := fun2 "val1" in
        let: "v" := fun3 "v" in
-       if: "v" = "v" then "v" else "v" @ E {{ Φ }}.
+       if: "v" = "v" then "v" else "v"
+    @ E_long
+    {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}.
   Proof.
-    iIntros "_". Show.
+    iIntros (?) "Hinv". Show.
+    wp_bind (! #l1)%E. Show.
+    iInv "Hinv" as "_". Show.
   Abort.
 
   Lemma texan_triple_long_expr (fun1 fun2 fun3 : expr) :
@@ -54,6 +62,26 @@ Section printing_tests.
        let: "val3" := fun3 "val2" in
        if: "val1" = "val2" then "val" else "val3"
     {{{ (x y : val) (z : Z), RET (x, y, #z); True }}}.
+  Proof. Show. Abort.
+
+  Lemma texan_triple_long_expr_mask (fun1 fun2 fun3 : expr) E_mask_is_long_too :
+    {{{ True }}}
+       let: "val1" := fun1 #() in
+       let: "val2" := fun2 "val1" in
+       let: "val3" := fun3 "val2" in
+       if: "val1" = "val2" then "val" else "val3"
+    @ E_mask_is_long_too
+    {{{ (x y : val) (z : Z), RET (x, y, #z); True }}}.
+  Proof. Show. Abort.
+
+  Lemma texan_triple_long_expr_mask_post (fun1 fun2 fun3 : expr) long_post E_mask_is_long_too :
+    {{{ True }}}
+       let: "val1" := fun1 #() in
+       let: "val2" := fun2 "val1" in
+       let: "val3" := fun3 "val2" in
+       if: "val1" = "val2" then "val" else "val3"
+    @ E_mask_is_long_too
+    {{{ (x y : val) (z : Z), RET (x, y, #z); long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post }}}.
   Proof. Show. Abort.
 
 End printing_tests.

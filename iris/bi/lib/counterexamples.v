@@ -55,8 +55,7 @@ Module savedprop. Section savedprop.
   Implicit Types P : PROP.
 
   Context (bupd : PROP → PROP).
-  Notation "|==> Q" := (bupd Q)
-    (at level 99, Q at level 200, format "|==>  Q") : bi_scope.
+  Notation "|==> Q" := (bupd Q) : bi_scope.
 
   Hypothesis bupd_intro : ∀ P, P ⊢ |==> P.
   Hypothesis bupd_mono : ∀ P Q, (P ⊢ Q) → (|==> P) ⊢ |==> Q.
