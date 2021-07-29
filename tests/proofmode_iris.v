@@ -98,6 +98,7 @@ Section iris_tests.
     iModIntro. iSplit; auto with iFrame.
   Qed.
 
+  Check "test_iInv_2_with_close".
   Lemma test_iInv_2_with_close γ p N P:
     cinv N γ (<pers> P) ∗ cinv_own γ p ={⊤}=∗ cinv_own γ p ∗ ▷ P.
   Proof.
@@ -116,6 +117,7 @@ Section iris_tests.
     iModIntro. iSplit; auto with iFrame.
   Qed.
 
+  Check "test_iInv_4".
   Lemma test_iInv_4 t N E1 E2 P:
     ↑N ⊆ E2 →
     na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2
@@ -126,6 +128,7 @@ Section iris_tests.
     iModIntro. iSplitL "Hown2"; auto with iFrame.
   Qed.
 
+  Check "test_iInv_4_with_close".
   Lemma test_iInv_4_with_close t N E1 E2 P:
     ↑N ⊆ E2 →
     na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2

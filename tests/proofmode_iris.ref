@@ -55,6 +55,8 @@
   "Hown" : cinv_own γ p
   --------------------------------------∗
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> cinv_own γ p ∗ ▷ P)
+"test_iInv_2_with_close"
+     : string
 1 goal
   
   Σ : gFunctors
@@ -73,6 +75,8 @@
   "Hclose" : ▷ <pers> P ={⊤ ∖ ↑N,⊤}=∗ emp
   --------------------------------------∗
   |={⊤ ∖ ↑N,⊤}=> cinv_own γ p ∗ ▷ P
+"test_iInv_4"
+     : string
 1 goal
   
   Σ : gFunctors
@@ -93,6 +97,8 @@
   --------------------------------------∗
   |={⊤}=> (▷ <pers> P ∗ na_own t (E2 ∖ ↑N)) ∗
     (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
+"test_iInv_4_with_close"
+     : string
 1 goal
   
   Σ : gFunctors
