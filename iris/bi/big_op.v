@@ -1543,6 +1543,7 @@ Proof.
     rewrite pure_True // left_id // wand_elim_l //.
 Qed.
 
+Lemma big_sepM_impl_dom_subseteq `{Countable K} {A B}
     (Φ : K → A → PROP) (Ψ : K → B → PROP) (m1 : gmap K A) (m2 : gmap K B) :
   dom (gset _) m2 ⊆ dom _ m1 →
   ([∗ map] k↦x ∈ m1, Φ k x) -∗

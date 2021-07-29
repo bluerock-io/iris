@@ -72,7 +72,7 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Slight change to the `AACC` notation for atomic accessors (which is usually
   only printed, not parsed): added a `,` before `ABORT`, for consistency with `COMM`.
 * Add the lemmas `big_sepM_impl_strong` and `big_sepM_impl_dom_subseteq` that
-  generalize the existing `big_sepM_impl` lemma.
+  generalize the existing `big_sepM_impl` lemma. (by Simon Friis Vindum)
 
 **Changes in `proofmode`:**
 
