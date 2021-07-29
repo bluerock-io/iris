@@ -111,7 +111,7 @@
   P : iProp Σ
   ============================
   ↑N ⊆ E2
-  → na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2 ={⊤}=∗ 
+  → na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2 ={⊤}=∗
     na_own t E1 ∗ na_own t E2 ∗ ▷ P
 1 goal
   

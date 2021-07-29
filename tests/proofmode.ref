@@ -456,8 +456,8 @@ Tactic failure: iFrame: cannot frame Q.
   PPPPPPPPPPPPPPPPP, QQQQQQQQQQQQQQQQQQ : PROP
   ============================
   --------------------------------------∗
-  PPPPPPPPPPPPPPPPP -∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗
-  QQQQQQQQQQQQQQQQQQ
+  PPPPPPPPPPPPPPPPP -∗
+  QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ
 "long_wand_nested"
      : string
 1 goal
@@ -480,8 +480,8 @@ Tactic failure: iFrame: cannot frame Q.
   PPPPPPPPPPPPPPPPP, QQQQQQQQQQQQQQQQQQ : PROP
   ============================
   --------------------------------------∗
-  PPPPPPPPPPPPPPPPP ={E}=∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗
-  QQQQQQQQQQQQQQQQQQ
+  PPPPPPPPPPPPPPPPP ={E}=∗
+  QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ
 "long_fupd_nested"
      : string
 1 goal
