@@ -5,7 +5,6 @@
   ============================
   --------------------------------------∗
   WP let: "f" := λ: "x", "x" in ref ("f" #10) {{ _, True }}
-  
 1 goal
   
   Σ : gFunctors
@@ -17,7 +16,6 @@
      let: "val2" := fun2 "val1" in
      let: "val3" := fun3 "val2" in if: "val1" = "val2" then "val" else "val3"
   {{ _, True }}
-  
 1 goal
   
   Σ : gFunctors
@@ -32,7 +30,6 @@
         let: "val3" := fun3 "val2" in
         if: "val1" = "val2" then "val" else "val3"
      {{ _, True }} }}
-  
 1 goal
   
   Σ : gFunctors
@@ -46,7 +43,6 @@
      let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
   {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
      long_post ∗ long_post }}
-  
 1 goal
   
   Σ : gFunctors
@@ -62,7 +58,6 @@
         let: "v" := fun3 "v" in if: "v" = "v" then "v" else "v"
      {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
         long_post ∗ long_post }} }}
-  
 1 goal
   
   Σ : gFunctors
@@ -82,7 +77,6 @@
   @ E_long
   {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
      long_post ∗ long_post }}
-  
 1 goal
   
   Σ : gFunctors
@@ -105,7 +99,6 @@
      @ E_long
      {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
         long_post ∗ long_post }} }}
-  
 1 goal
   
   Σ : gFunctors
@@ -128,7 +121,6 @@
        @ E_long
        {{ _, long_post ∗ long_post ∗ long_post ∗ long_post ∗ long_post ∗
           long_post ∗ long_post }} }}
-  
 1 goal
   
   Σ : gFunctors

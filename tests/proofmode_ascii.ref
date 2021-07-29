@@ -11,7 +11,6 @@
   "H2" : ▷ <pers> P
   --------------------------------------□
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> ▷ P)
-  
 1 goal
   
   Σ : gFunctors
@@ -27,7 +26,6 @@
   "Hclose" : ▷ <pers> P ={⊤ ∖ ↑N,⊤}=∗ emp
   --------------------------------------∗
   |={⊤ ∖ ↑N,⊤}=> ▷ P
-  
 1 goal
   
   Σ : gFunctors
@@ -45,7 +43,6 @@
   "Hown" : cinv_own γ p
   --------------------------------------∗
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> cinv_own γ p ∗ ▷ P)
-  
 1 goal
   
   Σ : gFunctors
@@ -64,7 +61,6 @@
   "Hclose" : ▷ <pers> P ={⊤ ∖ ↑N,⊤}=∗ emp
   --------------------------------------∗
   |={⊤ ∖ ↑N,⊤}=> cinv_own γ p ∗ ▷ P
-  
 1 goal
   
   Σ : gFunctors
@@ -85,7 +81,6 @@
   --------------------------------------∗
   |={⊤}=> (▷ <pers> P ∗ na_own t (E2 ∖ ↑N)) ∗
     (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
-  
 1 goal
   
   Σ : gFunctors
@@ -106,7 +101,6 @@
   "Hclose" : ▷ <pers> P ∗ na_own t (E2 ∖ ↑N) ={⊤}=∗ na_own t E2
   --------------------------------------∗
   |={⊤}=> na_own t E1 ∗ na_own t E2 ∗ ▷ P
-  
 "test_iInv_12"
      : string
 The command has indeed failed with message:
@@ -130,7 +124,6 @@ Tactic failure: iInv: invariant "H2" not found.
   "HP" : ⎡ ▷ 𝓟 ⎤
   --------------------------------------∗
   |={E ∖ ↑N}=> ⎡ ▷ 𝓟 ⎤ ∗ (|={E}=> emp)
-  
 "test_iInv_with_close"
      : string
 1 goal
@@ -147,7 +140,6 @@ Tactic failure: iInv: invariant "H2" not found.
   "Hclose" : ⎡ ▷ 𝓟 ={E ∖ ↑N,E}=∗ emp ⎤
   --------------------------------------∗
   |={E ∖ ↑N,E}=> emp
-  
 "p1"
      : string
 1 goal

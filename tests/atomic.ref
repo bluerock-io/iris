@@ -12,7 +12,6 @@
   AACC << ∀ (v0 : val) (q : dfrac), l ↦{q} v0, ABORT l ↦ v >>
        @ ⊤ ∖ ∅, ∅ 
        << l ↦{q} v0, COMM Q -∗ Q >>
-  
 "non_laterable"
      : string
 1 goal
@@ -28,7 +27,6 @@
   AACC << ∀ (v : val) (q : dfrac), l ↦{q} v, ABORT ▷ P >>
        @ ⊤ ∖ ∅, ∅ 
        << l ↦{q} v, COMM True >>
-  
 1 goal
   
   Σ : gFunctors
@@ -42,7 +40,6 @@
   AACC << ∀ (v : val) (q : dfrac), l ↦{q} v, ABORT ▷ P >>
        @ ⊤ ∖ ∅, ∅ 
        << l ↦{q} v, COMM True >>
-  
 "printing"
      : string
 1 goal
@@ -62,7 +59,6 @@
   "AU" : AU << ∀ x : val, P x >> @ ⊤ ∖ ∅, ∅ << ∃ y : val, P y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -78,7 +74,6 @@
            << ∃ y : val, P y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -96,7 +91,6 @@
   "AU" : AU << ∀ x : val, l ↦ x >> @ ⊤ ∖ ∅, ∅ << l ↦ x, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -112,7 +106,6 @@
            << l ↦ x, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -130,7 +123,6 @@
   "AU" : AU << l ↦ #() >> @ ⊤ ∖ ∅, ∅ << ∃ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -146,7 +138,6 @@
            << ∃ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -164,7 +155,6 @@
   "AU" : AU << l ↦ #() >> @ ⊤ ∖ ∅, ∅ << l ↦ #(), COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -178,7 +168,6 @@
            << l ↦ #(), COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 "Now come the long pre/post tests"
      : string
 1 goal
@@ -202,7 +191,6 @@
             << ∃ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -224,7 +212,6 @@
             << ∃ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -248,7 +235,6 @@
             l ↦ xx, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -270,7 +256,6 @@
             << l ↦ x, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -294,7 +279,6 @@
             << ∃ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -318,7 +302,6 @@
             << l ↦ #(), COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -342,7 +325,6 @@
             << l ↦ yyyy, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -368,7 +350,6 @@
                l ↦ xx, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
-  
 "Prettification"
      : string
 1 goal
@@ -386,4 +367,3 @@
            ∧ (∀ x0 : val, P x0 ={∅,⊤}=∗ Φ #())
   --------------------------------------∗
   WP ! #0 @ ∅ {{ v, |={∅,⊤}=> Φ v }}
-  

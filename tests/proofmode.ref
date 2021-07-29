@@ -10,7 +10,6 @@
   "H" : □ (P ∨ Q)
   --------------------------------------∗
   Q ∨ P
-  
 1 goal
   
   PROP : bi
@@ -20,7 +19,6 @@
   _ : P
   --------------------------------------□
   Q ∨ P
-  
 "test_iStopProof"
      : string
 1 goal
@@ -33,7 +31,6 @@
   "H2" : Q
   --------------------------------------∗
   Q
-  
 1 goal
   
   PROP : bi
@@ -53,7 +50,6 @@
   _ : Q
   --------------------------------------□
   <affine> (P ∗ Q)
-  
 "test_iDestruct_spatial"
      : string
 1 goal
@@ -64,7 +60,6 @@
   "HQ" : <affine> Q
   --------------------------------------∗
   Q
-  
 "test_iDestruct_spatial_affine"
      : string
 1 goal
@@ -76,7 +71,6 @@
   "HQ" : Q
   --------------------------------------∗
   Q
-  
 "test_iDestruct_exists_not_exists"
      : string
 The command has indeed failed with message:
@@ -93,7 +87,6 @@ Tactic failure: iExistDestruct: cannot destruct P.
   "H" : Φ y ∧ P
   --------------------------------------□
   P
-  
 "test_iDestruct_exists_anonymous"
      : string
 1 goal
@@ -106,7 +99,6 @@ Tactic failure: iExistDestruct: cannot destruct P.
   "HΦ" : ∃ x : nat, Φ x
   --------------------------------------∗
   ∃ x : nat, Φ x
-  
 "test_iIntros_forall_pure"
      : string
 1 goal
@@ -117,7 +109,6 @@ Tactic failure: iExistDestruct: cannot destruct P.
   ============================
   --------------------------------------∗
   Ψ x → Ψ x
-  
 "test_iIntros_pure_names"
      : string
 1 goal
@@ -130,7 +121,6 @@ Tactic failure: iExistDestruct: cannot destruct P.
   ============================
   --------------------------------------∗
   P -∗ P
-  
 The command has indeed failed with message:
 No applicable tactic.
 The command has indeed failed with message:
@@ -170,7 +160,6 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   ============================
   --------------------------------------∗
   ▷^(S n + S m) emp
-  
 "test_specialize_nested_intuitionistic"
      : string
 1 goal
@@ -186,7 +175,6 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   "HR" : R2
   --------------------------------------∗
   R2
-  
 "test_iSimpl_in"
      : string
 1 goal
@@ -197,7 +185,6 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   "H" : ⌜S (S (S x)) = y⌝
   --------------------------------------∗
   ⌜S (S (S x)) = y⌝
-  
 1 goal
   
   PROP : bi
@@ -207,7 +194,6 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   "H2" : ⌜S y = z⌝
   --------------------------------------∗
   ⌜S (S (S x)) = y⌝
-  
 1 goal
   
   PROP : bi
@@ -218,7 +204,6 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   "H2" : ⌜(1 + y)%nat = z⌝
   --------------------------------------∗
   ⌜S (S (S x)) = y⌝
-  
 "test_iSimpl_in4"
      : string
 The command has indeed failed with message:
@@ -232,7 +217,6 @@ Tactic failure: iEval: %: unsupported selection pattern.
   ============================
   --------------------------------------∗
   ▷ emp
-  
 "test_iFrame_later_2"
      : string
 1 goal
@@ -242,7 +226,6 @@ Tactic failure: iEval: %: unsupported selection pattern.
   ============================
   --------------------------------------∗
   ▷ emp
-  
 The command has indeed failed with message:
 Tactic failure: iFrame: cannot frame Q.
 "test_and_sep_affine_bi"
@@ -257,7 +240,6 @@ Tactic failure: iFrame: cannot frame Q.
   _ : Q
   --------------------------------------∗
   □ P
-  
 "test_big_sepL_simpl"
      : string
 1 goal
@@ -272,7 +254,6 @@ Tactic failure: iFrame: cannot frame Q.
   _ : [∗ list] y ∈ (x :: l), <affine> ⌜y = y⌝
   --------------------------------------∗
   P
-  
 1 goal
   
   PROP : bi
@@ -285,7 +266,6 @@ Tactic failure: iFrame: cannot frame Q.
   _ : <affine> ⌜x = x⌝ ∗ ([∗ list] y ∈ l, <affine> ⌜y = y⌝)
   --------------------------------------∗
   P
-  
 "test_big_sepL2_simpl"
      : string
 1 goal
@@ -300,7 +280,6 @@ Tactic failure: iFrame: cannot frame Q.
   _ : [∗ list] y1;y2 ∈ (x1 :: l1);((x2 :: l2) ++ l2), <affine> ⌜y1 = y2⌝
   --------------------------------------∗
   P ∨ ([∗ list] _;_ ∈ (x1 :: l1);(x2 :: l2), True)
-  
 1 goal
   
   PROP : bi
@@ -314,7 +293,6 @@ Tactic failure: iFrame: cannot frame Q.
       ([∗ list] y1;y2 ∈ l1;(l2 ++ l2), <affine> ⌜y1 = y2⌝)
   --------------------------------------∗
   P ∨ True ∗ ([∗ list] _;_ ∈ l1;l2, True)
-  
 "test_big_sepL2_iDestruct"
      : string
 1 goal
@@ -328,7 +306,6 @@ Tactic failure: iFrame: cannot frame Q.
   _ : [∗ list] y1;y2 ∈ l1;l2, Φ y1 y2
   --------------------------------------∗
   <absorb> Φ x1 x2
-  
 "test_reducing_after_iDestruct"
      : string
 1 goal
@@ -338,7 +315,6 @@ Tactic failure: iFrame: cannot frame Q.
   "H" : □ True
   --------------------------------------∗
   True
-  
 "test_reducing_after_iApply"
      : string
 1 goal
@@ -348,7 +324,6 @@ Tactic failure: iFrame: cannot frame Q.
   "H" : emp
   --------------------------------------□
   □ emp
-  
 "test_reducing_after_iApply_late_evar"
      : string
 1 goal
@@ -358,7 +333,6 @@ Tactic failure: iFrame: cannot frame Q.
   "H" : emp
   --------------------------------------□
   □ emp
-  
 "test_wandM"
      : string
 1 goal
@@ -372,7 +346,6 @@ Tactic failure: iFrame: cannot frame Q.
   "HP" : default emp mP
   --------------------------------------∗
   R
-  
 1 goal
   
   PROP : bi
@@ -382,7 +355,6 @@ Tactic failure: iFrame: cannot frame Q.
   "HP" : default emp mP
   --------------------------------------∗
   default emp mP
-  
 1 goal
   
   PROP : bi
@@ -394,7 +366,6 @@ Tactic failure: iFrame: cannot frame Q.
   "HQ" : Q
   --------------------------------------∗
   ▷ P ∗ Q
-  
 "elim_mod_accessor"
      : string
 1 goal
@@ -409,7 +380,6 @@ Tactic failure: iFrame: cannot frame Q.
   "Hacc" : ∃ x : X, α x ∗ (β x ={E2,E1}=∗ default emp (γ x))
   --------------------------------------∗
   |={E2,E1}=> True
-  
 "print_long_line_1"
      : string
 1 goal
@@ -422,7 +392,6 @@ Tactic failure: iFrame: cannot frame Q.
          P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P
   --------------------------------------∗
   True
-  
 1 goal
   
   PROP : bi
@@ -433,7 +402,6 @@ Tactic failure: iFrame: cannot frame Q.
       P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P
   --------------------------------------∗
   True
-  
 "print_long_line_2"
      : string
 1 goal
@@ -446,7 +414,6 @@ Tactic failure: iFrame: cannot frame Q.
          P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P }}
   --------------------------------------∗
   True
-  
 1 goal
   
   PROP : bi
@@ -457,7 +424,6 @@ Tactic failure: iFrame: cannot frame Q.
       P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P }}
   --------------------------------------∗
   True
-  
 "long_impl"
      : string
 1 goal
@@ -469,7 +435,6 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   PPPPPPPPPPPPPPPPP → QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗
   QQQQQQQQQQQQQQQQQQ
-  
 "long_impl_nested"
      : string
 1 goal
@@ -482,7 +447,6 @@ Tactic failure: iFrame: cannot frame Q.
   PPPPPPPPPPPPPPPPP
   → QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ
     → QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ
-  
 "long_wand"
      : string
 1 goal
@@ -494,7 +458,6 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   PPPPPPPPPPPPPPPPP -∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗
   QQQQQQQQQQQQQQQQQQ
-  
 "long_wand_nested"
      : string
 1 goal
@@ -507,7 +470,6 @@ Tactic failure: iFrame: cannot frame Q.
   PPPPPPPPPPPPPPPPP -∗
   QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ -∗
   QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ
-  
 "long_fupd"
      : string
 1 goal
@@ -520,7 +482,6 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   PPPPPPPPPPPPPPPPP ={E}=∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗
   QQQQQQQQQQQQQQQQQQ
-  
 "long_fupd_nested"
      : string
 1 goal
@@ -534,7 +495,6 @@ Tactic failure: iFrame: cannot frame Q.
   PPPPPPPPPPPPPPPPP ={E1,E2}=∗
   QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ={E1,E2}=∗
   QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ
-  
 "iStopProof_not_proofmode"
      : string
 The command has indeed failed with message:
@@ -764,7 +724,6 @@ but has unexpected type nat.
   "HP" : P
   --------------------------------------∗
   P ∗ ⌜φ2⌝
-  
 "test_not_fresh"
      : string
 The command has indeed failed with message:

@@ -11,7 +11,6 @@
   "HΦ" : ∀ w : val, is_list w (reverse xs ++ ys) -∗ Φ w
   --------------------------------------∗
   WP rev hd acc [{ v, Φ v }]
-  
 1 goal
   
   Σ : gFunctors
@@ -31,4 +30,3 @@
        "l" <- ("tmp1", acc);; rev "tmp2" (InjLV #())
      end
   [{ v, Φ v }]
-  

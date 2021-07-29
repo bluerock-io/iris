@@ -16,7 +16,6 @@
   one_shot_inv γ l ∗
   (⌜InjLV #() = InjLV #()⌝
    ∨ (∃ n : Z, ⌜InjLV #() = InjRV #n⌝ ∗ own γ (Shot n)))
-  
 1 goal
   
   Σ : gFunctors
@@ -40,5 +39,4 @@
        | InjR "m" => assert: #m = "m"
        end
     {{ _, True }}
-  
 Closed under the global context

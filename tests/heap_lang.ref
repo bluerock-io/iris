@@ -8,7 +8,6 @@
   ============================
   --------------------------------------∗
   WP let: "x" := ref #1 in "x" <- ! "x" + #1;; ! "x" @ E {{ v, ⌜v = #2⌝ }}
-  
 1 goal
   
   Σ : gFunctors
@@ -19,7 +18,6 @@
   _ : l ↦ #1
   --------------------------------------∗
   WP #l <- #1 + #1;; ! #l @ E {{ v, ⌜v = #2⌝ }}
-  
 "heap_e2_spec"
      : string
 1 goal
@@ -34,7 +32,6 @@
   WP let: "x" := #l in let: "y" := ref #1 in "x" <- ! "x" + #1;; ! "x"
   @ E
   [{ v, ⌜v = #2⌝ }]
-  
 1 goal
   
   Σ : gFunctors
@@ -46,7 +43,6 @@
   _ : l' ↦ #1
   --------------------------------------∗
   WP #l <- #1 + #1;; ! #l @ E [{ v, ⌜v = #2⌝ }]
-  
 "heap_e7_spec"
      : string
 1 goal
@@ -58,7 +54,6 @@
   _ : ▷ l ↦ #0
   --------------------------------------∗
   WP CmpXchg #l #0 #1 {{ _, l ↦ #1 }}
-  
 1 goal
   
   Σ : gFunctors
@@ -68,7 +63,6 @@
   _ : l ↦ #1
   --------------------------------------∗
   |={⊤}=> l ↦ #1
-  
 "wp_load_fail"
      : string
 The command has indeed failed with message:
@@ -105,7 +99,6 @@ Tactic failure: wp_bind: cannot find (! ?e)%E in (Val #()).
   "Hl2" : l ↦{#1 / 2} #0
   --------------------------------------∗
   |={⊤}=> True
-  
 1 goal
   
   Σ : gFunctors
@@ -114,7 +107,6 @@ Tactic failure: wp_bind: cannot find (! ?e)%E in (Val #()).
   ============================
   --------------------------------------∗
   |={⊤}=> True
-  
 "wp_nonclosed_value"
      : string
 The command has indeed failed with message:
@@ -127,7 +119,6 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   ============================
   --------------------------------------∗
   WP "x" {{ _, True }}
-  
 1 goal
   
   Σ : gFunctors
@@ -141,7 +132,6 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   _ : l ↦∗ replicate (Z.to_nat n) #0
   --------------------------------------∗
   |={⊤}=> Φ #l
-  
 "test_array_fraction_destruct"
      : string
 1 goal
@@ -155,7 +145,6 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   "Hl2" : l ↦∗{#1 / 2} vs
   --------------------------------------∗
   l ↦∗{#1 / 2} vs ∗ l ↦∗{#1 / 2} vs
-  
 "test_wp_finish_fupd"
      : string
 1 goal
@@ -166,7 +155,6 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   ============================
   --------------------------------------∗
   |={⊤}=> True
-  
 "test_twp_finish_fupd"
      : string
 1 goal
@@ -177,7 +165,6 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   ============================
   --------------------------------------∗
   |={⊤}=> True
-  
 1 goal
   
   Σ : gFunctors
@@ -191,7 +178,6 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   "HΦ" : ▷ (True -∗ Φ v)
   --------------------------------------∗
   WP ! #l {{ v, Φ v }}
-  
 1 goal
   
   Σ : gFunctors
@@ -205,7 +191,6 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   "HΦ" : True -∗ Φ v
   --------------------------------------∗
   WP ! #l [{ v, Φ v }]
-  
 1 goal
   
   Σ : gFunctors
@@ -228,9 +213,8 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
 
 goal 2 is:
  "H" : P
---------------------------------------∗
-WP #() #() @ E2 {{ _, |={E2,E1}=> True }}
-
+ --------------------------------------∗
+ WP #() #() @ E2 {{ _, |={E2,E1}=> True }}
 "wp_iInv_atomic"
      : string
 2 goals
@@ -246,10 +230,9 @@ WP #() #() @ E2 {{ _, |={E2,E1}=> True }}
 
 goal 2 is:
  "H" : ▷ P
-"Hclose" : ▷ P ={E ∖ ↑N,E}=∗ emp
---------------------------------------∗
-WP #() #() @ E ∖ ↑N {{ _, |={E ∖ ↑N,E}=> True }}
-
+ "Hclose" : ▷ P ={E ∖ ↑N,E}=∗ emp
+ --------------------------------------∗
+ WP #() #() @ E ∖ ↑N {{ _, |={E ∖ ↑N,E}=> True }}
 "wp_iInv_atomic_acc"
      : string
 2 goals
@@ -265,9 +248,8 @@ WP #() #() @ E ∖ ↑N {{ _, |={E ∖ ↑N,E}=> True }}
 
 goal 2 is:
  "H" : ▷ P
---------------------------------------∗
-WP #() #() @ E ∖ ↑N {{ _, |={E ∖ ↑N}=> ▷ P ∗ True }}
-
+ --------------------------------------∗
+ WP #() #() @ E ∖ ↑N {{ _, |={E ∖ ↑N}=> ▷ P ∗ True }}
 "not_cmpxchg"
      : string
 The command has indeed failed with message:
