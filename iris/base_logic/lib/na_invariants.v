@@ -23,7 +23,7 @@ Section defs.
 
   Definition na_inv (p : na_inv_pool_name) (N : namespace) (P : iProp Σ) : iProp Σ :=
     ∃ i, ⌜i ∈ (↑N:coPset)⌝ ∧
-         inv N (P ∗ own p (CoPset ∅, GSet {[i]}) ∨ na_own p {[i]}).
+         inv N (P ∗ own p (ε, GSet {[i]}) ∨ na_own p {[i]}).
 End defs.
 
 Global Instance: Params (@na_inv) 3 := {}.
@@ -80,12 +80,8 @@ Section proofs.
     iMod (own_updateP with "Hempty") as ([m1 m2]) "[Hm Hown]".
     { apply prod_updateP'.
       - apply cmra_updateP_id, (reflexivity (R:=eq)).
-      - apply (gset_disj_alloc_empty_updateP_strong' (λ i, i ∈ (↑N:coPset))).
-        intros Ef. exists (coPpick (↑ N ∖ gset_to_coPset Ef)).
-        rewrite -elem_of_gset_to_coPset comm -elem_of_difference.
-        apply coPpick_elem_of=> Hfin.
-        eapply nclose_infinite, (difference_finite_inv _ _), Hfin.
-        apply gset_to_coPset_finite. }
+      - apply (gset_disj_alloc_empty_updateP_strong' (λ i, i ∈ (↑N:coPset)))=> Ef.
+        apply fresh_inv_name. }
     simpl. iDestruct "Hm" as %(<- & i & -> & ?).
     rewrite /na_inv.
     iMod (inv_alloc N with "[-]"); last (iModIntro; iExists i; eauto).
