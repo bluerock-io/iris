@@ -816,17 +816,41 @@ generates a goal [A_i] for each non-dependent argument [x_i : A_i].
 
 For example, if goal is [IntoEmpValid (∀ x, P x → R1 x ⊢ R2 x) ?Q], then the
 [iIntoEmpValid] tactic generates an evar [?x], a subgoal [P ?x], and unifies
-[?Q] with [R1 ?x -∗ R2 ?x]. *)
-Ltac iIntoEmpValid_go := first
-  [(* Case [φ → ψ] *)
-   notypeclasses refine (into_emp_valid_impl _ _ _ _ _);
-     [(*goal for [φ] *)|iIntoEmpValid_go]
-  |(* Case [∀ x : A, φ] *)
-   notypeclasses refine (into_emp_valid_forall _ _ _ _); iIntoEmpValid_go
-  |(* Case [∀.. x : TT, φ] *)
-   notypeclasses refine (into_emp_valid_tforall _ _ _ _); iIntoEmpValid_go
-  |(* Case [P ⊢ Q], [P ⊣⊢ Q], [⊢ P] *)
-   notypeclasses refine (into_emp_valid_here _ _ _)].
+[?Q] with [R1 ?x -∗ R2 ?x].
+
+The tactic is implemented so as to provide a "fast path" for the arrow, forall
+and tforall cases, gated by syntactic ltac pattern matching on the shape of the
+goal. This is an optimization: the behavior of the tactic is equivalent to the
+code in the last "wildcard" case, but faster on larger goals, where running
+(possibly failing) [notypeclasses refine]s can take a significant amount of
+time.
+*)
+Ltac iIntoEmpValid_go :=
+  lazymatch goal with
+  | |- IntoEmpValid (?φ → ?ψ) _ =>
+    (* Case [φ → ψ] *)
+    (* note: the ltac pattern [_ → _] would not work as it would also match
+       [∀ _, _] *)
+    notypeclasses refine (into_emp_valid_impl _ _ _ _ _);
+      [(*goal for [φ] *)|iIntoEmpValid_go]
+  | |- IntoEmpValid (∀ _, _) _ =>
+    (* Case [∀ x : A, φ] *)
+    notypeclasses refine (into_emp_valid_forall _ _ _ _); iIntoEmpValid_go
+  | |- IntoEmpValid (∀.. _, _) _ =>
+    (* Case [∀.. x : TT, φ] *)
+    notypeclasses refine (into_emp_valid_tforall _ _ _ _); iIntoEmpValid_go
+  | |- _ =>
+    first
+      [(* Case [φ → ψ] *)
+       notypeclasses refine (into_emp_valid_impl _ _ _ _ _);
+         [(*goal for [φ] *)|iIntoEmpValid_go]
+      |(* Case [∀ x : A, φ] *)
+       notypeclasses refine (into_emp_valid_forall _ _ _ _); iIntoEmpValid_go
+      |(* Case [∀.. x : TT, φ] *)
+       notypeclasses refine (into_emp_valid_tforall _ _ _ _); iIntoEmpValid_go
+      |(* Case [P ⊢ Q], [P ⊣⊢ Q], [⊢ P] *)
+       notypeclasses refine (into_emp_valid_here _ _ _) ]
+  end.
 
 Ltac iIntoEmpValid :=
   (* Factor out the base case of the loop to avoid needless backtracking *)
