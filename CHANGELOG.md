@@ -134,6 +134,7 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Remove `wp_frame_wand_l`; add `wp_frame_wand` as more symmetric replacement.
 * Swap the polarity of the mask in logically atomic triples, so that it matches
   regular `WP` masks.
+* Rename `iris_invG` to `iris_invGS`.
 
 **Changes in `heap_lang`:**
 
@@ -163,6 +164,8 @@ s/\b([iI]nv|iris|(gen|inv)_heap|(Gen|Inv)Heap|proph_map|ProphMap|[oO]wnP|[hH]eap
 # iris.proofmode.tactics → iris.proofmode.proofmode
 s/\bproofmode\.tactics\b/proofmode.proofmode/
 s/(From +iris\.proofmode +Require +(Import|Export).*)\btactics\b/\1proofmode/
+# iris_invG → iris_invGS
+s/\biris_invG\b/iris_invGS/g
 EOF
 ```
 
