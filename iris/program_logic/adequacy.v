@@ -219,7 +219,7 @@ Qed.
 (** This simpler form of adequacy requires the [irisGS] instance that you use
 everywhere to syntactically be of the form
 {|
-  iris_invG := ...;
+  iris_invGS := ...;
   state_interp σ _ κs _ := ...;
   fork_post v := ...;
   num_laters_per_step _ := 0;

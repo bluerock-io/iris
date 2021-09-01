@@ -21,13 +21,13 @@ Class ownPGS (Λ : language) (Σ : gFunctors) := OwnPGS {
 }.
 
 Global Instance ownPG_irisGS `{!ownPGS Λ Σ} : irisGS Λ Σ := {
-  iris_invG := ownP_invG;
+  iris_invGS := ownP_invG;
   state_interp σ _ κs _ := own ownP_name (●E σ)%I;
   fork_post _ := True%I;
   num_laters_per_step _ := 0;
   state_interp_mono _ _ _ _ := fupd_intro _ _
 }.
-Global Opaque iris_invG.
+Global Opaque iris_invGS.
 
 Definition ownPΣ (Λ : language) : gFunctors :=
   #[invΣ;

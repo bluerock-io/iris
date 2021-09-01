@@ -8,7 +8,7 @@ From iris.prelude Require Import options.
 Import uPred.
 
 Class irisGS (Λ : language) (Σ : gFunctors) := IrisG {
-  iris_invG :> invGS Σ;
+  iris_invGS :> invGS Σ;
 
   (** The state interpretation is an invariant that should hold in
   between each step of reduction. Here [Λstate] is the global state,
@@ -45,7 +45,7 @@ Class irisGS (Λ : language) (Σ : gFunctors) := IrisG {
   state_interp_mono σ ns κs nt:
     state_interp σ ns κs nt ={∅}=∗ state_interp σ (S ns) κs nt
 }.
-Global Opaque iris_invG.
+Global Opaque iris_invGS.
 
 Definition wp_pre `{!irisGS Λ Σ} (s : stuckness)
     (wp : coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ) :

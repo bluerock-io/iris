@@ -11,14 +11,14 @@ From iris.heap_lang Require Import tactics notation.
 From iris.prelude Require Import options.
 
 Class heapGS Σ := HeapGS {
-  heapG_invG : invGS Σ;
-  heapG_gen_heapG :> gen_heapGS loc (option val) Σ;
-  heapG_inv_heapG :> inv_heapGS loc (option val) Σ;
-  heapG_proph_mapG :> proph_mapGS proph_id (val * val) Σ;
+  heapGS_invGS : invGS Σ;
+  heapGS_gen_heapGS :> gen_heapGS loc (option val) Σ;
+  heapGS_inv_heapGS :> inv_heapGS loc (option val) Σ;
+  heapGS_proph_mapGS :> proph_mapGS proph_id (val * val) Σ;
 }.
 
-Global Instance heapG_irisGS `{!heapGS Σ} : irisGS heap_lang Σ := {
-  iris_invG := heapG_invG;
+Global Instance heapGS_irisGS `{!heapGS Σ} : irisGS heap_lang Σ := {
+  iris_invGS := heapGS_invGS;
   state_interp σ _ κs _ :=
     (gen_heap_interp σ.(heap) ∗ proph_map_interp κs σ.(used_proph_id))%I;
   fork_post _ := True%I;
