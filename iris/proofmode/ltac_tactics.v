@@ -2312,9 +2312,12 @@ Tactic Notation "iInductionCore" tactic3(tac) "as" constr(IH) :=
   let rec fix_ihs rev_tac :=
     lazymatch goal with
     | H : context [envs_entails _ _] |- _ =>
-       eapply (tac_revert_ih _ _ _ H _);
-         [pm_reflexivity
-          || fail "iInduction: spatial context not empty, this should not happen"
+       notypeclasses refine (tac_revert_ih _ _ _ H _ _ _);
+         [iSolveTC ||
+          let φ := match goal with |- IntoIH ?φ _ _ => φ end in
+          fail "iInduction: cannot import IH" φ "into proof mode context"
+         |pm_reflexivity ||
+          fail "iInduction: spatial context not empty, this should not happen"
          |clear H];
        fix_ihs ltac:(fun j =>
          let IH' := eval vm_compute in
