@@ -589,6 +589,12 @@ Tactic failure: iSpecialize: "H" not found.
      : string
 The command has indeed failed with message:
 Tactic failure: iSpecialize: "H" not found.
+"iSpecialize_autoframe_fail"
+     : string
+The command has indeed failed with message:
+Tactic failure: iSpecialize: premise cannot be solved by framing.
+The command has indeed failed with message:
+Tactic failure: iSpecialize: premise cannot be solved by framing.
 "iExact_fail"
      : string
 The command has indeed failed with message:

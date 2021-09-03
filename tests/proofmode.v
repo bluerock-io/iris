@@ -1305,6 +1305,14 @@ Proof.
   iIntros "HW HP". Fail iSpecialize ("HW" with "H").
 Abort.
 
+Check "iSpecialize_autoframe_fail".
+Lemma iSpecialize_autoframe_fail P Q : (P -∗ Q) -∗ Q.
+Proof.
+  iIntros "H".
+  Fail iSpecialize ("H" with "[$]").
+  Fail iApply ("H" with "[$]").
+Abort.
+
 Check "iExact_fail".
 Lemma iExact_fail P Q :
   <affine> P -∗ Q -∗ <affine> P.
