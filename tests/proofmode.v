@@ -1313,6 +1313,14 @@ Proof.
   Fail iApply ("H" with "[$]").
 Abort.
 
+Check "iSpecialize_autoframe_fail2".
+Lemma iSpecialize_autoframe_fail2 P Q R : (P -∗ Q -∗ R) -∗ P -∗ R.
+Proof.
+  iIntros "H HP".
+  Fail iSpecialize ("H" with "[$] [$]").
+  Fail iApply ("H" with "[$] [$]").
+Abort.
+
 Check "iExact_fail".
 Lemma iExact_fail P Q :
   <affine> P -∗ Q -∗ <affine> P.
