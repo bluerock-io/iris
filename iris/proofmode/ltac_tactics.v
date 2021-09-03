@@ -1007,7 +1007,7 @@ Ltac iSpecializePat_go H1 pats :=
             [notypeclasses refine (tac_unlock_emp _ _ _)
             |notypeclasses refine (tac_unlock_True _ _ _)
             |iFrame "∗ #"; notypeclasses refine (tac_unlock _ _ _)
-            |fail "iSpecialize: premise cannot be solved by framing"]
+            |fail 1 "iSpecialize: premise cannot be solved by framing"]
          |exact eq_refl]; iIntro H1; iSpecializePat_go H1 pats
     end.
 
