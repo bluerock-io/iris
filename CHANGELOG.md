@@ -68,7 +68,8 @@ Coq 8.11 is no longer supported in this version of Iris.
   by combining the embeddings of `PROP1` into `PROP2` and `PROP2` into `PROP3`.
   This construct is *not* declared as an instance to avoid TC search divergence.
   (by Hai Dang, BedRock Systems)
-* Improve notation printing around `WP`, Texan triples, and logically atomic triples.
+* Improve notation printing around magic wands, view shifts, `WP`, Texan
+  triples, and logically atomic triples.
 * Slight change to the `AACC` notation for atomic accessors (which is usually
   only printed, not parsed): added a `,` before `ABORT`, for consistency with `COMM`.
 * Add the lemmas `big_sepM_impl_strong` and `big_sepM_impl_dom_subseteq` that
