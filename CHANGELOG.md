@@ -96,6 +96,9 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Rename the main entry point module for the proofmode from
   `iris.proofmode.tactics` to `iris.proofmode.proofmode`. Under normal
   circumstances, this should be the only proofmode file you need to import.
+* Improve performance of the `iIntoEmpValid` tactic used by `iPoseProof`,
+  especially in the case of large goals and lemmas with many forall quantifiers.
+  (by Armaël Guéneau)
 
 **Changes in `bi`:**
 
