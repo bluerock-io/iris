@@ -92,6 +92,10 @@ def build(args):
 
 def time(args):
     # Make sure only 'iris' variables are set.
+    # One could imagine generalizing to "either Iris or std++", but then if the
+    # ad-hoc timing jobs honor STDPP_REV, how do we make it so that particular
+    # deterministic std++ versions are used for Iris timing? This does not
+    # currently seem worth the effort / hacks.
     for project in BUILD_BRANCHES.keys():
         if project != 'iris':
             print("'time' command only supports Iris branches")
