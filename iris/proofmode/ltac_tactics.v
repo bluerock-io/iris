@@ -1454,6 +1454,24 @@ Tactic Notation "iModCore" constr(H) :=
 
 (** * Basic destruct tactic *)
 
+(* Two helper tactics to compute an identifier for the hypothesis corresponding
+   to the intro-pattern [pat], when trying to avoid extra renamings. These
+   mainly look whether the pattern is a name, and use that name in that case.
+   Otherwise, [ident_for_pat] generates a fresh name (a safe option), and
+   [ident_for_pat_default] uses the [default] name that it was provided.
+*)
+Local Ltac ident_for_pat pat :=
+  lazymatch pat with
+  | IIdent ?x => x
+  | _ => let x := iFresh in x
+  end.
+
+Local Ltac ident_for_pat_default pat default :=
+  lazymatch pat with
+  | IIdent ?x => x
+  | _ => default
+  end.
+
 (** [pat0] is the unparsed pattern, and is only used in error messages *)
 Local Ltac iDestructHypGo Hz pat0 pat :=
   lazymatch pat with
@@ -1464,36 +1482,59 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
      end
   | IDrop => iClearHyp Hz
   | IFrame => iFrameHyp Hz
+  | IIdent Hz => idtac
   | IIdent ?y => iRename Hz into y
   | IList [[]] => iExFalso; iExact Hz
 
   (* conjunctive patterns like [H1 H2] *)
   | IList [[?pat1; IDrop]] =>
-     iAndDestructChoice Hz as Left Hz;
-     iDestructHypGo Hz pat0 pat1
+     let x := ident_for_pat_default pat1 Hz in
+     iAndDestructChoice Hz as Left x;
+     iDestructHypGo x pat0 pat1
   | IList [[IDrop; ?pat2]] =>
-     iAndDestructChoice Hz as Right Hz;
-     iDestructHypGo Hz pat0 pat2
+     let x := ident_for_pat_default pat2 Hz in
+     iAndDestructChoice Hz as Right x;
+     iDestructHypGo x pat0 pat2
   (* [% ...] is always interpreted as an existential; there are [IntoExist]
   instances in place to handle conjunctions with a pure left-hand side this way
   as well. *)
   | IList [[IPure IGallinaAnon; ?pat2]] =>
-     iExistDestruct Hz as ? Hz; iDestructHypGo Hz pat0 pat2
+     let x := ident_for_pat_default pat2 Hz in
+     iExistDestruct Hz as ? x; iDestructHypGo x pat0 pat2
   | IList [[IPure (IGallinaNamed ?s); ?pat2]] =>
      let x := fresh in
-     iExistDestruct Hz as x Hz;
+     let y := ident_for_pat_default pat2 Hz in
+     iExistDestruct Hz as x y;
      rename_by_string x s;
-     iDestructHypGo Hz pat0 pat2
+     iDestructHypGo y pat0 pat2
   | IList [[?pat1; ?pat2]] =>
-     let Hy := iFresh in iAndDestruct Hz as Hz Hy;
-     iDestructHypGo Hz pat0 pat1; iDestructHypGo Hy pat0 pat2
+     (* We have to take care of not using the same name for the two hypotheses.
+        Furthermore, we can only reuse the name [Hz] for the first hypothesis,
+        on which we recurse first.
+
+        One tricky case is iDestruct "H" as "[? H]": here, we cannot reuse the
+        name "H" for the first hypothesis, as it would clash with the chosen
+        name for the second one. Hence, we need to compute the second name
+        first, and check it against [Hz] to know if it can be reused.
+      *)
+     let x2 := ident_for_pat pat2 in
+     let x1 :=
+       lazymatch x2 with
+       | Hz => ident_for_pat pat1
+       | _ => ident_for_pat_default pat1 Hz
+       end
+     in
+     iAndDestruct Hz as x1 x2;
+     iDestructHypGo x1 pat0 pat1; iDestructHypGo x2 pat0 pat2
   | IList [_ :: _ :: _] => fail "iDestruct:" pat0 "has too many conjuncts"
   | IList [[_]] => fail "iDestruct:" pat0 "has just a single conjunct"
 
   (* disjunctive patterns like [H1|H2] *)
   | IList [[?pat1];[?pat2]] =>
-     iOrDestruct Hz as Hz Hz;
-     [iDestructHypGo Hz pat0 pat1|iDestructHypGo Hz pat0 pat2]
+     let x1 := ident_for_pat_default pat1 Hz in
+     let x2 := ident_for_pat_default pat2 Hz in
+     iOrDestruct Hz as x1 x2;
+     [iDestructHypGo x1 pat0 pat1|iDestructHypGo x2 pat0 pat2]
   (* this matches a list of three or more disjunctions [H1|H2|H3] *)
   | IList (_ :: _ :: _ :: _) => fail "iDestruct:" pat0 "has too many disjuncts"
   (* the above patterns don't match [H1 H2|H3] *)
@@ -1506,9 +1547,12 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
      rename_by_string x s
   | IRewrite Right => iPure Hz as ->
   | IRewrite Left => iPure Hz as <-
-  | IIntuitionistic ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat0 pat
-  | ISpatial ?pat => iSpatial Hz; iDestructHypGo Hz pat0 pat
-  | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat0 pat
+  | IIntuitionistic ?pat =>
+    iIntuitionistic Hz; iDestructHypGo Hz pat0 pat
+  | ISpatial ?pat =>
+    iSpatial Hz; iDestructHypGo Hz pat0 pat
+  | IModalElim ?pat =>
+    iModCore Hz; iDestructHypGo Hz pat0 pat
   | _ => fail "iDestruct:" pat0 "is not supported due to" pat
   end.
 Local Ltac iDestructHypFindPat Hgo pat found pats :=
