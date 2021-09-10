@@ -174,11 +174,11 @@ Lemma tac_pure_revert Δ φ Q : envs_entails Δ (⌜φ⌝ → Q) → (φ → env
 Proof. rewrite envs_entails_eq. intros HΔ ?. by rewrite HΔ pure_True // left_id. Qed.
 
 (** * Intuitionistic *)
-Lemma tac_intuitionistic Δ i p P P' Q :
+Lemma tac_intuitionistic Δ i j p P P' Q :
   envs_lookup i Δ = Some (p, P) →
   IntoPersistent p P P' →
   (if p then TCTrue else TCOr (Affine P) (Absorbing Q)) →
-  match envs_replace i p true (Esnoc Enil i P') Δ with
+  match envs_replace i p true (Esnoc Enil j P') Δ with
   | None => False
   | Some Δ' => envs_entails Δ' Q
   end →
@@ -196,10 +196,10 @@ Proof.
         absorbingly_sep_l wand_elim_r HQ.
 Qed.
 
-Lemma tac_spatial Δ i p P P' Q :
+Lemma tac_spatial Δ i j p P P' Q :
   envs_lookup i Δ = Some (p, P) →
   (if p then FromAffinely P' P else TCEq P' P) →
-  match envs_replace i p false (Esnoc Enil i P') Δ with
+  match envs_replace i p false (Esnoc Enil j P') Δ with
   | None => False
   | Some Δ' => envs_entails Δ' Q
   end →
@@ -748,11 +748,11 @@ Proof.
 Qed.
 
 (** * Modalities *)
-Lemma tac_modal_elim Δ i p p' φ P' P Q Q' :
+Lemma tac_modal_elim Δ i j p p' φ P' P Q Q' :
   envs_lookup i Δ = Some (p, P) →
   ElimModal φ p p' P P' Q Q' →
   φ →
-  match envs_replace i p p' (Esnoc Enil i P') Δ with
+  match envs_replace i p p' (Esnoc Enil j P') Δ with
   | None => False
   | Some Δ' => envs_entails Δ' Q'
   end →
