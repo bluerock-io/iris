@@ -98,15 +98,10 @@ Section sep_list.
     ([∗ list] k↦y ∈ l ++ [x], Φ k y) ⊣⊢ ([∗ list] k↦y ∈ l, Φ k y) ∗ Φ (length l) x.
   Proof. by rewrite big_opL_snoc. Qed.
 
-  Lemma big_sepL_take_drop Φ l n:
+  Lemma big_sepL_take_drop Φ l n :
     ([∗ list] k ↦ x ∈ l, Φ k x) ⊣⊢
     ([∗ list] k ↦ x ∈ take n l, Φ k x) ∗ ([∗ list] k ↦ x ∈ drop n l, Φ (n + k) x).
-  Proof.
-    rewrite -{1}(take_drop n l) big_sepL_app take_length.
-    destruct (decide (length l ≤ n)).
-    - rewrite drop_ge //=.
-    - rewrite Nat.min_l //=; lia.
-  Qed.
+  Proof. by rewrite big_opL_take_drop. Qed.
 
   Lemma big_sepL_submseteq (Φ : A → PROP) `{!∀ x, Affine (Φ x)} l1 l2 :
     l1 ⊆+ l2 → ([∗ list] y ∈ l2, Φ y) ⊢ [∗ list] y ∈ l1, Φ y.

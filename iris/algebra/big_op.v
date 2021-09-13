@@ -104,6 +104,16 @@ Section list.
   Lemma big_opL_unit l : ([^o list] k↦y ∈ l, monoid_unit) ≡ (monoid_unit : M).
   Proof. induction l; rewrite /= ?left_id //. Qed.
 
+  Lemma big_opL_take_drop Φ l n :
+    ([^o list] k ↦ x ∈ l, Φ k x) ≡
+    ([^o list] k ↦ x ∈ take n l, Φ k x) `o` ([^o list] k ↦ x ∈ drop n l, Φ (n + k) x).
+  Proof.
+    rewrite -{1}(take_drop n l) big_opL_app take_length.
+    destruct (decide (length l ≤ n)).
+    - rewrite drop_ge //=.
+    - rewrite Nat.min_l //=; lia.
+  Qed.
+
   Lemma big_opL_gen_proper_2 {B} (R : relation M) f (g : nat → B → M)
         l1 (l2 : list B) :
     R monoid_unit monoid_unit →
