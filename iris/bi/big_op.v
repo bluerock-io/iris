@@ -179,6 +179,12 @@ Section sep_list.
     ⊣⊢ ([∗ list] k↦x ∈ l, Φ k x) ∗ ([∗ list] k↦x ∈ l, Ψ k x).
   Proof. by rewrite big_opL_op. Qed.
 
+  Lemma big_sepL_sep_2 Φ Ψ l :
+    ([∗ list] k↦x ∈ l, Φ k x) -∗
+    ([∗ list] k↦x ∈ l, Ψ k x) -∗
+    ([∗ list] k↦x ∈ l, Φ k x ∗ Ψ k x).
+  Proof. apply wand_intro_r. rewrite big_sepL_sep //. Qed.
+
   Lemma big_sepL_and Φ Ψ l :
     ([∗ list] k↦x ∈ l, Φ k x ∧ Ψ k x)
     ⊢ ([∗ list] k↦x ∈ l, Φ k x) ∧ ([∗ list] k↦x ∈ l, Ψ k x).
@@ -638,6 +644,12 @@ Section sep_list2.
     rewrite -assoc (assoc _ _ (<affine> _)%I) -!persistent_and_affinely_sep_l.
     by rewrite affinely_and_r persistent_and_affinely_sep_l idemp.
   Qed.
+
+  Lemma big_sepL2_sep_2 Φ Ψ l1 l2 :
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y1 y2).
+  Proof. apply wand_intro_r. rewrite big_sepL2_sep //. Qed.
 
   Lemma big_sepL2_and Φ Ψ l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∧ Ψ k y1 y2)
@@ -1338,6 +1350,12 @@ Section sep_map.
     ([∗ map] k↦x ∈ m, Φ k x ∗ Ψ k x)
     ⊣⊢ ([∗ map] k↦x ∈ m, Φ k x) ∗ ([∗ map] k↦x ∈ m, Ψ k x).
   Proof. apply big_opM_op. Qed.
+
+  Lemma big_sepM_sep_2 Φ Ψ m :
+    ([∗ map] k↦x ∈ m, Φ k x) -∗
+    ([∗ map] k↦x ∈ m, Ψ k x) -∗
+    ([∗ map] k↦x ∈ m, Φ k x ∗ Ψ k x).
+  Proof. apply wand_intro_r. rewrite big_sepM_sep //. Qed.
 
   Lemma big_sepM_and Φ Ψ m :
     ([∗ map] k↦x ∈ m, Φ k x ∧ Ψ k x)
@@ -2070,6 +2088,12 @@ Section map2.
     apply sep_proper=>//. apply big_sepM_sep.
   Qed.
 
+  Lemma big_sepM2_sep_2 Φ Ψ m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) -∗
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2) -∗
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2 ∗ Ψ k y1 y2).
+  Proof. apply wand_intro_r. rewrite big_sepM2_sep //. Qed.
+
   Lemma big_sepM2_and Φ Ψ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2 ∧ Ψ k y1 y2)
     ⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ∧ ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2).
@@ -2474,6 +2498,12 @@ Section gset.
     ([∗ set] y ∈ X, Φ y ∗ Ψ y) ⊣⊢ ([∗ set] y ∈ X, Φ y) ∗ ([∗ set] y ∈ X, Ψ y).
   Proof. apply big_opS_op. Qed.
 
+  Lemma big_sepS_sep_2 Φ Ψ X :
+    ([∗ set] y ∈ X, Φ y) -∗
+    ([∗ set] y ∈ X, Ψ y) -∗
+    ([∗ set] y ∈ X, Φ y ∗ Ψ y).
+  Proof. apply wand_intro_r. rewrite big_sepS_sep //. Qed.
+
   Lemma big_sepS_and Φ Ψ X :
     ([∗ set] y ∈ X, Φ y ∧ Ψ y) ⊢ ([∗ set] y ∈ X, Φ y) ∧ ([∗ set] y ∈ X, Ψ y).
   Proof. auto using and_intro, big_sepS_mono, and_elim_l, and_elim_r. Qed.
@@ -2691,6 +2721,12 @@ Section gmultiset.
   Lemma big_sepMS_sep Φ Ψ X :
     ([∗ mset] y ∈ X, Φ y ∗ Ψ y) ⊣⊢ ([∗ mset] y ∈ X, Φ y) ∗ ([∗ mset] y ∈ X, Ψ y).
   Proof. apply big_opMS_op. Qed.
+
+  Lemma big_sepMS_sep_2 Φ Ψ X :
+    ([∗ mset] y ∈ X, Φ y) -∗
+    ([∗ mset] y ∈ X, Ψ y) -∗
+    ([∗ mset] y ∈ X, Φ y ∗ Ψ y).
+  Proof. apply wand_intro_r. rewrite big_sepMS_sep //. Qed.
 
   Lemma big_sepMS_and Φ Ψ X :
     ([∗ mset] y ∈ X, Φ y ∧ Ψ y) ⊢ ([∗ mset] y ∈ X, Φ y) ∧ ([∗ mset] y ∈ X, Ψ y).
