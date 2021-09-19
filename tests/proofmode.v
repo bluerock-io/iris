@@ -1633,4 +1633,21 @@ Proof.
   iFrame select _.
 Qed.
 
+Lemma test_iDestruct_split_reuse_name P Q :
+  P ∗ Q -∗ P ∗ Q.
+Proof.
+  iIntros "H".
+  iDestruct "H" as "[? H]". Undo.
+  iDestruct "H" as "[H ?]". Undo.
+  auto.
+Qed.
+
+Lemma test_iDestruct_split_reuse_name_2 P Q R :
+  (P ∗ Q) ∗ R -∗ (P ∗ Q) ∗ R.
+Proof.
+  iIntros "H".
+  iDestruct "H" as "[[H H'] ?]". Undo.
+  auto.
+Qed.
+
 End tactic_tests.
