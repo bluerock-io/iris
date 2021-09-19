@@ -99,6 +99,9 @@ Coq 8.11 is no longer supported in this version of Iris.
 * Improve performance of the `iIntoEmpValid` tactic used by `iPoseProof`,
   especially in the case of large goals and lemmas with many forall quantifiers.
   (by Armaël Guéneau)
+* Improve performance of the `iDestruct` tactic, by using user-provided names
+  more eagerly in order to avoid later calls to `iRename`.
+  (by Armaël Guéneau)
 
 **Changes in `bi`:**
 
