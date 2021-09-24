@@ -98,7 +98,7 @@ Notation savedPredG Σ A := (savedAnythingG Σ (A -d> ▶ ∙)).
 Notation savedPredΣ A := (savedAnythingΣ (A -d> ▶ ∙)).
 
 Definition saved_pred_own `{!savedPredG Σ A} (γ : gname) (Φ : A → iProp Σ) :=
-  saved_anything_own (F := A -d> ▶ ∙) γ (OfeMor Next ∘ Φ).
+  saved_anything_own (F := A -d> ▶ ∙) γ (Next ∘ Φ).
 
 Global Instance saved_pred_own_contractive `{!savedPredG Σ A} γ :
   Contractive (saved_pred_own γ : (A -d> iPropO Σ) → iProp Σ).
