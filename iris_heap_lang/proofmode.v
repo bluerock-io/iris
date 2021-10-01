@@ -473,7 +473,8 @@ Lemma tac_twp_cmpxchg_fail Δ s E i K l q v v1 v2 Φ :
 Proof.
   rewrite envs_entails_eq. intros. rewrite -twp_bind.
   eapply wand_apply; first exact: twp_cmpxchg_fail.
-  rewrite envs_lookup_split //=. simpl. by do 2 f_equiv.
+  (* [//] solves some evars and enables further simplification. *)
+  rewrite envs_lookup_split /= // /=. by do 2 f_equiv.
 Qed.
 
 Lemma tac_wp_cmpxchg_suc Δ Δ' s E i K l v v1 v2 Φ :
