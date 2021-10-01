@@ -14,9 +14,10 @@ Global Arguments AsFractional {_} _%I _%I _%Qp.
 
 Global Arguments fractional {_ _ _} _ _.
 
-Global Hint Mode AsFractional - + - - : typeclass_instances.
+Global Hint Mode AsFractional - ! - - : typeclass_instances.
 (* To make [as_fractional_fractional] a useful instance, we have to
-allow [q] to be an evar. *)
+allow [q] to be an evar. The head of [Φ] will always be a λ so ! is
+not a useful mode there. *)
 Global Hint Mode AsFractional - - + - : typeclass_instances.
 
 Section fractional.
