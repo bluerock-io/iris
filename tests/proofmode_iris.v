@@ -243,6 +243,13 @@ Section iris_tests.
     iExact "H".
   Qed.
 
+  Check "test_iDestruct_mod_not_fresh".
+  Lemma test_iDestruct_mod_not_fresh P Q :
+    P -∗ (|={⊤}=> Q) -∗ (|={⊤}=> False).
+  Proof.
+    iIntros "H H'". Fail iDestruct "H'" as ">H".
+  Abort.
+
 End iris_tests.
 
 Section monpred_tests.

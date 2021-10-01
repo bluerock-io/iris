@@ -1650,4 +1650,18 @@ Proof.
   auto.
 Qed.
 
+Check "test_iDestruct_intuitionistic_not_fresh".
+Lemma test_iDestruct_intuitionistic_not_fresh P Q :
+  P -∗ □ Q -∗ False.
+Proof.
+  iIntros "H H'". Fail iDestruct "H'" as "#H".
+Abort.
+
+Check "test_iDestruct_spatial_not_fresh".
+Lemma test_iDestruct_spatial_not_fresh P Q :
+  P -∗ Q -∗ False.
+Proof.
+  iIntros "H H'". Fail iDestruct "H'" as "-#H".
+Abort.
+
 End tactic_tests.
