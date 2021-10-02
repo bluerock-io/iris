@@ -253,15 +253,17 @@ End contractive.
 
 Ltac f_contractive :=
   match goal with
-  | |- ?f _ ≡{_}≡ ?f _ => simple apply (_ : Proper (dist_later _ ==> _) f)
-  | |- ?f _ _ ≡{_}≡ ?f _ _ => simple apply (_ : Proper (dist_later _ ==> _ ==> _) f)
-  | |- ?f _ _ ≡{_}≡ ?f _ _ => simple apply (_ : Proper (_ ==> dist_later _ ==> _) f)
+  | |- ?f _ ≡{_}≡ ?f _ => simple apply (_ : Proper (dist_later _ ==> dist _) f)
+  | |- ?f _ _ ≡{_}≡ ?f _ _ => simple apply (_ : Proper (dist_later _ ==> _ ==> dist _) f)
+  | |- ?f _ _ ≡{_}≡ ?f _ _ => simple apply (_ : Proper (_ ==> dist_later _ ==> dist _) f)
   end;
   try match goal with
   | |- @dist_later ?A _ ?n ?x ?y =>
          destruct n as [|n]; [exact I|change (@dist A _ n x y)]
   end;
-  try simple apply reflexivity.
+  (* Only try reflexivity if the terms are syntactically equal. This avoids
+     very expensive failing unification. *)
+  try match goal with  |- _ ?x ?x => simple apply reflexivity end.
 
 Ltac solve_contractive :=
   solve_proper_core ltac:(fun _ => first [f_contractive | f_equiv]).
