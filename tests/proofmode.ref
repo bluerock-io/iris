@@ -752,3 +752,11 @@ Tactic failure: iPure: (φ n) not pure.
      : string
 The command has indeed failed with message:
 Tactic failure: iIntuitionistic: Q not persistent.
+"test_iDestruct_intuitionistic_not_fresh"
+     : string
+The command has indeed failed with message:
+Tactic failure: iIntuitionistic: "H" not fresh.
+"test_iDestruct_spatial_not_fresh"
+     : string
+The command has indeed failed with message:
+Tactic failure: iSpatial: "H" not fresh.

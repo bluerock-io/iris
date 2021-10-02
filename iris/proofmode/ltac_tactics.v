@@ -324,8 +324,8 @@ Tactic Notation "iAssumption" :=
 Tactic Notation "iExFalso" := apply tac_ex_falso.
 
 (** * Making hypotheses intuitionistic or pure *)
-Local Tactic Notation "iIntuitionistic" constr(H) :=
-  eapply tac_intuitionistic with H _ _ _; (* (i:=H) *)
+Local Tactic Notation "iIntuitionistic" constr(H) "as" constr(H') :=
+  eapply tac_intuitionistic with H H' _ _ _; (* (i:=H) (j:=H') *)
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iIntuitionistic:" H "not found"
@@ -335,15 +335,27 @@ Local Tactic Notation "iIntuitionistic" constr(H) :=
     |pm_reduce; iSolveTC ||
      let P := match goal with |- TCOr (Affine ?P) _ => P end in
      fail "iIntuitionistic:" P "not affine and the goal not absorbing"
-    |pm_reduce].
+    |pm_reduce;
+     lazymatch goal with
+     | |- False =>
+       let H' := pretty_ident H' in
+       fail "iIntuitionistic:" H' "not fresh"
+     | _ => idtac (* subgoal *)
+     end].
 
-Local Tactic Notation "iSpatial" constr(H) :=
-  eapply tac_spatial with H _ _ _;
+Local Tactic Notation "iSpatial" constr(H) "as" constr(H') :=
+  eapply tac_spatial with H H' _ _ _;
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iSpatial:" H "not found"
     |pm_reduce; iSolveTC
-    |pm_reduce].
+    |pm_reduce;
+     lazymatch goal with
+     | |- False =>
+       let H' := pretty_ident H' in
+       fail "iSpatial:" H' "not fresh"
+     | _ => idtac (* subgoal *)
+     end].
 
 Tactic Notation "iPure" constr(H) "as" simple_intropattern(pat) :=
   eapply tac_pure with H _ _ _; (* (i:=H1) *)
@@ -1442,17 +1454,46 @@ Tactic Notation "iNext" open_constr(n) := iModIntro (▷^n _)%I.
 Tactic Notation "iNext" := iModIntro (▷^_ _)%I.
 
 (** * Update modality *)
-Tactic Notation "iModCore" constr(H) :=
-  eapply tac_modal_elim with H _ _ _ _ _ _;
+Tactic Notation "iModCore" constr(H) "as" constr(H') :=
+  eapply tac_modal_elim with H H' _ _ _ _ _ _;
     [pm_reflexivity || fail "iMod:" H "not found"
     |iSolveTC ||
      let P := match goal with |- ElimModal _ _ _ ?P _ _ _ => P end in
      let Q := match goal with |- ElimModal _ _ _ _ _ ?Q _ => Q end in
      fail "iMod: cannot eliminate modality" P "in" Q
     |iSolveSideCondition
-    |pm_reduce; pm_prettify(* subgoal *)].
+    |pm_reduce;
+     lazymatch goal with
+     | |- False =>
+       let H' := pretty_ident H' in
+       fail "iMod:" H' "not fresh"
+     | _ => pm_prettify(* subgoal *)
+     end].
 
 (** * Basic destruct tactic *)
+
+(* Two helper tactics to compute an identifier for the hypothesis corresponding
+   to the intro-pattern [pat], when trying to avoid extra renamings. These
+   mainly look whether the pattern is a name, and use that name in that case.
+   Otherwise, [ident_for_pat] generates a fresh name (a safe option), and
+   [ident_for_pat_default] uses the [default] name that it was provided if
+   it is an anonymous name.
+*)
+Local Ltac ident_for_pat pat :=
+  lazymatch pat with
+  | IIdent ?x => x
+  | _ => let x := iFresh in x
+  end.
+
+Local Ltac ident_for_pat_default pat default :=
+  lazymatch pat with
+  | IIdent ?x => x
+  | _ =>
+    lazymatch default with
+    | IAnon _ => default
+    | _ => let x := iFresh in x
+    end
+  end.
 
 (** [pat0] is the unparsed pattern, and is only used in error messages *)
 Local Ltac iDestructHypGo Hz pat0 pat :=
@@ -1464,36 +1505,48 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
      end
   | IDrop => iClearHyp Hz
   | IFrame => iFrameHyp Hz
+  | IIdent Hz => idtac
   | IIdent ?y => iRename Hz into y
   | IList [[]] => iExFalso; iExact Hz
 
   (* conjunctive patterns like [H1 H2] *)
   | IList [[?pat1; IDrop]] =>
-     iAndDestructChoice Hz as Left Hz;
-     iDestructHypGo Hz pat0 pat1
+     let x := ident_for_pat_default pat1 Hz in
+     iAndDestructChoice Hz as Left x;
+     iDestructHypGo x pat0 pat1
   | IList [[IDrop; ?pat2]] =>
-     iAndDestructChoice Hz as Right Hz;
-     iDestructHypGo Hz pat0 pat2
+     let x := ident_for_pat_default pat2 Hz in
+     iAndDestructChoice Hz as Right x;
+     iDestructHypGo x pat0 pat2
   (* [% ...] is always interpreted as an existential; there are [IntoExist]
   instances in place to handle conjunctions with a pure left-hand side this way
   as well. *)
   | IList [[IPure IGallinaAnon; ?pat2]] =>
-     iExistDestruct Hz as ? Hz; iDestructHypGo Hz pat0 pat2
+     let x := ident_for_pat_default pat2 Hz in
+     iExistDestruct Hz as ? x; iDestructHypGo x pat0 pat2
   | IList [[IPure (IGallinaNamed ?s); ?pat2]] =>
      let x := fresh in
-     iExistDestruct Hz as x Hz;
+     let y := ident_for_pat_default pat2 Hz in
+     iExistDestruct Hz as x y;
      rename_by_string x s;
-     iDestructHypGo Hz pat0 pat2
+     iDestructHypGo y pat0 pat2
   | IList [[?pat1; ?pat2]] =>
-     let Hy := iFresh in iAndDestruct Hz as Hz Hy;
-     iDestructHypGo Hz pat0 pat1; iDestructHypGo Hy pat0 pat2
+     (* We have to take care of not using the same name for the two hypotheses:
+        [ident_for_pat_default] will thus only reuse [Hz] (which could in principle
+        clash with a name from [pat2]) if it is an anonymous name. *)
+     let x1 := ident_for_pat_default pat1 Hz in
+     let x2 := ident_for_pat pat2 in
+     iAndDestruct Hz as x1 x2;
+     iDestructHypGo x1 pat0 pat1; iDestructHypGo x2 pat0 pat2
   | IList [_ :: _ :: _] => fail "iDestruct:" pat0 "has too many conjuncts"
   | IList [[_]] => fail "iDestruct:" pat0 "has just a single conjunct"
 
   (* disjunctive patterns like [H1|H2] *)
   | IList [[?pat1];[?pat2]] =>
-     iOrDestruct Hz as Hz Hz;
-     [iDestructHypGo Hz pat0 pat1|iDestructHypGo Hz pat0 pat2]
+     let x1 := ident_for_pat_default pat1 Hz in
+     let x2 := ident_for_pat_default pat2 Hz in
+     iOrDestruct Hz as x1 x2;
+     [iDestructHypGo x1 pat0 pat1|iDestructHypGo x2 pat0 pat2]
   (* this matches a list of three or more disjunctions [H1|H2|H3] *)
   | IList (_ :: _ :: _ :: _) => fail "iDestruct:" pat0 "has too many disjuncts"
   (* the above patterns don't match [H1 H2|H3] *)
@@ -1506,9 +1559,15 @@ Local Ltac iDestructHypGo Hz pat0 pat :=
      rename_by_string x s
   | IRewrite Right => iPure Hz as ->
   | IRewrite Left => iPure Hz as <-
-  | IIntuitionistic ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat0 pat
-  | ISpatial ?pat => iSpatial Hz; iDestructHypGo Hz pat0 pat
-  | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat0 pat
+  | IIntuitionistic ?pat =>
+    let x := ident_for_pat_default pat Hz in
+    iIntuitionistic Hz as x; iDestructHypGo x pat0 pat
+  | ISpatial ?pat =>
+    let x := ident_for_pat_default pat Hz in
+    iSpatial Hz as x; iDestructHypGo x pat0 pat
+  | IModalElim ?pat =>
+    let x := ident_for_pat_default pat Hz in
+    iModCore Hz as x; iDestructHypGo x pat0 pat
   | _ => fail "iDestruct:" pat0 "is not supported due to" pat
   end.
 Local Ltac iDestructHypFindPat Hgo pat found pats :=
@@ -2896,48 +2955,48 @@ Ltac iSimplifyEq := repeat (
 
 (** * Update modality *)
 Tactic Notation "iMod" open_constr(lem) :=
-  iDestructCore lem as false (fun H => iModCore H).
+  iDestructCore lem as false (fun H => iModCore H as H).
 Tactic Notation "iMod" open_constr(lem) "as" constr(pat) :=
-  iDestructCore lem as false (fun H => iModCore H; last iDestructHyp H as pat).
+  iDestructCore lem as false (fun H => iModCore H as H; last iDestructHyp H as pat).
 Tactic Notation "iMod" open_constr(lem) "as" "(" simple_intropattern(x1) ")"
     constr(pat) :=
-  iDestructCore lem as false (fun H => iModCore H; last iDestructHyp H as ( x1 ) pat).
+  iDestructCore lem as false (fun H => iModCore H as H; last iDestructHyp H as ( x1 ) pat).
 Tactic Notation "iMod" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) ")" constr(pat) :=
-  iDestructCore lem as false (fun H => iModCore H; last iDestructHyp H as ( x1 x2 ) pat).
+  iDestructCore lem as false (fun H => iModCore H as H; last iDestructHyp H as ( x1 x2 ) pat).
 Tactic Notation "iMod" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) ")" constr(pat) :=
-  iDestructCore lem as false (fun H => iModCore H; last iDestructHyp H as ( x1 x2 x3 ) pat).
+  iDestructCore lem as false (fun H => iModCore H as H; last iDestructHyp H as ( x1 x2 x3 ) pat).
 Tactic Notation "iMod" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4) ")"
     constr(pat) :=
   iDestructCore lem as false (fun H =>
-    iModCore H; last iDestructHyp H as ( x1 x2 x3 x4 ) pat).
+    iModCore H as H; last iDestructHyp H as ( x1 x2 x3 x4 ) pat).
 Tactic Notation "iMod" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) ")" constr(pat) :=
   iDestructCore lem as false (fun H =>
-    iModCore H; last iDestructHyp H as ( x1 x2 x3 x4 x5 ) pat).
+    iModCore H as H; last iDestructHyp H as ( x1 x2 x3 x4 x5 ) pat).
 Tactic Notation "iMod" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) simple_intropattern(x6) ")" constr(pat) :=
   iDestructCore lem as false (fun H =>
-    iModCore H; last iDestructHyp H as ( x1 x2 x3 x4 x5 x6 ) pat).
+    iModCore H as H; last iDestructHyp H as ( x1 x2 x3 x4 x5 x6 ) pat).
 Tactic Notation "iMod" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7) ")"
     constr(pat) :=
   iDestructCore lem as false (fun H =>
-    iModCore H; last iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 ) pat).
+    iModCore H as H; last iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 ) pat).
 Tactic Notation "iMod" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
     simple_intropattern(x8) ")" constr(pat) :=
   iDestructCore lem as false (fun H =>
-    iModCore H; last iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 x8 ) pat).
+    iModCore H as H; last iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 x8 ) pat).
 
 Tactic Notation "iMod" open_constr(lem) "as" "%" simple_intropattern(pat) :=
-  iDestructCore lem as false (fun H => iModCore H; iPure H as pat).
+  iDestructCore lem as false (fun H => iModCore H as H; iPure H as pat).
 
 (** * Invariant *)
 
