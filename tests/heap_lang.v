@@ -368,6 +368,11 @@ Section mapsto_tests.
     iIntros (Φ) "Hl HΦ". Show. wp_load. by iApply "HΦ".
   Qed.
 
+  (* Make sure that we can split a mapsto containing an evar. *)
+  Lemma mapsto_evar_iSplit l v :
+    l ↦{#1 / 2} v -∗  ∃ q, l ↦{#1 / 2 + q} v.
+  Proof. iIntros "H". iExists _. iSplitL; first by iAssumption. Abort.
+
 End mapsto_tests.
 
 Section inv_mapsto_tests.
