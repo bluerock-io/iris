@@ -190,7 +190,7 @@ Global Instance from_forall_later {A} P (Φ : A → PROP) name :
 Proof. rewrite /FromForall=> <-. by rewrite later_forall. Qed.
 
 Global Instance from_forall_laterN {A} P (Φ : A → PROP) n name :
-      FromForall P Φ name → FromForall (▷^n P) (λ a, ▷^n (Φ a))%I name.
+  FromForall P Φ name → FromForall (▷^n P) (λ a, ▷^n (Φ a))%I name.
 Proof. rewrite /FromForall => <-. by rewrite laterN_forall. Qed.
 
 Global Instance from_forall_except_0 {A} P (Φ : A → PROP) name :
