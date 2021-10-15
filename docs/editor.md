@@ -565,3 +565,74 @@ click on "Edit in settings.json" and add the following:
         }
     ]
 ```
+
+
+## Vim
+
+The [Coqtail](https://github.com/whonore/coqtail) plugin can be used to develop Coq code in `vim` (install it with your favorite plugin manager).
+Follow the installation instructions in Coqtail's README to setup your keybinds and find out about its usage.
+
+### Unicode support
+For Unicode support, make sure that your terminal emulator supports Unicode and configure it to use a font with Unicode support.
+
+For entering Unicode symbols, one option is the plugin [latex-unicoder](https://github.com/joom/latex-unicoder.vim).
+Install it with your favorite plugin manager.
+To enter a Unicode symbol, hit `C-l` in normal or insert mode. For more details on the usage, see its README.
+
+latex-unicoder comes with a large set of pre-configured symbols known from LaTeX, but you can also add your own by adding (and adapting) the following to your `.vimrc`:
+```
+let g:unicode_map = {
+  \ "\\fun"     :   "λ",
+  \ "\\mult"    :   "⋅",
+  \ "\\ent"     :   "⊢",
+  \ "\\valid"   :   "✓",
+  \ "\\diamond" :   "◇",
+  \ "\\box"     :   "□",
+  \ "\\bbox"   	:   "■",
+  \ "\\later"  	:   "▷",
+  \ "\\pred"   	:   "φ",
+  \ "\\and"    	:   "∧",
+  \ "\\or"     	:   "∨",
+  \ "\\comp"   	:   "∘",
+  \ "\\ccomp"  	:   "◎",
+  \ "\\all"    	:   "∀",
+  \ "\\ex"     	:   "∃",
+  \ "\\to"     	:   "→",
+  \ "\\sep"    	:   "∗",
+  \ "\\lc"     	:   "⌜",
+  \ "\\rc"     	:   "⌝",
+  \ "\\Lc"     	:   "⎡",
+  \ "\\Rc"     	:   "⎤",
+  \ "\\lam"    	:   "λ",
+  \ "\\empty"  	:   "∅",
+  \ "\\Lam"    	:   "Λ",
+  \ "\\Sig"    	:   "Σ",
+  \ "\\-"      	:   "∖",
+  \ "\\aa"     	:   "●",
+  \ "\\af"     	:   "◯",
+  \ "\\auth"   	:   "●",
+  \ "\\frag"   	:   "◯",
+  \ "\\iff"    	:   "↔",
+  \ "\\gname"  	:   "γ",
+  \ "\\incl"   	:   "≼",
+  \ "\\latert" 	:   "▶",
+  \ "\\update" 	:   "⇝",
+  \ "\\\"o"     :   "ö",
+  \ "_a"        :   "ₐ",
+  \ "_e"        :   "ₑ",
+  \ "_h"        :   "ₕ",
+  \ "_i"        :   "ᵢ",
+  \ "_k"        :   "ₖ",
+  \ "_l"        :   "ₗ",
+  \ "_m"        :   "ₘ",
+  \ "_n"        :   "ₙ",
+  \ "_o"        :   "ₒ",
+  \ "_p"        :   "ₚ",
+  \ "_r"        :   "ᵣ",
+  \ "_s"        :   "ₛ",
+  \ "_t"        :   "ₜ",
+  \ "_u"        :   "ᵤ",
+  \ "_v"        :   "ᵥ",
+  \ "_x"        :   "ₓ",
+\ }
+```
