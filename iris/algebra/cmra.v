@@ -1699,8 +1699,9 @@ Proof.
   by apply discrete_funO_map_ne=>c; apply urFunctor_map_contractive.
 Qed.
 
-(** * Constructing a camera [B] through a bijection with [A] that
-is mostly an isomorphism but restricts validity. *)
+(** * Constructing a camera [B] through a bijection with [A]
+
+The bijection must be mostly an isomorphism but may restrict validity. *)
 Lemma iso_cmra_mixin_restrict {A : cmra} {B : Type}
   `{!Dist B, !Equiv B, !PCore B, !Op B, !Valid B, !ValidN B}
   (f : A → B) (g : B → A)
