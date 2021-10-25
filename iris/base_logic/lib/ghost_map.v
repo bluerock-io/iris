@@ -25,7 +25,7 @@ Section definitions.
   Context `{ghost_mapG Σ K V}.
 
   Definition ghost_map_auth_def (γ : gname) (q : Qp) (m : gmap K V) : iProp Σ :=
-    own γ (gmap_view_auth (V:=leibnizO V) q m).
+    own γ (gmap_view_auth (V:=leibnizO V) (DfracOwn q) m).
   Definition ghost_map_auth_aux : seal (@ghost_map_auth_def). Proof. by eexists. Qed.
   Definition ghost_map_auth := ghost_map_auth_aux.(unseal).
   Definition ghost_map_auth_eq : @ghost_map_auth = @ghost_map_auth_def := ghost_map_auth_aux.(seal_eq).
@@ -117,7 +117,7 @@ Section lemmas.
   (** Make an element read-only. *)
   Lemma ghost_map_elem_persist k γ dq v :
     k ↪[γ]{dq} v ==∗ k ↪[γ]□ v.
-  Proof. unseal. iApply own_update. apply gmap_view_persist. Qed.
+  Proof. unseal. iApply own_update. apply gmap_view_frag_persist. Qed.
 
   (** * Lemmas about [ghost_map_auth] *)
   Lemma ghost_map_alloc_strong P m :
@@ -125,7 +125,7 @@ Section lemmas.
     ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ ghost_map_auth γ 1 m ∗ [∗ map] k ↦ v ∈ m, k ↪[γ] v.
   Proof.
     unseal. intros.
-    iMod (own_alloc_strong (gmap_view_auth (V:=leibnizO V) 1 ∅) P)
+    iMod (own_alloc_strong (gmap_view_auth (V:=leibnizO V) (DfracOwn 1) ∅) P)
       as (γ) "[% Hauth]"; first done.
     { apply gmap_view_auth_valid. }
     iExists γ. iSplitR; first done.
@@ -165,14 +165,14 @@ Section lemmas.
   Lemma ghost_map_auth_valid γ q m : ghost_map_auth γ q m -∗ ⌜q ≤ 1⌝%Qp.
   Proof.
     unseal. iIntros "Hauth".
-    iDestruct (own_valid with "Hauth") as %?%gmap_view_auth_frac_valid.
+    iDestruct (own_valid with "Hauth") as %?%gmap_view_auth_dfrac_valid.
     done.
   Qed.
   Lemma ghost_map_auth_valid_2 γ q1 q2 m1 m2 :
     ghost_map_auth γ q1 m1 -∗ ghost_map_auth γ q2 m2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ m1 = m2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    iDestruct (own_valid_2 with "H1 H2") as %[??]%gmap_view_auth_frac_op_valid_L.
+    iDestruct (own_valid_2 with "H1 H2") as %[??]%gmap_view_auth_dfrac_op_valid_L.
     done.
   Qed.
   Lemma ghost_map_auth_agree γ q1 q2 m1 m2 :
@@ -188,7 +188,7 @@ Section lemmas.
     ghost_map_auth γ q m -∗ k ↪[γ]{dq} v -∗ ⌜m !! k = Some v⌝.
   Proof.
     unseal. iIntros "Hauth Hel".
-    iDestruct (own_valid_2 with "Hauth Hel") as %[?[??]]%gmap_view_both_frac_valid_L.
+    iDestruct (own_valid_2 with "Hauth Hel") as %[?[??]]%gmap_view_both_dfrac_valid_L.
     eauto.
   Qed.
 

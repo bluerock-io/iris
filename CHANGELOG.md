@@ -73,11 +73,12 @@ Chajed, and Yusuke Matsushita. Thanks a lot to everyone involved!
 
 **Changes in `algebra`:**
 
-* Generalize the authorative elements of the `view`, `auth` and `gset_bij`
-  cameras to be parameterized by a [discardable fraction](iris/algebra/dfrac.v)
-  (`dfrac`) instead of a fraction (`frac`). Normal fractions are now denoted
-  `●{#q} a` and `●V{#q} a`. Lemmas affected by this have been renamed such that
-  the "frac" in their name has been changed into "dfrac". (by Simon Friis Vindum)
+* Generalize the authorative elements of the `view`, `auth`, `gmap_view`, and
+  `gset_bij` cameras to be parameterized by a [discardable
+  fraction](iris/algebra/dfrac.v) (`dfrac`) instead of a fraction (`frac`).
+  Normal fractions are now denoted `●{#q} a` and `●V{#q} a`. Lemmas affected by
+  this have been renamed such that the "frac" in their name has been changed
+  into "dfrac". (by Simon Friis Vindum)
 * Generalize `namespace_map` to `reservation_map` which enhances `gmap positive
   A` with a notion of 'tokens' that enable allocating a particular name in the
   map. See [algebra.reservation_map](iris/algebra/reservation_map.v) for further
@@ -218,11 +219,13 @@ replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
 Note that the script is not idempotent, do not run it twice.
 ```
 sed -i -E -f- $(find theories -name "*.v") <<EOF
-# auth and view renames from frac to dfrac
+# auth, view, and gmap_view renames from frac to dfrac
 s/\b(auth|view)_(auth|both|update)_frac_(is_op|op_invN|op_inv|inv_L|validN|op_validN|valid|op_valid|valid_2|valid_discrete|includedN|included|alloc|validI|validI_2|validI_1|validI|)\b/\1_\2_dfrac_\3/g
 s/\bgset_bij_auth_frac_(\w*)\b/gset_bij_auth_dfrac_\1/g
 s/\bgset_bij_auth_empty_frac_valid\b/gset_bij_auth_empty_dfrac_valid/g
 s/\bbij_both_frac_valid\b/bij_both_dfrac_valid/g
+s/\bgmap_view_(auth|both)_frac_(op_invN|op_inv|op_inv_L|valid|op_validN|op_valid|op_valid_L)\b/gmap_view_\1_dfrac_\2/g
+s/\bgmap_view_persist\b/gmap_view_frag_persist/g
 # big_sepM renames
 s/\bbig_sepM2_lookup_1\b/big_sepM2_lookup_l/g
 s/\bbig_sepM2_lookup_2\b/big_sepM2_lookup_r/g
