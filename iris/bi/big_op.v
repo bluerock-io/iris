@@ -661,34 +661,6 @@ Section sep_list2.
     by rewrite affinely_and_r persistent_and_affinely_sep_l idemp.
   Qed.
 
-  Lemma big_sepL2_sep_sepL_l (Φ : nat → A → PROP) Ψ l1 l2 :
-    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 ∗ Ψ k y1 y2)
-    ⊣⊢ ([∗ list] k↦y1 ∈ l1, Φ k y1) ∗ ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2).
-  Proof.
-    rewrite big_sepL2_sep big_sepL2_const_sepL_l. apply (anti_symm _).
-    - rewrite and_elim_r. done.
-    - rewrite !big_sepL2_alt [(_ ∗ _)%I]comm -!persistent_and_sep_assoc.
-      apply pure_elim_l=>Hl. apply and_intro.
-      { apply pure_intro. done. }
-      rewrite [(_ ∗ _)%I]comm. apply sep_mono; first done.
-      apply and_intro; last done.
-      apply pure_intro. done.
-  Qed.
-
-  Lemma big_sepL2_sep_sepL_r Φ (Ψ : nat → B → PROP) l1 l2 :
-    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y2)
-    ⊣⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∗ ([∗ list] k↦y2 ∈ l2, Ψ k y2).
-  Proof.
-    rewrite big_sepL2_sep big_sepL2_const_sepL_r. apply (anti_symm _).
-    - rewrite and_elim_r. done.
-    - rewrite !big_sepL2_alt -!persistent_and_sep_assoc.
-      apply pure_elim_l=>Hl. apply and_intro.
-      { apply pure_intro. done. }
-      apply sep_mono; first done.
-      apply and_intro; last done.
-      apply pure_intro. done.
-  Qed.
-
   Lemma big_sepL2_and Φ Ψ l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∧ Ψ k y1 y2)
     ⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∧ ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2).
@@ -904,6 +876,30 @@ Section sep_list2.
     Timeless ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
   Proof. rewrite big_sepL2_alt. apply _. Qed.
 End sep_list2.
+
+Lemma big_sepL2_sep_sepL_l {A B} (Φ : nat → A → PROP)
+    (Ψ : nat → A → B → PROP) l1 l2 :
+  ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 ∗ Ψ k y1 y2)
+  ⊣⊢ ([∗ list] k↦y1 ∈ l1, Φ k y1) ∗ ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2).
+Proof.
+  rewrite big_sepL2_sep big_sepL2_const_sepL_l. apply (anti_symm _).
+  { rewrite and_elim_r. done. }
+  rewrite !big_sepL2_alt [(_ ∗ _)%I]comm -!persistent_and_sep_assoc.
+  apply pure_elim_l=>Hl. apply and_intro.
+  { apply pure_intro. done. }
+  rewrite [(_ ∗ _)%I]comm. apply sep_mono; first done.
+  apply and_intro; last done.
+  apply pure_intro. done.
+Qed.
+
+Lemma big_sepL2_sep_sepL_r {A B} (Φ : nat → A → B → PROP)
+    (Ψ : nat → B → PROP) l1 l2 :
+  ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y2)
+  ⊣⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∗ ([∗ list] k↦y2 ∈ l2, Ψ k y2).
+Proof.
+  rewrite !(big_sepL2_flip _ _ l1). setoid_rewrite (comm bi_sep).
+  by rewrite big_sepL2_sep_sepL_l.
+Qed.
 
 Lemma big_sepL_sepL2_diag {A} (Φ : nat → A → A → PROP) (l : list A) :
   ([∗ list] k↦y ∈ l, Φ k y y) -∗
