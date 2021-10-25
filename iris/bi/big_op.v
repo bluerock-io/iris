@@ -568,28 +568,6 @@ Section sep_list2.
            (big_sepL2 (PROP:=PROP) (A:=A) (B:=B)).
   Proof. intros f g Hf l1 ? <- l2 ? <-. apply big_sepL2_proper; intros; apply Hf. Qed.
 
-  Lemma big_sepL2_const_sepL_l (Φ : nat → A → PROP) (l1 : list A) (l2 : list B) :
-    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1) ⊣⊢ ⌜length l1 = length l2⌝ ∧ ([∗ list] k↦y1 ∈ l1, Φ k y1).
-  Proof.
-    rewrite big_sepL2_alt.
-    trans (⌜length l1 = length l2⌝ ∧ [∗ list] k↦y1 ∈ (zip l1 l2).*1, Φ k y1)%I.
-    - rewrite big_sepL_fmap //.
-    - apply (anti_symm (⊢)); apply pure_elim_l=> Hl; rewrite fst_zip;
-      try (rewrite Hl //);
-      (apply and_intro; [by apply pure_intro|done]).
-  Qed.
-
-  Lemma big_sepL2_const_sepL_r (Φ : nat → B → PROP) (l1 : list A) (l2 : list B) :
-    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y2) ⊣⊢ ⌜length l1 = length l2⌝ ∧ ([∗ list] k↦y2 ∈ l2, Φ k y2).
-  Proof.
-    rewrite big_sepL2_alt.
-    trans (⌜length l1 = length l2⌝ ∧ [∗ list] k↦y2 ∈ (zip l1 l2).*2, Φ k y2)%I.
-    - rewrite big_sepL_fmap //.
-    - apply (anti_symm (⊢)); apply pure_elim_l=> Hl; rewrite snd_zip;
-      try (rewrite Hl //);
-      (apply and_intro; [by apply pure_intro|done]).
-  Qed.
-
   Lemma big_sepL2_insert_acc Φ l1 l2 i x1 x2 :
     l1 !! i = Some x1 → l2 !! i = Some x2 →
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ⊢
@@ -877,6 +855,22 @@ Section sep_list2.
   Proof. rewrite big_sepL2_alt. apply _. Qed.
 End sep_list2.
 
+Lemma big_sepL2_const_sepL_l {A B} (Φ : nat → A → PROP) (l1 : list A) (l2 : list B) :
+  ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1)
+  ⊣⊢ ⌜length l1 = length l2⌝ ∧ ([∗ list] k↦y1 ∈ l1, Φ k y1).
+Proof.
+  rewrite big_sepL2_alt.
+  trans (⌜length l1 = length l2⌝ ∧ [∗ list] k↦y1 ∈ (zip l1 l2).*1, Φ k y1)%I.
+  { rewrite big_sepL_fmap //. }
+  apply (anti_symm (⊢)); apply pure_elim_l=> Hl; rewrite fst_zip;
+    rewrite ?Hl //;
+    (apply and_intro; [by apply pure_intro|done]).
+Qed.
+Lemma big_sepL2_const_sepL_r {A B}  (Φ : nat → B → PROP) (l1 : list A) (l2 : list B) :
+  ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y2)
+  ⊣⊢ ⌜length l1 = length l2⌝ ∧ ([∗ list] k↦y2 ∈ l2, Φ k y2).
+Proof. by rewrite big_sepL2_flip big_sepL2_const_sepL_l (symmetry_iff (=)). Qed.
+
 Lemma big_sepL2_sep_sepL_l {A B} (Φ : nat → A → PROP)
     (Ψ : nat → A → B → PROP) l1 l2 :
   ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 ∗ Ψ k y1 y2)
@@ -891,7 +885,6 @@ Proof.
   apply and_intro; last done.
   apply pure_intro. done.
 Qed.
-
 Lemma big_sepL2_sep_sepL_r {A B} (Φ : nat → A → B → PROP)
     (Ψ : nat → B → PROP) l1 l2 :
   ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y2)
