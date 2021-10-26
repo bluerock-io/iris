@@ -70,6 +70,16 @@ Section fractional.
     Persistent P → TCOr (Affine P) (Absorbing P) → Fractional (λ _, P).
   Proof. intros ?? q q'. apply: bi.persistent_sep_dup. Qed.
 
+  (** We do not have [AsFractional] instances for [∗] and the big operators
+  because the [iDestruct] tactic already turns [P ∗ Q] into [P] and [Q],
+  [[∗ list] k↦x ∈ y :: l, Φ k x] into [Φ 0 i] and [[∗ list] k↦x ∈ l, Φ (S k) x],
+  etc. Hence, an [AsFractional] instance would cause ambiguity because for
+  example [l ↦{1} v ∗ l' ↦{1} v'] could be turned into [l ↦{1} v] and
+  [l' ↦{1} v'], or into two times [l ↦{1/2} v ∗ l' ↦{1/2} v'].
+
+  We do provide the [Fractional] instances so that when one defines a derived
+  connection in terms of [∗] or a big operator (and makes that opaque in some
+  way), one could choose to split along the [∗] or along the fraction. *)
   Global Instance fractional_sep Φ Ψ :
     Fractional Φ → Fractional Ψ → Fractional (λ q, Φ q ∗ Ψ q)%I.
   Proof.
