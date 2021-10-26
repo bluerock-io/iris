@@ -9,8 +9,12 @@ version: "dev"
 
 synopsis: "The canonical example language for Iris"
 description: """
-This package provides the iris.heap_lang Coq module.
+This package defines HeapLang, a concurrent lambda calculus with references, and
+uses Iris to build a program logic for HeapLang programs.
 """
+tags: [
+  "logpath:iris.heap_lang"
+]
 
 depends: [
   "coq-iris" {= version}
