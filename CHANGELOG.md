@@ -74,6 +74,7 @@ Coq 8.11 is no longer supported in this version of Iris.
   only printed, not parsed): added a `,` before `ABORT`, for consistency with `COMM`.
 * Add the lemmas `big_sepM_impl_strong` and `big_sepM_impl_dom_subseteq` that
   generalize the existing `big_sepM_impl` lemma. (by Simon Friis Vindum)
+* Add new instance `fractional_big_sepL2`. (by Paolo G. Giarrusso, BedRock Systems)
 
 **Changes in `proofmode`:**
 

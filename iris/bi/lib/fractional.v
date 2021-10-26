@@ -77,13 +77,18 @@ Section fractional.
     rewrite !assoc. f_equiv. by rewrite comm.
   Qed.
 
-  Global Instance fractional_big_sepL {A} l Ψ :
-    (∀ k (x : A), Fractional (Ψ k x)) →
+  Global Instance fractional_big_sepL {A} (l : list A) Ψ :
+    (∀ k x, Fractional (Ψ k x)) →
     Fractional (PROP:=PROP) (λ q, [∗ list] k↦x ∈ l, Ψ k x q)%I.
   Proof. intros ? q q'. rewrite -big_sepL_sep. by setoid_rewrite fractional. Qed.
 
+  Global Instance fractional_big_sepL2 {A B} (l1 : list A) (l2 : list B) Ψ :
+    (∀ k x1 x2, Fractional (Ψ k x1 x2)) →
+    Fractional (PROP:=PROP) (λ q, [∗ list] k↦x1; x2 ∈ l1; l2, Ψ k x1 x2 q)%I.
+  Proof. intros ? q q'. rewrite -big_sepL2_sep. by setoid_rewrite fractional. Qed.
+
   Global Instance fractional_big_sepM `{Countable K} {A} (m : gmap K A) Ψ :
-    (∀ k (x : A), Fractional (Ψ k x)) →
+    (∀ k x, Fractional (Ψ k x)) →
     Fractional (PROP:=PROP) (λ q, [∗ map] k↦x ∈ m, Ψ k x q)%I.
   Proof. intros ? q q'. rewrite -big_sepM_sep. by setoid_rewrite fractional. Qed.
 
