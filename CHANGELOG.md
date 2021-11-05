@@ -5,7 +5,7 @@ lemma.
 
 ## Iris master
 
-## Iris 3.5.0
+## Iris 3.5.0 (2021-11-05)
 
 The highlights and most notable changes of this release are:
 
