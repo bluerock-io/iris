@@ -5,7 +5,37 @@ lemma.
 
 ## Iris master
 
-Coq 8.11 is no longer supported in this version of Iris.
+## Iris 3.5.0
+
+The highlights and most notable changes of this release are:
+
+* Coq 8.14 is now supported, while Coq 8.12 and Coq 8.13 remain supported.
+* The proof mode now has native support for pure names `%H` in intro patterns,
+  without installing
+  [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident). If you had
+  the plugin installed, to migrate simply uninstall the plugin and stop
+  importing it.
+* The proof mode now supports destructing existentials with the `"[%x ...]"`
+  pattern.
+* `iMod` and `iModIntro` now report an error message for mask mismatches.
+* Performance improvements for the proof mode in `iFrame` in non-affine
+  logics, `iPoseProof`, and `iDestruct` (by Paolo G. Giarrusso, Bedrock Systems,
+  and Armaël Guéneau).
+* The new `ghost_map` logic-level library supports a ghost `gmap K V` with an
+  authoritative view and per-element points-to facts written `k ↪[γ] w`.
+* Weakest preconditions now support a flexible number of laters per
+  physical step of the operational semantics. See merge request
+  [!585](https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/595) (by
+  Jacques-Henri Jourdan).
+* HeapLang now has an atomic `Xchg` (exchange) operation (by Simon Hudon,
+  Google).
+
+This release was managed by Ralf Jung, Robbert Krebbers, and Tej Chajed, with
+contributions from Amin Timany, Armaël Guéneau, Dan Frumin, Dmitry Khalanskiy,
+Hai Dang, Hoang-Hai Dang, Jacques-Henri Jourdan, Lennard Gäher, Michael
+Sammler, Paolo G. Giarrusso, Ralf Jung, Robbert Krebbers, Simon Friis Vindum,
+Simon Hudon, Tej Chajed, and Yusuke Matsushita. Thanks a lot to everyone
+involved!
 
 **Changes in `algebra`:**
 
