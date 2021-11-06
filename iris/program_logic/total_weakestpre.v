@@ -88,7 +88,7 @@ Proof.
   assert (NonExpansive Ψ').
   { intros n [[E1 e1] Φ1] [[E2 e2] Φ2]
       [[?%leibniz_equiv ?%leibniz_equiv] ?]; simplify_eq/=. by apply HΨ. }
-  iApply (least_fixpoint_strong_ind _ Ψ' with "[] H").
+  iApply (least_fixpoint_ind _ Ψ' with "[] H").
   iIntros "!>" ([[??] ?]) "H". by iApply "IH".
 Qed.
 

@@ -57,7 +57,7 @@ Section bi_rtc.
     ∀ x1, bi_rtc R x1 x2 -∗ Φ x1.
  Proof.
     iIntros (?) "#IH". rewrite /bi_rtc.
-    by iApply (least_fixpoint_strong_ind (bi_rtc_pre R x2) with "IH").
+    by iApply (least_fixpoint_ind (bi_rtc_pre R x2) with "IH").
   Qed.
 
   Lemma bi_rtc_ind_l x2 Φ :
@@ -66,7 +66,7 @@ Section bi_rtc.
     ∀ x1, bi_rtc R x1 x2 -∗ Φ x1.
   Proof.
     iIntros (?) "#IH". rewrite /bi_rtc.
-    by iApply (least_fixpoint_ind (bi_rtc_pre R x2) with "IH").
+    by iApply (least_fixpoint_iter (bi_rtc_pre R x2) with "IH").
   Qed.
 
   Lemma bi_rtc_refl x : ⊢ bi_rtc R x x.

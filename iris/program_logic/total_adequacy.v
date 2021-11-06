@@ -43,7 +43,7 @@ Proof.
   iIntros "#IH" (t) "H".
   assert (NonExpansive Ψ).
   { by intros n ?? ->%(discrete_iff _ _)%leibniz_equiv. }
-  iApply (least_fixpoint_strong_ind _ Ψ with "[] H").
+  iApply (least_fixpoint_ind _ Ψ with "[] H").
   iIntros "!>" (t') "H". by iApply "IH".
 Qed.
 
