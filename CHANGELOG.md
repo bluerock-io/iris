@@ -26,7 +26,7 @@ The highlights and most notable changes of this release are:
 * Weakest preconditions now support a flexible number of laters per
   physical step of the operational semantics. See merge request
   [!585](https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/595) (by
-  Jacques-Henri Jourdan).
+  Jacques-Henri Jourdan and Yusuke Matsushita).
 * HeapLang now has an atomic `Xchg` (exchange) operation (by Simon Hudon,
   Google).
 
