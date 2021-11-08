@@ -26,7 +26,8 @@ Section core.
     by iApply "HPQ".
   Qed.
 
-  Global Instance coreP_persistent `{!BiPersistentlyForall PROP, !BiPersistentlyImplPlainly PROP} P :
+  Global Instance coreP_persistent
+      `{!BiPersistentlyForall PROP, !BiPersistentlyImplPlainly PROP} P :
     Persistent (coreP P).
   Proof.
     rewrite /coreP /Persistent. iIntros "HC" (Q).

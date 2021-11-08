@@ -53,7 +53,7 @@ Proof.
   - exact: persistently_idemp_2.
   - (* emp ⊢ <pers> emp (ADMISSIBLE) *)
     trans (uPred_forall (M:=M) (λ _ : False, uPred_persistently uPred_emp)).
-    + apply forall_intro=>[[]].
+    + apply forall_intro=>-[].
     + etrans; first exact: persistently_forall_2.
       apply persistently_mono. exact: pure_intro.
   - (* ((<pers> P) ∧ (<pers> Q)) ⊢ <pers> (P ∧ Q) (ADMISSIBLE) *)

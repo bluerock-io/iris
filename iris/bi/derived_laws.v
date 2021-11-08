@@ -862,8 +862,7 @@ Lemma persistently_and P Q : <pers> (P ∧ Q) ⊣⊢ <pers> P ∧ <pers> Q.
 Proof. apply (anti_symm _); by auto using persistently_and_2. Qed.
 Lemma persistently_or P Q : <pers> (P ∨ Q) ⊣⊢ <pers> P ∨ <pers> Q.
 Proof. rewrite !or_alt persistently_exist. by apply exist_proper=> -[]. Qed.
-Lemma persistently_impl P Q :
-  <pers> (P → Q) ⊢ <pers> P → <pers> Q.
+Lemma persistently_impl P Q : <pers> (P → Q) ⊢ <pers> P → <pers> Q.
 Proof.
   apply impl_intro_l; rewrite -persistently_and.
   apply persistently_mono, impl_elim with P; auto.

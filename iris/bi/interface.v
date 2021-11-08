@@ -107,7 +107,7 @@ Section bi_mixin.
     The null-ary case, [persistently_True : True ⊢ <pers> True], is derivable from the
     other laws. *)
     bi_mixin_persistently_and_2 (P Q : PROP) :
-      ((<pers> P) ∧ (<pers> Q)) ⊢ <pers> (P ∧ Q);
+      (<pers> P) ∧ (<pers> Q) ⊢ <pers> (P ∧ Q);
     bi_mixin_persistently_exist_1 {A} (Ψ : A → PROP) :
       <pers> (∃ a, Ψ a) ⊢ ∃ a, <pers> (Ψ a);
 
