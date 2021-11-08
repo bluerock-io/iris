@@ -32,10 +32,9 @@ The highlights and most notable changes of this release are:
 
 This release was managed by Ralf Jung, Robbert Krebbers, and Tej Chajed, with
 contributions from Amin Timany, Armaël Guéneau, Dan Frumin, Dmitry Khalanskiy,
-Hai Dang, Hoang-Hai Dang, Jacques-Henri Jourdan, Lennard Gäher, Michael
-Sammler, Paolo G. Giarrusso, Ralf Jung, Robbert Krebbers, Simon Friis Vindum,
-Simon Hudon, Tej Chajed, and Yusuke Matsushita. Thanks a lot to everyone
-involved!
+Hoang-Hai Dang, Jacques-Henri Jourdan, Lennard Gäher, Michael Sammler, Paolo G.
+Giarrusso, Ralf Jung, Robbert Krebbers, Simon Friis Vindum, Simon Hudon, Tej
+Chajed, and Yusuke Matsushita. Thanks a lot to everyone involved!
 
 **Changes in `algebra`:**
 
