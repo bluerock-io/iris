@@ -26,6 +26,7 @@ PROJECTS = {
     'lambda-rust': { 'name': 'lambda-rust', 'branch': 'master', 'timing': True },
     'lambda-rust-weak': { 'name': 'lambda-rust', 'branch': 'masters/weak_mem' }, # covers GPFSL and ORC11
     'examples': { 'name': 'examples', 'branch': 'master', 'timing': True },
+    'gpfsl': { 'name': 'gpfsl', 'branch': 'master', 'timing': True }, # need separate entry for timing
     'iron': { 'name': 'iron', 'branch': 'master', 'timing': True },
     'reloc': { 'name': 'reloc', 'branch': 'master' },
     'spygame': { 'name': 'spygame', 'branch': 'master' },
