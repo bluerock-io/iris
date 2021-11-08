@@ -5,6 +5,25 @@ lemma.
 
 ## Iris master
 
+**Changes in `bi`:**
+* Rename `least_fixpoint_ind` into `least_fixpoint_iter`,
+  rename `greatest_fixpoint_coind` into `greatest_fixpoint_coiter`,
+  rename `least_fixpoint_strong_ind` into `least_fixpoint_ind`,
+  add lemmas `least_fixpoint_{ind_wf, ne', strong_mono}`, and
+  add lemmas `greatest_fixpoint_{coind, paco, ne', strong_mono}`.
+
+The following `sed` script helps adjust your code to the renaming (on macOS,
+replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
+Note that the script is not idempotent, do not run it twice.
+```
+sed -i -E -f- $(find theories -name "*.v") <<EOF
+# least/greatest fixpoint renames
+s/\bleast_fixpoint_ind\b/least_fixpoint_iter/g
+s/\bgreatest_fixpoint_coind\b/greatest_fixpoint_coiter/g
+s/\bleast_fixpoint_strong_ind\b/least_fixpoint_ind/g
+EOF
+```
+
 ## Iris 3.5.0 (2021-11-05)
 
 The highlights and most notable changes of this release are:
