@@ -21,7 +21,7 @@ lemma.
   typeclass `BiPersistentlyImplPlainly`.
   Proofs that are generic in `PROP` might have to add those new classes as
   assumptions to remain compatible, and code that instantiates the BI interface
-  needs to also provide instances for the new classes.
+  needs to provide instances for the new classes.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
