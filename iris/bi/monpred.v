@@ -287,7 +287,7 @@ Proof.
   - intros P Q [?]. split=> i /=. by f_equiv.
   - intros P. split=> i. by apply bi.persistently_idemp_2.
   - split=> i. by apply bi.persistently_emp_intro.
-  - intros A Ψ. split=> i. by apply bi.persistently_forall_2.
+  - intros A Ψ. split=> i. by apply bi.persistently_and_2.
   - intros A Ψ. split=> i. by apply bi.persistently_exist_1.
   - intros P Q. split=> i. apply bi.sep_elim_l, _.
   - intros P Q. split=> i. by apply bi.persistently_and_sep_elim.
@@ -401,6 +401,10 @@ Proof. unseal. split. solve_proper. Qed.
 Global Instance monPred_in_flip_mono : Proper ((⊑) ==> flip (⊢)) (@monPred_in I PROP).
 Proof. solve_proper. Qed.
 
+Global Instance monPred_persistently_forall :
+  BiPersistentlyForall PROP → BiPersistentlyForall monPredI.
+Proof. intros ? A φ. split=> /= i. unseal. by apply persistently_forall_2. Qed.
+
 Global Instance monPred_pure_forall : BiPureForall PROP → BiPureForall monPredI.
 Proof. intros ? A φ. split=> /= i. unseal. by apply pure_forall_2. Qed.
 
@@ -476,7 +480,8 @@ Global Instance monPred_objectively_flip_mono' :
   Proper (flip (⊢) ==> flip (⊢)) (@monPred_objectively I PROP).
 Proof. intros ???. by apply monPred_objectively_mono. Qed.
 
-Global Instance monPred_objectively_persistent P : Persistent P → Persistent (<obj> P).
+Global Instance monPred_objectively_persistent `{!BiPersistentlyForall PROP} P :
+  Persistent P → Persistent (<obj> P).
 Proof. rewrite monPred_objectively_unfold. apply _. Qed.
 Global Instance monPred_objectively_absorbing P : Absorbing P → Absorbing (<obj> P).
 Proof. rewrite monPred_objectively_unfold. apply _. Qed.
@@ -937,10 +942,6 @@ Proof.
     rewrite -plainly_idemp_2. f_equiv. by apply bi.forall_intro=>_.
   - intros A Ψ. split=> i /=. apply bi.forall_intro=> j.
     rewrite plainly_forall. apply bi.forall_intro=> a. by rewrite !bi.forall_elim.
-  - intros P Q. split=> i /=. setoid_rewrite bi.pure_impl_forall.
-    setoid_rewrite <-plainly_forall.
-    do 2 setoid_rewrite bi.persistently_forall. do 4 f_equiv.
-    apply persistently_impl_plainly.
   - intros P Q. split=> i /=.
     setoid_rewrite bi.pure_impl_forall. rewrite 2!bi.forall_elim //.
     do 2 setoid_rewrite <-plainly_forall.
@@ -955,6 +956,17 @@ Proof.
 Qed.
 Global Instance monPred_bi_plainly `{BiPlainly PROP} : BiPlainly monPredI :=
   {| bi_plainly_mixin := monPred_plainly_mixin |}.
+
+Global Instance minPred_bi_persistently_impl_plainly
+     `{!BiPlainly PROP, !BiPersistentlyForall PROP, !BiPersistentlyImplPlainly PROP} :
+  BiPersistentlyImplPlainly monPredI.
+Proof.
+  intros P Q. rewrite monPred_plainly_eq. unseal.
+  split=> i /=. setoid_rewrite bi.pure_impl_forall.
+  setoid_rewrite <-plainly_forall.
+  do 2 setoid_rewrite bi.persistently_forall. do 4 f_equiv.
+  apply: persistently_impl_plainly.
+Qed.
 
 Global Instance monPred_bi_prop_ext
   `{!BiPlainly PROP, !BiInternalEq PROP, !BiPropExt PROP} : BiPropExt monPredI.

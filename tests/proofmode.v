@@ -22,7 +22,8 @@ Proof.
 Qed.
 
 Check "demo_0".
-Lemma demo_0 P Q : □ (P ∨ Q) -∗ (∀ x, ⌜x = 0⌝ ∨ ⌜x = 1⌝) → (Q ∨ P).
+Lemma demo_0 `{!BiPersistentlyForall PROP} P Q :
+  □ (P ∨ Q) -∗ (∀ x, ⌜x = 0⌝ ∨ ⌜x = 1⌝) → (Q ∨ P).
 Proof.
   iIntros "H #H2". Show. iDestruct "H" as "###H".
   (* should remove the disjunction "H" *)
@@ -701,7 +702,7 @@ Proof.
   iIntros "#HPQ HQ !>". iNext. by iRewrite "HPQ" in "HQ".
 Qed.
 
-Lemma test_iIntros_modalities `(!Absorbing P) :
+Lemma test_iIntros_modalities `{!BiPersistentlyForall PROP} `(!Absorbing P) :
   ⊢ <pers> (▷ ∀  x : nat, ⌜ x = 0 ⌝ → ⌜ x = 0 ⌝ -∗ False -∗ P -∗ P).
 Proof.
   iIntros (x ??).

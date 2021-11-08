@@ -23,11 +23,9 @@ Record BiPlainlyMixin (PROP : bi) `(Plainly PROP) := {
   bi_plainly_mixin_plainly_forall_2 {A} (Ψ : A → PROP) :
     (∀ a, ■ (Ψ a)) ⊢ ■ (∀ a, Ψ a);
 
-  (* The following two laws are very similar, and indeed they hold not just
-     for persistently and plainly, but for any modality defined as `M P n x :=
-     ∀ y, R x y → P n y`. *)
-  bi_plainly_mixin_persistently_impl_plainly (P Q : PROP) :
-    (■ P → <pers> Q) ⊢ <pers> (■ P → Q);
+  (* The following law and [persistently_impl_plainly] below are very similar,
+     and indeed they hold not just for persistently and plainly, but for any
+     modality defined as [M P n x := ∀ y, R x y → P n y]. *)
   bi_plainly_mixin_plainly_impl_plainly (P Q : PROP) :
     (■ P → ■ Q) ⊢ ■ (■ P → Q);
 
@@ -44,6 +42,14 @@ Class BiPlainly (PROP : bi) := {
 }.
 Global Hint Mode BiPlainly ! : typeclass_instances.
 Global Arguments bi_plainly_plainly : simpl never.
+
+Class BiPersistentlyImplPlainly `{!BiPlainly PROP} :=
+  persistently_impl_plainly (P Q : PROP) :
+    (■ P → <pers> Q) ⊢ <pers> (■ P → Q).
+Global Arguments BiPersistentlyImplPlainly : clear implicits.
+Global Arguments BiPersistentlyImplPlainly _ {_}.
+Global Arguments persistently_impl_plainly _ {_ _} _.
+Global Hint Mode BiPersistentlyImplPlainly ! - : typeclass_instances.
 
 Class BiPlainlyExist `{!BiPlainly PROP} :=
   plainly_exist_1 A (Ψ : A → PROP) :
@@ -75,8 +81,6 @@ Section plainly_laws.
   Proof. eapply bi_plainly_mixin_plainly_idemp_2, bi_plainly_mixin. Qed.
   Lemma plainly_forall_2 {A} (Ψ : A → PROP) : (∀ a, ■ (Ψ a)) ⊢ ■ (∀ a, Ψ a).
   Proof. eapply bi_plainly_mixin_plainly_forall_2, bi_plainly_mixin. Qed.
-  Lemma persistently_impl_plainly P Q : (■ P → <pers> Q) ⊢ <pers> (■ P → Q).
-  Proof. eapply bi_plainly_mixin_persistently_impl_plainly, bi_plainly_mixin. Qed.
   Lemma plainly_impl_plainly P Q : (■ P → ■ Q) ⊢ ■ (■ P → Q).
   Proof. eapply bi_plainly_mixin_plainly_impl_plainly, bi_plainly_mixin. Qed.
   Lemma plainly_absorb P Q : ■ P ∗ Q ⊢ ■ P.
@@ -270,9 +274,9 @@ Proof. apply impl_intro_l. by rewrite plainly_and_sep_l_1 wand_elim_r. Qed.
 Lemma impl_wand_affinely_plainly P Q : (■ P → Q) ⊣⊢ (<affine> ■ P -∗ Q).
 Proof. by rewrite -(persistently_elim_plainly P) impl_wand_intuitionistically. Qed.
 
-Lemma persistently_wand_affinely_plainly P Q :
+Lemma persistently_wand_affinely_plainly `{!BiPersistentlyImplPlainly PROP} P Q :
   (<affine> ■ P -∗ <pers> Q) ⊢ <pers> (<affine> ■ P -∗ Q).
-Proof. rewrite -!impl_wand_affinely_plainly. apply persistently_impl_plainly. Qed.
+Proof. rewrite -!impl_wand_affinely_plainly. apply: persistently_impl_plainly. Qed.
 
 Lemma plainly_wand_affinely_plainly P Q :
   (<affine> ■ P -∗ ■ Q) ⊢ ■ (<affine> ■ P -∗ Q).
@@ -362,7 +366,7 @@ Proof. intros; destruct p; simpl; apply _. Qed.
 Lemma plain_persistent P : Plain P → Persistent P.
 Proof. intros. by rewrite /Persistent -plainly_elim_persistently. Qed.
 
-Global Instance impl_persistent P Q :
+Global Instance impl_persistent `{!BiPersistentlyImplPlainly PROP} P Q :
   Absorbing P → Plain P → Persistent Q → Persistent (P → Q).
 Proof.
   intros. by rewrite /Persistent {2}(plain P) -persistently_impl_plainly
@@ -372,7 +376,7 @@ Qed.
 Global Instance plainly_persistent P : Persistent (■ P).
 Proof. by rewrite /Persistent persistently_elim_plainly. Qed.
 
-Global Instance wand_persistent P Q :
+Global Instance wand_persistent `{!BiPersistentlyImplPlainly PROP} P Q :
   Plain P → Persistent Q → Absorbing Q → Persistent (P -∗ Q).
 Proof.
   intros. rewrite /Persistent {2}(plain P). trans (<pers> (■ P → Q))%I.

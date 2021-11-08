@@ -846,20 +846,20 @@ Proof.
   by rewrite /bi_absorbingly comm persistently_absorbing.
 Qed.
 
-Lemma persistently_forall {A} (Ψ : A → PROP) :
+Lemma persistently_forall_1 {A} (Ψ : A → PROP) :
+  <pers> (∀ a, Ψ a) ⊢ ∀ a, <pers> (Ψ a).
+Proof. apply forall_intro=> x. by rewrite (forall_elim x). Qed.
+Lemma persistently_forall `{!BiPersistentlyForall PROP} {A} (Ψ : A → PROP) :
   <pers> (∀ a, Ψ a) ⊣⊢ ∀ a, <pers> (Ψ a).
-Proof.
-  apply (anti_symm _); auto using persistently_forall_2.
-  apply forall_intro=> x. by rewrite (forall_elim x).
-Qed.
+Proof. apply (anti_symm _); auto using persistently_forall_1, persistently_forall_2. Qed.
 Lemma persistently_exist {A} (Ψ : A → PROP) :
   <pers> (∃ a, Ψ a) ⊣⊢ ∃ a, <pers> (Ψ a).
 Proof.
-  apply (anti_symm _); auto using persistently_exist_1.
+  apply (anti_symm _); first by auto using persistently_exist_1.
   apply exist_elim=> x. by rewrite (exist_intro x).
 Qed.
 Lemma persistently_and P Q : <pers> (P ∧ Q) ⊣⊢ <pers> P ∧ <pers> Q.
-Proof. rewrite !and_alt persistently_forall. by apply forall_proper=> -[]. Qed.
+Proof. apply (anti_symm _); by auto using persistently_and_2. Qed.
 Lemma persistently_or P Q : <pers> (P ∨ Q) ⊣⊢ <pers> P ∨ <pers> Q.
 Proof. rewrite !or_alt persistently_exist. by apply exist_proper=> -[]. Qed.
 Lemma persistently_impl P Q : <pers> (P → Q) ⊢ <pers> P → <pers> Q.
@@ -875,6 +875,8 @@ Qed.
 
 Lemma persistently_True_emp : <pers> True ⊣⊢ <pers> emp.
 Proof. apply (anti_symm _); auto using persistently_emp_intro. Qed.
+Lemma persistently_True : True ⊢ <pers> True.
+Proof. rewrite persistently_True_emp. apply persistently_emp_intro. Qed.
 
 Lemma persistently_and_emp P : <pers> P ⊣⊢ <pers> (emp ∧ P).
 Proof.
@@ -922,9 +924,8 @@ Lemma persistently_pure φ : <pers> ⌜φ⌝ ⊣⊢ ⌜φ⌝.
 Proof.
   apply (anti_symm _).
   { by rewrite persistently_into_absorbingly absorbingly_pure. }
-  apply pure_elim'=> Hφ.
-  trans (∀ x : False, <pers> True : PROP)%I; [by apply forall_intro|].
-  rewrite persistently_forall_2. auto using persistently_mono, pure_intro.
+  apply pure_elim'=> Hφ. rewrite persistently_True.
+  auto using persistently_mono, pure_intro.
 Qed.
 
 Lemma persistently_sep_dup P : <pers> P ⊣⊢ <pers> P ∗ <pers> P.
@@ -1083,7 +1084,7 @@ Qed.
 Lemma intuitionistically_and P Q : □ (P ∧ Q) ⊣⊢ □ P ∧ □ Q.
 Proof. by rewrite /bi_intuitionistically persistently_and affinely_and. Qed.
 Lemma intuitionistically_forall {A} (Φ : A → PROP) : □ (∀ x, Φ x) ⊢ ∀ x, □ Φ x.
-Proof. by rewrite /bi_intuitionistically persistently_forall affinely_forall. Qed.
+Proof. by rewrite /bi_intuitionistically persistently_forall_1 affinely_forall. Qed.
 Lemma intuitionistically_or P Q : □ (P ∨ Q) ⊣⊢ □ P ∨ □ Q.
 Proof. by rewrite /bi_intuitionistically persistently_or affinely_or. Qed.
 Lemma intuitionistically_exist {A} (Φ : A → PROP) : □ (∃ x, Φ x) ⊣⊢ ∃ x, □ Φ x.
@@ -1547,7 +1548,7 @@ Proof. intros. by rewrite /Persistent persistently_and -!persistent. Qed.
 Global Instance or_persistent P Q :
   Persistent P → Persistent Q → Persistent (P ∨ Q).
 Proof. intros. by rewrite /Persistent persistently_or -!persistent. Qed.
-Global Instance forall_persistent {A} (Ψ : A → PROP) :
+Global Instance forall_persistent `{!BiPersistentlyForall PROP} {A} (Ψ : A → PROP) :
   (∀ x, Persistent (Ψ x)) → Persistent (∀ x, Ψ x).
 Proof.
   intros. rewrite /Persistent persistently_forall.

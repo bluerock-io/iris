@@ -6,11 +6,22 @@ lemma.
 ## Iris master
 
 **Changes in `bi`:**
+
 * Rename `least_fixpoint_ind` into `least_fixpoint_iter`,
   rename `greatest_fixpoint_coind` into `greatest_fixpoint_coiter`,
   rename `least_fixpoint_strong_ind` into `least_fixpoint_ind`,
   add lemmas `least_fixpoint_{ind_wf, ne', strong_mono}`, and
   add lemmas `greatest_fixpoint_{coind, paco, ne', strong_mono}`.
+* Move `persistently_forall_2` (`∀ <pers> ⊢ <pers> ∀`) out of the BI interface
+  into a new typeclass, `BiPersistentlyForall`. The BI interface instead just
+  demands the equivalent property for conjunction (`(<pers> P) ∧ (<pers> Q) ⊢
+  <pers> (P ∧ Q)`). This enables the IPM to support logics where the
+  persistently modality is defined with an existential quantifier. This also
+  necessitates removing `persistently_impl_plainly` from `BiPlainly` into a new
+  typeclass `BiPersistentlyImplPlainly`.
+  Proofs that are generic in `PROP` might have to add those new classes as
+  assumptions to remain compatible, and code that instantiates the BI interface
+  needs to provide instances for the new classes.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).

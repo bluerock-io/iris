@@ -3,6 +3,7 @@
 1 goal
   
   PROP : bi
+  BiPersistentlyForall0 : BiPersistentlyForall PROP
   P, Q : PROP
   ============================
   "H2" : ∀ x : nat, ⌜x = 0⌝ ∨ ⌜x = 1⌝
@@ -13,6 +14,7 @@
 1 goal
   
   PROP : bi
+  BiPersistentlyForall0 : BiPersistentlyForall PROP
   P, Q : PROP
   ============================
   "H2" : ∀ x : nat, ⌜x = 0⌝ ∨ ⌜x = 1⌝

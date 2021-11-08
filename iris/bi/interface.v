@@ -101,8 +101,13 @@ Section bi_mixin.
     (* In the ordered RA model: [ε ≼ core x]. *)
     bi_mixin_persistently_emp_2 : emp ⊢ <pers> emp;
 
-    bi_mixin_persistently_forall_2 {A} (Ψ : A → PROP) :
-      (∀ a, <pers> (Ψ a)) ⊢ <pers> (∀ a, Ψ a);
+    (* The laws of a "frame" (https://ncatlab.org/nlab/show/frame, not to be
+    confused with separation logic terminology): commuting with finite
+    conjunction and infinite disjunction.
+    The null-ary case, [persistently_True : True ⊢ <pers> True], is derivable from the
+    other laws. *)
+    bi_mixin_persistently_and_2 (P Q : PROP) :
+      (<pers> P) ∧ (<pers> Q) ⊢ <pers> (P ∧ Q);
     bi_mixin_persistently_exist_1 {A} (Ψ : A → PROP) :
       <pers> (∃ a, Ψ a) ⊢ ∃ a, <pers> (Ψ a);
 
@@ -364,9 +369,9 @@ Proof. eapply bi_mixin_persistently_idemp_2, bi_bi_mixin. Qed.
 Lemma persistently_emp_2 : emp ⊢@{PROP} <pers> emp.
 Proof. eapply bi_mixin_persistently_emp_2, bi_bi_mixin. Qed.
 
-Lemma persistently_forall_2 {A} (Ψ : A → PROP) :
-  (∀ a, <pers> (Ψ a)) ⊢ <pers> (∀ a, Ψ a).
-Proof. eapply bi_mixin_persistently_forall_2, bi_bi_mixin. Qed.
+Lemma persistently_and_2 (P Q : PROP) :
+  ((<pers> P) ∧ (<pers> Q)) ⊢ <pers> (P ∧ Q).
+Proof. eapply bi_mixin_persistently_and_2, bi_bi_mixin. Qed.
 Lemma persistently_exist_1 {A} (Ψ : A → PROP) :
   <pers> (∃ a, Ψ a) ⊢ ∃ a, <pers> (Ψ a).
 Proof. eapply bi_mixin_persistently_exist_1, bi_bi_mixin. Qed.
