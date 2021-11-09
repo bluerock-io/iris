@@ -340,6 +340,9 @@ Definition fixpoint_eq : @fixpoint = @fixpoint_def := fixpoint_aux.(seal_eq).
 Section fixpoint.
   Context `{Cofe A, Inhabited A} (f : A → A) `{!Contractive f}.
 
+  (** This lemma does not work well with [rewrite]; we usually define a specific
+  unfolding lemma for each fixpoint and then [apply fixpoint_unfold] in the
+  proof of that unfolding lemma. *)
   Lemma fixpoint_unfold : fixpoint f ≡ f (fixpoint f).
   Proof.
     apply equiv_dist=>n.
