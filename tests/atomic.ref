@@ -9,7 +9,7 @@
   ============================
   "Hl" : l ↦ v
   --------------------------------------∗
-  AACC << ∀ (v0 : val) (q : dfrac), l ↦{q} v0, ABORT l ↦ v >>
+  AACC << ∃∃ (v0 : val) (q : dfrac), l ↦{q} v0, ABORT l ↦ v >>
        @ ⊤ ∖ ∅, ∅
        << l ↦{q} v0, COMM Q -∗ Q >>
 "non_laterable"
@@ -24,7 +24,7 @@
   ============================
   "HP" : ▷ P
   --------------------------------------∗
-  AACC << ∀ (v : val) (q : dfrac), l ↦{q} v, ABORT ▷ P >>
+  AACC << ∃∃ (v : val) (q : dfrac), l ↦{q} v, ABORT ▷ P >>
        @ ⊤ ∖ ∅, ∅
        << l ↦{q} v, COMM True >>
 1 goal
@@ -37,7 +37,7 @@
   ============================
   "HP" : ▷ P
   --------------------------------------∗
-  AACC << ∀ (v : val) (q : dfrac), l ↦{q} v, ABORT ▷ P >>
+  AACC << ∃∃ (v : val) (q : dfrac), l ↦{q} v, ABORT ▷ P >>
        @ ⊤ ∖ ∅, ∅
        << l ↦{q} v, COMM True >>
 "printing"
@@ -48,7 +48,7 @@
   heapGS0 : heapGS Σ
   P : val → iProp Σ
   ============================
-  ⊢ <<< ∀ x : val, P x >>> code @ ∅ <<< ∃ y : val, P y, RET #() >>>
+  ⊢ <<< ∀∀ x : val, P x >>> code @ ∅ <<< ∃∃ y : val, P y, RET #() >>>
 1 goal
   
   Σ : gFunctors
@@ -56,7 +56,7 @@
   P : val → iProp Σ
   Φ : language.val heap_lang → iProp Σ
   ============================
-  "AU" : AU << ∀ x : val, P x >> @ ⊤ ∖ ∅, ∅ << ∃ y : val, P y, COMM Φ #() >>
+  "AU" : AU << ∃∃ x : val, P x >> @ ⊤, ∅ << ∀∀ y : val, P y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
 1 goal
@@ -66,12 +66,12 @@
   P : val → iProp Σ
   Φ : language.val heap_lang → iProp Σ
   ============================
-  _ : AACC << ∀ x : val, P x,
-              ABORT AU << ∀ x : val, P x >>
-                       @ ⊤ ∖ ∅, ∅
-                       << ∃ y : val, P y, COMM Φ #() >> >>
-           @ ⊤ ∖ ∅, ∅
-           << ∃ y : val, P y, COMM Φ #() >>
+  _ : AACC << ∃∃ x : val, P x,
+              ABORT AU << ∃∃ x : val, P x >>
+                       @ ⊤, ∅
+                       << ∀∀ y : val, P y, COMM Φ #() >> >>
+           @ ⊤, ∅
+           << ∀∀ y : val, P y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
 1 goal
@@ -80,7 +80,7 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< ∀ x : val, l ↦ x >>> code @ ∅ <<< l ↦ x, RET #() >>>
+  ⊢ <<< ∀∀ x : val, l ↦ x >>> code @ ∅ <<< l ↦ x, RET #() >>>
 1 goal
   
   Σ : gFunctors
@@ -88,7 +88,7 @@
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
-  "AU" : AU << ∀ x : val, l ↦ x >> @ ⊤ ∖ ∅, ∅ << l ↦ x, COMM Φ #() >>
+  "AU" : AU << ∃∃ x : val, l ↦ x >> @ ⊤ ∖ ∅, ∅ << l ↦ x, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
 1 goal
@@ -98,8 +98,8 @@
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
-  _ : AACC << ∀ x : val, l ↦ x,
-              ABORT AU << ∀ x : val, l ↦ x >>
+  _ : AACC << ∃∃ x : val, l ↦ x,
+              ABORT AU << ∃∃ x : val, l ↦ x >>
                        @ ⊤ ∖ ∅, ∅
                        << l ↦ x, COMM Φ #() >> >>
            @ ⊤ ∖ ∅, ∅
@@ -112,7 +112,7 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< l ↦ #() >>> code @ ∅ <<< ∃ y : val, l ↦ y, RET #() >>>
+  ⊢ <<< l ↦ #() >>> code @ ∅ <<< ∃∃ y : val, l ↦ y, RET #() >>>
 1 goal
   
   Σ : gFunctors
@@ -120,7 +120,7 @@
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
-  "AU" : AU << l ↦ #() >> @ ⊤ ∖ ∅, ∅ << ∃ y : val, l ↦ y, COMM Φ #() >>
+  "AU" : AU << l ↦ #() >> @ ⊤ ∖ ∅, ∅ << ∀∀ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
 1 goal
@@ -133,9 +133,9 @@
   _ : AACC << l ↦ #(),
               ABORT AU << l ↦ #() >>
                        @ ⊤ ∖ ∅, ∅
-                       << ∃ y : val, l ↦ y, COMM Φ #() >> >>
+                       << ∀∀ y : val, l ↦ y, COMM Φ #() >> >>
            @ ⊤ ∖ ∅, ∅
-           << ∃ y : val, l ↦ y, COMM Φ #() >>
+           << ∀∀ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
 1 goal
@@ -176,7 +176,7 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x >>>
+  ⊢ <<< ∀∀ x : val, l ↦ x ∗ l ↦ x >>>
       code @ ∅
     <<< ∃ y : val, l ↦ y, RET #() >>>
 1 goal
@@ -186,7 +186,7 @@
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
-  "AU" : AU << ∀ x : val, l ↦ x ∗ l ↦ x >>
+  "AU" : AU << ∃∃ x : val, l ↦ x ∗ l ↦ x >>
             @ ⊤ ∖ ∅, ∅
             << ∃ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
@@ -197,9 +197,9 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
+  ⊢ <<< ∀∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ∅
-    <<< ∃ y : val, l ↦ y, RET #() >>>
+    <<< ∃∃ y : val, l ↦ y, RET #() >>>
 1 goal
   
   Σ : gFunctors
@@ -207,9 +207,9 @@
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
-  "AU" : AU << ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>
+  "AU" : AU << ∃∃ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>
             @ ⊤ ∖ ∅, ∅
-            << ∃ y : val, l ↦ y, COMM Φ #() >>
+            << ∀∀ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
 1 goal
@@ -218,9 +218,9 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< ∀ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
+  ⊢ <<< ∀∀ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
       code @ ∅
-    <<< ∃ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
+    <<< ∃∃ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
         RET #() >>>
 1 goal
   
@@ -229,9 +229,9 @@
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
-  _ : AU << ∀ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>
+  _ : AU << ∃∃ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>
          @ ⊤ ∖ ∅, ∅
-         << ∃ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗
+         << ∀∀ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗
             l ↦ xx, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
@@ -241,7 +241,7 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
+  ⊢ <<< ∀∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ∅
     <<< l ↦ x, RET #() >>>
 1 goal
@@ -251,7 +251,7 @@
   l : loc
   Φ : language.val heap_lang → iProp Σ
   ============================
-  "AU" : AU << ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>
+  "AU" : AU << ∃∃ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>
             @ ⊤ ∖ ∅, ∅
             << l ↦ x, COMM Φ #() >>
   --------------------------------------∗
@@ -265,7 +265,7 @@
   ============================
   ⊢ <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ∅
-    <<< ∃ y : val, l ↦ y, RET #() >>>
+    <<< ∃∃ y : val, l ↦ y, RET #() >>>
 1 goal
   
   Σ : gFunctors
@@ -276,7 +276,7 @@
   ============================
   "AU" : AU << l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>
             @ ⊤ ∖ ∅, ∅
-            << ∃ y : val, l ↦ y, COMM Φ #() >>
+            << ∀∀ y : val, l ↦ y, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
 1 goal
@@ -361,9 +361,9 @@
   ============================
   "AU" : ∃ x : val, P x ∗
            (P x ={∅,⊤}=∗
-            AU << ∀ x0 : val, P x0 >>
+            AU << ∃∃ x0 : val, P x0 >>
                @ ⊤ ∖ ∅, ∅
-               << ∃ y : val, P y, COMM Φ #() >>)
+               << ∀∀ y : val, P y, COMM Φ #() >>)
            ∧ (∀ x0 : val, P x0 ={∅,⊤}=∗ Φ #())
   --------------------------------------∗
   WP ! #0 @ ∅ {{ v, |={∅,⊤}=> Φ v }}

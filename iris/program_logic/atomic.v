@@ -25,7 +25,7 @@ Definition atomic_wp `{!irisGS Λ Σ} {TA TB : tele}
 
 (* The way to read the [tele_app foo] here is that they convert the n-ary
 function [foo] into a unary function taking a telescope as the argument. *)
-Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
+Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β , 'RET' v '>>>'" :=
   (atomic_wp (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
              (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
              e%E
@@ -39,10 +39,10 @@ Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v 
                         ) .. )
   )
   (at level 20, E, α, β, v at level 200, x1 binder, xn binder, y1 binder, yn binder,
-   format "'[hv' '<<<'  '[' ∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
+   format "'[hv' '<<<'  '[' ∀∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
   : bi_scope.
 
-Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
+Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
   (atomic_wp (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
              (TB:=TeleO)
              e%E
@@ -52,10 +52,10 @@ Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
              (tele_app $ λ x1, .. (λ xn, tele_app v%V) .. )
   )
   (at level 20, E, α, β, v at level 200, x1 binder, xn binder,
-   format "'[hv' '<<<'  '[' ∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β ,  '/' 'RET'  v  ']' '>>>' ']'")
+   format "'[hv' '<<<'  '[' ∀∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β ,  '/' 'RET'  v  ']' '>>>' ']'")
   : bi_scope.
 
-Notation "'<<<' α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
+Notation "'<<<' α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β , 'RET' v '>>>'" :=
   (atomic_wp (TA:=TeleO)
              (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
              e%E
@@ -65,7 +65,7 @@ Notation "'<<<' α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
              (tele_app $ tele_app (λ y1, .. (λ yn, v%V) .. ))
   )
   (at level 20, E, α, β, v at level 200, y1 binder, yn binder,
-   format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
+   format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
   : bi_scope.
 
 Notation "'<<<' α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
