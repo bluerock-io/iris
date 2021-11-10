@@ -14,3 +14,4 @@
 *.fls
 _*_.tex
 auto/*.el
+*.rubbercache
