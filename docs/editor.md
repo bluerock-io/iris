@@ -125,6 +125,29 @@ results in a decent choice for the symbols used in Iris:
 (set-fontset-font t nil (font-spec :name "Symbola"))
 ```
 
+### Automated Indentation
+
+The default indentation configuration of company-coq is not compatible with the Iris syntax.
+As a result, automatic indentation will indent lines incorrectly.
+
+To solve some of these indentation errors you can add the following line to your Emacs
+initialisation file:
+```
+(setq coq-smie-user-tokens
+    '(("∗" . "*")
+      ("-∗" . "->")
+      ("∗-∗" . "<->")
+      ("==∗" . "->")
+      ("⊢" . "->")
+      ("⊣⊢" . "<->")
+      ("⋅" . "*")
+      (":>" . ":=")
+      ("by" . "now")
+      ("forall" . "now")))
+```
+This will let the indentation strategy treat the Iris symbols (e.g. `-∗`) similar to the
+closely related Coq symbols (e.g. `->`).
+
 ## CoqIDE 8.9 and earlier on Linux (ibus-m17n)
 
 On Linux with old versions of CoqIDE you can use the Intelligent
