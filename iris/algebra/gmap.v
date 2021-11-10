@@ -94,7 +94,6 @@ Lemma insert_idN n m i x :
   m !! i ≡{n}≡ Some x → <[i:=x]>m ≡{n}≡ m.
 Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
 
-(** Internalized properties *)
 End ofe.
 
 Global Instance map_seq_ne {A : ofe} start :
