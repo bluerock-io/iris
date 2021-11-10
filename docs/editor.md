@@ -134,14 +134,16 @@ To solve some of these indentation errors you can add the following line to your
 initialisation file:
 ```
 (setq coq-smie-user-tokens
-	'(("∗" . "*")
-	  ("-∗" . "->")
-	  ("∗-∗" . "<->")
-	  ("==∗" . "->")
-	  ("⊢" . "->")
-	  ("⊣⊢" . "<->")
-	  ("⋅" . "*")
-	  (":>" . ":=")))
+    '(("∗" . "*")
+      ("-∗" . "->")
+      ("∗-∗" . "<->")
+      ("==∗" . "->")
+      ("⊢" . "->")
+      ("⊣⊢" . "<->")
+      ("⋅" . "*")
+      (":>" . ":=")
+      ("by" . "now")
+      ("forall" . "now")))
 ```
 This will let the indentation strategy treat the Iris symbols (e.g. `-∗`) similar to the
 closely related Coq symbols (e.g. `->`).
