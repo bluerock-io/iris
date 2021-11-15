@@ -15,6 +15,8 @@
 # Cannot use non-canonical projections as it causes massive unification failures
 # (https://github.com/coq/coq/issues/6294).
 -arg -w -arg -redundant-canonical-projection
+# Fixing this one requires Coq 8.15.
+-arg -w -arg -deprecated-typeclasses-transparency-without-locality
 
 iris/prelude/options.v
 iris/prelude/prelude.v
