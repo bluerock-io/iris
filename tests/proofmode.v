@@ -1,3 +1,4 @@
+From iris.algebra Require Import gmap.
 From iris.bi Require Import laterable.
 From iris.proofmode Require Import tactics intro_patterns.
 From iris.prelude Require Import options.
@@ -80,6 +81,11 @@ Proof.
   iRewrite -("H1" $! _ with "[- //]").
   auto.
 Qed.
+
+Lemma test_iRewrite_dom `{!BiInternalEq PROP} {A : ofe} (m1 m2 : gmap nat A) :
+  m1 ≡ m2 ⊢@{PROP}
+  ⌜ dom (gset nat) m1 = dom (gset nat) m2 ⌝.
+Proof. iIntros "H". by iRewrite "H". Qed.
 
 Check "test_iDestruct_and_emp".
 Lemma test_iDestruct_and_emp P Q `{!Persistent P, !Persistent Q} :
