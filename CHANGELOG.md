@@ -5,6 +5,11 @@ lemma.
 
 ## Iris master
 
+**Changes in `algebra`**
+
+* Define non-expansive instance for `dom`. This, in particular, makes it
+  possible to `iRewrite` below `dom` (even if the `dom` appears in `⌜ _ ⌝`).
+
 **Changes in `bi`:**
 
 * Rename `least_fixpoint_ind` into `least_fixpoint_iter`,
