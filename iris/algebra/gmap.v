@@ -1,5 +1,6 @@
 From stdpp Require Export list gmap.
 From iris.algebra Require Export list cmra.
+From iris.algebra Require Import gset.
 From iris.algebra Require Import updates local_updates proofmode_classes big_op.
 From iris.prelude Require Import options.
 
@@ -94,6 +95,9 @@ Lemma insert_idN n m i x :
   m !! i ≡{n}≡ Some x → <[i:=x]>m ≡{n}≡ m.
 Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
 
+Global Instance gmap_dom_ne n :
+  Proper ((≡{n}@{gmap K A}≡) ==> (=)) (dom (gset K)).
+Proof. intros m1 m2 Hm. apply set_eq=> k. by rewrite !elem_of_dom Hm. Qed.
 End ofe.
 
 Global Instance map_seq_ne {A : ofe} start :
