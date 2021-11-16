@@ -656,6 +656,15 @@ End unital_properties.
 Global Instance gmap_fmap_ne `{Countable K} {A B : ofe} (f : A → B) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==>dist n) (fmap (M:=gmap K) f).
 Proof. by intros ? m m' Hm k; rewrite !lookup_fmap; apply option_fmap_ne. Qed.
+Lemma gmap_fmap_ne_ext `{Countable K}
+  {A : Type} {B : ofe} (f1 f2 : A → B) (m : gmap K A) n :
+  (∀ i x, m !! i = Some x → f1 x ≡{n}≡ f2 x) →
+  f1 <$> m ≡{n}≡ f2 <$> m.
+Proof.
+  move => Hf i.
+  rewrite !lookup_fmap.
+  destruct (m !! i) eqn:?; constructor; by eauto.
+Qed.
 Global Instance gmap_fmap_cmra_morphism `{Countable K} {A B : cmra} (f : A → B)
   `{!CmraMorphism f} : CmraMorphism (fmap f : gmap K A → gmap K B).
 Proof.
