@@ -1,5 +1,5 @@
 (* This file is still experimental. See its tracking issue
-https://gitlab.mpi-sws.org/iris/iris/-/issues/415 for details on remaining
+https://gitlab.mpi-sws.org/iris/iris/-/issues/439 for details on remaining
 issues before stabilization. *)
 From iris.algebra Require Export auth dfrac max_prefix_list.
 From iris.algebra Require Import updates local_updates proofmode_classes.
