@@ -9,6 +9,10 @@ lemma.
 
 * Define non-expansive instance for `dom`. This, in particular, makes it
   possible to `iRewrite` below `dom` (even if the `dom` appears in `⌜ _ ⌝`).
+* Generalize the authorative elements of `gmap_view` to be parameterized by a
+  [discardable fraction](iris/algebra/dfrac.v) (`dfrac`) instead of a fraction
+  (`frac`). Lemmas affected by this have been renamed such that the "frac" in
+  their name has been changed into "dfrac". (by Simon Friis Vindum)
 
 **Changes in `bi`:**
 
@@ -37,6 +41,9 @@ sed -i -E -f- $(find theories -name "*.v") <<EOF
 s/\bleast_fixpoint_ind\b/least_fixpoint_iter/g
 s/\bgreatest_fixpoint_coind\b/greatest_fixpoint_coiter/g
 s/\bleast_fixpoint_strong_ind\b/least_fixpoint_ind/g
+# gmap_view renames from frac to dfrac
+s/\bgmap_view_(auth|both)_frac_(op_invN|op_inv|op_inv_L|valid|op_validN|op_valid|op_valid_L)\b/gmap_view_\1_dfrac_\2/g
+s/\bgmap_view_persist\b/gmap_view_frag_persist/g
 EOF
 ```
 
