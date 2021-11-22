@@ -135,6 +135,35 @@ Section sep_list.
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_sep PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
 
+  Global Instance big_sepL_nil_persistent Φ :
+    Persistent ([∗ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_sepL_persistent Φ l :
+    (∀ k x, Persistent (Φ k x)) → Persistent ([∗ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+  Global Instance big_sepL_persistent_id Ps :
+    TCForall Persistent Ps → Persistent ([∗] Ps).
+  Proof. induction 1; simpl; apply _. Qed.
+
+  Global Instance big_sepL_nil_affine Φ :
+    Affine ([∗ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_sepL_affine Φ l :
+    (∀ k x, Affine (Φ k x)) → Affine ([∗ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+  Global Instance big_sepL_affine_id Ps : TCForall Affine Ps → Affine ([∗] Ps).
+  Proof. induction 1; simpl; apply _. Qed.
+
+  Global Instance big_sepL_nil_timeless `{!Timeless (emp%I : PROP)} Φ :
+    Timeless ([∗ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_sepL_timeless `{!Timeless (emp%I : PROP)} Φ l :
+    (∀ k x, Timeless (Φ k x)) → Timeless ([∗ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+  Global Instance big_sepL_timeless_id `{!Timeless (emp%I : PROP)} Ps :
+    TCForall Timeless Ps → Timeless ([∗] Ps).
+  Proof. induction 1; simpl; apply _. Qed.
+
   Lemma big_sepL_emp l : ([∗ list] k↦y ∈ l, emp) ⊣⊢@{PROP} emp.
   Proof. by rewrite big_opL_unit. Qed.
 
@@ -343,35 +372,6 @@ Section sep_list.
   Lemma big_sepL_laterN_2 Φ n l :
     ([∗ list] k↦x ∈ l, ▷^n Φ k x) ⊢ ▷^n [∗ list] k↦x ∈ l, Φ k x.
   Proof. by rewrite (big_opL_commute _). Qed.
-
-  Global Instance big_sepL_nil_persistent Φ :
-    Persistent ([∗ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_sepL_persistent Φ l :
-    (∀ k x, Persistent (Φ k x)) → Persistent ([∗ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-  Global Instance big_sepL_persistent_id Ps :
-    TCForall Persistent Ps → Persistent ([∗] Ps).
-  Proof. induction 1; simpl; apply _. Qed.
-
-  Global Instance big_sepL_nil_affine Φ :
-    Affine ([∗ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_sepL_affine Φ l :
-    (∀ k x, Affine (Φ k x)) → Affine ([∗ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-  Global Instance big_sepL_affine_id Ps : TCForall Affine Ps → Affine ([∗] Ps).
-  Proof. induction 1; simpl; apply _. Qed.
-
-  Global Instance big_sepL_nil_timeless `{!Timeless (emp%I : PROP)} Φ :
-    Timeless ([∗ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_sepL_timeless `{!Timeless (emp%I : PROP)} Φ l :
-    (∀ k x, Timeless (Φ k x)) → Timeless ([∗ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-  Global Instance big_sepL_timeless_id `{!Timeless (emp%I : PROP)} Ps :
-    TCForall Timeless Ps → Timeless ([∗] Ps).
-  Proof. induction 1; simpl; apply _. Qed.
 End sep_list.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
@@ -581,6 +581,30 @@ Section sep_list2.
       ==> (=) ==> (=) ==> (⊣⊢))
            (big_sepL2 (PROP:=PROP) (A:=A) (B:=B)).
   Proof. intros f g Hf l1 ? <- l2 ? <-. apply big_sepL2_proper; intros; apply Hf. Qed.
+
+  Global Instance big_sepL2_nil_persistent Φ :
+    Persistent ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_sepL2_persistent Φ l1 l2 :
+    (∀ k x1 x2, Persistent (Φ k x1 x2)) →
+    Persistent ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
+  Proof. rewrite big_sepL2_alt. apply _. Qed.
+
+  Global Instance big_sepL2_nil_affine Φ :
+    Affine ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_sepL2_affine Φ l1 l2 :
+    (∀ k x1 x2, Affine (Φ k x1 x2)) →
+    Affine ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
+  Proof. rewrite big_sepL2_alt. apply _. Qed.
+
+  Global Instance big_sepL2_nil_timeless `{!Timeless (emp%I : PROP)} Φ :
+    Timeless ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_sepL2_timeless `{!Timeless (emp%I : PROP)} Φ l1 l2 :
+    (∀ k x1 x2, Timeless (Φ k x1 x2)) →
+    Timeless ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
+  Proof. rewrite big_sepL2_alt. apply _. Qed.
 
   Lemma big_sepL2_insert_acc Φ l1 l2 i x1 x2 :
     l1 !! i = Some x1 → l2 !! i = Some x2 →
@@ -854,30 +878,6 @@ Section sep_list2.
     ([∗ list] k↦y2 ∈ l2, Φ2 k y2) -∗
     [∗ list] k↦y1;y2 ∈ l1;l2, Φ1 k y1 ∗ Φ2 k y2.
   Proof. intros. apply wand_intro_r. by rewrite big_sepL2_sepL. Qed.
-
-  Global Instance big_sepL2_nil_persistent Φ :
-    Persistent ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_sepL2_persistent Φ l1 l2 :
-    (∀ k x1 x2, Persistent (Φ k x1 x2)) →
-    Persistent ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
-  Proof. rewrite big_sepL2_alt. apply _. Qed.
-
-  Global Instance big_sepL2_nil_affine Φ :
-    Affine ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_sepL2_affine Φ l1 l2 :
-    (∀ k x1 x2, Affine (Φ k x1 x2)) →
-    Affine ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
-  Proof. rewrite big_sepL2_alt. apply _. Qed.
-
-  Global Instance big_sepL2_nil_timeless `{!Timeless (emp%I : PROP)} Φ :
-    Timeless ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_sepL2_timeless `{!Timeless (emp%I : PROP)} Φ l1 l2 :
-    (∀ k x1 x2, Timeless (Φ k x1 x2)) →
-    Timeless ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
-  Proof. rewrite big_sepL2_alt. apply _. Qed.
 End sep_list2.
 
 Lemma big_sepL2_const_sepL_l {A B} (Φ : nat → A → PROP) (l1 : list A) (l2 : list B) :
@@ -996,6 +996,20 @@ Section and_list.
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_and PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
 
+  Global Instance big_andL_nil_persistent Φ :
+    Persistent ([∧ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_andL_persistent Φ l :
+    (∀ k x, Persistent (Φ k x)) → Persistent ([∧ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
+  Global Instance big_andL_nil_timeless Φ :
+    Timeless ([∧ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_andL_timeless Φ l :
+    (∀ k x, Timeless (Φ k x)) → Timeless ([∧ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
   Lemma big_andL_lookup Φ l i x :
     l !! i = Some x → ([∧ list] k↦y ∈ l, Φ k y) ⊢ Φ i x.
   Proof.
@@ -1081,20 +1095,6 @@ Section and_list.
   Lemma big_andL_laterN Φ n l :
     ▷^n ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ ([∧ list] k↦x ∈ l, ▷^n Φ k x).
   Proof. apply (big_opL_commute _). Qed.
-
-  Global Instance big_andL_nil_persistent Φ :
-    Persistent ([∧ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_andL_persistent Φ l :
-    (∀ k x, Persistent (Φ k x)) → Persistent ([∧ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-
-  Global Instance big_andL_nil_timeless Φ :
-    Timeless ([∧ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_andL_timeless Φ l :
-    (∀ k x, Timeless (Φ k x)) → Timeless ([∧ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
 End and_list.
 
 Section or_list.
@@ -1147,6 +1147,20 @@ Section or_list.
   Global Instance big_orL_id_mono' :
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_or PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
+
+  Global Instance big_orL_nil_persistent Φ :
+    Persistent ([∨ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_orL_persistent Φ l :
+    (∀ k x, Persistent (Φ k x)) → Persistent ([∨ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
+  Global Instance big_orL_nil_timeless Φ :
+    Timeless ([∨ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_orL_timeless Φ l :
+    (∀ k x, Timeless (Φ k x)) → Timeless ([∨ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
 
   Lemma big_orL_intro Φ l i x :
     l !! i = Some x → Φ i x ⊢ ([∨ list] k↦y ∈ l, Φ k y).
@@ -1220,20 +1234,6 @@ Section or_list.
     l ≠ [] →
     ▷^n ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ ([∨ list] k↦x ∈ l, ▷^n Φ k x).
   Proof. apply (big_opL_commute1 _). Qed.
-
-  Global Instance big_orL_nil_persistent Φ :
-    Persistent ([∨ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_orL_persistent Φ l :
-    (∀ k x, Persistent (Φ k x)) → Persistent ([∨ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-
-  Global Instance big_orL_nil_timeless Φ :
-    Timeless ([∨ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_orL_timeless Φ l :
-    (∀ k x, Timeless (Φ k x)) → Timeless ([∨ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
 End or_list.
 
 (** ** Big ops over finite maps *)
@@ -1276,6 +1276,27 @@ Section sep_map.
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
            (big_opM (@bi_sep PROP) (K:=K) (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_sepM_mono; intros; apply Hf. Qed.
+
+  Global Instance big_sepM_empty_persistent Φ :
+    Persistent ([∗ map] k↦x ∈ ∅, Φ k x).
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
+  Global Instance big_sepM_persistent Φ m :
+    (∀ k x, Persistent (Φ k x)) → Persistent ([∗ map] k↦x ∈ m, Φ k x).
+  Proof. rewrite big_opM_eq. intros. apply big_sepL_persistent=> _ [??]; apply _. Qed.
+
+  Global Instance big_sepM_empty_affine Φ :
+    Affine ([∗ map] k↦x ∈ ∅, Φ k x).
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
+  Global Instance big_sepM_affine Φ m :
+    (∀ k x, Affine (Φ k x)) → Affine ([∗ map] k↦x ∈ m, Φ k x).
+  Proof. rewrite big_opM_eq. intros. apply big_sepL_affine=> _ [??]; apply _. Qed.
+
+  Global Instance big_sepM_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
+    Timeless ([∗ map] k↦x ∈ ∅, Φ k x).
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
+  Global Instance big_sepM_timeless `{!Timeless (emp%I : PROP)} Φ m :
+    (∀ k x, Timeless (Φ k x)) → Timeless ([∗ map] k↦x ∈ m, Φ k x).
+  Proof. rewrite big_opM_eq. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
 
   Lemma big_sepM_empty Φ : ([∗ map] k↦x ∈ ∅, Φ k x) ⊣⊢ emp.
   Proof. by rewrite big_opM_empty. Qed.
@@ -1536,28 +1557,6 @@ Section sep_map.
   Lemma big_sepM_laterN_2 Φ n m :
     ([∗ map] k↦x ∈ m, ▷^n Φ k x) ⊢ ▷^n [∗ map] k↦x ∈ m, Φ k x.
   Proof. by rewrite big_opM_commute. Qed.
-
-  Global Instance big_sepM_empty_persistent Φ :
-    Persistent ([∗ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
-  Global Instance big_sepM_persistent Φ m :
-    (∀ k x, Persistent (Φ k x)) → Persistent ([∗ map] k↦x ∈ m, Φ k x).
-  Proof. rewrite big_opM_eq. intros. apply big_sepL_persistent=> _ [??]; apply _. Qed.
-
-  Global Instance big_sepM_empty_affine Φ :
-    Affine ([∗ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
-  Global Instance big_sepM_affine Φ m :
-    (∀ k x, Affine (Φ k x)) → Affine ([∗ map] k↦x ∈ m, Φ k x).
-  Proof. rewrite big_opM_eq. intros. apply big_sepL_affine=> _ [??]; apply _. Qed.
-
-  Global Instance big_sepM_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
-    Timeless ([∗ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
-  Global Instance big_sepM_timeless `{!Timeless (emp%I : PROP)} Φ m :
-    (∀ k x, Timeless (Φ k x)) → Timeless ([∗ map] k↦x ∈ m, Φ k x).
-  Proof. rewrite big_opM_eq. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
-
 End sep_map.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
@@ -1670,6 +1669,20 @@ Section and_map.
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
            (big_opM (@bi_and PROP) (K:=K) (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_andM_mono; intros; apply Hf. Qed.
+
+  Global Instance big_andM_empty_persistent Φ :
+    Persistent ([∧ map] k↦x ∈ ∅, Φ k x).
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
+  Global Instance big_andM_persistent Φ m :
+    (∀ k x, Persistent (Φ k x)) → Persistent ([∧ map] k↦x ∈ m, Φ k x).
+  Proof. rewrite big_opM_eq. intros. apply big_andL_persistent=> _ [??]; apply _. Qed.
+
+  Global Instance big_andM_empty_timeless Φ :
+    Timeless ([∧ map] k↦x ∈ ∅, Φ k x).
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty /=. apply _. Qed.
+  Global Instance big_andM_timeless Φ m :
+    (∀ k x, Timeless (Φ k x)) → Timeless ([∧ map] k↦x ∈ m, Φ k x).
+  Proof. rewrite big_opM_eq. intros. apply big_andL_timeless=> _ [??]; apply _. Qed.
 
   Lemma big_andM_empty Φ : ([∧ map] k↦x ∈ ∅, Φ k x) ⊣⊢ True.
   Proof. by rewrite big_opM_empty. Qed.
@@ -1815,20 +1828,6 @@ Section and_map.
   Lemma big_andM_laterN Φ n m :
     ▷^n ([∧ map] k↦x ∈ m, Φ k x) ⊣⊢ ([∧ map] k↦x ∈ m, ▷^n Φ k x).
   Proof. apply (big_opM_commute _). Qed.
-
-  Global Instance big_andM_empty_persistent Φ :
-    Persistent ([∧ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
-  Global Instance big_andM_persistent Φ m :
-    (∀ k x, Persistent (Φ k x)) → Persistent ([∧ map] k↦x ∈ m, Φ k x).
-  Proof. rewrite big_opM_eq. intros. apply big_andL_persistent=> _ [??]; apply _. Qed.
-
-  Global Instance big_andM_empty_timeless Φ :
-    Timeless ([∧ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty /=. apply _. Qed.
-  Global Instance big_andM_timeless Φ m :
-    (∀ k x, Timeless (Φ k x)) → Timeless ([∧ map] k↦x ∈ m, Φ k x).
-  Proof. rewrite big_opM_eq. intros. apply big_andL_timeless=> _ [??]; apply _. Qed.
 End and_map.
 
 (** ** Big ops over two maps *)
@@ -1863,6 +1862,14 @@ Section map2.
     rewrite -map_zip_with_flip map_zip_with_map_zip big_sepM_fmap.
     apply big_sepM_proper. by intros k [b a].
   Qed.
+
+  Lemma big_sepM2_empty Φ : ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2) ⊣⊢ emp.
+  Proof.
+    rewrite big_sepM2_eq /big_sepM2_def big_opM_eq pure_True ?left_id //.
+    intros k. rewrite !lookup_empty; split; by inversion 1.
+  Qed.
+  Lemma big_sepM2_empty' P `{!Affine P} Φ : P ⊢ [∗ map] k↦y1;y2 ∈ ∅;∅, Φ k y1 y2.
+  Proof. rewrite big_sepM2_empty. apply: affine. Qed.
 
   (** The lemmas [big_sepM2_mono], [big_sepM2_ne] and [big_sepM2_proper] are more
   generic than the instances as they also give [mi !! k = Some yi] in the premise. *)
@@ -1929,13 +1936,29 @@ Section map2.
       ==> (=) ==> (=) ==> (⊣⊢)) (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
   Proof. intros f g Hf m1 ? <- m2 ? <-. apply big_sepM2_proper; intros; apply Hf. Qed.
 
-  Lemma big_sepM2_empty Φ : ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2) ⊣⊢ emp.
-  Proof.
-    rewrite big_sepM2_eq /big_sepM2_def big_opM_eq pure_True ?left_id //.
-    intros k. rewrite !lookup_empty; split; by inversion 1.
-  Qed.
-  Lemma big_sepM2_empty' P `{!Affine P} Φ : P ⊢ [∗ map] k↦y1;y2 ∈ ∅;∅, Φ k y1 y2.
-  Proof. rewrite big_sepM2_empty. apply: affine. Qed.
+  Global Instance big_sepM2_empty_persistent Φ :
+    Persistent ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
+  Proof. rewrite big_sepM2_empty. apply _. Qed.
+  Global Instance big_sepM2_persistent Φ m1 m2 :
+    (∀ k x1 x2, Persistent (Φ k x1 x2)) →
+    Persistent ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2).
+  Proof. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
+
+  Global Instance big_sepM2_empty_affine Φ :
+    Affine ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
+  Proof. rewrite big_sepM2_empty. apply _. Qed.
+  Global Instance big_sepM2_affine Φ m1 m2 :
+    (∀ k x1 x2, Affine (Φ k x1 x2)) →
+    Affine ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2).
+  Proof. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
+
+  Global Instance big_sepM2_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
+    Timeless ([∗ map] k↦x1;x2 ∈ ∅;∅, Φ k x1 x2).
+  Proof. rewrite big_sepM2_eq /big_sepM2_def map_zip_with_empty. apply _. Qed.
+  Global Instance big_sepM2_timeless `{!Timeless (emp%I : PROP)} Φ m1 m2 :
+    (∀ k x1 x2, Timeless (Φ k x1 x2)) →
+    Timeless ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
+  Proof. intros. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 
   Lemma big_sepM2_empty_l m1 Φ : ([∗ map] k↦y1;y2 ∈ m1; ∅, Φ k y1 y2) ⊢ ⌜m1 = ∅⌝.
   Proof.
@@ -2348,30 +2371,6 @@ Section map2.
     { apply pure_intro. by apply map_disjoint_insert_l. }
     by rewrite big_sepM2_insert // -assoc.
   Qed.
-
-  Global Instance big_sepM2_empty_persistent Φ :
-    Persistent ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
-  Proof. rewrite big_sepM2_empty. apply _. Qed.
-  Global Instance big_sepM2_persistent Φ m1 m2 :
-    (∀ k x1 x2, Persistent (Φ k x1 x2)) →
-    Persistent ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2).
-  Proof. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
-
-  Global Instance big_sepM2_empty_affine Φ :
-    Affine ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
-  Proof. rewrite big_sepM2_empty. apply _. Qed.
-  Global Instance big_sepM2_affine Φ m1 m2 :
-    (∀ k x1 x2, Affine (Φ k x1 x2)) →
-    Affine ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2).
-  Proof. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
-
-  Global Instance big_sepM2_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
-    Timeless ([∗ map] k↦x1;x2 ∈ ∅;∅, Φ k x1 x2).
-  Proof. rewrite big_sepM2_eq /big_sepM2_def map_zip_with_empty. apply _. Qed.
-  Global Instance big_sepM2_timeless `{!Timeless (emp%I : PROP)} Φ m1 m2 :
-    (∀ k x1 x2, Timeless (Φ k x1 x2)) →
-    Timeless ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
-  Proof. intros. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 End map2.
 
 Lemma big_sepM2_union_inv_r `{Countable K} {A B}
@@ -2450,6 +2449,26 @@ Section gset.
   Global Instance big_sepS_mono' :
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepS_mono. Qed.
+
+  Global Instance big_sepS_empty_persistent Φ :
+    Persistent ([∗ set] x ∈ ∅, Φ x).
+  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
+  Global Instance big_sepS_persistent Φ X :
+    (∀ x, Persistent (Φ x)) → Persistent ([∗ set] x ∈ X, Φ x).
+  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
+
+  Global Instance big_sepS_empty_affine Φ : Affine ([∗ set] x ∈ ∅, Φ x).
+  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
+  Global Instance big_sepS_affine Φ X :
+    (∀ x, Affine (Φ x)) → Affine ([∗ set] x ∈ X, Φ x).
+  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
+
+  Global Instance big_sepS_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
+    Timeless ([∗ set] x ∈ ∅, Φ x).
+  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
+  Global Instance big_sepS_timeless `{!Timeless (emp%I : PROP)} Φ X :
+    (∀ x, Timeless (Φ x)) → Timeless ([∗ set] x ∈ X, Φ x).
+  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
 
   Lemma big_sepS_elements Φ X :
     ([∗ set] x ∈ X, Φ x) ⊣⊢ ([∗ list] x ∈ elements X, Φ x).
@@ -2694,26 +2713,6 @@ Section gset.
   Lemma big_sepS_laterN_2 Φ n X :
     ([∗ set] y ∈ X, ▷^n Φ y) ⊢ ▷^n ([∗ set] y ∈ X, Φ y).
   Proof. by rewrite big_opS_commute. Qed.
-
-  Global Instance big_sepS_empty_persistent Φ :
-    Persistent ([∗ set] x ∈ ∅, Φ x).
-  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
-  Global Instance big_sepS_persistent Φ X :
-    (∀ x, Persistent (Φ x)) → Persistent ([∗ set] x ∈ X, Φ x).
-  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
-
-  Global Instance big_sepS_empty_affine Φ : Affine ([∗ set] x ∈ ∅, Φ x).
-  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
-  Global Instance big_sepS_affine Φ X :
-    (∀ x, Affine (Φ x)) → Affine ([∗ set] x ∈ X, Φ x).
-  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
-
-  Global Instance big_sepS_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
-    Timeless ([∗ set] x ∈ ∅, Φ x).
-  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
-  Global Instance big_sepS_timeless `{!Timeless (emp%I : PROP)} Φ X :
-    (∀ x, Timeless (Φ x)) → Timeless ([∗ set] x ∈ X, Φ x).
-  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
 End gset.
 
 Lemma big_sepM_dom `{Countable K} {A} (Φ : K → PROP) (m : gmap K A) :
@@ -2755,6 +2754,26 @@ Section gmultiset.
   Global Instance big_sepMS_mono' :
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opMS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepMS_mono. Qed.
+
+  Global Instance big_sepMS_empty_persistent Φ :
+    Persistent ([∗ mset] x ∈ ∅, Φ x).
+  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
+  Global Instance big_sepMS_persistent Φ X :
+    (∀ x, Persistent (Φ x)) → Persistent ([∗ mset] x ∈ X, Φ x).
+  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
+
+  Global Instance big_sepMS_empty_affine Φ : Affine ([∗ mset] x ∈ ∅, Φ x).
+  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
+  Global Instance big_sepMS_affine Φ X :
+    (∀ x, Affine (Φ x)) → Affine ([∗ mset] x ∈ X, Φ x).
+  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
+
+  Global Instance big_sepMS_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
+    Timeless ([∗ mset] x ∈ ∅, Φ x).
+  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
+  Global Instance big_sepMS_timeless `{!Timeless (emp%I : PROP)} Φ X :
+    (∀ x, Timeless (Φ x)) → Timeless ([∗ mset] x ∈ X, Φ x).
+  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
 
   Lemma big_sepMS_empty Φ : ([∗ mset] x ∈ ∅, Φ x) ⊣⊢ emp.
   Proof. by rewrite big_opMS_empty. Qed.
@@ -2924,26 +2943,6 @@ Section gmultiset.
     rewrite (big_sepMS_delete Ψ X x) //. apply sep_mono_r.
     apply wand_elim_l', big_sepMS_impl.
   Qed.
-
-  Global Instance big_sepMS_empty_persistent Φ :
-    Persistent ([∗ mset] x ∈ ∅, Φ x).
-  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
-  Global Instance big_sepMS_persistent Φ X :
-    (∀ x, Persistent (Φ x)) → Persistent ([∗ mset] x ∈ X, Φ x).
-  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
-
-  Global Instance big_sepMS_empty_affine Φ : Affine ([∗ mset] x ∈ ∅, Φ x).
-  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
-  Global Instance big_sepMS_affine Φ X :
-    (∀ x, Affine (Φ x)) → Affine ([∗ mset] x ∈ X, Φ x).
-  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
-
-  Global Instance big_sepMS_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
-    Timeless ([∗ mset] x ∈ ∅, Φ x).
-  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
-  Global Instance big_sepMS_timeless `{!Timeless (emp%I : PROP)} Φ X :
-    (∀ x, Timeless (Φ x)) → Timeless ([∗ mset] x ∈ X, Φ x).
-  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
 End gmultiset.
 
 (** Commuting lemmas *)
