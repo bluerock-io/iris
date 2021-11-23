@@ -66,17 +66,9 @@ Definition faa_atomic {Σ} `{!heapGS_gen hlc Σ, !atomic_heap} : val :=
     if: CAS "l" "m" ("m" + "n") then "m" else "faa" "l" "n".
 
 (** Notation for heap primitives, in a module so you can import it separately. *)
-(** FIXME: Refactor these notations using custom entries once Coq bug #13654
-has been fixed. *)
 Module notation.
-  Notation "l ↦{ dq } v" := (mapsto l dq v)
-    (at level 20, format "l  ↦{ dq }  v") : bi_scope.
-  Notation "l ↦□ v" := (mapsto l DfracDiscarded v)
-    (at level 20, format "l  ↦□  v") : bi_scope.
-  Notation "l ↦{# q } v" := (mapsto l (DfracOwn q) v)
-    (at level 20, format "l  ↦{# q }  v") : bi_scope.
-  Notation "l ↦ v" := (mapsto l (DfracOwn 1) v)
-    (at level 20, format "l  ↦  v") : bi_scope.
+  Notation "l ↦ dq v" := (mapsto l dq v)
+    (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 
   Notation "'ref' e" := (alloc e) : expr_scope.
   Notation "! e" := (load e) : expr_scope.

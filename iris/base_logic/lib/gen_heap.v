@@ -126,16 +126,8 @@ Section definitions.
 End definitions.
 Global Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
-(** FIXME: Refactor these notations using custom entries once Coq bug #13654
-has been fixed. *)
-Local Notation "l ↦{ dq } v" := (mapsto l dq v)
-  (at level 20, format "l  ↦{ dq }  v") : bi_scope.
-Local Notation "l ↦□ v" := (mapsto l DfracDiscarded v)
-  (at level 20, format "l  ↦□  v") : bi_scope.
-Local Notation "l ↦{# q } v" := (mapsto l (DfracOwn q) v)
-  (at level 20, format "l  ↦{# q }  v") : bi_scope.
-Local Notation "l ↦ v" := (mapsto l (DfracOwn 1) v)
-  (at level 20, format "l  ↦  v") : bi_scope.
+Local Notation "l ↦ dq v" := (mapsto l dq v)
+  (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 
 Section gen_heap.
   Context {L V} `{Countable L, !gen_heapGS L V Σ}.
