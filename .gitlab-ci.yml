@@ -47,25 +47,33 @@ build-coq.dev:
     OPAM_PINS: "coq version dev"
     MANGLE_NAMES: "1"
 
-build-coq.8.14.0:
+build-coq.8.14.1:
   <<: *template
-  <<: *branches_and_mr
   variables:
-    OPAM_PINS: "coq version 8.14.0"
+    OPAM_PINS: "coq version 8.14.1"
     MANGLE_NAMES: "1"
-    DENY_WARNINGS: "1"
-
-build-coq.8.13.2:
-  <<: *template
-  interruptible: false
-  variables:
-    OPAM_PINS: "coq version 8.13.2"
     DENY_WARNINGS: "1"
     OPAM_PKG: "1"
     DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
     DOC_OPTS: "--external https://plv.mpi-sws.org/coqdoc/stdpp/ stdpp"
   tags:
   - fp-timing
+  interruptible: false
+
+# Separate MR job that does not run on fp-timing.
+build-coq.8.14.1-mr:
+  <<: *template
+  <<: *only_mr
+  variables:
+    OPAM_PINS: "coq version 8.14.1"
+    MANGLE_NAMES: "1"
+    DENY_WARNINGS: "1"
+
+build-coq.8.13.2:
+  <<: *template
+  variables:
+    OPAM_PINS: "coq version 8.13.2"
+    DENY_WARNINGS: "1"
 
 build-coq.8.12.2:
   <<: *template
