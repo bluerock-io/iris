@@ -198,6 +198,10 @@ Section lemmas.
     ✓ (gmap_view_auth dp m1 ⋅ gmap_view_auth dq m2) → m1 = m2.
   Proof. apply view_auth_dfrac_op_inv_L, _. Qed.
 
+  Lemma gmap_view_auth_dfrac_validN m n dq : ✓{n} gmap_view_auth dq m ↔ ✓ dq.
+  Proof.
+    rewrite view_auth_dfrac_validN. intuition eauto using gmap_view_rel_unit.
+  Qed.
   Lemma gmap_view_auth_dfrac_valid m dq : ✓ gmap_view_auth dq m ↔ ✓ dq.
   Proof.
     rewrite view_auth_dfrac_valid. intuition eauto using gmap_view_rel_unit.
