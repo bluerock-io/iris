@@ -16,7 +16,7 @@ which allows one to grow the auth element by appending only. At any time the
 auth list can be "snapshotted" with [mono_list_lb_own_get] to produce a
 persistent lower-bound. *)
 From iris.proofmode Require Import tactics.
-From iris.staging.algebra Require Import mono_list.
+From iris.algebra.lib Require Import mono_list.
 From iris.bi.lib Require Import fractional.
 From iris.base_logic.lib Require Export own.
 From iris.prelude Require Import options.

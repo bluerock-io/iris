@@ -55,6 +55,7 @@ iris/algebra/lib/ufrac_auth.v
 iris/algebra/lib/dfrac_agree.v
 iris/algebra/lib/gmap_view.v
 iris/algebra/lib/mono_nat.v
+iris/algebra/lib/mono_list.v
 iris/algebra/lib/gset_bij.v
 iris/si_logic/siprop.v
 iris/si_logic/bi.v
@@ -174,7 +175,6 @@ iris_heap_lang/lib/arith.v
 iris_heap_lang/lib/array.v
 
 iris_staging/algebra/list.v
-iris_staging/algebra/mono_list.v
 iris_staging/base_logic/algebra.v
 iris_staging/base_logic/mono_list.v
 iris_staging/heap_lang/interpreter.v

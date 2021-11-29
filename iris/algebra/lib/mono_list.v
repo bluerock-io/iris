@@ -1,13 +1,9 @@
-(* This file is still experimental. See its tracking issue
-https://gitlab.mpi-sws.org/iris/iris/-/issues/439 for details on remaining
-issues before stabilization. *)
-From iris.algebra Require Export auth dfrac max_prefix_list.
-From iris.algebra Require Import updates local_updates proofmode_classes.
-From iris.prelude Require Import options.
-
 (** Authoritative CMRA of append-only lists, where the fragment represents a
   snap-shot of the list, and the authoritative element can only grow by
   appending. *)
+From iris.algebra Require Export auth dfrac max_prefix_list.
+From iris.algebra Require Import updates local_updates proofmode_classes.
+From iris.prelude Require Import options.
 
 Definition mono_listR (A : ofe) : cmra  := authR (max_prefix_listUR A).
 Definition mono_listUR (A : ofe) : ucmra  := authUR (max_prefix_listUR A).
@@ -192,7 +188,7 @@ Section mono_list_props.
   (** * Update *)
   Lemma mono_list_update {l1} l2 : l1 `prefix_of` l2 → ●ML l1 ~~> ●ML l2.
   Proof. intros ?. by apply auth_update, max_prefix_list_local_update. Qed.
-  Lemma mono_list_update_auth_persist dq l : ●ML{dq} l ~~> ●□ML l.
+  Lemma mono_list_auth_persist dq l : ●ML{dq} l ~~> ●□ML l.
   Proof.
     rewrite /mono_list_auth. apply cmra_update_op; [|done].
     by apply auth_update_auth_persist.
