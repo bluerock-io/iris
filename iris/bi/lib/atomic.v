@@ -95,21 +95,18 @@ Global Arguments atomic_acc {PROP _ TA TB} Eo Ei _ _ _ _ : simpl never.
 Global Arguments atomic_update {PROP _ TA TB} Eo Ei _ _ _ : simpl never.
 
 (** Notation: Atomic updates *)
+(* The way to read the [tele_app foo] here is that they convert the n-ary
+function [foo] into a unary function taking a telescope as the argument. *)
 Notation "'AU' '<<' ∀ x1 .. xn , α '>>' @ Eo , Ei '<<' ∃ y1 .. yn , β , 'COMM' Φ '>>'" :=
   (atomic_update (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
                  (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
                  Eo Ei
-                 (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn, α%I) ..)
-                 (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn,
-                         tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                         (λ y1, .. (λ yn, β%I) .. )
+                 (tele_app $ λ x1, .. (λ xn, α%I) ..)
+                 (tele_app $ λ x1, .. (λ xn,
+                         tele_app (λ y1, .. (λ yn, β%I) .. )
                         ) .. )
-                 (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn,
-                         tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                         (λ y1, .. (λ yn, Φ%I) .. )
+                 (tele_app $ λ x1, .. (λ xn,
+                         tele_app (λ y1, .. (λ yn, Φ%I) .. )
                         ) .. )
   )
   (at level 20, Eo, Ei, α, β, Φ at level 200, x1 binder, xn binder, y1 binder, yn binder,
@@ -119,12 +116,9 @@ Notation "'AU' '<<' ∀ x1 .. xn , α '>>' @ Eo , Ei '<<' β , 'COMM' Φ '>>'" :
   (atomic_update (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
                  (TB:=TeleO)
                  Eo Ei
-                 (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn, α%I) ..)
-                 (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn, tele_app (TT:=TeleO) β%I) .. )
-                 (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn, tele_app (TT:=TeleO) Φ%I) .. )
+                 (tele_app $ λ x1, .. (λ xn, α%I) ..)
+                 (tele_app $ λ x1, .. (λ xn, tele_app β%I) .. )
+                 (tele_app $ λ x1, .. (λ xn, tele_app Φ%I) .. )
   )
   (at level 20, Eo, Ei, α, β, Φ at level 200, x1 binder, xn binder,
    format "'[hv   ' 'AU'  '<<'  '[' ∀  x1  ..  xn ,  '/' α  ']' '>>'  '/' @  '[' Eo ,  '/' Ei ']'  '/' '<<'  '[' β ,  '/' COMM  Φ  ']' '>>' ']'") : bi_scope.
@@ -133,22 +127,19 @@ Notation "'AU' '<<' α '>>' @ Eo , Ei '<<' ∃ y1 .. yn , β , 'COMM' Φ '>>'" :
   (atomic_update (TA:=TeleO)
                  (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
                  Eo Ei
-                 (tele_app (TT:=TeleO) α%I)
-                 (tele_app (TT:=TeleO) $
-                       tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                                (λ y1, .. (λ yn, β%I) ..))
-                 (tele_app (TT:=TeleO) $
-                       tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                                (λ y1, .. (λ yn, Φ%I) ..))
+                 (tele_app α%I)
+                 (tele_app $ tele_app (λ y1, .. (λ yn, β%I) ..))
+                 (tele_app $ tele_app (λ y1, .. (λ yn, Φ%I) ..))
   )
   (at level 20, Eo, Ei, α, β, Φ at level 200, y1 binder, yn binder,
    format "'[hv   ' 'AU'  '<<'  '[' α  ']' '>>'  '/' @  '[' Eo ,  '/' Ei ']'  '/' '<<'  '[' ∃  y1  ..  yn ,  '/' β ,  '/' COMM  Φ  ']' '>>' ']'") : bi_scope.
 
 Notation "'AU' '<<' α '>>' @ Eo , Ei '<<' β , 'COMM' Φ '>>'" :=
-  (atomic_update (TA:=TeleO) (TB:=TeleO) Eo Ei
-                 (tele_app (TT:=TeleO) α%I)
-                 (tele_app (TT:=TeleO) $ tele_app (TT:=TeleO) β%I)
-                 (tele_app (TT:=TeleO) $ tele_app (TT:=TeleO) Φ%I)
+  (atomic_update (TA:=TeleO) (TB:=TeleO)
+                 Eo Ei
+                 (tele_app α%I)
+                 (tele_app $ tele_app β%I)
+                 (tele_app $ tele_app Φ%I)
   )
   (at level 20, Eo, Ei, α, β, Φ at level 200,
    format "'[hv   ' 'AU'  '<<'  '[' α  ']' '>>'  '/' @  '[' Eo ,  '/' Ei ']'  '/' '<<'  '[' β ,  '/' COMM  Φ  ']' '>>' ']'") : bi_scope.
@@ -158,18 +149,13 @@ Notation "'AACC' '<<' ∀ x1 .. xn , α , 'ABORT' P '>>' @ Eo , Ei '<<' ∃ y1 .
   (atomic_acc (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
               (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
               Eo Ei
-              (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                    λ x1, .. (λ xn, α%I) ..)
+              (tele_app $ λ x1, .. (λ xn, α%I) ..)
               P%I
-              (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                    λ x1, .. (λ xn,
-                      tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                      (λ y1, .. (λ yn, β%I) .. )
+              (tele_app $ λ x1, .. (λ xn,
+                      tele_app (λ y1, .. (λ yn, β%I) .. )
                      ) .. )
-              (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                    λ x1, .. (λ xn,
-                      tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                      (λ y1, .. (λ yn, Φ%I) .. )
+              (tele_app $ λ x1, .. (λ xn,
+                      tele_app (λ y1, .. (λ yn, Φ%I) .. )
                      ) .. )
   )
   (at level 20, Eo, Ei, α, P, β, Φ at level 200, x1 binder, xn binder, y1 binder, yn binder,
@@ -179,13 +165,10 @@ Notation "'AACC' '<<' ∀ x1 .. xn , α , 'ABORT' P '>>' @ Eo , Ei '<<' β , 'CO
   (atomic_acc (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
               (TB:=TeleO)
               Eo Ei
-              (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                        λ x1, .. (λ xn, α%I) ..)
+              (tele_app $ λ x1, .. (λ xn, α%I) ..)
               P%I
-              (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                        λ x1, .. (λ xn, tele_app (TT:=TeleO) β%I) .. )
-              (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                        λ x1, .. (λ xn, tele_app (TT:=TeleO) Φ%I) .. )
+              (tele_app $ λ x1, .. (λ xn, tele_app β%I) .. )
+              (tele_app $ λ x1, .. (λ xn, tele_app Φ%I) .. )
   )
   (at level 20, Eo, Ei, α, P, β, Φ at level 200, x1 binder, xn binder,
    format "'[hv     ' 'AACC'  '<<'  '[' ∀  x1  ..  xn ,  '/' α ,  '/' ABORT  P  ']' '>>'  '/' @  '[' Eo ,  '/' Ei ']'  '/' '<<'  '[' β ,  '/' COMM  Φ  ']' '>>' ']'") : bi_scope.
@@ -194,14 +177,10 @@ Notation "'AACC' '<<' α , 'ABORT' P '>>' @ Eo , Ei '<<' ∃ y1 .. yn , β , 'CO
   (atomic_acc (TA:=TeleO)
               (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
               Eo Ei
-              (tele_app (TT:=TeleO) α%I)
+              (tele_app α%I)
               P%I
-              (tele_app (TT:=TeleO) $
-                        tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                        (λ y1, .. (λ yn, β%I) ..))
-              (tele_app (TT:=TeleO) $
-                        tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                        (λ y1, .. (λ yn, Φ%I) ..))
+              (tele_app $ tele_app (λ y1, .. (λ yn, β%I) ..))
+              (tele_app $ tele_app (λ y1, .. (λ yn, Φ%I) ..))
   )
   (at level 20, Eo, Ei, α, P, β, Φ at level 200, y1 binder, yn binder,
    format "'[hv     ' 'AACC'  '<<'  '[' α ,  '/' ABORT  P  ']' '>>'  '/' @  '[' Eo ,  '/' Ei ']'  '/' '<<'  '[' ∃  y1  ..  yn ,  '/' β ,  '/' COMM  Φ  ']' '>>' ']'") : bi_scope.
@@ -210,10 +189,10 @@ Notation "'AACC' '<<' α , 'ABORT' P '>>' @ Eo , Ei '<<' β , 'COMM' Φ '>>'" :=
   (atomic_acc (TA:=TeleO)
               (TB:=TeleO)
               Eo Ei
-              (tele_app (TT:=TeleO) α%I)
+              (tele_app α%I)
               P%I
-                 (tele_app (TT:=TeleO) $ tele_app (TT:=TeleO) β%I)
-                 (tele_app (TT:=TeleO) $ tele_app (TT:=TeleO) Φ%I)
+              (tele_app $ tele_app β%I)
+              (tele_app $ tele_app Φ%I)
   )
   (at level 20, Eo, Ei, α, P, β, Φ at level 200,
    format "'[hv     ' 'AACC'  '<<'  '[' α ,  '/' ABORT  P  ']' '>>'  '/' @  '[' Eo ,  '/' Ei ']'  '/' '<<'  '[' β ,  '/' COMM  Φ  ']' '>>' ']'") : bi_scope.
