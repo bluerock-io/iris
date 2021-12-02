@@ -155,7 +155,7 @@ Section contrib_spec.
 
   Lemma read_contrib_spec_1 γ l n :
     {{{ ccounter_ctx γ l ∗ ccounter γ 1 n }}} read #l
-    {{{ n, RET #n; ccounter γ 1 n }}}.
+    {{{ RET #n; ccounter γ 1 n }}}.
   Proof.
     iIntros (Φ) "[#? Hγf] HΦ".
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]". wp_load.
