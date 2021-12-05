@@ -12,6 +12,7 @@ Definition bi_wand_iff {PROP : bi} (P Q : PROP) : PROP :=
 Global Arguments bi_wand_iff {_} _%I _%I : simpl never.
 Global Instance: Params (@bi_wand_iff) 1 := {}.
 Infix "∗-∗" := bi_wand_iff : bi_scope.
+Notation "P ∗-∗ Q" := (⊢ P ∗-∗ Q) : stdpp_scope.
 
 Class Persistent {PROP : bi} (P : PROP) := persistent : P ⊢ <pers> P.
 Global Arguments Persistent {_} _%I : simpl never.
