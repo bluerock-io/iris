@@ -69,7 +69,7 @@ Section max_nat.
     apply ra_total_mixin; apply _ || eauto.
     - intros [x] [y] [z]. repeat rewrite max_nat_op. by rewrite Nat.max_assoc.
     - intros [x] [y]. by rewrite max_nat_op Nat.max_comm.
-    - intros [x]. by rewrite max_nat_op Max.max_idempotent.
+    - intros [x]. by rewrite max_nat_op Nat.max_id.
   Qed.
   Canonical Structure max_natR : cmra := discreteR max_nat max_nat_ra_mixin.
 
@@ -124,7 +124,7 @@ Section min_nat.
     apply ra_total_mixin; apply _ || eauto.
     - intros [x] [y] [z]. repeat rewrite min_nat_op_min. by rewrite Nat.min_assoc.
     - intros [x] [y]. by rewrite min_nat_op_min Nat.min_comm.
-    - intros [x]. by rewrite min_nat_op_min Min.min_idempotent.
+    - intros [x]. by rewrite min_nat_op_min Nat.min_id.
   Qed.
   Canonical Structure min_natR : cmra := discreteR min_nat min_nat_ra_mixin.
 
@@ -147,7 +147,7 @@ Section min_nat.
   Proof. done. Qed.
 
   Global Instance : RightAbsorb (=) (MinNat 0) (⋅).
-  Proof. intros [x]. by rewrite min_nat_op_min Min.min_0_r. Qed.
+  Proof. intros [x]. by rewrite min_nat_op_min Nat.min_0_r. Qed.
 
   Global Instance : IdemP (=@{min_nat}) (⋅).
   Proof. intros [x]. rewrite min_nat_op_min. apply f_equal. lia. Qed.
