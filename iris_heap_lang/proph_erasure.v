@@ -185,10 +185,10 @@ Proof.
     split; [intros ?|intros (?&?&?)];
       repeat (case_match; simplify_eq/=); eauto.
   - eexists _; split; eauto; simpl.
-    erewrite bool_decide_iff; first by eauto.
+    erewrite bool_decide_ext; first by eauto.
     rewrite erase_val_inj_iff; done.
   - by assert (vals_compare_safe v1 v2) by by apply vals_compare_safe_erase.
-  - by erewrite bool_decide_iff; last apply erase_val_inj_iff.
+  - by erewrite bool_decide_ext; last apply erase_val_inj_iff.
   - by assert (vals_compare_safe (erase_val v1) (erase_val v2))
       by by apply vals_compare_safe_erase.
 Qed.
