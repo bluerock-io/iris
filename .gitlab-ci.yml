@@ -96,7 +96,7 @@ trigger-stdpp.dev-coq.8.14.1:
   - api
 
 # Nightly job with latest Coq branch
-trigger-stdpp.dev-coq.8.14.dev:
+trigger-stdpp.dev-coq.dev:
   <<: *template
   variables:
     STDPP_REPO: "iris/stdpp"
