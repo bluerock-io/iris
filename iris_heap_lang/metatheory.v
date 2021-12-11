@@ -64,24 +64,21 @@ Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
   end.
 
 (* Properties *)
-Local Instance SetUnfoldElemOf_insert_binder x y X Q :
+Local Instance set_unfold_elem_of_insert_binder x y X Q :
   SetUnfoldElemOf y X Q →
   SetUnfoldElemOf y (set_binder_insert x X) (Q ∨ BNamed y = x).
-Proof.
-  intros H1. constructor.
-  destruct x as [|x]; set_solver.
-Qed.
+Proof. destruct 1; constructor; destruct x; set_solver. Qed.
 
 Lemma is_closed_weaken X Y e : is_closed_expr X e → X ⊆ Y → is_closed_expr Y e.
-Proof.
-  revert X Y; induction e; naive_solver (eauto; set_solver).
-Qed.
+Proof. revert X Y; induction e; naive_solver (eauto; set_solver). Qed.
 
 Lemma is_closed_weaken_empty X e : is_closed_expr ∅ e → is_closed_expr X e.
 Proof. intros. by apply is_closed_weaken with ∅, empty_subseteq. Qed.
 
 Lemma is_closed_subst X e y v :
-  is_closed_val v → is_closed_expr ({[y]} ∪ X) e → is_closed_expr X (subst y v e).
+  is_closed_val v →
+  is_closed_expr ({[y]} ∪ X) e →
+  is_closed_expr X (subst y v e).
 Proof.
   intros Hv. revert X.
   induction e=> X /= ?; destruct_and?; split_and?; simplify_option_eq;
@@ -90,14 +87,16 @@ Proof.
     end; eauto using is_closed_weaken with set_solver.
 Qed.
 Lemma is_closed_subst' X e x v :
-  is_closed_val v → is_closed_expr (set_binder_insert x X) e → is_closed_expr X (subst' x v e).
+  is_closed_val v →
+  is_closed_expr (set_binder_insert x X) e →
+  is_closed_expr X (subst' x v e).
 Proof. destruct x; eauto using is_closed_subst. Qed.
 
 Lemma subst_is_closed X e x es : is_closed_expr X e → x ∉ X → subst x es e = e.
 Proof.
   revert X. induction e=> X /=;
    rewrite ?bool_decide_spec ?andb_True=> ??;
-    repeat case_decide; simplify_eq/=; f_equal; intuition eauto with set_solver.
+   repeat case_decide; simplify_eq/=; f_equal; intuition eauto with set_solver.
 Qed.
 
 Lemma subst_is_closed_empty e x v : is_closed_expr ∅ e → subst x v e = e.
@@ -244,19 +243,11 @@ Lemma subst_map_is_closed X e vs :
 Proof.
   revert X vs. assert (∀ x x1 x2 X (vs : gmap string val),
     (∀ x, x ∈ X → vs !! x = None) →
-    x ∈ x2 :b: x1 :b: X →
+    x ∈ set_binder_insert x2 (set_binder_insert x1 X) →
     binder_delete x1 (binder_delete x2 vs) !! x = None).
   { intros x x1 x2 X vs ??. rewrite !lookup_binder_delete_None. set_solver. }
-  induction e as [| |f x e IHe | | | | | | | | | | | | | | | | | | | |]=> X vs /= ? HX.
-  3:{ f_equal. eapply IHe; eauto.
-      intros x0 Hx0.
-      rewrite !lookup_binder_delete_None.
-      set_solver. }
-  all: repeat case_match; naive_solver eauto with f_equal.
+  induction e=> X vs /= ? HX; repeat case_match; naive_solver eauto with f_equal.
 Qed.
 
 Lemma subst_map_is_closed_empty e vs : is_closed_expr ∅ e → subst_map vs e = e.
-Proof.
-  intros.
-  apply subst_map_is_closed with ∅; try setoid_rewrite elem_of_empty; set_solver.
-Qed.
+Proof. intros. apply subst_map_is_closed with (∅ : stringset); set_solver. Qed.
