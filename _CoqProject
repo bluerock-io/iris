@@ -52,7 +52,7 @@ iris/algebra/max_prefix_list.v
 iris/algebra/lib/excl_auth.v
 iris/algebra/lib/frac_auth.v
 iris/algebra/lib/ufrac_auth.v
-iris/algebra/lib/frac_agree.v
+iris/algebra/lib/dfrac_agree.v
 iris/algebra/lib/gmap_view.v
 iris/algebra/lib/mono_nat.v
 iris/algebra/lib/gset_bij.v

@@ -16,6 +16,9 @@ lemma.
 * Change `ufrac_auth` notation to not use curly braces, since these fractions do
   not behave like regular fractions (and cannot be made `dfrac`).
   Old: `●U{q} a`, `◯U{q} b`; new: `●U_q a`, `◯U_q b`.
+* Equip `frac_agree` with support for `dfrac` and rename it to `dfrac_agree`.
+  The old `to_frac_agree` and its lemmas still exist, except that the
+  `frac_agree_op_valid` lemmas are made bi-directional.
 
 **Changes in `bi`:**
 
@@ -47,6 +50,8 @@ s/\bleast_fixpoint_strong_ind\b/least_fixpoint_ind/g
 # gmap_view renames from frac to dfrac
 s/\bgmap_view_(auth|both)_frac_(op_invN|op_inv|op_inv_L|valid|op_validN|op_valid|op_valid_L)\b/gmap_view_\1_dfrac_\2/g
 s/\bgmap_view_persist\b/gmap_view_frag_persist/g
+# frac_agree with dfrac
+s/\bfrac_agreeR\b/dfrac_agreeR/g
 EOF
 ```
 

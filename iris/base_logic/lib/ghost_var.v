@@ -1,6 +1,6 @@
 (** A simple "ghost variable" of arbitrary type with fractional ownership.
 Can be mutated when fully owned. *)
-From iris.algebra Require Import frac_agree.
+From iris.algebra Require Import dfrac_agree.
 From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import proofmode.
 From iris.base_logic.lib Require Export own.
@@ -8,12 +8,12 @@ From iris.prelude Require Import options.
 
 (** The CMRA we need. *)
 Class ghost_varG Σ (A : Type) := GhostVarG {
-  ghost_var_inG :> inG Σ (frac_agreeR $ leibnizO A);
+  ghost_var_inG :> inG Σ (dfrac_agreeR $ leibnizO A);
 }.
 Global Hint Mode ghost_varG - ! : typeclass_instances.
 
 Definition ghost_varΣ (A : Type) : gFunctors :=
-  #[ GFunctor (frac_agreeR $ leibnizO A) ].
+  #[ GFunctor (dfrac_agreeR $ leibnizO A) ].
 
 Global Instance subG_ghost_varΣ Σ A : subG (ghost_varΣ A) Σ → ghost_varG Σ A.
 Proof. solve_inG. Qed.
