@@ -30,22 +30,20 @@ Section lemmas.
   Proof. rewrite /to_frac_agree -pair_op agree_idemp //. Qed.
 
   Lemma frac_agree_op_valid q1 a1 q2 a2 :
-    ✓ (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) →
+    ✓ (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) ↔
     (q1 + q2 ≤ 1)%Qp ∧ a1 ≡ a2.
   Proof.
-    intros [Hq Ha]%pair_valid. simpl in *. split; first done.
-    apply to_agree_op_inv. done.
+    rewrite /to_frac_agree -pair_op pair_valid to_agree_op_valid. done.
   Qed.
   Lemma frac_agree_op_valid_L `{!LeibnizEquiv A} q1 a1 q2 a2 :
-    ✓ (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) →
+    ✓ (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) ↔
     (q1 + q2 ≤ 1)%Qp ∧ a1 = a2.
   Proof. unfold_leibniz. apply frac_agree_op_valid. Qed.
   Lemma frac_agree_op_validN q1 a1 q2 a2 n :
-    ✓{n} (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) →
+    ✓{n} (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) ↔
     (q1 + q2 ≤ 1)%Qp ∧ a1 ≡{n}≡ a2.
   Proof.
-    intros [Hq Ha]%pair_validN. simpl in *. split; first done.
-    apply to_agree_op_invN. done.
+    rewrite /to_frac_agree -pair_op pair_validN to_agree_op_validN. done.
   Qed.
 
   Lemma frac_agree_included q1 a1 q2 a2 :
@@ -64,8 +62,18 @@ Section lemmas.
                frac_included to_agree_includedN.
   Qed.
 
-  (** No frame-preserving update lemma needed -- use [cmra_update_exclusive] with
-  the above [Exclusive] instance. *)
+  (** While [cmra_update_exclusive] takes care of most updates, it is not sufficient
+      for this one since there is no abstraction-preserving way to rewrite
+      [to_frac_agree q1 v1 ⋅ to_frac_agree q2 v2] into something simpler. *)
+  Lemma to_frac_agree_update_2 q1 q2 a1 a2 a' :
+    (q1 + q2 = 1)%Qp →
+    to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2 ~~>
+    to_frac_agree q1 a' ⋅ to_frac_agree q2 a'.
+  Proof.
+    intros Hq. rewrite -pair_op frac_op Hq.
+    apply cmra_update_exclusive.
+    rewrite frac_agree_op_valid Hq //.
+  Qed.
 
 End lemmas.
 
