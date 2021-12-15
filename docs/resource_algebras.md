@@ -249,7 +249,7 @@ Using these combinators, one can easily construct bigger functors in point-free
 style and automatically infer their contractivity, e.g:
 
 ```coq
-F := gmaURF K (agreeRF (prodOF (constOF natO) (laterOF idOF)))
+F := gmapURF K (agreeRF (prodOF (constOF natO) (laterOF idOF)))
 ```
 
 which effectively defines the desired example functor
