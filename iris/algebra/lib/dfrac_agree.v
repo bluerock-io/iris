@@ -6,6 +6,7 @@ Definition dfrac_agreeR (A : ofe) : cmra := prodR dfracR (agreeR A).
 
 Definition to_dfrac_agree {A : ofe} (d : dfrac) (a : A) : dfrac_agreeR A :=
   (d, to_agree a).
+Global Instance: Params (@to_dfrac_agree) 2 := {}.
 (** To make it easier to work with the [Qp] version of this, we also provide
     [to_frac_agree] and appropriate lemmas. *)
 Definition to_frac_agree {A : ofe} (q : Qp) (a : A) : dfrac_agreeR A :=
