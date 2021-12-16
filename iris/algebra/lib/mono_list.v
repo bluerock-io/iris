@@ -22,7 +22,7 @@ Notation "●ML{ dq } l" :=
   (mono_list_auth dq l) (at level 20, format "●ML{ dq }  l").
 Notation "●ML{# q } l" :=
   (mono_list_auth (DfracOwn q) l) (at level 20, format "●ML{# q }  l").
-Notation "●□ML l" := (mono_list_auth DfracDiscarded l) (at level 20).
+Notation "●ML□ l" := (mono_list_auth DfracDiscarded l) (at level 20).
 Notation "●ML l" := (mono_list_auth (DfracOwn 1) l) (at level 20).
 Notation "◯ML l" := (mono_list_lb l) (at level 20).
 
@@ -188,7 +188,7 @@ Section mono_list_props.
   (** * Update *)
   Lemma mono_list_update {l1} l2 : l1 `prefix_of` l2 → ●ML l1 ~~> ●ML l2.
   Proof. intros ?. by apply auth_update, max_prefix_list_local_update. Qed.
-  Lemma mono_list_auth_persist dq l : ●ML{dq} l ~~> ●□ML l.
+  Lemma mono_list_auth_persist dq l : ●ML{dq} l ~~> ●ML□ l.
   Proof.
     rewrite /mono_list_auth. apply cmra_update_op; [|done].
     by apply auth_update_auth_persist.
