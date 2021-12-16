@@ -23,6 +23,14 @@ lemma.
 * Remove `view_auth_frac_op`, `auth_auth_frac_op`, `gmap_view_auth_frac_op`; the
   corresponding `dfrac` lemmas can be used instead (together with `dfrac_op_own`
   if needed).
+* Equip `mono_nat` algebra with support for `dfrac`, make API more consistent,
+  and add notation for algebra elements. See `iris/algebra/lib/mono_nat.v` for
+  details. This affects some existing terms and lemmas:
+  - `mono_nat_auth` now takes a `dfrac`, but the recommendation is to port to the notation.
+  - `mono_nat_lb_op`: direction of equality is swapped.
+  - `mono_nat_auth_frac_op`, `mono_nat_auth_frac_op_valid`,
+    `mono_nat_auth_frac_valid`, `mono_nat_both_frac_valid`: use `dfrac` variant
+    instead.
 
 **Changes in `bi`:**
 
