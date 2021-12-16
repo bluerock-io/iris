@@ -11,6 +11,7 @@ Global Instance: Params (@to_dfrac_agree) 2 := {}.
     [to_frac_agree] and appropriate lemmas. *)
 Definition to_frac_agree {A : ofe} (q : Qp) (a : A) : dfrac_agreeR A :=
   to_dfrac_agree (DfracOwn q) a.
+Global Instance: Params (@to_frac_agree) 2 := {}.
 
 Section lemmas.
   Context {A : ofe}.
@@ -125,3 +126,4 @@ Section lemmas.
 End lemmas.
 
 Typeclasses Opaque to_dfrac_agree.
+(* to_frac_agree is deliberately transparent to reuse the to_dfrac_agree instances *)
