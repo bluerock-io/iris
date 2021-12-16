@@ -13,6 +13,9 @@ lemma.
   [discardable fraction](iris/algebra/dfrac.v) (`dfrac`) instead of a fraction
   (`frac`). Lemmas affected by this have been renamed such that the "frac" in
   their name has been changed into "dfrac". (by Simon Friis Vindum)
+* Change `ufrac_auth` notation to not use curly braces, since these fractions do
+  not behave like regular fractions (and cannot be made `dfrac`).
+  Old: `●U{q} a`, `◯U{q} b`; new: `●U_q a`, `◯U_q b`.
 
 **Changes in `bi`:**
 
