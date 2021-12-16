@@ -678,6 +678,18 @@ Proof.
     by iApply "IH".
 Qed.
 
+Inductive tree := leaf | node (l r: tree).
+
+Check "test_iInduction_multiple_IHs".
+Lemma test_iInduction_multiple_IHs (t: tree) (Φ : tree → PROP) :
+  □ Φ leaf -∗ □ (∀ l r, Φ l -∗ Φ r -∗ Φ (node l r)) -∗ Φ t.
+Proof.
+  iIntros "#Hleaf #Hnode". iInduction t as [|l r] "IH".
+  - iExact "Hleaf".
+  - Show. (* should have "IH" and "IH1", since [node] has two trees *)
+    iApply ("Hnode" with "IH IH1").
+Qed.
+
 Lemma test_iIntros_start_proof :
   ⊢@{PROP} True.
 Proof.
@@ -889,6 +901,28 @@ Proof. iIntros "#H1 H2". iSimpl in "#". Show. done. Qed.
 Check "test_iSimpl_in4".
 Lemma test_iSimpl_in4 x y : ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ S (S (S x)) = y ⌝ : PROP.
 Proof. iIntros "H". Fail iSimpl in "%". by iSimpl in "H". Qed.
+
+Check "test_iRename".
+Lemma test_iRename P : □P -∗ P.
+Proof. iIntros "#H". iRename "H" into "X". Show. iExact "X". Qed.
+
+(** [iTypeOf] is an internal tactic for the proofmode *)
+Lemma test_iTypeOf Q R φ : □ Q ∗ R ∗ ⌜φ⌝ -∗ True.
+Proof.
+  iIntros "(#HQ & H)".
+  lazymatch iTypeOf "HQ" with
+  | Some (true, Q) => idtac
+  | ?x => fail "incorrect iTypeOf HQ" x
+  end.
+  lazymatch iTypeOf "H" with
+  | Some (false, (R ∗ ⌜φ⌝)%I) => idtac
+  | ?x => fail "incorrect iTypeOf H" x
+  end.
+  lazymatch iTypeOf "missing" with
+  | None => idtac
+  | ?x => fail "incorrect iTypeOf missing" x
+  end.
+Abort.
 
 Lemma test_iPureIntro_absorbing (φ : Prop) :
   φ → ⊢@{PROP} <absorb> ⌜φ⌝.
