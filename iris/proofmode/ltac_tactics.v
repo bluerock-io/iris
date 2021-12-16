@@ -2301,9 +2301,9 @@ result in the following actions:
   hypotheses containing the induction variable [x]
 - Revert the pure hypotheses [x1..xn]
 
-- Actuall perform induction
+- Actually perform induction
 
-- Introduce thee pure hypotheses [x1..xn]
+- Introduce the pure hypotheses [x1..xn]
 - Introduce the spatial hypotheses and intuitionistic hypotheses involving [x]
 - Introduce the proofmode hypotheses [Hs]
 *)

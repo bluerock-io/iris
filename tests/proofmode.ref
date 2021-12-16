@@ -147,6 +147,20 @@ Tactic failure: iSpecialize: Q not persistent.
      : string
 The command has indeed failed with message:
 Tactic failure: iSpecialize: (|==> P)%I not persistent.
+"test_iInduction_multiple_IHs"
+     : string
+1 goal
+  
+  PROP : bi
+  l, t1 : tree
+  Φ : tree → PROP
+  ============================
+  "Hleaf" : Φ leaf
+  "Hnode" : ∀ l0 r : tree, Φ l0 -∗ Φ r -∗ Φ (node l0 r)
+  "IH" : Φ l
+  "IH1" : Φ t1
+  --------------------------------------□
+  Φ (node l t1)
 The command has indeed failed with message:
 Tactic failure: iSpecialize: cannot instantiate (∀ _ : φ, P -∗ False)%I with
 P.
@@ -210,6 +224,16 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
      : string
 The command has indeed failed with message:
 Tactic failure: iEval: %: unsupported selection pattern.
+"test_iRename"
+     : string
+1 goal
+  
+  PROP : bi
+  P : PROP
+  ============================
+  "X" : P
+  --------------------------------------□
+  P
 "test_iFrame_later_1"
      : string
 1 goal
