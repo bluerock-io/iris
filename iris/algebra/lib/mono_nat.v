@@ -45,7 +45,7 @@ Section mono_nat.
   Proof. by rewrite -mono_nat_auth_dfrac_op dfrac_op_own. Qed.
 
   Lemma mono_nat_lb_op n1 n2 :
-    ◯MN n1 ⋅ ◯MN n2 = ◯MN (n1 `max` n2).
+    ◯MN (n1 `max` n2) = ◯MN n1 ⋅ ◯MN n2.
   Proof. rewrite -auth_frag_op max_nat_op //. Qed.
 
   Lemma mono_nat_auth_lb_op dq n :
@@ -61,7 +61,7 @@ Section mono_nat.
   Lemma mono_nat_lb_op_le_l n n' :
     n' ≤ n →
     ◯MN n = ◯MN n' ⋅ ◯MN n.
-  Proof. intros. rewrite mono_nat_lb_op Nat.max_r //. Qed.
+  Proof. intros. rewrite -mono_nat_lb_op Nat.max_r //. Qed.
 
   Lemma mono_nat_auth_dfrac_valid dq n : (✓ ●MN{dq} n) ↔ ✓ dq.
   Proof.
