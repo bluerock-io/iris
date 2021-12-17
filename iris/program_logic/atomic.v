@@ -23,22 +23,19 @@ Definition atomic_wp `{!irisGS Λ Σ} {TA TB : tele}
 (* Note: To add a private postcondition, use
    atomic_update α β Eo Ei (λ x y, POST x y -∗ Φ (f x y)) *)
 
+(* The way to read the [tele_app foo] here is that they convert the n-ary
+function [foo] into a unary function taking a telescope as the argument. *)
 Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
   (atomic_wp (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
              (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
              e%E
              E
-             (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn, α%I) ..)
-             (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn,
-                         tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                         (λ y1, .. (λ yn, β%I) .. )
+             (tele_app $ λ x1, .. (λ xn, α%I) ..)
+             (tele_app $ λ x1, .. (λ xn,
+                         tele_app (λ y1, .. (λ yn, β%I) .. )
                         ) .. )
-             (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn,
-                         tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                         (λ y1, .. (λ yn, v%V) .. )
+             (tele_app $ λ x1, .. (λ xn,
+                         tele_app (λ y1, .. (λ yn, v%V) .. )
                         ) .. )
   )
   (at level 20, E, α, β, v at level 200, x1 binder, xn binder, y1 binder, yn binder,
@@ -50,16 +47,9 @@ Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
              (TB:=TeleO)
              e%E
              E
-             (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn, α%I) ..)
-             (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn,
-                         tele_app (TT:=TeleO) β%I
-                        ) .. )
-             (tele_app (TT:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. )) $
-                       λ x1, .. (λ xn,
-                         tele_app (TT:=TeleO) v%V
-                        ) .. )
+             (tele_app $ λ x1, .. (λ xn, α%I) ..)
+             (tele_app $ λ x1, .. (λ xn, tele_app β%I) .. )
+             (tele_app $ λ x1, .. (λ xn, tele_app v%V) .. )
   )
   (at level 20, E, α, β, v at level 200, x1 binder, xn binder,
    format "'[hv' '<<<'  '[' ∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β ,  '/' 'RET'  v  ']' '>>>' ']'")
@@ -70,13 +60,9 @@ Notation "'<<<' α '>>>' e @ E '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
              (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
              e%E
              E
-             (tele_app (TT:=TeleO) α%I)
-             (tele_app (TT:=TeleO) $
-                       tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                         (λ y1, .. (λ yn, β%I) .. ))
-             (tele_app (TT:=TeleO) $
-                       tele_app (TT:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
-                         (λ y1, .. (λ yn, v%V) .. ))
+             (tele_app α%I)
+             (tele_app $ tele_app (λ y1, .. (λ yn, β%I) .. ))
+             (tele_app $ tele_app (λ y1, .. (λ yn, v%V) .. ))
   )
   (at level 20, E, α, β, v at level 200, y1 binder, yn binder,
    format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
@@ -87,9 +73,9 @@ Notation "'<<<' α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
              (TB:=TeleO)
              e%E
              E
-             (tele_app (TT:=TeleO) α%I)
-             (tele_app (TT:=TeleO) $ tele_app (TT:=TeleO) β%I)
-             (tele_app (TT:=TeleO) $ tele_app (TT:=TeleO) v%V)
+             (tele_app α%I)
+             (tele_app $ tele_app β%I)
+             (tele_app $ tele_app v%V)
   )
   (at level 20, E, α, β, v at level 200,
    format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β ,  '/' 'RET'  v  ']' '>>>' ']'")
