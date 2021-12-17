@@ -126,4 +126,4 @@ Section lemmas.
 End lemmas.
 
 Typeclasses Opaque to_dfrac_agree.
-(* to_frac_agree is deliberately transparent to reuse the to_dfrac_agree instances *)
+(* [to_frac_agree] is deliberately transparent to reuse the [to_dfrac_agree] instances *)
