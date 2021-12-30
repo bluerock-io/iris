@@ -1170,7 +1170,7 @@ Section later.
 
   Global Instance Next_contractive : Contractive (@Next A).
   Proof. by intros [|n] x y. Qed.
-  Global Instance Later_inj n : Inj (dist n) (dist (S n)) (@Next A).
+  Global Instance Next_inj n : Inj (dist n) (dist (S n)) (@Next A).
   Proof. by intros x y. Qed.
 
   Lemma Next_uninj x : ∃ a, x ≡ Next a.
