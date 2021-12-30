@@ -19,6 +19,7 @@ lemma.
 * Equip `frac_agree` with support for `dfrac` and rename it to `dfrac_agree`.
   The old `to_frac_agree` and its lemmas still exist, except that the
   `frac_agree_op_valid` lemmas are made bi-directional.
+* Rename typeclass instance `Later_inj` -> `Next_inj`.
 
 **Changes in `bi`:**
 
