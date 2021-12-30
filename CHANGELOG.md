@@ -39,6 +39,11 @@ lemma.
   assumptions to remain compatible, and code that instantiates the BI interface
   needs to provide instances for the new classes.
 
+**Changes in `heap_lang`:**
+
+* The `is_closed_expr` predicate is formulated in terms of a
+  set of binders (as opposed to a list of binders).
+
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
 Note that the script is not idempotent, do not run it twice.

@@ -5,7 +5,7 @@ From iris.prelude Require Import options.
 (* This file contains some metatheory about the heap_lang language,
   which is not needed for verifying programs. *)
 
-(* Lifting `Insert` on strings to binders. *)
+(* Adding a binder to a set of identifiers. *)
 Local Definition set_binder_insert (x : binder) (X : stringset) : stringset :=
   match x with
   | BAnon => X
