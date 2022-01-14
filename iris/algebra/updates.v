@@ -52,8 +52,11 @@ Lemma cmra_update_exclusive `{!Exclusive x} y:
 Proof. move=>??[z|]=>[/exclusiveN_l[]|_]. by apply cmra_valid_validN. Qed.
 
 (** Updates form a preorder. *)
+(** We set this rewrite relation's priority below the stdlib's 
+  ([impl], [iff], [eq], ...) and [≡] but above [⊑].
+  [eq] (at 100) < [≡] (at 150) < [cmra_update] (at 170) < [⊑] (at 200) *)
 Global Instance cmra_update_rewrite_relation :
-  RewriteRelation (@cmra_update A) := {}.
+  RewriteRelation (@cmra_update A) | 170 := {}.
 Global Instance cmra_update_preorder : PreOrder (@cmra_update A).
 Proof.
   split.
