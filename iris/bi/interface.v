@@ -224,7 +224,11 @@ Global Arguments bi_persistently {PROP} _ : simpl never, rename.
 Global Arguments bi_later {PROP} _ : simpl never, rename.
 
 Global Hint Extern 0 (bi_entails _ _) => reflexivity : core.
-Global Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) := {}.
+(** We set this rewrite relation's priority below the stdlib's 
+  ([impl], [iff], [eq], ...) and [≡] but above [⊑].
+  [eq] (at 100) < [≡] (at 150) < [bi_entails _] (at 170) < [⊑] (at 200)
+*)
+Global Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) | 170 := {}.
 Global Instance bi_inhabited {PROP : bi} : Inhabited PROP := populate (bi_pure True).
 
 Notation "P ⊢ Q" := (bi_entails P%I Q%I) : stdpp_scope.
