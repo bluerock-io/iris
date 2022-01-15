@@ -58,9 +58,6 @@ Section mono_list_props.
     rewrite (comm _ (●{dq2} _)) -!assoc (assoc _ (◯ _)).
     by rewrite -core_id_dup (comm _ (◯ _)).
   Qed.
-  Lemma mono_list_auth_frac_op q1 q2 l :
-    ●ML{#(q1 + q2)} l ≡ ●ML{#q1} l ⋅ ●ML{#q2} l.
-  Proof. by rewrite -mono_list_auth_dfrac_op dfrac_op_own. Qed.
 
   Lemma mono_list_lb_op_l l1 l2 : l1 `prefix_of` l2 → ◯ML l1 ⋅ ◯ML l2 ≡ ◯ML l2.
   Proof. intros ?. by rewrite /mono_list_lb -auth_frag_op to_max_prefix_list_op_l. Qed.
@@ -101,9 +98,6 @@ Section mono_list_props.
     - intros [? ->]. rewrite -core_id_dup -auth_auth_dfrac_op auth_both_dfrac_validN.
       naive_solver apply to_max_prefix_list_validN.
   Qed.
-  Lemma mono_list_auth_frac_op_validN n q1 q2 l1 l2 :
-    ✓{n} (●ML{#q1} l1 ⋅ ●ML{#q2} l2) ↔ (q1 + q2 ≤ 1)%Qp ∧ l1 ≡{n}≡ l2.
-  Proof. by apply mono_list_auth_dfrac_op_validN. Qed.
   Lemma mono_list_auth_op_validN n l1 l2 : ✓{n} (●ML l1 ⋅ ●ML l2) ↔ False.
   Proof. rewrite mono_list_auth_dfrac_op_validN. naive_solver. Qed.
 
@@ -113,18 +107,12 @@ Section mono_list_props.
     rewrite cmra_valid_validN equiv_dist.
     setoid_rewrite mono_list_auth_dfrac_op_validN. naive_solver eauto using O.
   Qed.
-  Lemma mono_list_auth_frac_op_valid q1 q2 l1 l2 :
-    ✓ (●ML{#q1} l1 ⋅ ●ML{#q2} l2) ↔ (q1 + q2 ≤ 1)%Qp ∧ l1 ≡ l2.
-  Proof. by apply mono_list_auth_dfrac_op_valid. Qed.
   Lemma mono_list_auth_op_valid l1 l2 : ✓ (●ML l1 ⋅ ●ML l2) ↔ False.
   Proof. rewrite mono_list_auth_dfrac_op_valid. naive_solver. Qed.
 
   Lemma mono_list_auth_dfrac_op_valid_L `{!LeibnizEquiv A} dq1 dq2 l1 l2 :
     ✓ (●ML{dq1} l1 ⋅ ●ML{dq2} l2) ↔ ✓ (dq1 ⋅ dq2) ∧ l1 = l2.
   Proof. unfold_leibniz. apply mono_list_auth_dfrac_op_valid. Qed.
-  Lemma mono_list_auth_frac_op_valid_L `{!LeibnizEquiv A} q1 q2 l1 l2 :
-    ✓ (●ML{#q1} l1 ⋅ ●ML{#q2} l2) ↔ (q1 + q2 ≤ 1)%Qp ∧ l1 = l2.
-  Proof. unfold_leibniz. apply mono_list_auth_frac_op_valid. Qed.
 
   Lemma mono_list_both_dfrac_validN n dq l1 l2 :
     ✓{n} (●ML{dq} l1 ⋅ ◯ML l2) ↔ ✓ dq ∧ ∃ l, l1 ≡{n}≡ l2 ++ l.
