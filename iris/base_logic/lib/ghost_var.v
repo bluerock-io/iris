@@ -79,7 +79,7 @@ Section lemmas.
     ghost_var γ q1 a1 -∗ ghost_var γ q2 a2 ==∗ ghost_var γ q1 b ∗ ghost_var γ q2 b.
   Proof.
     intros Hq. unseal. rewrite -own_op. iApply own_update_2.
-    apply to_frac_agree_update_2. done.
+    apply frac_agree_update_2. done.
   Qed.
   Lemma ghost_var_update_halves b γ a1 a2 :
     ghost_var γ (1/2) a1 -∗

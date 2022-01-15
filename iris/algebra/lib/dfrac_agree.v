@@ -101,7 +101,7 @@ Section lemmas.
   (** While [cmra_update_exclusive] takes care of most updates, it is not sufficient
       for this one since there is no abstraction-preserving way to rewrite
       [to_dfrac_agree d1 v1 ⋅ to_dfrac_agree d2 v2] into something simpler. *)
-  Lemma to_dfrac_agree_update_2 d1 d2 a1 a2 a' :
+  Lemma dfrac_agree_update_2 d1 d2 a1 a2 a' :
     d1 ⋅ d2 = DfracOwn 1 →
     to_dfrac_agree d1 a1 ⋅ to_dfrac_agree d2 a2 ~~>
     to_dfrac_agree d1 a' ⋅ to_dfrac_agree d2 a'.
@@ -110,13 +110,13 @@ Section lemmas.
     apply cmra_update_exclusive.
     rewrite dfrac_agree_op_valid Hq //.
   Qed.
-  Lemma to_frac_agree_update_2 q1 q2 a1 a2 a' :
+  Lemma frac_agree_update_2 q1 q2 a1 a2 a' :
     (q1 + q2 = 1)%Qp →
     to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2 ~~>
     to_frac_agree q1 a' ⋅ to_frac_agree q2 a'.
-  Proof. intros Hq. apply to_dfrac_agree_update_2. rewrite dfrac_op_own Hq //. Qed.
+  Proof. intros Hq. apply dfrac_agree_update_2. rewrite dfrac_op_own Hq //. Qed.
 
-  Lemma to_dfrac_agree_persist d a :
+  Lemma dfrac_agree_persist d a :
     to_dfrac_agree d a ~~> to_dfrac_agree DfracDiscarded a.
   Proof.
     rewrite /to_dfrac_agree. apply prod_update; last done.
