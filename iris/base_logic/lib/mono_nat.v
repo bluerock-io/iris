@@ -53,7 +53,7 @@ Section mono_nat.
 
   Global Instance mono_nat_auth_own_fractional γ n :
     Fractional (λ q, mono_nat_auth_own γ q n).
-  Proof. unseal. intros p q. rewrite -own_op mono_nat_auth_frac_op //. Qed.
+  Proof. unseal. intros p q. rewrite -own_op -mono_nat_auth_dfrac_op //. Qed.
   Global Instance mono_nat_auth_own_as_fractional γ q n :
     AsFractional (mono_nat_auth_own γ q n) (λ q, mono_nat_auth_own γ q n) q.
   Proof. split; [auto|apply _]. Qed.

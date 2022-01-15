@@ -40,9 +40,6 @@ Section mono_nat.
     rewrite (comm _ (●{dq2} _)) -!assoc (assoc _ (◯ _)).
     by rewrite -core_id_dup (comm _ (◯ _)).
   Qed.
-  Lemma mono_nat_auth_frac_op q1 q2 n :
-    ●MN{#(q1 + q2)} n ≡ ●MN{#q1} n ⋅ ●MN{#q2} n.
-  Proof. by rewrite -mono_nat_auth_dfrac_op dfrac_op_own. Qed.
 
   Lemma mono_nat_lb_op n1 n2 :
     ◯MN (n1 `max` n2) = ◯MN n1 ⋅ ◯MN n2.
@@ -79,9 +76,6 @@ Section mono_nat.
     - intros [? ->]. rewrite -core_id_dup -auth_auth_dfrac_op.
       by apply auth_both_dfrac_valid_discrete.
   Qed.
-  Lemma mono_nat_auth_frac_op_valid q1 q2 n1 n2 :
-    ✓ (●MN{#q1} n1 ⋅ ●MN{#q2} n2) ↔ (q1 + q2 ≤ 1)%Qp ∧ n1 = n2.
-  Proof. by apply mono_nat_auth_dfrac_op_valid. Qed.
   Lemma mono_nat_auth_op_valid n1 n2 :
     ✓ (●MN n1 ⋅ ●MN n2) ↔ False.
   Proof. rewrite mono_nat_auth_dfrac_op_valid. naive_solver. Qed.
