@@ -20,6 +20,9 @@ lemma.
   The old `to_frac_agree` and its lemmas still exist, except that the
   `frac_agree_op_valid` lemmas are made bi-directional.
 * Rename typeclass instance `Later_inj` -> `Next_inj`.
+* Remove `view_auth_frac_op`, `auth_auth_frac_op`, `gmap_view_auth_frac_op`; the
+  corresponding `dfrac` lemmas can be used instead (together with `dfrac_op_own`
+  if needed).
 
 **Changes in `bi`:**
 

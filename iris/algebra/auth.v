@@ -120,8 +120,6 @@ Section auth.
   (** Operation *)
   Lemma auth_auth_dfrac_op dq1 dq2 a : ●{dq1 ⋅ dq2} a ≡ ●{dq1} a ⋅ ●{dq2} a.
   Proof. apply view_auth_dfrac_op. Qed.
-  Lemma auth_auth_frac_op q1 q2 a : ●{#(q1 + q2)} a ≡ ●{#q1} a ⋅ ●{#q2} a.
-  Proof. apply view_auth_frac_op. Qed.
   Global Instance auth_auth_dfrac_is_op dq dq1 dq2 a :
     IsOp dq dq1 dq2 → IsOp' (●{dq} a) (●{dq1} a) (●{dq2} a).
   Proof. rewrite /auth_auth. apply _. Qed.

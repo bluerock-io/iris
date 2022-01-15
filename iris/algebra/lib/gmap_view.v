@@ -180,10 +180,6 @@ Section lemmas.
     gmap_view_auth (dp ⋅ dq) m ≡
     gmap_view_auth dp m ⋅ gmap_view_auth dq m.
   Proof. by rewrite /gmap_view_auth view_auth_dfrac_op. Qed.
-  Lemma gmap_view_auth_frac_op p q m :
-    gmap_view_auth (DfracOwn (p + q)) m ≡
-    gmap_view_auth (DfracOwn p) m ⋅ gmap_view_auth (DfracOwn q) m.
-  Proof. by rewrite /gmap_view_auth view_auth_frac_op. Qed.
   Global Instance gmap_view_auth_dfrac_is_op dq dq1 dq2 m :
     IsOp dq dq1 dq2 → IsOp' (gmap_view_auth dq m) (gmap_view_auth dq1 m) (gmap_view_auth dq2 m).
   Proof. rewrite /gmap_view_auth. apply _. Qed.
