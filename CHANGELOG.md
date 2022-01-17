@@ -38,6 +38,10 @@ lemma.
   Proofs that are generic in `PROP` might have to add those new classes as
   assumptions to remain compatible, and code that instantiates the BI interface
   needs to provide instances for the new classes.
+* Make `frame_fractional` not an instance any more; instead fractional
+  propositions that want to support framing are expected to register an
+  appropriate instance themselves. HeapLang and gen_heap `↦` still support
+  framing, but the other fractional propositions in Iris do not.
 
 **Changes in `heap_lang`:**
 
