@@ -21,7 +21,7 @@ Proof. solve_inG. Qed.
 
 Definition mono_nat_auth_own_def `{!mono_natG Σ}
     (γ : gname) (q : Qp) (n : nat) : iProp Σ :=
-  own γ (mono_nat_auth q n).
+  own γ (●MN{#q} n).
 Definition mono_nat_auth_own_aux : seal (@mono_nat_auth_own_def). Proof. by eexists. Qed.
 Definition mono_nat_auth_own := mono_nat_auth_own_aux.(unseal).
 Definition mono_nat_auth_own_eq :
@@ -29,7 +29,7 @@ Definition mono_nat_auth_own_eq :
 Global Arguments mono_nat_auth_own {Σ _} γ q n.
 
 Definition mono_nat_lb_own_def `{!mono_natG Σ} (γ : gname) (n : nat): iProp Σ :=
-  own γ (mono_nat_lb n).
+  own γ (◯MN n).
 Definition mono_nat_lb_own_aux : seal (@mono_nat_lb_own_def). Proof. by eexists. Qed.
 Definition mono_nat_lb_own := mono_nat_lb_own_aux.(unseal).
 Definition mono_nat_lb_own_eq :
@@ -53,7 +53,7 @@ Section mono_nat.
 
   Global Instance mono_nat_auth_own_fractional γ n :
     Fractional (λ q, mono_nat_auth_own γ q n).
-  Proof. unseal. intros p q. rewrite -own_op mono_nat_auth_frac_op //. Qed.
+  Proof. unseal. intros p q. rewrite -own_op -mono_nat_auth_dfrac_op //. Qed.
   Global Instance mono_nat_auth_own_as_fractional γ q n :
     AsFractional (mono_nat_auth_own γ q n) (λ q, mono_nat_auth_own γ q n) q.
   Proof. split; [auto|apply _]. Qed.
@@ -64,7 +64,7 @@ Section mono_nat.
     ⌜(q1 + q2 ≤ 1)%Qp ∧ n1 = n2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    iDestruct (own_valid_2 with "H1 H2") as %?%mono_nat_auth_frac_op_valid; done.
+    iDestruct (own_valid_2 with "H1 H2") as %?%mono_nat_auth_dfrac_op_valid; done.
   Qed.
   Lemma mono_nat_auth_own_exclusive γ n1 n2 :
     mono_nat_auth_own γ 1 n1 -∗ mono_nat_auth_own γ 1 n2 -∗ False.
@@ -77,7 +77,7 @@ Section mono_nat.
     mono_nat_auth_own γ q n -∗ mono_nat_lb_own γ m -∗ ⌜(q ≤ 1)%Qp ∧ m ≤ n⌝.
   Proof.
     unseal. iIntros "Hauth Hlb".
-    iDestruct (own_valid_2 with "Hauth Hlb") as %Hvalid%mono_nat_both_frac_valid.
+    iDestruct (own_valid_2 with "Hauth Hlb") as %Hvalid%mono_nat_both_dfrac_valid.
     auto.
   Qed.
 
@@ -97,7 +97,7 @@ Section mono_nat.
   Lemma mono_nat_own_alloc n :
     ⊢ |==> ∃ γ, mono_nat_auth_own γ 1 n ∗ mono_nat_lb_own γ n.
   Proof.
-    unseal. iMod (own_alloc (mono_nat_auth 1 n ⋅ mono_nat_lb n)) as (γ) "[??]".
+    unseal. iMod (own_alloc (●MN n ⋅ ◯MN n)) as (γ) "[??]".
     { apply mono_nat_both_valid; auto. }
     auto with iFrame.
   Qed.
