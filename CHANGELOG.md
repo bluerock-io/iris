@@ -31,6 +31,9 @@ lemma.
   - `mono_nat_auth_frac_op`, `mono_nat_auth_frac_op_valid`,
     `mono_nat_auth_frac_valid`, `mono_nat_both_frac_valid`: use `dfrac` variant
     instead.
+* Add `mono_list` algebra for monotonically growing lists with an exclusive
+  authoritative element and persistent prefix witnesses. See
+  `iris/algebra/lib/mono_list.v` for details.
 
 **Changes in `bi`:**
 
