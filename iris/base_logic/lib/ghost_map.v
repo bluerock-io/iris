@@ -157,7 +157,7 @@ Section lemmas.
   Global Instance ghost_map_auth_timeless γ q m : Timeless (ghost_map_auth γ q m).
   Proof. unseal. apply _. Qed.
   Global Instance ghost_map_auth_fractional γ m : Fractional (λ q, ghost_map_auth γ q m)%I.
-  Proof. intros p q. unseal. rewrite -own_op gmap_view_auth_frac_op //. Qed.
+  Proof. intros p q. unseal. rewrite -own_op -gmap_view_auth_dfrac_op //. Qed.
   Global Instance ghost_map_auth_as_fractional γ q m :
     AsFractional (ghost_map_auth γ q m) (λ q, ghost_map_auth γ q m)%I q.
   Proof. split; first done. apply _. Qed.

@@ -275,8 +275,6 @@ Section cmra.
     intros; split; simpl; last by rewrite left_id.
     by rewrite -Some_op -pair_op agree_idemp.
   Qed.
-  Lemma view_auth_frac_op q1 q2 a : ●V{#(q1 + q2)} a ≡ ●V{#q1} a ⋅ ●V{#q2} a.
-  Proof. rewrite -dfrac_op_own. apply view_auth_dfrac_op. Qed.
   Global Instance view_auth_dfrac_is_op dq dq1 dq2 a :
     IsOp dq dq1 dq2 → IsOp' (●V{dq} a) (●V{dq1} a) (●V{dq2} a).
   Proof. rewrite /IsOp' /IsOp => ->. by rewrite -view_auth_dfrac_op. Qed.
