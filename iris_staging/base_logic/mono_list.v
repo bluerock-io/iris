@@ -16,7 +16,7 @@ which allows one to grow the auth element by appending only. At any time the
 auth list can be "snapshotted" with [mono_list_lb_own_get] to produce a
 persistent lower-bound. *)
 From iris.proofmode Require Import tactics.
-From iris.staging.algebra Require Import mono_list.
+From iris.algebra.lib Require Import mono_list.
 From iris.bi.lib Require Import fractional.
 From iris.base_logic.lib Require Export own.
 From iris.prelude Require Import options.
@@ -73,7 +73,7 @@ Section mono_list_own.
 
   Global Instance mono_list_auth_own_fractional γ l :
     Fractional (λ q, mono_list_auth_own γ q l).
-  Proof. unseal. intros p q. by rewrite -own_op mono_list_auth_frac_op. Qed.
+  Proof. unseal. intros p q. by rewrite -own_op -mono_list_auth_dfrac_op. Qed.
   Global Instance mono_list_auth_own_as_fractional γ q l :
     AsFractional (mono_list_auth_own γ q l) (λ q, mono_list_auth_own γ q l) q.
   Proof. split; [auto|apply _]. Qed.
@@ -84,7 +84,7 @@ Section mono_list_own.
     ⌜(q1 + q2 ≤ 1)%Qp ∧ l1 = l2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    by iDestruct (own_valid_2 with "H1 H2") as %?%mono_list_auth_frac_op_valid_L.
+    by iDestruct (own_valid_2 with "H1 H2") as %?%mono_list_auth_dfrac_op_valid_L.
   Qed.
   Lemma mono_list_auth_own_exclusive γ l1 l2 :
     mono_list_auth_own γ 1 l1 -∗ mono_list_auth_own γ 1 l2 -∗ False.

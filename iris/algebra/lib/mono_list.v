@@ -1,13 +1,9 @@
-(* This file is still experimental. See its tracking issue
-https://gitlab.mpi-sws.org/iris/iris/-/issues/439 for details on remaining
-issues before stabilization. *)
-From iris.algebra Require Export auth dfrac max_prefix_list.
-From iris.algebra Require Import updates local_updates proofmode_classes.
-From iris.prelude Require Import options.
-
 (** Authoritative CMRA of append-only lists, where the fragment represents a
   snap-shot of the list, and the authoritative element can only grow by
   appending. *)
+From iris.algebra Require Export auth dfrac max_prefix_list.
+From iris.algebra Require Import updates local_updates proofmode_classes.
+From iris.prelude Require Import options.
 
 Definition mono_listR (A : ofe) : cmra  := authR (max_prefix_listUR A).
 Definition mono_listUR (A : ofe) : ucmra  := authUR (max_prefix_listUR A).
@@ -26,7 +22,7 @@ Notation "●ML{ dq } l" :=
   (mono_list_auth dq l) (at level 20, format "●ML{ dq }  l").
 Notation "●ML{# q } l" :=
   (mono_list_auth (DfracOwn q) l) (at level 20, format "●ML{# q }  l").
-Notation "●□ML l" := (mono_list_auth DfracDiscarded l) (at level 20).
+Notation "●ML□ l" := (mono_list_auth DfracDiscarded l) (at level 20).
 Notation "●ML l" := (mono_list_auth (DfracOwn 1) l) (at level 20).
 Notation "◯ML l" := (mono_list_lb l) (at level 20).
 
@@ -62,9 +58,6 @@ Section mono_list_props.
     rewrite (comm _ (●{dq2} _)) -!assoc (assoc _ (◯ _)).
     by rewrite -core_id_dup (comm _ (◯ _)).
   Qed.
-  Lemma mono_list_auth_frac_op q1 q2 l :
-    ●ML{#(q1 + q2)} l ≡ ●ML{#q1} l ⋅ ●ML{#q2} l.
-  Proof. by rewrite -mono_list_auth_dfrac_op dfrac_op_own. Qed.
 
   Lemma mono_list_lb_op_l l1 l2 : l1 `prefix_of` l2 → ◯ML l1 ⋅ ◯ML l2 ≡ ◯ML l2.
   Proof. intros ?. by rewrite /mono_list_lb -auth_frag_op to_max_prefix_list_op_l. Qed.
@@ -105,9 +98,6 @@ Section mono_list_props.
     - intros [? ->]. rewrite -core_id_dup -auth_auth_dfrac_op auth_both_dfrac_validN.
       naive_solver apply to_max_prefix_list_validN.
   Qed.
-  Lemma mono_list_auth_frac_op_validN n q1 q2 l1 l2 :
-    ✓{n} (●ML{#q1} l1 ⋅ ●ML{#q2} l2) ↔ (q1 + q2 ≤ 1)%Qp ∧ l1 ≡{n}≡ l2.
-  Proof. by apply mono_list_auth_dfrac_op_validN. Qed.
   Lemma mono_list_auth_op_validN n l1 l2 : ✓{n} (●ML l1 ⋅ ●ML l2) ↔ False.
   Proof. rewrite mono_list_auth_dfrac_op_validN. naive_solver. Qed.
 
@@ -117,18 +107,12 @@ Section mono_list_props.
     rewrite cmra_valid_validN equiv_dist.
     setoid_rewrite mono_list_auth_dfrac_op_validN. naive_solver eauto using O.
   Qed.
-  Lemma mono_list_auth_frac_op_valid q1 q2 l1 l2 :
-    ✓ (●ML{#q1} l1 ⋅ ●ML{#q2} l2) ↔ (q1 + q2 ≤ 1)%Qp ∧ l1 ≡ l2.
-  Proof. by apply mono_list_auth_dfrac_op_valid. Qed.
   Lemma mono_list_auth_op_valid l1 l2 : ✓ (●ML l1 ⋅ ●ML l2) ↔ False.
   Proof. rewrite mono_list_auth_dfrac_op_valid. naive_solver. Qed.
 
   Lemma mono_list_auth_dfrac_op_valid_L `{!LeibnizEquiv A} dq1 dq2 l1 l2 :
     ✓ (●ML{dq1} l1 ⋅ ●ML{dq2} l2) ↔ ✓ (dq1 ⋅ dq2) ∧ l1 = l2.
   Proof. unfold_leibniz. apply mono_list_auth_dfrac_op_valid. Qed.
-  Lemma mono_list_auth_frac_op_valid_L `{!LeibnizEquiv A} q1 q2 l1 l2 :
-    ✓ (●ML{#q1} l1 ⋅ ●ML{#q2} l2) ↔ (q1 + q2 ≤ 1)%Qp ∧ l1 = l2.
-  Proof. unfold_leibniz. apply mono_list_auth_frac_op_valid. Qed.
 
   Lemma mono_list_both_dfrac_validN n dq l1 l2 :
     ✓{n} (●ML{dq} l1 ⋅ ◯ML l2) ↔ ✓ dq ∧ ∃ l, l1 ≡{n}≡ l2 ++ l.
@@ -192,7 +176,7 @@ Section mono_list_props.
   (** * Update *)
   Lemma mono_list_update {l1} l2 : l1 `prefix_of` l2 → ●ML l1 ~~> ●ML l2.
   Proof. intros ?. by apply auth_update, max_prefix_list_local_update. Qed.
-  Lemma mono_list_update_auth_persist dq l : ●ML{dq} l ~~> ●□ML l.
+  Lemma mono_list_auth_persist dq l : ●ML{dq} l ~~> ●ML□ l.
   Proof.
     rewrite /mono_list_auth. apply cmra_update_op; [|done].
     by apply auth_update_auth_persist.
