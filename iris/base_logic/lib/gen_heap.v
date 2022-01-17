@@ -177,6 +177,12 @@ Section gen_heap.
   Lemma mapsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
   Proof. rewrite mapsto_eq. apply ghost_map_elem_persist. Qed.
 
+  (** Framing support *)
+  Global Instance frame_mapsto p l v q1 q2 RES :
+    FrameFractionalHyps p (l ↦{#q1} v) (λ q, l ↦{#q} v)%I RES q1 q2 →
+    Frame p (l ↦{#q1} v) (l ↦{#q2} v) RES | 5.
+  Proof. apply: frame_fractional. Qed.
+
   (** General properties of [meta] and [meta_token] *)
   Global Instance meta_token_timeless l N : Timeless (meta_token l N).
   Proof. rewrite meta_token_eq. apply _. Qed.

@@ -373,6 +373,14 @@ Section mapsto_tests.
     l ↦{#1 / 2} v -∗  ∃ q, l ↦{#1 / 2 + q} v.
   Proof. iIntros "H". iExists _. iSplitL; first by iAssumption. Abort.
 
+  Lemma mapsto_frame_1 l v q1 q2 :
+    l ↦{#q1} v -∗ l ↦{#q2} v -∗ l ↦{#q1 + q2} v.
+  Proof. iIntros "H1 H2". iFrame "H1". iExact "H2". Qed.
+
+  Lemma mapsto_frame_2 l v q :
+    l ↦{#q/2} v -∗ l ↦{#q/2} v -∗ l ↦{#q} v.
+  Proof. iIntros "H1 H2". iFrame "H1". iExact "H2". Qed.
+
 End mapsto_tests.
 
 Section inv_mapsto_tests.

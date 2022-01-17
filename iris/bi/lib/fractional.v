@@ -194,10 +194,13 @@ Section fractional.
   Global Existing Instances frame_fractional_hyps_l frame_fractional_hyps_r
     frame_fractional_hyps_half.
 
-  Global Instance frame_fractional p R r Φ P q RES:
+  (* Not an instance because of performance; you can locally add it if you are
+  willing to pay the cost. We have concrete instances for certain fractional
+  assertions such as ↦. *)
+  Lemma frame_fractional p R r Φ P q RES:
     AsFractional R Φ r → AsFractional P Φ q →
     FrameFractionalHyps p R Φ RES r q →
-    Frame p R P RES. (* No explicit priority, as default prio > [frame_here]'s 1. *)
+    Frame p R P RES.
   Proof.
     rewrite /Frame=>-[HR _][->?]H.
     revert H HR=>-[Q q0 q0' r0|Q q0 q0' r0|q0].
