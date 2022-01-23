@@ -3,7 +3,28 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
-## Iris master
+## Iris 3.6.0 (2022-01-22)
+
+The highlights and most notable changes of this release are:
+
+* Coq 8.15 is now supported, while Coq 8.13 and Coq 8.14 remain supported.
+  Coq 8.12 is no longer supported.
+* Support for discardable fractions (`dfrac`) has been added to `gmap_view`
+  authoritative elements, and to the `mono_nat` library. See below for other
+  `dfrac`-related changes.
+* A new `mono_list` algebra provides monotonically growing lists with an
+  exclusive authoritative element and persistent prefix witnesses. See
+  `iris/algebra/lib/mono_list.v` for details. An experimental logic-level
+  library wrapping the algebra is available at
+  `iris_staging/base_logic/mono_list.v`; if you use it, please give feedback on
+  the tracking issue
+  [iris/iris#439](https://gitlab.mpi-sws.org/iris/iris/-/issues/439).
+
+This release was managed by Ralf Jung, Robbert Krebbers, and Tej Chajed, with
+contributions from Dan Frumin, Jonas Kastberg Hinrichsen, Lennard Gäher,
+Matthieu Sozeau, Michael Sammler, Paolo G. Giarrusso, Ralf Jung, Robbert
+Krebbers, Simon Friis Vindum, Tej Chajed, and Vincent Siles. Thanks a lot to
+everyone involved!
 
 **Changes in `algebra`**
 
