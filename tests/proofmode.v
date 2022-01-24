@@ -326,11 +326,6 @@ Definition tc_opaque_test : PROP := tc_opaque (∀ x : nat, ⌜ x = x ⌝)%I.
 Lemma test_iIntros_tc_opaque : ⊢ tc_opaque_test.
 Proof. by iIntros (x). Qed.
 
-(** Prior to 0b84351c this used to loop, now [iAssumption] instantiates [R] with
-[False] and performs false elimination. *)
-Lemma test_iAssumption_evar_ex_false : ∃ R, R ⊢ ∀ P, P.
-Proof. eexists. iIntros "?" (P). iAssumption. Qed.
-
 Lemma test_iApply_evar P Q R : (∀ Q, Q -∗ P) -∗ R -∗ P.
 Proof. iIntros "H1 H2". iApply "H1". iExact "H2". Qed.
 
@@ -978,12 +973,23 @@ Lemma test_iAssumption_evar P : ∃ R, (R ⊢ P) ∧ R = P.
 Proof.
   eexists. split.
   - iIntros "H". iAssumption.
-  (* Now verify that the evar was chosen as desired (i.e., it should not pick False). *)
-  - reflexivity.
+  - (* Verify that [iAssumption] instantiates the evar for the existential [R]
+    to become [P], and in particular, that it does not make it [False]. *)
+    reflexivity.
 Qed.
 
+(** Prior to 0b84351c this used to loop, now [iAssumption] fails. *)
 Lemma test_iAssumption_False_no_loop : ∃ R, R ⊢ ∀ P, P.
-Proof. eexists. iIntros "?" (P). done. Qed.
+Proof.
+  eexists. iIntros "H" (P).
+  (* Make sure that [iAssumption] does not perform False elimination on
+  hypotheses that are evars. *)
+  Fail iAssumption.
+  (* And neither does [done]. *)
+  Fail done.
+  (* But we can of course achieve that using an explicit proof. *)
+  iExFalso. iExact "H".
+Qed.
 
 Lemma test_apply_affine_impl `{!BiPlainly PROP} (P : PROP) :
   P -∗ (∀ Q : PROP, ■ (Q -∗ <pers> Q) → ■ (P -∗ Q) → Q).

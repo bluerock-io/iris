@@ -306,7 +306,8 @@ Tactic Notation "iAssumption" :=
           |exact Hass
           |pm_reduce; iSolveTC ||
            fail 2 "iAssumption: remaining hypotheses not affine and the goal not absorbing"]
-       |assert (P = False%I) as Hass by reflexivity;
+       |assert_fails (is_evar P); 
+        assert (P = False%I) as Hass by reflexivity;
         apply (tac_false_destruct _ j p P);
           [pm_reflexivity
           |exact Hass]

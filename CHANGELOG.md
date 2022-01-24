@@ -3,6 +3,15 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
+## Iris master
+
+**Changes in `proofmode`:**
+
+* `iAssumption` no longer instantiates evar premises with `False`. This used
+   to occur when the conclusion contains variables that are not in scope of the
+   evar, thus blocking the default behavior of instantiating the premise with
+   the conclusion. The old behavior can be emulated with`iExFalso. iExact "H".`
+
 ## Iris 3.6.0 (2022-01-22)
 
 The highlights and most notable changes of this release are:
