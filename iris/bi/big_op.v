@@ -1335,14 +1335,14 @@ Section sep_map.
     ([∗ map] k↦y ∈ <[i:=x]> m, Φ k y) ⊣⊢ Φ i x ∗ [∗ map] k↦y ∈ delete i m, Φ k y.
   Proof. apply big_opM_insert_delete. Qed.
 
-  Lemma big_sepM_insert_2 Φ m i x :
-    TCOr (∀ y, Affine (Φ i y)) (Absorbing (Φ i x)) →
+  Lemma big_sepM_insert_2 Φ m i x
+    `{!TCOr (∀ y, Affine (Φ i y)) (Absorbing (Φ i x))} :
     Φ i x -∗ ([∗ map] k↦y ∈ m, Φ k y) -∗ [∗ map] k↦y ∈ <[i:=x]> m, Φ k y.
   Proof.
-    intros Ha. apply wand_intro_r. destruct (m !! i) as [y|] eqn:Hi; last first.
+    apply wand_intro_r. destruct (m !! i) as [y|] eqn:Hi; last first.
     { by rewrite -big_sepM_insert. }
     assert (TCOr (Affine (Φ i y)) (Absorbing (Φ i x))).
-    { destruct Ha; try apply _. }
+    { destruct select (TCOr _ _); try apply _. }
     rewrite big_sepM_delete // assoc.
     rewrite (sep_elim_l (Φ i x)) -big_sepM_insert ?lookup_delete //.
     by rewrite insert_delete_insert.
@@ -2099,15 +2099,15 @@ Section map2.
     by apply wand_intro_l.
   Qed.
 
-  Lemma big_sepM2_insert_2 Φ m1 m2 i x1 x2 :
-    TCOr (∀ x y, Affine (Φ i x y)) (Absorbing (Φ i x1 x2)) →
+  Lemma big_sepM2_insert_2 Φ m1 m2 i x1 x2
+    `{!TCOr (∀ x y, Affine (Φ i x y)) (Absorbing (Φ i x1 x2))} :
     Φ i x1 x2 -∗
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) -∗
     ([∗ map] k↦y1;y2 ∈ <[i:=x1]>m1; <[i:=x2]>m2, Φ k y1 y2).
   Proof.
-    intros Ha. rewrite big_sepM2_eq /big_sepM2_def.
+    rewrite big_sepM2_eq /big_sepM2_def.
     assert (TCOr (∀ x, Affine (Φ i x.1 x.2)) (Absorbing (Φ i x1 x2))).
-    { destruct Ha; try apply _. }
+    { destruct select (TCOr _ _); try apply _. }
     apply wand_intro_r.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite (sep_comm  (Φ _ _ _)) -sep_assoc. apply sep_mono.
@@ -2538,11 +2538,11 @@ Section gset.
     x ∈ X → ([∗ set] y ∈ X, Φ y) ⊣⊢ Φ x ∗ [∗ set] y ∈ X ∖ {[ x ]}, Φ y.
   Proof. apply big_opS_delete. Qed.
 
-  Lemma big_sepS_insert_2 {Φ X} x :
-    TCOr (Affine (Φ x)) (Absorbing (Φ x)) →
+  Lemma big_sepS_insert_2 {Φ X} x
+    `{!TCOr (Affine (Φ x)) (Absorbing (Φ x))} :
     Φ x -∗ ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ {[ x ]} ∪ X, Φ y).
   Proof.
-    intros Haff. apply wand_intro_r. destruct (decide (x ∈ X)); last first.
+    apply wand_intro_r. destruct (decide (x ∈ X)); last first.
     { rewrite -big_sepS_insert //. }
     rewrite big_sepS_delete // assoc.
     rewrite (sep_elim_l (Φ x)) -big_sepS_insert; last set_solver.
