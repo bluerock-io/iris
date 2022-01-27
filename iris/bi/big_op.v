@@ -186,14 +186,23 @@ Section sep_list.
     ([∗ list] k↦y ∈ l, Φ k y) ⊢ Φ i x ∗ (Φ i x -∗ ([∗ list] k↦y ∈ l, Φ k y)).
   Proof. intros. by rewrite {1}big_sepL_insert_acc // (forall_elim x) list_insert_id. Qed.
 
-  Lemma big_sepL_lookup Φ l i x `{!Absorbing (Φ i x)} :
+  Lemma big_sepL_lookup Φ l i x
+    `{!TCOr (∀ j y, Affine (Φ j y)) (Absorbing (Φ i x))} :
     l !! i = Some x → ([∗ list] k↦y ∈ l, Φ k y) ⊢ Φ i x.
-  Proof. intros. rewrite big_sepL_lookup_acc //. by rewrite sep_elim_l. Qed.
+  Proof.
+    intros Hi. destruct select (TCOr _ _).
+    - rewrite -(take_drop_middle l i x) // big_sepL_app /= take_length.
+      apply lookup_lt_Some in Hi. rewrite (_ : _ + 0 = i); last lia.
+      rewrite sep_elim_r sep_elim_l //.
+    - rewrite big_sepL_lookup_acc // sep_elim_l //.
+  Qed.
 
-  Lemma big_sepL_elem_of (Φ : A → PROP) l x `{!Absorbing (Φ x)} :
+  Lemma big_sepL_elem_of (Φ : A → PROP) l x
+    `{!TCOr (∀ y, Affine (Φ y)) (Absorbing (Φ x))} :
     x ∈ l → ([∗ list] y ∈ l, Φ y) ⊢ Φ x.
   Proof.
-    intros [i ?]%elem_of_list_lookup. by eapply (big_sepL_lookup (λ _, Φ)).
+    intros [i ?]%elem_of_list_lookup.
+    destruct select (TCOr _ _); by apply: big_sepL_lookup.
   Qed.
 
   Lemma big_sepL_fmap {B} (f : A → B) (Φ : nat → B → PROP) l :
@@ -627,10 +636,19 @@ Section sep_list2.
     by rewrite !list_insert_id.
   Qed.
 
-  Lemma big_sepL2_lookup Φ l1 l2 i x1 x2 `{!Absorbing (Φ i x1 x2)} :
+  Lemma big_sepL2_lookup Φ l1 l2 i x1 x2
+    `{!TCOr (∀ j y1 y2, Affine (Φ j y1 y2)) (Absorbing (Φ i x1 x2))} :
     l1 !! i = Some x1 → l2 !! i = Some x2 →
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ⊢ Φ i x1 x2.
-  Proof. intros. rewrite big_sepL2_lookup_acc //. by rewrite sep_elim_l. Qed.
+  Proof.
+    intros Hx1 Hx2. destruct select (TCOr _ _).
+    - rewrite -(take_drop_middle l1 i x1) // -(take_drop_middle l2 i x2) //.
+      apply lookup_lt_Some in Hx1. apply lookup_lt_Some in Hx2.
+      rewrite big_sepL2_app_same_length /= 2?take_length; last lia.
+      rewrite (_ : _ + 0 = i); last lia.
+      rewrite sep_elim_r sep_elim_l //.
+    - rewrite big_sepL2_lookup_acc // sep_elim_l //.
+  Qed.
 
   Lemma big_sepL2_fmap_l {A'} (f : A → A') (Φ : nat → A' → B → PROP) l1 l2 :
     ([∗ list] k↦y1;y2 ∈ f <$> l1; l2, Φ k y1 y2)
@@ -1337,13 +1355,19 @@ Section sep_map.
     intros. rewrite big_sepM_delete //. by apply sep_mono_r, wand_intro_l.
   Qed.
 
-  Lemma big_sepM_lookup Φ m i x `{!Absorbing (Φ i x)} :
+  Lemma big_sepM_lookup Φ m i x
+    `{!TCOr (∀ j y, Affine (Φ j y)) (Absorbing (Φ i x))} :
     m !! i = Some x → ([∗ map] k↦y ∈ m, Φ k y) ⊢ Φ i x.
-  Proof. intros. rewrite big_sepM_lookup_acc //. by rewrite sep_elim_l. Qed.
+  Proof.
+    intros Hi. destruct select (TCOr _ _).
+    - rewrite big_sepM_delete // sep_elim_l //.
+    - rewrite big_sepM_lookup_acc // sep_elim_l //.
+  Qed.
 
-  Lemma big_sepM_lookup_dom (Φ : K → PROP) m i `{!Absorbing (Φ i)} :
+  Lemma big_sepM_lookup_dom (Φ : K → PROP) m i
+    `{!TCOr (∀ j, Affine (Φ j)) (Absorbing (Φ i))} :
     is_Some (m !! i) → ([∗ map] k↦_ ∈ m, Φ k) ⊢ Φ i.
-  Proof. intros [x ?]. by eapply (big_sepM_lookup (λ i x, Φ i)). Qed.
+  Proof. intros [x ?]. destruct select (TCOr _ _); by apply: big_sepM_lookup. Qed.
 
   Lemma big_sepM_singleton Φ i x : ([∗ map] k↦y ∈ {[i:=x]}, Φ k y) ⊣⊢ Φ i x.
   Proof. by rewrite big_opM_singleton. Qed.
@@ -2103,25 +2127,34 @@ Section map2.
     rewrite !insert_id //.
  Qed.
 
-  Lemma big_sepM2_lookup Φ m1 m2 i x1 x2 `{!Absorbing (Φ i x1 x2)} :
+  Lemma big_sepM2_lookup Φ m1 m2 i x1 x2
+    `{!TCOr (∀ j y1 y2, Affine (Φ j y1 y2)) (Absorbing (Φ i x1 x2))} :
     m1 !! i = Some x1 → m2 !! i = Some x2 →
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ⊢ Φ i x1 x2.
-  Proof. intros. rewrite big_sepM2_lookup_acc //. by rewrite sep_elim_l. Qed.
-  Lemma big_sepM2_lookup_l Φ m1 m2 i x1 `{!∀ x2, Absorbing (Φ i x1 x2)} :
+  Proof.
+    intros Hx1 Hx2. destruct select (TCOr _ _).
+    - rewrite big_sepM2_delete // sep_elim_l //.
+    - rewrite big_sepM2_lookup_acc // sep_elim_l //.
+  Qed.
+  Lemma big_sepM2_lookup_l Φ m1 m2 i x1
+    `{!TCOr (∀ j y1 y2, Affine (Φ j y1 y2)) (∀ x2, Absorbing (Φ i x1 x2))} :
     m1 !! i = Some x1 →
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊢ ∃ x2, ⌜m2 !! i = Some x2⌝ ∧ Φ i x1 x2.
   Proof.
     intros Hm1. rewrite big_sepM2_delete_l //.
-    f_equiv=> x2. by rewrite sep_elim_l.
+    f_equiv=> x2. erewrite sep_elim_l; first done.
+    destruct select (TCOr _ _); exact _.
   Qed.
-  Lemma big_sepM2_lookup_r Φ m1 m2 i x2 `{!∀ x1, Absorbing (Φ i x1 x2)} :
+  Lemma big_sepM2_lookup_r Φ m1 m2 i x2
+    `{!TCOr (∀ j y1 y2, Affine (Φ j y1 y2)) (∀ x1, Absorbing (Φ i x1 x2))} :
     m2 !! i = Some x2 →
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊢ ∃ x1, ⌜m1 !! i = Some x1⌝ ∧ Φ i x1 x2.
   Proof.
     intros Hm2. rewrite big_sepM2_delete_r //.
-    f_equiv=> x1. by rewrite sep_elim_l.
+    f_equiv=> x1. erewrite sep_elim_l; first done.
+    destruct select (TCOr _ _); exact _.
   Qed.
 
   Lemma big_sepM2_singleton Φ i x1 x2 :
@@ -2529,9 +2562,13 @@ Section gset.
     auto.
   Qed.
 
-  Lemma big_sepS_elem_of Φ X x `{!Absorbing (Φ x)} :
+  Lemma big_sepS_elem_of Φ X x
+    `{!TCOr (∀ y, Affine (Φ y)) (Absorbing (Φ x))} :
     x ∈ X → ([∗ set] y ∈ X, Φ y) ⊢ Φ x.
-  Proof. intros. rewrite big_sepS_delete //. by rewrite sep_elim_l. Qed.
+  Proof.
+    intros ?. rewrite big_sepS_delete //. erewrite sep_elim_l; first done.
+    destruct select (TCOr _ _); exact _.
+  Qed.
 
   Lemma big_sepS_elem_of_acc Φ X x :
     x ∈ X →
@@ -2788,9 +2825,13 @@ Section gmultiset.
     x ∈ X → ([∗ mset] y ∈ X, Φ y) ⊣⊢ Φ x ∗ [∗ mset] y ∈ X ∖ {[+ x +]}, Φ y.
   Proof. apply big_opMS_delete. Qed.
 
-  Lemma big_sepMS_elem_of Φ X x `{!Absorbing (Φ x)} :
+  Lemma big_sepMS_elem_of Φ X x
+    `{!TCOr (∀ y, Affine (Φ y)) (Absorbing (Φ x))} :
     x ∈ X → ([∗ mset] y ∈ X, Φ y) ⊢ Φ x.
-  Proof. intros. rewrite big_sepMS_delete //. by rewrite sep_elim_l. Qed.
+  Proof.
+    intros ?. rewrite big_sepMS_delete //. erewrite sep_elim_l; first done.
+    destruct select (TCOr _ _); exact _.
+  Qed.
 
   Lemma big_sepMS_elem_of_acc Φ X x :
     x ∈ X →
