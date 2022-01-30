@@ -1342,7 +1342,7 @@ Section sep_map.
     apply wand_intro_r. destruct (m !! i) as [y|] eqn:Hi; last first.
     { by rewrite -big_sepM_insert. }
     assert (TCOr (Affine (Φ i y)) (Absorbing (Φ i x))).
-    { destruct select (TCOr _ _); try apply _. }
+    { destruct select (TCOr _ _); apply _. }
     rewrite big_sepM_delete // assoc.
     rewrite (sep_elim_l (Φ i x)) -big_sepM_insert ?lookup_delete //.
     by rewrite insert_delete_insert.
@@ -2107,7 +2107,7 @@ Section map2.
   Proof.
     rewrite big_sepM2_eq /big_sepM2_def.
     assert (TCOr (∀ x, Affine (Φ i x.1 x.2)) (Absorbing (Φ i x1 x2))).
-    { destruct select (TCOr _ _); try apply _. }
+    { destruct select (TCOr _ _); apply _. }
     apply wand_intro_r.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite (sep_comm  (Φ _ _ _)) -sep_assoc. apply sep_mono.
@@ -2143,8 +2143,7 @@ Section map2.
     ⊢ ∃ x2, ⌜m2 !! i = Some x2⌝ ∧ Φ i x1 x2.
   Proof.
     intros Hm1. rewrite big_sepM2_delete_l //.
-    f_equiv=> x2. erewrite sep_elim_l; first done.
-    destruct select (TCOr _ _); exact _.
+    f_equiv=> x2. destruct select (TCOr _ _); by rewrite sep_elim_l.
   Qed.
   Lemma big_sepM2_lookup_r Φ m1 m2 i x2
     `{!TCOr (∀ j y1 y2, Affine (Φ j y1 y2)) (∀ x1, Absorbing (Φ i x1 x2))} :
@@ -2153,8 +2152,7 @@ Section map2.
     ⊢ ∃ x1, ⌜m1 !! i = Some x1⌝ ∧ Φ i x1 x2.
   Proof.
     intros Hm2. rewrite big_sepM2_delete_r //.
-    f_equiv=> x1. erewrite sep_elim_l; first done.
-    destruct select (TCOr _ _); exact _.
+    f_equiv=> x1. destruct select (TCOr _ _); by rewrite sep_elim_l.
   Qed.
 
   Lemma big_sepM2_singleton Φ i x1 x2 :
@@ -2566,8 +2564,8 @@ Section gset.
     `{!TCOr (∀ y, Affine (Φ y)) (Absorbing (Φ x))} :
     x ∈ X → ([∗ set] y ∈ X, Φ y) ⊢ Φ x.
   Proof.
-    intros ?. rewrite big_sepS_delete //. erewrite sep_elim_l; first done.
-    destruct select (TCOr _ _); exact _.
+    intros ?. rewrite big_sepS_delete //.
+    destruct select (TCOr _ _); by rewrite sep_elim_l.
   Qed.
 
   Lemma big_sepS_elem_of_acc Φ X x :
@@ -2829,8 +2827,8 @@ Section gmultiset.
     `{!TCOr (∀ y, Affine (Φ y)) (Absorbing (Φ x))} :
     x ∈ X → ([∗ mset] y ∈ X, Φ y) ⊢ Φ x.
   Proof.
-    intros ?. rewrite big_sepMS_delete //. erewrite sep_elim_l; first done.
-    destruct select (TCOr _ _); exact _.
+    intros ?. rewrite big_sepMS_delete //.
+    destruct select (TCOr _ _); by rewrite sep_elim_l.
   Qed.
 
   Lemma big_sepMS_elem_of_acc Φ X x :
