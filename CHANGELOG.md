@@ -11,7 +11,7 @@ lemma.
   some assertion: they now take any of (`TCOr`) an `Affine` instance or an
   `Absorbing` instance. This breaks uses where an `Absorbing` instance was
   provided without relying on TC search (e.g. in `by apply ...`; a possible fix
-  is `by apply: ...`).
+  is `by apply: ...`). (by Glen Mével, Bedrock Systems)
 
 **Changes in `proofmode`:**
 
