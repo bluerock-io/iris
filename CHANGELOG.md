@@ -19,6 +19,8 @@ lemma.
    to occur when the conclusion contains variables that are not in scope of the
    evar, thus blocking the default behavior of instantiating the premise with
    the conclusion. The old behavior can be emulated with`iExFalso. iExact "H".`
+* `iInduction` now supports induction schemes that involve `Forall` and
+  `Forall2` (for example, for trees with finite branching).
 
 ## Iris 3.6.0 (2022-01-22)
 
