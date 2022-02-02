@@ -458,15 +458,50 @@ Proof.
 Qed.
 
 Class IntoIH (φ : Prop) (Δ : envs PROP) (Q : PROP) :=
-  into_ih : φ → of_envs Δ ⊢ Q.
+  into_ih : φ → □ of_envs Δ ⊢ Q.
 Global Instance into_ih_entails Δ Q : IntoIH (envs_entails Δ Q) Δ Q.
-Proof. by rewrite envs_entails_eq /IntoIH. Qed.
+Proof. by rewrite envs_entails_eq /IntoIH bi.intuitionistically_elim. Qed.
 Global Instance into_ih_forall {A} (φ : A → Prop) Δ Φ :
   (∀ x, IntoIH (φ x) Δ (Φ x)) → IntoIH (∀ x, φ x) Δ (∀ x, Φ x) | 2.
 Proof. rewrite /IntoIH=> HΔ ?. apply forall_intro=> x. by rewrite (HΔ x). Qed.
 Global Instance into_ih_impl (φ ψ : Prop) Δ Q :
   IntoIH φ Δ Q → IntoIH (ψ → φ) Δ (⌜ψ⌝ → Q) | 1.
 Proof. rewrite /IntoIH=> HΔ ?. apply impl_intro_l, pure_elim_l. auto. Qed.
+(** The instances [into_ih_Forall] and [into_ih_Forall2] are used to support
+induction principles for mutual inductive types such as finitely branching trees:
+
+  Inductive ntree := Tree : list ntree → ntree.
+
+  Lemma ntree_ind (P : ntree → Prop) :
+    (∀ l, Forall P l → P (Tree l)) → ∀ t, P t.
+
+Note 1: We need an [IntoIH] instance for any predicate transformer (like
+[Forall]) that is used in induction principles. However, since nested induction
+with lists is most common, we currently only support [Forall] and [Forall2].
+
+Note 2: We could also write the instance [into_ih_Forall] using the big operator
+for conjunction, or using the forall quantifier. We use the big operating
+because that corresponds most closely to [Forall], and we use the version with
+separating conjunction because we do not have a binary version of the big
+operator for conjunctions. *)
+Global Instance into_ih_Forall {A} (φ : A → Prop) l Δ Φ :
+  (∀ x, IntoIH (φ x) Δ (Φ x)) →
+  IntoIH (Forall φ l) Δ ([∗ list] x ∈ l, □ Φ x) | 2.
+Proof.
+  rewrite /IntoIH=> HΔ. induction 1 as [|x l ? IH]; simpl.
+  { apply (affine _). }
+  rewrite {1}intuitionistically_sep_dup. f_equiv; [|done].
+  apply intuitionistically_intro', HΔ; auto.
+Qed.
+Global Instance into_ih_Forall2 {A B} (φ : A → B → Prop) l1 l2 Δ Φ :
+  (∀ x1 x2, IntoIH (φ x1 x2) Δ (Φ x1 x2)) →
+  IntoIH (Forall2 φ l1 l2) Δ ([∗ list] x1;x2 ∈ l1;l2, □ Φ x1 x2) | 2.
+Proof.
+  rewrite /IntoIH=> HΔ. induction 1 as [|x1 x2 l1 l2 ? IH]; simpl.
+  { apply (affine _). }
+  rewrite {1}intuitionistically_sep_dup. f_equiv; [|done].
+  apply intuitionistically_intro', HΔ; auto.
+Qed.
 
 Lemma tac_revert_ih Δ P Q {φ : Prop} (Hφ : φ) :
   IntoIH φ Δ P →
@@ -476,8 +511,9 @@ Lemma tac_revert_ih Δ P Q {φ : Prop} (Hφ : φ) :
 Proof.
   rewrite /IntoIH envs_entails_eq. intros HP ? HPQ.
   rewrite (env_spatial_is_nil_intuitionistically Δ) //.
-  rewrite -(idemp bi_and (□ (of_envs Δ))%I) {1}HP // HPQ.
-  rewrite {1}intuitionistically_into_persistently_1 intuitionistically_elim impl_elim_r //.
+  rewrite -(idemp bi_and (□ (of_envs Δ))%I).
+  rewrite -{1}intuitionistically_idemp {1}intuitionistically_into_persistently_1.
+  by rewrite {1}HP // intuitionistically_elim HPQ impl_elim_r.
 Qed.
 
 Lemma tac_assert Δ j P Q :
