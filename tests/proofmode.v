@@ -1712,3 +1712,63 @@ Proof.
 Abort.
 
 End tactic_tests.
+
+Section mutual_induction.
+  Context {PROP : bi}.
+  Implicit Types P Q R : PROP.
+  Implicit Types φ : nat → PROP.
+  Implicit Types Ψ : nat → nat → PROP.
+
+  Unset Elimination Schemes.
+  Inductive ntree := Tree : list ntree → ntree.
+
+  (** The common induction principle for finitely branching trees. By default,
+  Coq generates a too weak induction principle, so we have to prove it by hand. *)
+  Lemma ntree_ind (φ : ntree → Prop) :
+    (∀ l, Forall φ l → φ (Tree l)) →
+    ∀ t, φ t.
+  Proof.
+    intros Hrec. fix REC 1. intros [l]. apply Hrec. clear Hrec.
+    induction l as [|t l IH]; constructor; auto.
+  Qed.
+
+  (** Now let's test that we can derive the internal induction principle for
+  finitely branching trees in separation logic. There are many variants of the
+  induction principle, but we pick the variant with an induction hypothesis of
+  the form [∀ x, ⌜ x ∈ l ⌝ → ...]. This is most interesting, since the proof
+  mode generates a version with [[∗ list]]. *)
+  Check "test_iInduction_Forall".
+  Lemma test_iInduction_Forall (P : ntree → PROP) :
+    □ (∀ l, (∀ x, ⌜ x ∈ l ⌝ → P x) -∗ P (Tree l)) -∗
+    ∀ t, P t.
+  Proof.
+    iIntros "#H" (t). iInduction t as [] "IH".
+    Show. (* make sure that the induction hypothesis is exactly what we want *)
+    iApply "H". iIntros (x ?). by iApply (big_sepL_elem_of with "IH").
+  Qed.
+
+  (** Now let's define a custom version of [Forall], called [my_Forall], and
+  use that in the variant [tree_ind_alt] of the induction principle. The proof
+  mode does not support [my_Forall], so we test if [iInduction] generates a
+  proper error message. *)
+  Inductive my_Forall {A} (φ : A → Prop) : list A → Prop :=
+    | my_Forall_nil : my_Forall φ []
+    | my_Forall_cons x l : φ x → my_Forall φ l → my_Forall φ (x :: l).
+
+  Lemma ntree_ind_alt (φ : ntree → Prop) :
+    (∀ l, my_Forall φ l → φ (Tree l)) →
+    ∀ t, φ t.
+  Proof.
+    intros Hrec. fix REC 1. intros [l]. apply Hrec. clear Hrec.
+    induction l as [|t l IH]; constructor; auto.
+  Qed.
+
+  Check "test_iInduction_Forall_fail".
+  Lemma test_iInduction_Forall_fail (P : ntree → PROP) :
+    □ (∀ l, ([∗ list] x ∈ l, P x) -∗ P (Tree l)) -∗
+    ∀ t, P t.
+  Proof.
+    iIntros "#H" (t).
+    Fail iInduction t as [] "IH" using ntree_ind_alt.
+  Abort.
+End mutual_induction.
