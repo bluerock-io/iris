@@ -6,10 +6,10 @@ Import bi.
 (* This cannot import the proofmode because it is imported by the proofmode! *)
 
 (** Telescopic quantifiers *)
-Definition bi_texist {PROP : bi} {TT : tele} (Ψ : TT → PROP) : PROP :=
+Definition bi_texist {PROP : bi} {TT : tele@{Quant}} (Ψ : TT → PROP) : PROP :=
   tele_fold (@bi_exist PROP) (λ x, x) (tele_bind Ψ).
 Global Arguments bi_texist {_ !_} _ /.
-Definition bi_tforall {PROP : bi} {TT : tele} (Ψ : TT → PROP) : PROP :=
+Definition bi_tforall {PROP : bi} {TT : tele@{Quant}} (Ψ : TT → PROP) : PROP :=
   tele_fold (@bi_forall PROP) (λ x, x) (tele_bind Ψ).
 Global Arguments bi_tforall {_ !_} _ /.
 
@@ -21,7 +21,7 @@ Notation "'∀..' x .. y , P" := (bi_tforall (λ x, .. (bi_tforall (λ y, P)) ..
   format "∀..  x  ..  y ,  P") : bi_scope.
 
 Section telescopes.
-  Context {PROP : bi} {TT : tele}.
+  Context {PROP : bi} {TT : tele@{Quant}}.
   Implicit Types Ψ : TT → PROP.
 
   Lemma bi_tforall_forall Ψ : bi_tforall Ψ ⊣⊢ bi_forall Ψ.
@@ -34,7 +34,7 @@ Section telescopes.
     - simpl. apply (anti_symm _); apply forall_intro; intros a.
       + rewrite /= -IH. apply forall_intro; intros p.
         by rewrite (forall_elim (TargS a p)).
-      + move/tele_arg_inv : (a) => [x [pf ->]] {a} /=.
+      + destruct a=> /=.
         setoid_rewrite <- IH.
         rewrite 2!forall_elim. done.
   Qed.
@@ -47,7 +47,7 @@ Section telescopes.
         rewrite (tele_arg_O_inv p) //.
       + by rewrite -(exist_intro TargO).
     - simpl. apply (anti_symm _); apply exist_elim.
-      + intros p. move/tele_arg_inv: (p) => [x [pf ->]] {p} /=.
+      + intros p. destruct p => /=.
         by rewrite -exist_intro -IH -exist_intro.
       + intros x.
         rewrite /= -IH. apply exist_elim; intros p.
