@@ -1747,8 +1747,8 @@ Section mutual_induction.
     iApply "H". iIntros (x ?). by iApply (big_sepL_elem_of with "IH").
   Qed.
 
-  (** Now let's define a custom version of [Forall], called [my_Forall], and
-  use that in the variant [tree_ind_alt] of the induction principle. The proof
+  (** Now let us define a custom version of [Forall], called [my_Forall], and
+  use that in the variant [ntree_ind_alt] of the induction principle. The proof
   mode does not support [my_Forall], so we test if [iInduction] generates a
   proper error message. *)
   Inductive my_Forall {A} (φ : A → Prop) : list A → Prop :=

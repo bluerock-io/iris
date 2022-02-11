@@ -810,4 +810,4 @@ Tactic failure: iInduction: cannot import IH
    (λ t : ntree,
       "H" : ∀ l : list ntree, ([∗ list] x ∈ l, P x) -∗ P (Tree l)
       --------------------------------------□
-      P t) l) into proof mode context.
+      P t) l) into proof mode context (IntoIH instance missing).

@@ -480,10 +480,11 @@ Note 1: We need an [IntoIH] instance for any predicate transformer (like
 with lists is most common, we currently only support [Forall] and [Forall2].
 
 Note 2: We could also write the instance [into_ih_Forall] using the big operator
-for conjunction, or using the forall quantifier. We use the big operating
+for conjunction, or using the forall quantifier. We use the big operator
 because that corresponds most closely to [Forall], and we use the version with
 separating conjunction because we do not have a binary version of the big
-operator for conjunctions. *)
+operator for conjunctions, and want to treat [Forall] and [Forall2]
+consistently. *)
 Global Instance into_ih_Forall {A} (φ : A → Prop) l Δ Φ :
   (∀ x, IntoIH (φ x) Δ (Φ x)) →
   IntoIH (Forall φ l) Δ ([∗ list] x ∈ l, □ Φ x) | 2.

@@ -2315,7 +2315,8 @@ Tactic Notation "iInductionCore" tactic3(tac) "as" constr(IH) :=
        notypeclasses refine (tac_revert_ih _ _ _ H _ _ _);
          [iSolveTC ||
           let φ := match goal with |- IntoIH ?φ _ _ => φ end in
-          fail "iInduction: cannot import IH" φ "into proof mode context"
+          fail "iInduction: cannot import IH" φ
+               "into proof mode context (IntoIH instance missing)"
          |pm_reflexivity ||
           fail "iInduction: spatial context not empty, this should not happen"
          |clear H];
