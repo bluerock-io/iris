@@ -249,20 +249,50 @@ Section restate.
 
   Lemma later_soundness P : (⊢ ▷ P) → ⊢ P.
   Proof. apply later_soundness. Qed.
-  (** See [derived.v] for a similar soundness result for basic updates. *)
+
+  (** All of these sealing lemmas are partially applied so that they also rewrite
+  under binders. *)
+  Local Lemma uPred_emp_unseal : bi_emp = @upred.uPred_pure_def M True.
+  Proof. by rewrite -upred.uPred_pure_unseal. Qed.
+  Local Lemma uPred_pure_unseal : bi_pure = @upred.uPred_pure_def M.
+  Proof. by rewrite -upred.uPred_pure_unseal. Qed.
+  Local Lemma uPred_and_unseal : bi_and = @upred.uPred_and_def M.
+  Proof. by rewrite -upred.uPred_and_unseal. Qed.
+  Local Lemma uPred_or_unseal : bi_or = @upred.uPred_or_def M.
+  Proof. by rewrite -upred.uPred_or_unseal. Qed.
+  Local Lemma uPred_impl_unseal : bi_impl = @upred.uPred_impl_def M.
+  Proof. by rewrite -upred.uPred_impl_unseal. Qed.
+  Local Lemma uPred_forall_unseal : @bi_forall _ = @upred.uPred_forall_def M.
+  Proof. by rewrite -upred.uPred_forall_unseal. Qed.
+  Local Lemma uPred_exist_unseal : @bi_exist _ = @upred.uPred_exist_def M.
+  Proof. by rewrite -upred.uPred_exist_unseal. Qed.
+  Local Lemma uPred_internal_eq_unseal :
+    @internal_eq _ _ = @upred.uPred_internal_eq_def M.
+  Proof. by rewrite -upred.uPred_internal_eq_unseal. Qed.
+  Local Lemma uPred_sep_unseal : bi_sep = @upred.uPred_sep_def M.
+  Proof. by rewrite -upred.uPred_sep_unseal. Qed.
+  Local Lemma uPred_wand_unseal : bi_wand = @upred.uPred_wand_def M.
+  Proof. by rewrite -upred.uPred_wand_unseal. Qed.
+  Local Lemma uPred_plainly_unseal : plainly = @upred.uPred_plainly_def M.
+  Proof. by rewrite -upred.uPred_plainly_unseal. Qed.
+  Local Lemma uPred_persistently_unseal :
+    bi_persistently = @upred.uPred_persistently_def M.
+  Proof. by rewrite -upred.uPred_persistently_unseal. Qed.
+  Local Lemma uPred_later_unseal : bi_later = @upred.uPred_later_def M.
+  Proof. by rewrite -upred.uPred_later_unseal. Qed.
+  Local Lemma uPred_bupd_unseal : bupd = @upred.uPred_bupd_def M.
+  Proof. by rewrite -upred.uPred_bupd_unseal. Qed.
+
+  Local Definition uPred_unseal :=
+    (uPred_emp_unseal, uPred_pure_unseal, uPred_and_unseal, uPred_or_unseal,
+    uPred_impl_unseal, uPred_forall_unseal, uPred_exist_unseal,
+    uPred_internal_eq_unseal, uPred_sep_unseal, uPred_wand_unseal,
+    uPred_plainly_unseal, uPred_persistently_unseal, uPred_later_unseal,
+    upred.uPred_ownM_unseal, upred.uPred_cmra_valid_unseal, @uPred_bupd_unseal).
 End restate.
 
-
 (** New unseal tactic that also unfolds the BI layer.
-    This is used by [base_logic.algebra] and [base_logic.bupd_alt].
-    TODO: Can we get rid of this? *)
-Ltac unseal := (* Coq unfold is used to circumvent bug #5699 in rewrite /foo *)
-  unfold bi_emp; simpl;
-  unfold uPred_emp, bupd, bi_bupd_bupd, bi_pure,
-    bi_and, bi_or, bi_impl, bi_forall, bi_exist,
-    bi_sep, bi_wand, bi_persistently, bi_later; simpl;
-  unfold internal_eq, bi_internal_eq_internal_eq,
-    plainly, bi_plainly_plainly; simpl;
-  uPred_primitive.unseal.
+  This is used by [base_logic.algebra] and [base_logic.bupd_alt]. *)
 
+Ltac unseal := rewrite !uPred_unseal /=.
 End uPred.
