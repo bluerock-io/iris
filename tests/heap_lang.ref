@@ -165,6 +165,20 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   ============================
   --------------------------------------∗
   |={⊤}=> True
+"test_heaplang_not_unfolded"
+     : string
+1 goal
+  
+  Σ : gFunctors
+  heapGS0 : heapGS Σ
+  ============================
+  @bi_emp_valid (uPredI (iResUR Σ))
+    (@fupd (bi_car (uPredI (iResUR Σ)))
+       (@bi_fupd_fupd (uPredI (iResUR Σ))
+          (@uPred_bi_fupd Σ
+             (@iris_invGS heap_lang Σ (@heapGS_irisGS Σ heapGS0))))
+       (@top coPset coPset_top) (@top coPset coPset_top)
+       (@bi_pure (uPredI (iResUR Σ)) True))
 1 goal
   
   Σ : gFunctors

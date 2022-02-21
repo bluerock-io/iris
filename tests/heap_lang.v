@@ -326,6 +326,16 @@ Section tests.
   Proof.
     wp_pures. Show. (* No second fupd was added. *)
   Abort.
+
+  Check "test_heaplang_not_unfolded".
+  Lemma test_heaplang_not_unfolded :
+    ⊢@{iPropI Σ} |={⊤}=> True.
+  Proof.
+    cbn.
+    Set Printing All.
+    Show.
+    Unset Printing All.
+  Abort.
 End tests.
 
 Section mapsto_tests.
