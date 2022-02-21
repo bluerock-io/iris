@@ -324,3 +324,5 @@ Definition LanguageOfEctx (Λ : ectxLanguage) : language :=
   let '@EctxLanguage E V C St K of_val to_val empty comp fill head mix := Λ in
   @Language E V St K of_val to_val _
     (@ectx_lang_mixin (@EctxLanguage E V C St K of_val to_val empty comp fill head mix)).
+
+Global Arguments LanguageOfEctx : simpl never.
