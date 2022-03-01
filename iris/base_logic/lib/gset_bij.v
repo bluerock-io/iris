@@ -29,8 +29,8 @@ From iris.prelude Require Import options.
 (* The uCMRA we need. *)
 Class gset_bijG Σ A B `{Countable A, Countable B} :=
   GsetBijG { gset_bijG_inG : inG Σ (gset_bijR A B); }.
-Global Hint Mode gset_bijG - ! ! - - - - : typeclass_instances.
 Local Existing Instance gset_bijG_inG.
+Global Hint Mode gset_bijG - ! ! - - - - : typeclass_instances.
 
 Definition gset_bijΣ A B `{Countable A, Countable B}: gFunctors :=
   #[ GFunctor (gset_bijR A B) ].

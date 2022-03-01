@@ -6,8 +6,9 @@ From iris.prelude Require Import options.
 Import uPred.
 
 Class cinvG Σ := cinv_inG : inG Σ fracR.
-Definition cinvΣ : gFunctors := #[GFunctor fracR].
 Local Existing Instance cinv_inG.
+
+Definition cinvΣ : gFunctors := #[GFunctor fracR].
 
 Global Instance subG_cinvΣ {Σ} : subG cinvΣ Σ → cinvG Σ.
 Proof. solve_inG. Qed.

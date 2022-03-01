@@ -275,8 +275,9 @@ your example would look as follows:
 
 ```coq
 Class libG Σ := { lib_inG : inG Σ (gmapR K (agreeR (prodO natO (laterO (iPropO Σ))))) }.
-Definition libΣ : gFunctors := #[GFunctor (gmapRF K (agreeRF (natO * ▶ ∙)))].
 Local Existing Instance lib_inG.
+
+Definition libΣ : gFunctors := #[GFunctor (gmapRF K (agreeRF (natO * ▶ ∙)))].
 Instance subG_libΣ {Σ} : subG libΣ Σ → libG Σ.
 Proof. solve_inG. Qed.
 ```
