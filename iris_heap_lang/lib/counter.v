@@ -15,6 +15,7 @@ Definition read : val := λ: "l", !"l".
 (** Monotone counter *)
 Class mcounterG Σ := MCounterG { mcounter_inG : inG Σ (authR max_natUR) }.
 Local Existing Instance mcounter_inG.
+
 Definition mcounterΣ : gFunctors := #[GFunctor (authR max_natUR)].
 
 Global Instance subG_mcounterΣ {Σ} : subG mcounterΣ Σ → mcounterG Σ.
@@ -89,6 +90,7 @@ End mono_proof.
 Class ccounterG Σ :=
   CCounterG { ccounter_inG : inG Σ (frac_authR natR) }.
 Local Existing Instance ccounter_inG.
+
 Definition ccounterΣ : gFunctors :=
   #[GFunctor (frac_authR natR)].
 

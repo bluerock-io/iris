@@ -21,6 +21,7 @@ Definition join : val :=
 (* Not bundling heapGS, as it may be shared with other users. *)
 Class spawnG Σ := SpawnG { spawn_tokG : inG Σ (exclR unitO) }.
 Local Existing Instance spawn_tokG.
+
 Definition spawnΣ : gFunctors := #[GFunctor (exclR unitO)].
 
 Global Instance subG_spawnΣ {Σ} : subG spawnΣ Σ → spawnG Σ.

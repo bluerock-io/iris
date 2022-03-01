@@ -15,6 +15,7 @@ Class authG Σ (A : ucmra) := AuthG {
   auth_cmra_discrete :> CmraDiscrete A;
 }.
 Local Existing Instance auth_inG.
+
 Definition authΣ (A : ucmra) : gFunctors := #[ GFunctor (authR A) ].
 
 Global Instance subG_authΣ Σ A : subG (authΣ A) Σ → CmraDiscrete A → authG Σ A.

@@ -16,6 +16,7 @@ Definition release : val := λ: "l", "l" <- #false.
 (* Not bundling heapGS, as it may be shared with other users. *)
 Class lockG Σ := LockG { lock_tokG : inG Σ (exclR unitO) }.
 Local Existing Instance lock_tokG.
+
 Definition lockΣ : gFunctors := #[GFunctor (exclR unitO)].
 
 Global Instance subG_lockΣ {Σ} : subG lockΣ Σ → lockG Σ.
