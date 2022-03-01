@@ -14,7 +14,8 @@ Libraries typically bundle the `inG` they need in a `libG` typeclass, so they do
 not have to expose to clients what exactly their resource algebras are. For
 example, in the [one-shot example](../tests/one_shot.v), we have:
 ```coq
-Class one_shotG Σ := { one_shot_inG :> inG Σ one_shotR }.
+Class one_shotG Σ := { one_shot_inG : inG Σ one_shotR }.
+Local Existing Instance one_shot_inG.
 ```
 The `:>` means that the projection `one_shot_inG` is automatically registered as
 an instance for type-class resolution.  If you need several resource algebras,
@@ -273,8 +274,9 @@ Putting it all together, the `libG` typeclass and `libΣ` list of functors for
 your example would look as follows:
 
 ```coq
-Class libG Σ := { lib_inG :> inG Σ (gmapR K (agreeR (prodO natO (laterO (iPropO Σ))))) }.
+Class libG Σ := { lib_inG : inG Σ (gmapR K (agreeR (prodO natO (laterO (iPropO Σ))))) }.
 Definition libΣ : gFunctors := #[GFunctor (gmapRF K (agreeRF (natO * ▶ ∙)))].
+Local Existing Instance lib_inG.
 Instance subG_libΣ {Σ} : subG libΣ Σ → libG Σ.
 Proof. solve_inG. Qed.
 ```

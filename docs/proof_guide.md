@@ -99,9 +99,10 @@ for further details on `libG` classes).  For example, the STS library is
 parameterized by an STS and assumes that the STS state space is inhabited:
 ```coq
 Class stsG Σ (sts : stsT) := {
-  sts_inG :> inG Σ (stsR sts);
+  sts_inG : inG Σ (stsR sts);
   sts_inhabited :> Inhabited (sts.state sts);
 }.
+Local Existing Instance sts_inG.
 ```
 In this case, the `Instance` for this `libG` class has more than just a `subG`
 assumption:
