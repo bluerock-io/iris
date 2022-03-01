@@ -68,8 +68,9 @@ these can be matched up with the invariant namespaces. *)
 Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_heapGpreS_heap :> ghost_mapG Σ L V;
   gen_heapGpreS_meta :> ghost_mapG Σ L gname;
-  gen_heapGpreS_meta_data :> inG Σ (reservation_mapR (agreeR positiveO));
+  gen_heapGpreS_meta_data : inG Σ (reservation_mapR (agreeR positiveO));
 }.
+Local Existing Instance gen_heapGpreS_meta_data.
 
 Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
   gen_heap_inG :> gen_heapGpreS L V Σ;

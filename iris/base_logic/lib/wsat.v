@@ -9,9 +9,9 @@ exception of what's in the [invGS] module. The module [invGS] is thus exported i
 [fancy_updates], where [wsat] is only imported. *)
 Module invGS.
   Class invGpreS (Σ : gFunctors) : Set := InvGpreS {
-    invGpreS_inv :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
-    invGpreS_enabled :> inG Σ coPset_disjR;
-    invGpreS_disabled :> inG Σ (gset_disjR positive);
+    invGpreS_inv : inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
+    invGpreS_enabled : inG Σ coPset_disjR;
+    invGpreS_disabled : inG Σ (gset_disjR positive);
   }.
 
   Class invGS (Σ : gFunctors) : Set := InvG {

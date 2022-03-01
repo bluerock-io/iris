@@ -8,8 +8,9 @@ From iris.prelude Require Import options.
 
 (** The CMRA we need. *)
 Class ghost_varG Σ (A : Type) := GhostVarG {
-  ghost_var_inG :> inG Σ (dfrac_agreeR $ leibnizO A);
+  ghost_var_inG : inG Σ (dfrac_agreeR $ leibnizO A);
 }.
+Local Existing Instance ghost_var_inG.
 Global Hint Mode ghost_varG - ! : typeclass_instances.
 
 Definition ghost_varΣ (A : Type) : gFunctors :=
