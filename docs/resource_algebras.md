@@ -119,8 +119,9 @@ class for the generalized heap module, bundles the usual `inG` assumptions
 together with the `gname`:
 ```coq
 Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heapGpreS_heap :> ghost_mapG Σ L V;
+  gen_heapGpreS_heap : ghost_mapG Σ L V;
 }.
+Local Existing Instances gen_heapGpreS_heap.
 Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
   gen_heap_inG :> gen_heapGpreS L V Σ;
   gen_heap_name : gname;
