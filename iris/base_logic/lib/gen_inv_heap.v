@@ -36,9 +36,10 @@ Class inv_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
 Local Existing Instance inv_heapGpreS_inG.
 
 Class inv_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := Inv_HeapG {
-  inv_heap_inG :> inv_heapGpreS L V Σ;
+  inv_heap_inG : inv_heapGpreS L V Σ;
   inv_heap_name : gname
 }.
+Local Existing Instance inv_heap_inG.
 Global Arguments Inv_HeapG _ _ {_ _ _ _}.
 Global Arguments inv_heap_name {_ _ _ _ _} _ : assert.
 

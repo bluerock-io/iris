@@ -123,9 +123,10 @@ Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
 }.
 Local Existing Instances gen_heapGpreS_heap.
 Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
-  gen_heap_inG :> gen_heapGpreS L V Σ;
+  gen_heap_inG : gen_heapGpreS L V Σ;
   gen_heap_name : gname;
 }.
+Local Existing Instance gen_heap_inG.
 ```
 The trailing `S` here is for "singleton", because the idea is that only one
 instance of `gen_heapGS` ever exists. This is important, since two instances

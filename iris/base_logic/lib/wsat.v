@@ -15,7 +15,7 @@ Module invGS.
   }.
 
   Class invGS (Σ : gFunctors) : Set := InvG {
-    inv_inG :> invGpreS Σ;
+    inv_inG : invGpreS Σ;
     invariant_name : gname;
     enabled_name : gname;
     disabled_name : gname;
@@ -30,6 +30,7 @@ Module invGS.
   Proof. solve_inG. Qed.
 End invGS.
 Import invGS.
+Local Existing Instances inv_inG invGpreS_inv invGpreS_enabled invGpreS_disabled.
 
 Definition invariant_unfold {Σ} (P : iProp Σ) : later (iProp Σ) :=
   Next P.

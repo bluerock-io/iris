@@ -73,10 +73,11 @@ Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
 Local Existing Instances gen_heapGpreS_meta_data gen_heapGpreS_heap gen_heapGpreS_meta.
 
 Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
-  gen_heap_inG :> gen_heapGpreS L V Σ;
+  gen_heap_inG : gen_heapGpreS L V Σ;
   gen_heap_name : gname;
   gen_meta_name : gname
 }.
+Local Existing Instance gen_heap_inG.
 Global Arguments GenHeapGS L V Σ {_ _ _} _ _.
 Global Arguments gen_heap_name {L V Σ _ _} _ : assert.
 Global Arguments gen_meta_name {L V Σ _ _} _ : assert.
