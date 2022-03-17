@@ -17,10 +17,16 @@ example, in the [one-shot example](../tests/one_shot.v), we have:
 Class one_shotG Σ := { one_shot_inG : inG Σ one_shotR }.
 Local Existing Instance one_shot_inG.
 ```
-The `:>` means that the projection `one_shot_inG` is automatically registered as
-an instance for type-class resolution.  If you need several resource algebras,
-just add more `inG` fields.  If you are using another module as part of yours,
-add a field like `one_shot_other :> otherG Σ`.
+Here, the projection `one_shot_inG` is registered as an instance for type-class
+resolution. If you need several resource algebras, just add more `inG` fields.
+If you are using another module as part of yours, add a field like
+`one_shot_other : otherG Σ`.
+
+The code above enables these typeclass instances only in the surrounding file:
+where they are used to define the new abstraction by the library, while the
+interface of these abstractions will only depend on the `one_shotG` class.
+Since `one_shot_inG` will be hidden from clients, they will not accidentally
+reuse it accidentally in their code.
 
 Having defined the type class, we need to provide a way to instantiate it.  This
 is an important step, as not every resource algebra can actually be used: if
