@@ -37,11 +37,16 @@ of [gFunctor]s.
 
 Note that [gFunctors] is isomorphic to [list gFunctor], but defined in an
 alternative way to avoid universe inconsistencies with respect to the universe
-monomorphic [list] type. *)
-Definition gFunctors := { n : nat & fin n → gFunctor }.
+monomorphic [list] type.
 
-Definition gid (Σ : gFunctors) := fin (projT1 Σ).
-Definition gFunctors_lookup (Σ : gFunctors) : gid Σ → gFunctor := projT2 Σ.
+Defining [gFunctors] as a dependent record instead of a [sigT] avoids other
+universe inconsistencies. *)
+Record gFunctors := GFunctors {
+  gFunctors_len : nat;
+  gFunctors_lookup : fin gFunctors_len → gFunctor
+}.
+
+Definition gid (Σ : gFunctors) := fin (gFunctors_len Σ).
 
 Definition gname := positive.
 Canonical Structure gnameO := leibnizO gname.
@@ -55,13 +60,14 @@ Definition iResF (Σ : gFunctors) : urFunctor :=
 functors, and the append operator on lists of functors. These are used to
 compose [gFunctors] out of smaller pieces. *)
 Module gFunctors.
-  Definition nil : gFunctors := existT 0 (fin_0_inv _).
+  Definition nil : gFunctors := GFunctors 0 (fin_0_inv _).
 
   Definition singleton (F : gFunctor) : gFunctors :=
-    existT 1 (fin_S_inv (λ _, gFunctor) F (fin_0_inv _)).
+    GFunctors 1 (fin_S_inv (λ _, gFunctor) F (fin_0_inv _)).
 
   Definition app (Σ1 Σ2 : gFunctors) : gFunctors :=
-    existT (projT1 Σ1 + projT1 Σ2) (fin_plus_inv _ (projT2 Σ1) (projT2 Σ2)).
+    GFunctors (gFunctors_len Σ1 + gFunctors_len Σ2)
+              (fin_plus_inv _ (gFunctors_lookup Σ1) (gFunctors_lookup Σ2)).
 End gFunctors.
 
 Coercion gFunctors.singleton : gFunctor >-> gFunctors.
