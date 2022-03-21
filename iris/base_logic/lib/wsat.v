@@ -9,13 +9,13 @@ exception of what's in the [invGS] module. The module [invGS] is thus exported i
 [fancy_updates], where [wsat] is only imported. *)
 Module invGS.
   Class invGpreS (Σ : gFunctors) : Set := InvGpreS {
-    invGpreS_inv :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
-    invGpreS_enabled :> inG Σ coPset_disjR;
-    invGpreS_disabled :> inG Σ (gset_disjR positive);
+    invGpreS_inv : inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
+    invGpreS_enabled : inG Σ coPset_disjR;
+    invGpreS_disabled : inG Σ (gset_disjR positive);
   }.
 
   Class invGS (Σ : gFunctors) : Set := InvG {
-    inv_inG :> invGpreS Σ;
+    inv_inG : invGpreS Σ;
     invariant_name : gname;
     enabled_name : gname;
     disabled_name : gname;
@@ -30,6 +30,7 @@ Module invGS.
   Proof. solve_inG. Qed.
 End invGS.
 Import invGS.
+Local Existing Instances inv_inG invGpreS_inv invGpreS_enabled invGpreS_disabled.
 
 Definition invariant_unfold {Σ} (P : iProp Σ) : later (iProp Σ) :=
   Next P.

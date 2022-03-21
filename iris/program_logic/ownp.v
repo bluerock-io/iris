@@ -16,9 +16,10 @@ union.
 
 Class ownPGS (Λ : language) (Σ : gFunctors) := OwnPGS {
   ownP_invG : invGS Σ;
-  ownP_inG :> inG Σ (excl_authR (stateO Λ));
+  ownP_inG : inG Σ (excl_authR (stateO Λ));
   ownP_name : gname;
 }.
+Local Existing Instance ownP_inG.
 
 Global Instance ownPG_irisGS `{!ownPGS Λ Σ} : irisGS Λ Σ := {
   iris_invGS := ownP_invG;
@@ -35,8 +36,9 @@ Definition ownPΣ (Λ : language) : gFunctors :=
 
 Class ownPGpreS (Λ : language) (Σ : gFunctors) : Set := {
   ownPPre_invG :> invGpreS Σ;
-  ownPPre_state_inG :> inG Σ (excl_authR (stateO Λ))
+  ownPPre_state_inG : inG Σ (excl_authR (stateO Λ))
 }.
+Local Existing Instance ownPPre_state_inG.
 
 Global Instance subG_ownPΣ {Λ Σ} : subG (ownPΣ Λ) Σ → ownPGpreS Λ Σ.
 Proof. solve_inG. Qed.

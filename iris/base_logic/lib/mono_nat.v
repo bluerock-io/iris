@@ -14,7 +14,9 @@ From iris.base_logic.lib Require Export own.
 From iris.prelude Require Import options.
 
 Class mono_natG Σ :=
-  MonoNatG { mono_natG_inG :> inG Σ mono_natR; }.
+  MonoNatG { mono_natG_inG : inG Σ mono_natR; }.
+Local Existing Instance mono_natG_inG.
+
 Definition mono_natΣ : gFunctors := #[ GFunctor mono_natR ].
 Global Instance subG_mono_natΣ Σ : subG mono_natΣ Σ → mono_natG Σ.
 Proof. solve_inG. Qed.

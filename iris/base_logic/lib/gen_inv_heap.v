@@ -31,13 +31,15 @@ Definition to_inv_heap {L V : Type} `{Countable L}
   prod_map (λ x, Excl' x) to_agree <$> h.
 
 Class inv_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  inv_heapGpreS_inG :> inG Σ (authR (inv_heap_mapUR L V))
+  inv_heapGpreS_inG : inG Σ (authR (inv_heap_mapUR L V))
 }.
+Local Existing Instance inv_heapGpreS_inG.
 
 Class inv_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := Inv_HeapG {
-  inv_heap_inG :> inv_heapGpreS L V Σ;
+  inv_heap_inG : inv_heapGpreS L V Σ;
   inv_heap_name : gname
 }.
+Local Existing Instance inv_heap_inG.
 Global Arguments Inv_HeapG _ _ {_ _ _ _}.
 Global Arguments inv_heap_name {_ _ _ _ _} _ : assert.
 

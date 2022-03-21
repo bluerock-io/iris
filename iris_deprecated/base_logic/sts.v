@@ -10,9 +10,10 @@ Import uPred.
 
 (** The CMRA we need. *)
 Class stsG Σ (sts : stsT) := StsG {
-  sts_inG :> inG Σ (sts_resR sts);
+  sts_inG : inG Σ (sts_resR sts);
   sts_inhabited :> Inhabited (sts.state sts);
 }.
+Local Existing Instance sts_inG.
 
 Definition stsΣ (sts : stsT) : gFunctors := #[ GFunctor (sts_resR sts) ].
 Global Instance subG_stsΣ Σ sts :

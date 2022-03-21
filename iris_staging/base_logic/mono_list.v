@@ -22,7 +22,9 @@ From iris.base_logic.lib Require Export own.
 From iris.prelude Require Import options.
 
 Class mono_listG (A : Type) Σ :=
-  MonoListG { mono_list_inG :> inG Σ (mono_listR (leibnizO A)) }.
+  MonoListG { mono_list_inG : inG Σ (mono_listR (leibnizO A)) }.
+Local Existing Instance mono_list_inG.
+
 Definition mono_listΣ (A : Type) : gFunctors :=
   #[GFunctor (mono_listR (leibnizO A))].
 

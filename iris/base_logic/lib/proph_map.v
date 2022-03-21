@@ -9,14 +9,16 @@ Definition proph_val_list (P V : Type) := list (P * V).
 
 (** The CMRA we need. *)
 Class proph_mapGpreS (P V : Type) (Σ : gFunctors) `{Countable P} := {
-  proph_map_GpreS_inG :> ghost_mapG Σ P (list V)
+  proph_map_GpreS_inG : ghost_mapG Σ P (list V)
 }.
+Local Existing Instances proph_map_GpreS_inG.
 
 Class proph_mapGS (P V : Type) (Σ : gFunctors) `{Countable P} := ProphMapGS {
-  proph_map_inG :> proph_mapGpreS P V Σ;
+  proph_map_inG : proph_mapGpreS P V Σ;
   proph_map_name : gname
 }.
 Global Arguments proph_map_name {_ _ _ _ _} _ : assert.
+Local Existing Instances proph_map_inG.
 
 Definition proph_mapΣ (P V : Type) `{Countable P} : gFunctors :=
   #[ghost_mapΣ P (list V)].

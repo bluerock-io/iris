@@ -28,7 +28,9 @@ Definition release : val :=
 
 (** The CMRAs we need. *)
 Class tlockG Σ :=
-  tlock_G :> inG Σ (authR (prodUR (optionUR (exclR natO)) (gset_disjUR nat))).
+  tlock_G : inG Σ (authR (prodUR (optionUR (exclR natO)) (gset_disjUR nat))).
+Local Existing Instance tlock_G.
+
 Definition tlockΣ : gFunctors :=
   #[ GFunctor (authR (prodUR (optionUR (exclR natO)) (gset_disjUR nat))) ].
 

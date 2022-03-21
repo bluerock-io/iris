@@ -14,12 +14,20 @@ Libraries typically bundle the `inG` they need in a `libG` typeclass, so they do
 not have to expose to clients what exactly their resource algebras are. For
 example, in the [one-shot example](../tests/one_shot.v), we have:
 ```coq
-Class one_shotG Σ := { one_shot_inG :> inG Σ one_shotR }.
+Class one_shotG Σ := { one_shot_inG : inG Σ one_shotR }.
+Local Existing Instances one_shot_inG.
 ```
-The `:>` means that the projection `one_shot_inG` is automatically registered as
-an instance for type-class resolution.  If you need several resource algebras,
-just add more `inG` fields.  If you are using another module as part of yours,
-add a field like `one_shot_other :> otherG Σ`.
+Here, the projection `one_shot_inG` is registered as an instance for type-class
+resolution. If you need several resource algebras, just add more `inG` fields.
+If you are using another module as part of yours, add a field like
+`one_shot_other : otherG Σ`. All of these fields should be added to the
+`Local Existing Instances` command.
+
+The code above enables these typeclass instances only in the surrounding file
+where they are used to define the new abstractions by the library. The
+interface of these abstractions will only depend on the `one_shotG` class.
+Since `one_shot_inG` will be hidden from clients, they will not accidentally
+rely on it in their code.
 
 Having defined the type class, we need to provide a way to instantiate it.  This
 is an important step, as not every resource algebra can actually be used: if
@@ -118,12 +126,14 @@ class for the generalized heap module, bundles the usual `inG` assumptions
 together with the `gname`:
 ```coq
 Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heapGpreS_heap :> ghost_mapG Σ L V;
+  gen_heapGpreS_heap : ghost_mapG Σ L V;
 }.
+Local Existing Instances gen_heapGpreS_heap.
 Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
-  gen_heap_inG :> gen_heapGpreS L V Σ;
+  gen_heap_inG : gen_heapGpreS L V Σ;
   gen_heap_name : gname;
 }.
+Local Existing Instances gen_heap_inG.
 ```
 The trailing `S` here is for "singleton", because the idea is that only one
 instance of `gen_heapGS` ever exists. This is important, since two instances
@@ -273,7 +283,9 @@ Putting it all together, the `libG` typeclass and `libΣ` list of functors for
 your example would look as follows:
 
 ```coq
-Class libG Σ := { lib_inG :> inG Σ (gmapR K (agreeR (prodO natO (laterO (iPropO Σ))))) }.
+Class libG Σ := { lib_inG : inG Σ (gmapR K (agreeR (prodO natO (laterO (iPropO Σ))))) }.
+Local Existing Instance lib_inG.
+
 Definition libΣ : gFunctors := #[GFunctor (gmapRF K (agreeRF (natO * ▶ ∙)))].
 Instance subG_libΣ {Σ} : subG libΣ Σ → libG Σ.
 Proof. solve_inG. Qed.

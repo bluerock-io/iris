@@ -66,16 +66,18 @@ these can be matched up with the invariant namespaces. *)
 (** The CMRAs we need, and the global ghost names we are using. *)
 
 Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heapGpreS_heap :> ghost_mapG Σ L V;
-  gen_heapGpreS_meta :> ghost_mapG Σ L gname;
-  gen_heapGpreS_meta_data :> inG Σ (reservation_mapR (agreeR positiveO));
+  gen_heapGpreS_heap : ghost_mapG Σ L V;
+  gen_heapGpreS_meta : ghost_mapG Σ L gname;
+  gen_heapGpreS_meta_data : inG Σ (reservation_mapR (agreeR positiveO));
 }.
+Local Existing Instances gen_heapGpreS_meta_data gen_heapGpreS_heap gen_heapGpreS_meta.
 
 Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
-  gen_heap_inG :> gen_heapGpreS L V Σ;
+  gen_heap_inG : gen_heapGpreS L V Σ;
   gen_heap_name : gname;
   gen_meta_name : gname
 }.
+Local Existing Instance gen_heap_inG.
 Global Arguments GenHeapGS L V Σ {_ _ _} _ _.
 Global Arguments gen_heap_name {L V Σ _ _} _ : assert.
 Global Arguments gen_meta_name {L V Σ _ _} _ : assert.

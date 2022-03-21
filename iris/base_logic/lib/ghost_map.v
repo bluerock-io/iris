@@ -12,8 +12,10 @@ From iris.prelude Require Import options.
 FIXME: This is intentionally discrete-only, but
 should we support setoids via [Equiv]? *)
 Class ghost_mapG Σ (K V : Type) `{Countable K} := GhostMapG {
-  ghost_map_inG :> inG Σ (gmap_viewR K (leibnizO V));
+  ghost_map_inG : inG Σ (gmap_viewR K (leibnizO V));
 }.
+Local Existing Instance ghost_map_inG.
+
 Definition ghost_mapΣ (K V : Type) `{Countable K} : gFunctors :=
   #[ GFunctor (gmap_viewR K (leibnizO V)) ].
 
