@@ -22,6 +22,11 @@ lemma.
 * `iInduction` now supports induction schemes that involve `Forall` and
   `Forall2` (for example, for trees with finite branching).
 
+**Changes in `base_logic`:**
+
+* Make the `inG` instances for `libG` fields local, so they are only used inside
+  the library that defines the `libG`.
+
 ## Iris 3.6.0 (2022-01-22)
 
 The highlights and most notable changes of this release are:
