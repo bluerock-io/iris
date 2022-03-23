@@ -74,11 +74,11 @@ Section list_resolves.
   Qed.
 End list_resolves.
 
-Lemma proph_map_init `{Countable P, !proph_mapGpreS P V PVS} pvs ps :
-  ⊢ |==> ∃ _ : proph_mapGS P V PVS, proph_map_interp pvs ps.
+Lemma proph_map_init `{Countable P, !proph_mapGpreS P V Σ} pvs ps :
+  ⊢ |==> ∃ _ : proph_mapGS P V Σ, proph_map_interp pvs ps.
 Proof.
   iMod (ghost_map_alloc_empty) as (γ) "Hh".
-  iModIntro. iExists (ProphMapGS P V PVS _ _ _ γ), ∅. iSplit; last by iFrame.
+  iModIntro. iExists (ProphMapGS P V _ _ _ _ γ), ∅. iSplit; last by iFrame.
   iPureIntro. done.
 Qed.
 
