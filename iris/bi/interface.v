@@ -181,7 +181,7 @@ Structure bi := Bi {
   bi_persistently : bi_car → bi_car;
   bi_later : bi_car → bi_car;
   bi_ofe_mixin : OfeMixin bi_car;
-  bi_cofe : Cofe (Ofe bi_car bi_ofe_mixin);
+  bi_cofe_aux : Cofe (Ofe bi_car bi_ofe_mixin);
   bi_bi_mixin : BiMixin bi_entails bi_emp bi_pure bi_and bi_or bi_impl bi_forall
                         bi_exist bi_sep bi_wand bi_persistently;
   bi_bi_later_mixin : BiLaterMixin bi_entails bi_pure bi_or bi_impl
@@ -191,8 +191,12 @@ Bind Scope bi_scope with bi_car.
 
 Coercion bi_ofeO (PROP : bi) : ofe := Ofe PROP (bi_ofe_mixin PROP).
 Canonical Structure bi_ofeO.
-Global Instance bi_cofe' (PROP : bi) : Cofe PROP.
-Proof. apply bi_cofe. Qed.
+
+(** The projection [bi_cofe_aux] is not registered as an instance because it has
+the wrong type. Its result type is unfolded, i.e., [Cofe (Ofe PROP ...)], and
+thus should never be used. The instance [bi_cofe] has the proper result type
+[Cofe (bi_ofeO PROP)]. *)
+Global Instance bi_cofe (PROP : bi) : Cofe PROP := bi_cofe_aux PROP.
 
 Global Instance: Params (@bi_entails) 1 := {}.
 Global Instance: Params (@bi_emp) 1 := {}.

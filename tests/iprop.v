@@ -17,3 +17,8 @@ Definition foo :=
     (sigT (A:=Type -> Type)).
 
 From iris.base_logic Require Import iprop.
+
+Lemma bi_ofeO_iProp Σ : bi_ofeO (iPropI Σ) = iPropO Σ.
+Proof. reflexivity. Qed.
+Lemma bi_cofe_iProp Σ : bi_cofe (iPropI Σ) = @uPred_cofe (iResUR Σ).
+Proof. reflexivity. Qed.
