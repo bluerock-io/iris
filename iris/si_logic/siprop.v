@@ -130,8 +130,7 @@ Ltac unseal := rewrite !unseal_eqs /=.
 Section primitive.
 Local Arguments siProp_holds !_ _ /.
 
-Notation "P ⊢ Q" := (siProp_entails P Q)
-  (at level 99, Q at level 200, right associativity).
+Notation "P ⊢ Q" := (siProp_entails P Q).
 Notation "'True'" := (siProp_pure True) : siProp_scope.
 Notation "'False'" := (siProp_pure False) : siProp_scope.
 Notation "'⌜' φ '⌝'" := (siProp_pure φ%type%stdpp) : siProp_scope.
