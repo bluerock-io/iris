@@ -13,9 +13,7 @@ Local Coercion siProp_holds : siProp >-> Funclass.
 Global Arguments siProp_holds : simpl never.
 Add Printing Constructor siProp.
 
-Declare Scope siProp_scope.
-Delimit Scope siProp_scope with SI.
-Bind Scope siProp_scope with siProp.
+Bind Scope bi_scope with siProp.
 
 Section cofe.
   Inductive siProp_equiv' (P Q : siProp) : Prop :=
@@ -131,16 +129,18 @@ Section primitive.
 Local Arguments siProp_holds !_ _ /.
 
 Notation "P ⊢ Q" := (siProp_entails P Q).
-Notation "'True'" := (siProp_pure True) : siProp_scope.
-Notation "'False'" := (siProp_pure False) : siProp_scope.
-Notation "'⌜' φ '⌝'" := (siProp_pure φ%type%stdpp) : siProp_scope.
-Infix "∧" := siProp_and : siProp_scope.
-Infix "∨" := siProp_or : siProp_scope.
-Infix "→" := siProp_impl : siProp_scope.
-Notation "∀ x .. y , P" := (siProp_forall (λ x, .. (siProp_forall (λ y, P%SI)) ..)) : siProp_scope.
-Notation "∃ x .. y , P" := (siProp_exist (λ x, .. (siProp_exist (λ y, P%SI)) ..)) : siProp_scope.
-Notation "x ≡ y" := (siProp_internal_eq x y) : siProp_scope.
-Notation "▷ P" := (siProp_later P) (at level 20, right associativity) : siProp_scope.
+Notation "'True'" := (siProp_pure True) : bi_scope.
+Notation "'False'" := (siProp_pure False) : bi_scope.
+Notation "'⌜' φ '⌝'" := (siProp_pure φ%type%stdpp) : bi_scope.
+Infix "∧" := siProp_and : bi_scope.
+Infix "∨" := siProp_or : bi_scope.
+Infix "→" := siProp_impl : bi_scope.
+Notation "∀ x .. y , P" :=
+  (siProp_forall (λ x, .. (siProp_forall (λ y, P%I)) ..)) : bi_scope.
+Notation "∃ x .. y , P" :=
+  (siProp_exist (λ x, .. (siProp_exist (λ y, P%I)) ..)) : bi_scope.
+Notation "x ≡ y" := (siProp_internal_eq x y) : bi_scope.
+Notation "▷ P" := (siProp_later P) : bi_scope.
 
 (** Below there follow the primitive laws for [siProp]. There are no derived laws
 in this file. *)
