@@ -67,7 +67,7 @@ Section tests.
     iStartProof. iIntros (n) "$".
   Qed.
 
-  Lemma test_embed_wand (P Q : PROP) : (⎡P⎤ -∗ ⎡Q⎤) -∗ ⎡P -∗ Q⎤ : monPred.
+  Lemma test_embed_wand (P Q : PROP) : (⎡P⎤ -∗ ⎡Q⎤) ⊢@{monPredI} ⎡P -∗ Q⎤.
   Proof.
     iIntros "H HP". by iApply "H".
   Qed.

@@ -865,7 +865,7 @@ Lemma test_specialize_intuitionistic P Q :
   □ P -∗ □ (P -∗ Q) -∗ □ Q.
 Proof. iIntros "#HP #HQ". iSpecialize ("HQ" with "HP"). done. Qed.
 
-Lemma test_iEval x y : ⌜ (y + x)%nat = 1 ⌝ -∗ ⌜ S (x + y) = 2%nat ⌝ : PROP.
+Lemma test_iEval x y : ⌜ (y + x)%nat = 1 ⌝ ⊢@{PROP} ⌜ S (x + y) = 2%nat ⌝.
 Proof.
   iIntros (H).
   iEval (rewrite (Nat.add_comm x y) // H).
@@ -880,21 +880,21 @@ Proof.
 Qed.
 
 Check "test_iSimpl_in".
-Lemma test_iSimpl_in x y : ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ S (S (S x)) = y ⌝ : PROP.
+Lemma test_iSimpl_in x y : ⌜ (3 + x)%nat = y ⌝ ⊢@{PROP} ⌜ S (S (S x)) = y ⌝.
 Proof. iIntros "H". iSimpl in "H". Show. done. Qed.
 
 Lemma test_iSimpl_in_2 x y z :
-  ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ (1 + y)%nat = z ⌝ -∗
-  ⌜ S (S (S x)) = y ⌝ : PROP.
+  ⌜ (3 + x)%nat = y ⌝ ⊢@{PROP} ⌜ (1 + y)%nat = z ⌝ -∗
+  ⌜ S (S (S x)) = y ⌝.
 Proof. iIntros "H1 H2". iSimpl in "H1 H2". Show. done. Qed.
 
 Lemma test_iSimpl_in3 x y z :
-  ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ (1 + y)%nat = z ⌝ -∗
-  ⌜ S (S (S x)) = y ⌝ : PROP.
+  ⌜ (3 + x)%nat = y ⌝ ⊢@{PROP} ⌜ (1 + y)%nat = z ⌝ -∗
+  ⌜ S (S (S x)) = y ⌝.
 Proof. iIntros "#H1 H2". iSimpl in "#". Show. done. Qed.
 
 Check "test_iSimpl_in4".
-Lemma test_iSimpl_in4 x y : ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ S (S (S x)) = y ⌝ : PROP.
+Lemma test_iSimpl_in4 x y : ⌜ (3 + x)%nat = y ⌝ ⊢@{PROP} ⌜ S (S (S x)) = y ⌝.
 Proof. iIntros "H". Fail iSimpl in "%". by iSimpl in "H". Qed.
 
 Check "test_iRename".
