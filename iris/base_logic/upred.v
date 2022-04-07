@@ -435,6 +435,8 @@ Implicit Types A : Type.
 Local Arguments uPred_holds {_} !_ _ _ /.
 Local Hint Immediate uPred_in_entails : core.
 
+(** The notations below are implicitly local due to the section, so we do not
+mind the overlap with the general BI notations. *)
 Notation "P ⊢ Q" := (@uPred_entails M P%I Q%I) : stdpp_scope.
 Notation "(⊢)" := (@uPred_entails M) (only parsing) : stdpp_scope.
 Notation "P ⊣⊢ Q" := (@uPred_equiv M P%I Q%I) : stdpp_scope.

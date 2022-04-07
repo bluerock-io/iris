@@ -128,6 +128,8 @@ Ltac unseal := rewrite !unseal_eqs /=.
 Section primitive.
 Local Arguments siProp_holds !_ _ /.
 
+(** The notations below are implicitly local due to the section, so we do not
+mind the overlap with the general BI notations. *)
 Notation "P ⊢ Q" := (siProp_entails P Q).
 Notation "'True'" := (siProp_pure True) : bi_scope.
 Notation "'False'" := (siProp_pure False) : bi_scope.
