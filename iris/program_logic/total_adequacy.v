@@ -116,22 +116,27 @@ Proof.
 Qed.
 End adequacy.
 
-Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ :
+Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ n :
   (∀ `{Hinv : !invGS Σ},
      ⊢ |={⊤}=> ∃
-         (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
-         (fork_post : val Λ → iProp Σ),
+         (stateI : state Λ → nat → list (observation Λ) → nat → iProp Σ)
+         (** We abstract over any instance of [irisG], and thus any value of
+             the field [num_laters_per_step]. This is needed because instances
+             of [irisG] (e.g., the one of HeapLang) are shared between WP and
+             TWP, where TWP simply ignores [num_laters_per_step]. *)
+         (num_laters_per_step : nat → nat)
+         (fork_post : val Λ → iProp Σ)
+         state_interp_mono,
        let _ : irisGS Λ Σ :=
-           IrisG _ _ Hinv (λ σ _, stateI σ) fork_post (λ _, 0)
-                 (λ _ _ _ _, fupd_intro _ _)
+           IrisG _ _ Hinv stateI fork_post num_laters_per_step state_interp_mono
        in
-       stateI σ [] 0 ∗ WP e @ s; ⊤ [{ Φ }]) →
+       stateI σ n [] 0 ∗ WP e @ s; ⊤ [{ Φ }]) →
   sn erased_step ([e], σ). (* i.e. ([e], σ) is strongly normalizing *)
 Proof.
   intros Hwp. apply (soundness (M:=iResUR Σ) _  1); simpl.
   apply (fupd_plain_soundness ⊤ ⊤ _)=> Hinv.
-  iMod (Hwp) as (stateI fork_post) "[Hσ H]".
-  iApply (@twptp_total _ _ (IrisG _ _ Hinv (λ σ _, stateI σ) fork_post _ _)
-                       _ 0 with "Hσ").
+  iMod (Hwp) as (stateI num_laters_per_step fork_post stateI_mono) "[Hσ H]".
+  set (iG := IrisG _ _ Hinv stateI fork_post num_laters_per_step stateI_mono).
+  iApply (@twptp_total _ _ iG _ n with "Hσ").
   by iApply (@twp_twptp _ _ (IrisG _ _ Hinv _ fork_post _ _)).
 Qed.

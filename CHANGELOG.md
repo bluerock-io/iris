@@ -27,6 +27,14 @@ lemma.
 * Make the `inG` instances for `libG` fields local, so they are only used inside
   the library that defines the `libG`.
 
+**Changes in `iris_heap_lang`:**
+
+* Changed the `num_laters_per_step` of `heap_lang` to `λ n, n`, signifying that
+  each step of the weakest precondition strips `n` laters, where `n` is the
+  number of steps taken so far. This number is tied to ghost state in the state
+  interpretation, which is exposed, updated, and used with new lemmas
+  `wp_lb_init`, `wp_lb_update`, and `wp_step_fupdN_lb`. (by Jonas Kastberg Hinrichsen)
+
 ## Iris 3.6.0 (2022-01-22)
 
 The highlights and most notable changes of this release are:
