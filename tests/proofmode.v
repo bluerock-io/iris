@@ -1109,6 +1109,17 @@ Proof.
   iIntros "?". iExists _. iApply modal_if_lemma2. done.
 Qed.
 
+Check "test_iApply_prettification3".
+Lemma test_iApply_prettification3 (Ψ Φ : nat → PROP) :
+  (∀ f y, TCEq f (λ x, x + 10) → Ψ (f 1) -∗ Φ y) →
+  Ψ 11 -∗ Φ 10.
+Proof.
+  iIntros (HP) "H".
+  iApply HP.
+  Show.
+  iApply "H".
+Qed.
+
 Lemma test_iDestruct_clear P Q R :
   P -∗ (Q ∗ R) -∗ True.
 Proof.
