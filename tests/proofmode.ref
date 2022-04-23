@@ -396,6 +396,29 @@ No applicable tactic.
   "HQ" : Q
   --------------------------------------∗
   ▷ P ∗ Q
+"test_iRevert_pure"
+     : string
+1 goal
+  
+  PROP : bi
+  φ : Prop
+  P : PROP
+  ============================
+  "H" : <affine> ⌜φ⌝ -∗ P
+  --------------------------------------∗
+  <affine> ⌜φ⌝ -∗ P
+"test_iRevert_pure_affine"
+     : string
+1 goal
+  
+  PROP : bi
+  BiAffine0 : BiAffine PROP
+  φ : Prop
+  P : PROP
+  ============================
+  "H" : ⌜φ⌝ -∗ P
+  --------------------------------------∗
+  ⌜φ⌝ -∗ P
 "elim_mod_accessor"
      : string
 1 goal
