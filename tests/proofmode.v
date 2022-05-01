@@ -1115,7 +1115,7 @@ Lemma test_iApply_prettification3 (Ψ Φ : nat → PROP) :
   Ψ 11 -∗ Φ 10.
 Proof.
   iIntros (HP) "H".
-  iApply HP.
+  iApply HP. (* should be [Ψ (1 + 10)], without a beta redex *)
   Show.
   iApply "H".
 Qed.
