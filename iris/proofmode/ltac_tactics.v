@@ -1240,8 +1240,7 @@ Local Ltac iApplyHypLoop H :=
     [eapply tac_apply with H _ _ _;
       [pm_reflexivity
       |iSolveTC
-      |pm_reduce;
-       pm_prettify (* reduce redexes created by instantiation *)]
+      |pm_reduce]
     |iSpecializePat H "[]"; last iApplyHypLoop H].
 
 Tactic Notation "iApplyHyp" constr(H) :=
@@ -1253,7 +1252,9 @@ Tactic Notation "iApplyHyp" constr(H) :=
      end].
 
 Tactic Notation "iApply" open_constr(lem) :=
-  iPoseProofCore lem as false (fun H => iApplyHyp H).
+  iPoseProofCore lem as false (fun H => iApplyHyp H);
+  pm_prettify. (* reduce redexes created by instantiation; this is done at the
+  very end after all type classes have been solved. *)
 
 (** * Disjunction *)
 Tactic Notation "iLeft" :=

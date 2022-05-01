@@ -385,6 +385,18 @@ No applicable tactic.
   "HP" : default emp mP
   --------------------------------------∗
   default emp mP
+"test_iApply_prettification3"
+     : string
+1 goal
+  
+  PROP : bi
+  Ψ, Φ : nat → PROP
+  HP : ∀ (f : nat → nat) (y : nat),
+         TCEq f (λ x : nat, x + 10) → Ψ (f 1) -∗ Φ y
+  ============================
+  "H" : Ψ 11
+  --------------------------------------∗
+  Ψ (1 + 10)
 1 goal
   
   PROP : bi
