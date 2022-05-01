@@ -15,11 +15,11 @@ lemma.
 
 **Changes in `proofmode`:**
 
-* `iAssumption` no longer instantiates evar premises with `False`. This used
-   to occur when the conclusion contains variables that are not in scope of the
-   evar, thus blocking the default behavior of instantiating the premise with
-   the conclusion. The old behavior can be emulated with`iExFalso. iExact "H".`
-* `iInduction` now supports induction schemes that involve `Forall` and
+* Change `iAssumption` to no longer instantiate evar premises with `False`. This
+  used to occur when the conclusion contains variables that are not in scope of
+  the evar, thus blocking the default behavior of instantiating the premise with
+  the conclusion. The old behavior can be emulated with`iExFalso. iExact "H".`
+* In `iInduction`, support induction schemes that involve `Forall` and
   `Forall2` (for example, for trees with finite branching).
 
 **Changes in `base_logic`:**
@@ -29,7 +29,7 @@ lemma.
 
 **Changes in `iris_heap_lang`:**
 
-* Changed the `num_laters_per_step` of `heap_lang` to `λ n, n`, signifying that
+* Change the `num_laters_per_step` of `heap_lang` to `λ n, n`, signifying that
   each step of the weakest precondition strips `n` laters, where `n` is the
   number of steps taken so far. This number is tied to ghost state in the state
   interpretation, which is exposed, updated, and used with new lemmas
