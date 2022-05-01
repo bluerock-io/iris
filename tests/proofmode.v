@@ -1157,6 +1157,22 @@ Proof.
   iIntros (?) "HP HQ". iModIntro. Show. by iFrame.
 Qed.
 
+Check "test_iRevert_pure".
+Lemma test_iRevert_pure (φ : Prop) P :
+  φ → (<affine> ⌜ φ ⌝ -∗ P) -∗ P.
+Proof.
+  (* Check that iRevert creates a wand instead of an implication *)
+  iIntros (Hφ) "H". iRevert (Hφ). Show. done.
+Qed.
+
+Check "test_iRevert_pure_affine".
+Lemma test_iRevert_pure_affine `{!BiAffine PROP} (φ : Prop) P :
+  φ → (⌜ φ ⌝ -∗ P) -∗ P.
+Proof.
+  (* If the BI is affine, no affine modality should be added *)
+  iIntros (Hφ) "H". iRevert (Hφ). Show. done.
+Qed.
+
 End tests.
 
 Section parsing_tests.

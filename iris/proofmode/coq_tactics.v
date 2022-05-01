@@ -170,8 +170,14 @@ Proof.
       rewrite -persistent_and_affinely_sep_l. apply pure_elim_l=> ?. by rewrite HQ.
 Qed.
 
-Lemma tac_pure_revert Δ φ Q : envs_entails Δ (⌜φ⌝ → Q) → (φ → envs_entails Δ Q).
-Proof. rewrite envs_entails_eq. intros HΔ ?. by rewrite HΔ pure_True // left_id. Qed.
+Lemma tac_pure_revert Δ φ P Q :
+  FromAffinely P ⌜ φ ⌝ →
+  envs_entails Δ (P -∗ Q) →
+  (φ → envs_entails Δ Q).
+Proof.
+  rewrite /FromAffinely envs_entails_eq. intros <- -> ?.
+  by rewrite pure_True // affinely_True_emp affinely_emp left_id.
+Qed.
 
 (** * Intuitionistic *)
 Lemma tac_intuitionistic Δ i j p P P' Q :

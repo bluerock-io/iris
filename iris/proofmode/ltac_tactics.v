@@ -651,7 +651,10 @@ Local Tactic Notation "iForallRevert" ident(x) :=
   first [let A := type of x in idtac|fail 1 "iRevert:" x "not in scope"];
   let A := type of x in
   lazymatch type of A with
-  | Prop => revert x; first [apply tac_pure_revert|err x]
+  | Prop =>
+     revert x; first
+       [eapply tac_pure_revert; [iSolveTC (* [FromAffinely], should never fail *)|]
+       |err x]
   | _ => revert x; first [apply tac_forall_revert|err x]
   end.
 

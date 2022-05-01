@@ -21,6 +21,8 @@ lemma.
   the conclusion. The old behavior can be emulated with`iExFalso. iExact "H".`
 * In `iInduction`, support induction schemes that involve `Forall` and
   `Forall2` (for example, for trees with finite branching).
+* Change `iRevert` of a pure hypothesis to generate a magic wand instead of an
+  implication.
 
 **Changes in `base_logic`:**
 
