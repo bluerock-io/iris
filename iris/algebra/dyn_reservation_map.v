@@ -282,10 +282,10 @@ Section cmra.
     intros [Hmap [Hinf Hdisj]].
     (* Pick a fresh set disjoint from the existing tokens [Ef] and map [mf],
        such that both that set [E1] and the remainder [E2] are infinite. *)
-    edestruct (coPset_split_infinite (⊤ ∖ (Ef ∪ dom coPset mf))) as
+    edestruct (coPset_split_infinite (⊤ ∖ (Ef ∪ (gset_to_coPset $ dom (gset _) mf)))) as
         (E1 & E2 & HEunion & HEdisj & HE1inf & HE2inf).
     { rewrite -difference_difference_L.
-        by apply difference_infinite, dom_finite. }
+      by apply difference_infinite, gset_to_coPset_finite. }
     exists (dyn_reservation_map_token E1).
     split; first by apply HQ. clear HQ.
     rewrite dyn_reservation_map_validN_eq /=.
