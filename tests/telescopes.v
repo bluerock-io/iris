@@ -176,3 +176,7 @@ Restart.
 Abort.
 
 End telescopes_and_tactics.
+
+Lemma tele_universe {PROP : bi} (TT : tele@{bi.Quant}) (P : TT → PROP) :
+  bi_texist P ⊣⊢ bi_exist P.
+Proof. apply bi_texist_exist. Qed.
