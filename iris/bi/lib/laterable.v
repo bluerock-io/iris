@@ -4,7 +4,7 @@ From iris.prelude Require Import options.
 
 (** The class of laterable assertions *)
 Class Laterable {PROP : bi} (P : PROP) := laterable :
-  P -∗ ∃ Q, ▷ Q ∗ □ (▷ Q -∗ ◇ P).
+  P ⊢ ∃ Q, ▷ Q ∗ □ (▷ Q -∗ ◇ P).
 Global Arguments Laterable {_} _%I : simpl never.
 Global Arguments laterable {_} _%I {_}.
 Global Hint Mode Laterable + ! : typeclass_instances.
@@ -129,14 +129,14 @@ Section instances.
   Proof. by intros ->. Qed.
 
   Lemma make_laterable_except_0 Q :
-    make_laterable (◇ Q) -∗ make_laterable Q.
+    make_laterable (◇ Q) ⊢ make_laterable Q.
   Proof.
     iIntros "(%P & HP & #HPQ)". iExists P. iFrame.
     iIntros "!# HP". iMod ("HPQ" with "HP"). done.
   Qed.
 
   Lemma make_laterable_sep Q1 Q2 :
-    make_laterable Q1 ∗ make_laterable Q2 -∗ make_laterable (Q1 ∗ Q2).
+    make_laterable Q1 ∗ make_laterable Q2 ⊢ make_laterable (Q1 ∗ Q2).
   Proof.
     iIntros "[HQ1 HQ2]".
     iDestruct "HQ1" as (P1) "[HP1 #HQ1]".
@@ -151,7 +151,7 @@ Section instances.
   resources. We cannot keep arbitrary resources since that would let us "frame
   in" non-laterable things. *)
   Lemma make_laterable_wand Q1 Q2 :
-    make_laterable (Q1 -∗ Q2) -∗ (make_laterable Q1 -∗ make_laterable Q2).
+    make_laterable (Q1 -∗ Q2) ⊢ (make_laterable Q1 -∗ make_laterable Q2).
   Proof.
     iIntros "HQ HQ1".
     iDestruct (make_laterable_sep with "[$HQ $HQ1 //]") as "HQ".
@@ -162,7 +162,7 @@ Section instances.
   (** A variant of the above for keeping arbitrary intuitionistic resources.
       Sadly, this is not implied by the above for non-affine BIs. *)
   Lemma make_laterable_intuitionistic_wand Q1 Q2 :
-    □ (Q1 -∗ Q2) -∗ (make_laterable Q1 -∗ make_laterable Q2).
+    □ (Q1 -∗ Q2) ⊢ (make_laterable Q1 -∗ make_laterable Q2).
   Proof.
     iIntros "#HQ HQ1". iDestruct "HQ1" as (P) "[HP #HQ1]".
     iExists P. iFrame. iIntros "!> HP".
@@ -178,7 +178,7 @@ Section instances.
   Qed.
 
   Lemma make_laterable_elim Q :
-    make_laterable Q -∗ ◇ Q.
+    make_laterable Q ⊢ ◇ Q.
   Proof.
     iIntros "HQ". iDestruct "HQ" as (P) "[HP #HQ]". by iApply "HQ".
   Qed.
@@ -197,7 +197,7 @@ Section instances.
   Qed.
   Lemma make_laterable_intro' Q :
     Laterable Q →
-    Q -∗ make_laterable Q.
+    Q ⊢ make_laterable Q.
   Proof.
     intros ?. iApply make_laterable_intro. iIntros "!# $".
   Qed.
@@ -213,7 +213,7 @@ Section instances.
   Qed.
 
   Lemma laterable_alt Q :
-    Laterable Q ↔ (Q -∗ make_laterable Q).
+    Laterable Q ↔ (Q ⊢ make_laterable Q).
   Proof.
     split.
     - intros ?. apply make_laterable_intro'. done.

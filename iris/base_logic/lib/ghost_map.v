@@ -242,15 +242,15 @@ Section lemmas.
   Lemma ghost_map_delete {γ m k v} :
     ghost_map_auth γ 1 m -∗ k ↪[γ] v ==∗ ghost_map_auth γ 1 (delete k m).
   Proof.
-    unseal. apply bi.wand_intro_r. rewrite -own_op.
+    unseal. iApply bi.wand_intro_r. rewrite -own_op.
     iApply own_update. apply: gmap_view_delete.
   Qed.
 
   Lemma ghost_map_update {γ m k v} w :
     ghost_map_auth γ 1 m -∗ k ↪[γ] v ==∗ ghost_map_auth γ 1 (<[k := w]> m) ∗ k ↪[γ] w.
   Proof.
-    unseal. apply bi.wand_intro_r. rewrite -!own_op.
-    apply own_update. apply: gmap_view_update.
+    unseal. iApply bi.wand_intro_r. rewrite -!own_op.
+    iApply own_update. apply: gmap_view_update.
   Qed.
 
   (** Big-op versions of above lemmas *)
@@ -270,8 +270,8 @@ Section lemmas.
     ghost_map_auth γ 1 m ==∗
     ghost_map_auth γ 1 (m' ∪ m) ∗ ([∗ map] k ↦ v ∈ m', k ↪[γ] v).
   Proof.
-    unseal. intros ?. rewrite -big_opM_own_1 -own_op.
-    apply own_update. apply: gmap_view_alloc_big; done.
+    unseal. intros ?. rewrite -big_opM_own_1 -own_op. iApply own_update.
+    apply: gmap_view_alloc_big; done.
   Qed.
   Lemma ghost_map_insert_persist_big {γ m} m' :
     m' ##ₘ m →

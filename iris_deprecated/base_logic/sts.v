@@ -75,25 +75,25 @@ Section sts.
   Lemma sts_ownS_weaken γ S1 S2 T1 T2 :
     T2 ⊆ T1 → S1 ⊆ S2 → sts.closed S2 T2 →
     sts_ownS γ S1 T1 ==∗ sts_ownS γ S2 T2.
-  Proof. intros ???. by apply own_update, sts_update_frag. Qed.
+  Proof. intros ???. iApply own_update. by apply sts_update_frag. Qed.
 
   Lemma sts_own_weaken γ s S T1 T2 :
     T2 ⊆ T1 → s ∈ S → sts.closed S T2 →
     sts_own γ s T1 ==∗ sts_ownS γ S T2.
-  Proof. intros ???. by apply own_update, sts_update_frag_up. Qed.
+  Proof. intros ???. iApply own_update. by apply sts_update_frag_up. Qed.
 
   Lemma sts_own_weaken_state γ s1 s2 T :
     sts.frame_steps T s2 s1 → sts.tok s2 ## T →
     sts_own γ s1 T ==∗ sts_own γ s2 T.
   Proof.
-    intros ??. apply own_update, sts_update_frag_up; [|done..].
+    intros ??. iApply own_update. apply sts_update_frag_up; [|done..].
     intros Hdisj. apply sts.closed_up. done.
   Qed.
 
   Lemma sts_own_weaken_tok γ s T1 T2 :
     T2 ⊆ T1 → sts_own γ s T1 ==∗ sts_own γ s T2.
   Proof.
-    intros ?. apply own_update, sts_update_frag_up; last done.
+    intros ?. iApply own_update. apply sts_update_frag_up; last done.
     - intros. apply sts.closed_up. set_solver.
     - apply sts.elem_of_up.
   Qed.

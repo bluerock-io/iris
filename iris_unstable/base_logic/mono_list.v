@@ -134,11 +134,11 @@ Section mono_list_own.
   Qed.
 
   Lemma mono_list_lb_own_get γ q l :
-    mono_list_auth_own γ q l -∗ mono_list_lb_own γ l.
+    mono_list_auth_own γ q l ⊢ mono_list_lb_own γ l.
   Proof. intros. unseal. by apply own_mono, mono_list_included. Qed.
   Lemma mono_list_lb_own_le {γ l} l' :
     l' `prefix_of` l →
-    mono_list_lb_own γ l -∗ mono_list_lb_own γ l'.
+    mono_list_lb_own γ l ⊢ mono_list_lb_own γ l'.
   Proof. unseal. intros. by apply own_mono, mono_list_lb_mono. Qed.
 
   Lemma mono_list_idx_own_get {γ l} i a :

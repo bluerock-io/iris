@@ -112,7 +112,7 @@ Section gset_bij.
     gset_bij_own_auth γ q L -∗ gset_bij_own_elem γ a b.
   Proof.
     intros. rewrite gset_bij_own_auth_eq gset_bij_own_elem_eq.
-    by apply own_mono, bij_view_included.
+    iApply own_mono. by apply bij_view_included.
   Qed.
 
   Lemma gset_bij_elem_of {γ q L} a b :

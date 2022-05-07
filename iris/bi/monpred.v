@@ -656,7 +656,7 @@ Module Import monPred.
 End monPred.
 
 Class Objective {I : biIndex} {PROP : bi} (P : monPred I PROP) :=
-  objective_at i j : P i -∗ P j.
+  objective_at i j : P i ⊢ P j.
 Global Arguments Objective {_ _} _%I.
 Global Arguments objective_at {_ _} _%I {_}.
 Global Hint Mode Objective + + ! : typeclass_instances.
@@ -716,9 +716,9 @@ Section bi_facts.
   Lemma monPred_at_absorbingly_if i p P : (<absorb>?p P) i ⊣⊢ <absorb>?p (P i).
   Proof. destruct p=>//=. apply monPred_at_absorbingly. Qed.
 
-  Lemma monPred_wand_force i P Q : (P -∗ Q) i -∗ (P i -∗ Q i).
+  Lemma monPred_wand_force i P Q : (P -∗ Q) i ⊢ (P i -∗ Q i).
   Proof. unseal. rewrite bi.forall_elim bi.pure_impl_forall bi.forall_elim //. Qed.
-  Lemma monPred_impl_force i P Q : (P → Q) i -∗ (P i → Q i).
+  Lemma monPred_impl_force i P Q : (P → Q) i ⊢ (P i → Q i).
   Proof. unseal. rewrite bi.forall_elim bi.pure_impl_forall bi.forall_elim //. Qed.
 
   (** Instances *)
@@ -983,7 +983,7 @@ Section bi_facts.
     unseal. split=>i /=.
     rewrite /= -(bi.exist_intro i). apply bi.and_intro=>//. by apply bi.pure_intro.
   Qed.
-  Lemma monPred_in_elim P i : monPred_in i -∗ ⎡P i⎤ → P .
+  Lemma monPred_in_elim P i : monPred_in i ⊢ ⎡P i⎤ → P .
   Proof.
     apply bi.impl_intro_r. unseal. split=>i' /=.
     eapply bi.pure_elim; [apply bi.and_elim_l|]=>?. rewrite bi.and_elim_r. by f_equiv.

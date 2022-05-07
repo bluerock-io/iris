@@ -69,7 +69,7 @@ Section saved_anything.
   Lemma saved_anything_valid γ dq x :
     saved_anything_own γ dq x -∗ ⌜✓ dq⌝.
   Proof.
-    rewrite /saved_anything_own own_valid dfrac_agree_validI //.
+    rewrite /saved_anything_own own_valid dfrac_agree_validI //. eauto.
   Qed.
   Lemma saved_anything_valid_2 γ dq1 dq2 x y :
     saved_anything_own γ dq1 x -∗ saved_anything_own γ dq2 y -∗ ⌜✓ (dq1 ⋅ dq2)⌝ ∗ x ≡ y.

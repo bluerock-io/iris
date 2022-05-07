@@ -126,7 +126,7 @@ Section iris_tests.
   Lemma test_iInv_4 t N E1 E2 P:
     ↑N ⊆ E2 →
     na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2
-         ⊢ |={⊤}=> na_own t E1 ∗ na_own t E2  ∗ ▷ P.
+       ={⊤}=∗ na_own t E1 ∗ na_own t E2  ∗ ▷ P.
   Proof.
     iIntros (?) "(#?&Hown1&Hown2)".
     iInv N as "(#HP&Hown2)". Show.
@@ -137,9 +137,8 @@ Section iris_tests.
   Lemma test_iInv_4_with_close t N E1 E2 P:
     ↑N ⊆ E2 →
     na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2
-         ⊢ |={⊤}=> na_own t E1 ∗ na_own t E2  ∗ ▷ P.
+         ={⊤}=∗ na_own t E1 ∗ na_own t E2  ∗ ▷ P.
   Proof.
-    Show.
     iIntros (?) "(#?&Hown1&Hown2)".
     iInv N as "(#HP&Hown2)" "Hclose". Show.
     iMod ("Hclose" with "[HP Hown2]").

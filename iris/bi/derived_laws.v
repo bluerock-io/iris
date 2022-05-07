@@ -519,7 +519,7 @@ Qed.
 Lemma and_parallel P1 P2 Q1 Q2 :
   (P1 ∧ P2) -∗ ((P1 -∗ Q1) ∧ (P2 -∗ Q2)) -∗ Q1 ∧ Q2.
 Proof.
-  apply wand_intro_r, and_intro.
+  apply entails_wand, wand_intro_r, and_intro.
   - rewrite !and_elim_l wand_elim_r. done.
   - rewrite !and_elim_r wand_elim_r. done.
 Qed.
@@ -1727,15 +1727,15 @@ Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
 (* iterated modalities *)
 Lemma iter_modal_intro (M : PROP → PROP) P (n : nat) :
   (∀ Q, Q ⊢ M Q) →
-  P -∗ Nat.iter n M P.
+  P ⊢ Nat.iter n M P.
 Proof.
   intros Hintro; induction n as [|n IHn]; simpl; first done.
   etransitivity; first apply IHn. apply Hintro.
 Qed.
 
 Lemma iter_modal_mono (M : PROP → PROP) P Q (n : nat) :
-  (∀ P Q, (P -∗ Q) -∗ M P -∗ M Q)  →
-  (P -∗ Q) -∗
+  (∀ P Q, (P -∗ Q) ⊢ M P -∗ M Q) →
+  (P -∗ Q) ⊢
   Nat.iter n M P -∗ Nat.iter n M Q.
 Proof.
   intros Hmono; induction n as [|n IHn]; simpl; first done.

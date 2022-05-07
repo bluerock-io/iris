@@ -183,13 +183,13 @@ Module le_upd.
       do 9 (done || f_equiv). f_contractive. eapply IH, dist_le; [lia|done|lia].
     Qed.
 
-    Lemma bupd_le_upd P : (|==> P) -∗ (|==£> P).
+    Lemma bupd_le_upd P : (|==> P) ⊢ (|==£> P).
     Proof.
       rewrite le_upd_unfold; iIntros "Hupd" (x) "Hpr".
       iMod "Hupd" as "P". iModIntro. iLeft. by iFrame.
     Qed.
 
-    Lemma le_upd_intro P : P -∗ |==£> P.
+    Lemma le_upd_intro P : P ⊢ |==£> P.
     Proof.
       iIntros "H"; by iApply bupd_le_upd.
     Qed.
@@ -223,7 +223,7 @@ Module le_upd.
     Qed.
 
     (** Derived lemmas *)
-    Lemma le_upd_mono P Q : (P ⊢ Q) → (|==£> P) -∗ (|==£> Q).
+    Lemma le_upd_mono P Q : (P ⊢ Q) → (|==£> P) ⊢ (|==£> Q).
     Proof.
       intros Hent. iApply le_upd_bind.
       iIntros "P"; iApply le_upd_intro; by iApply Hent.
@@ -236,16 +236,16 @@ Module le_upd.
     Global Instance le_upd_equiv_proper : Proper ((≡) ==> (≡)) le_upd.
     Proof. apply ne_proper. apply _. Qed.
 
-    Lemma le_upd_trans P :  (|==£> |==£> P) -∗ |==£> P.
+    Lemma le_upd_trans P :  (|==£> |==£> P) ⊢ |==£> P.
     Proof.
       iIntros "HP". iApply le_upd_bind; eauto.
     Qed.
-    Lemma le_upd_frame_r P R : (|==£> P) ∗ R -∗ |==£> P ∗ R.
+    Lemma le_upd_frame_r P R : (|==£> P) ∗ R ⊢ |==£> P ∗ R.
     Proof.
       iIntros "[Hupd R]". iApply (le_upd_bind with "[R]"); last done.
       iIntros "P". iApply le_upd_intro. by iFrame.
     Qed.
-    Lemma le_upd_frame_l P R : R ∗ (|==£> P) -∗ |==£> R ∗ P.
+    Lemma le_upd_frame_l P R : R ∗ (|==£> P) ⊢ |==£> R ∗ P.
     Proof. rewrite comm le_upd_frame_r comm //. Qed.
 
     Lemma le_upd_later P :
@@ -405,7 +405,7 @@ Module le_upd_if.
     Global Instance le_upd_if_ne b : NonExpansive (le_upd_if b).
     Proof. destruct b; apply _. Qed.
 
-    Lemma le_upd_if_intro b P : P -∗ le_upd_if b P.
+    Lemma le_upd_if_intro b P : P ⊢ le_upd_if b P.
     Proof.
       destruct b; [apply le_upd_intro | apply bupd_intro].
     Qed.
@@ -417,25 +417,25 @@ Module le_upd_if.
       iIntros "HPQ >HP". by iApply "HPQ".
     Qed.
 
-    Lemma le_upd_if_mono b P Q : (P ⊢ Q) → (le_upd_if b P) -∗ (le_upd_if b Q).
+    Lemma le_upd_if_mono b P Q : (P ⊢ Q) → (le_upd_if b P) ⊢ (le_upd_if b Q).
     Proof.
       destruct b; [apply le_upd_mono | apply bupd_mono].
     Qed.
-    Lemma le_upd_if_trans b P : (le_upd_if b (le_upd_if b P)) -∗ le_upd_if b P.
+    Lemma le_upd_if_trans b P : (le_upd_if b (le_upd_if b P)) ⊢ le_upd_if b P.
     Proof.
       destruct b; [apply le_upd_trans | apply bupd_trans].
     Qed.
-    Lemma le_upd_if_frame_r b P R : (le_upd_if b P) ∗ R -∗ le_upd_if b (P ∗ R).
+    Lemma le_upd_if_frame_r b P R : (le_upd_if b P) ∗ R ⊢ le_upd_if b (P ∗ R).
     Proof.
       destruct b; [apply le_upd_frame_r | apply bupd_frame_r].
     Qed.
 
-    Lemma bupd_le_upd_if b P : (|==> P) -∗ (le_upd_if b P).
+    Lemma bupd_le_upd_if b P : (|==> P) ⊢ (le_upd_if b P).
     Proof.
       destruct b; [apply bupd_le_upd | done].
     Qed.
 
-    Lemma le_upd_if_frame_l b R Q : (R ∗ le_upd_if b Q) -∗ le_upd_if b (R ∗ Q).
+    Lemma le_upd_if_frame_l b R Q : (R ∗ le_upd_if b Q) ⊢ le_upd_if b (R ∗ Q).
     Proof.
       rewrite comm le_upd_if_frame_r comm //.
     Qed.

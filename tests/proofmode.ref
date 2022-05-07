@@ -38,7 +38,7 @@
   PROP : bi
   Q : PROP
   ============================
-  □ emp ∗ Q -∗ Q
+  □ emp ∗ Q ⊢ Q
 "test_iDestruct_and_emp"
      : string
 1 goal
