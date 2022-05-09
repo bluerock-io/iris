@@ -2548,6 +2548,24 @@ Section gset.
     replace ({[x]} ∪ X) with X by set_solver.
     auto.
   Qed.
+  Lemma big_sepS_insert_2' {Φ X} x
+    `{!TCOr (Affine (Φ x)) (Absorbing (Φ x))} :
+    Φ x -∗ ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ X ∪ {[ x ]}, Φ y).
+  Proof. rewrite comm_L. by apply big_sepS_insert_2. Qed.
+
+  Lemma big_sepS_union_2 {Φ} X Y
+    `{!∀ x, TCOr (Affine (Φ x)) (Absorbing (Φ x))} :
+    ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ Y, Φ y) -∗ ([∗ set] y ∈ X ∪ Y, Φ y).
+  Proof.
+    apply wand_intro_r. induction X as [|x X ? IH] using set_ind_L.
+    { by rewrite left_id_L big_sepS_empty left_id. }
+    rewrite big_sepS_insert // -assoc IH -assoc_L.
+    destruct (decide (x ∈ Y)).
+    { replace ({[x]} ∪ (X ∪ Y)) with (X ∪ Y) by set_solver.
+      rewrite (big_sepS_delete _ _ x); last set_solver.
+      by rewrite assoc sep_elim_r. }
+    by rewrite big_sepS_insert; last set_solver.
+  Qed.
 
   Lemma big_sepS_delete_2 {Φ X} x :
     Affine (Φ x) →
