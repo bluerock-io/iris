@@ -134,19 +134,48 @@ To solve some of these indentation errors you can add the following line to your
 initialisation file:
 ```
 (setq coq-smie-user-tokens
-    '(("∗" . "*")
-      ("-∗" . "->")
-      ("∗-∗" . "<->")
-      ("==∗" . "->")
-      ("⊢" . "->")
-      ("⊣⊢" . "<->")
-      ("⋅" . "*")
-      (":>" . ":=")
-      ("by" . "now")
-      ("forall" . "now")))
+   '(("," . ":=")
+	("∗" . "->")
+	("-∗" . "->")
+	("∗-∗" . "->")
+	("==∗" . "->")
+	("=∗" . "->") 			;; Hack to match ={E1,E2}=∗
+	("|==>" . ":=")
+	("⊢" . "->")
+	("⊣⊢" . "->")
+	("↔" . "->")
+	("←" . "<-")
+	("→" . "->")
+	("=" . "->")
+	("==" . "->")
+	("/\\" . "->")
+	("⋅" . "->")
+	(":>" . ":=")
+	("by" . "now")
+	("forall" . "now")              ;; NB: this breaks current ∀ indentation.
+   ))
 ```
 This will let the indentation strategy treat the Iris symbols (e.g. `-∗`) similar to the
 closely related Coq symbols (e.g. `->`).
+Note that `->` is used in many places, as its indentation behaviour is:
+```
+  P ->
+  Q
+```
+This is the indentation behaviour is what we want, e.g. for `∗`:
+```
+  P ∗
+  Q
+```
+Note that this configuration has some caveats.
+Notably, the change to `forall` (which gives good behavior to e.g.
+`iInduction xs as [|x xs IHxs] forall (ys).`), now gives the following indentation
+behavior to universal quantification:
+```
+  ∀ x,
+  P x
+```
+This is not what we want; the second line should be indented by 2 spaces.
 
 ## CoqIDE 8.9 and earlier on Linux (ibus-m17n)
 
