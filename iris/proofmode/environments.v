@@ -256,18 +256,19 @@ Definition of_envs {PROP : bi} (Δ : envs PROP) : PROP :=
 Global Instance: Params (@of_envs) 1 := {}.
 Global Arguments of_envs : simpl never.
 
-Definition pre_envs_entails_def {PROP : bi} (Γp Γs : env PROP) (Q : PROP) :=
+Local Definition pre_envs_entails_def {PROP : bi} (Γp Γs : env PROP) (Q : PROP) :=
   of_envs' Γp Γs ⊢ Q.
-Definition pre_envs_entails_aux : seal (@pre_envs_entails_def). Proof. by eexists. Qed.
-Definition pre_envs_entails := pre_envs_entails_aux.(unseal).
-Definition pre_envs_entails_eq : @pre_envs_entails = @pre_envs_entails_def :=
-  pre_envs_entails_aux.(seal_eq).
+Local Definition pre_envs_entails_aux : seal (@pre_envs_entails_def).
+Proof. by eexists. Qed.
+Local Definition pre_envs_entails := pre_envs_entails_aux.(unseal).
+Local Definition pre_envs_entails_unseal :
+  @pre_envs_entails = @pre_envs_entails_def := pre_envs_entails_aux.(seal_eq).
 
 Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
   pre_envs_entails  PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
-Definition envs_entails_eq :
+Local Definition envs_entails_unseal :
   @envs_entails = λ PROP (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
-Proof. by rewrite /envs_entails pre_envs_entails_eq. Qed.
+Proof. by rewrite /envs_entails pre_envs_entails_unseal. Qed.
 Global Arguments envs_entails {PROP} Δ Q%I.
 Global Instance: Params (@envs_entails) 1 := {}.
 
@@ -453,13 +454,13 @@ Proof. by constructor. Qed.
 
 Global Instance envs_entails_proper :
   Proper (envs_Forall2 (⊣⊢) ==> (⊣⊢) ==> iff) (@envs_entails PROP).
-Proof. rewrite envs_entails_eq. solve_proper. Qed.
+Proof. rewrite envs_entails_unseal. solve_proper. Qed.
 Global Instance envs_entails_mono :
   Proper (flip (envs_Forall2 (⊢)) ==> (⊢) ==> impl) (@envs_entails PROP).
-Proof. rewrite envs_entails_eq=> Δ1 Δ2 ? P1 P2 <- <-. by f_equiv. Qed.
+Proof. rewrite envs_entails_unseal=> Δ1 Δ2 ? P1 P2 <- <-. by f_equiv. Qed.
 Global Instance envs_entails_flip_mono :
   Proper (envs_Forall2 (⊢) ==> flip (⊢) ==> flip impl) (@envs_entails PROP).
-Proof. rewrite envs_entails_eq=> Δ1 Δ2 ? P1 P2 <- <-. by f_equiv. Qed.
+Proof. rewrite envs_entails_unseal=> Δ1 Δ2 ? P1 P2 <- <-. by f_equiv. Qed.
 
 Lemma envs_delete_intuitionistic Δ i : envs_delete false i true Δ = Δ.
 Proof. by destruct Δ. Qed.

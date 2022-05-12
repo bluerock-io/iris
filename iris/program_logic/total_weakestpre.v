@@ -25,7 +25,7 @@ Definition twp_pre `{!irisGS Λ Σ} (s : stuckness)
 
 (** This is some uninteresting bookkeeping to prove that [twp_pre_mono] is
 monotone. The actual least fixpoint [twp_def] can be found below. *)
-Lemma twp_pre_mono `{!irisGS Λ Σ} s
+Local Lemma twp_pre_mono `{!irisGS Λ Σ} s
     (wp1 wp2 : coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ) :
   ⊢ (□ ∀ E e Φ, wp1 E e Φ -∗ wp2 E e Φ) →
     ∀ E e Φ, twp_pre s wp1 E e Φ -∗ twp_pre s wp2 E e Φ.
@@ -42,7 +42,7 @@ Proof.
 Qed.
 
 (* Uncurry [twp_pre] and equip its type with an OFE structure *)
-Definition twp_pre' `{!irisGS Λ Σ} (s : stuckness) :
+Local Definition twp_pre' `{!irisGS Λ Σ} (s : stuckness) :
   (prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ) →
   prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ :=
     uncurry3 ∘ twp_pre s ∘ curry3.
@@ -57,13 +57,13 @@ Proof.
     rewrite /curry3 /twp_pre. do 26 (f_equiv || done). by apply pair_ne.
 Qed.
 
-Definition twp_def `{!irisGS Λ Σ} : Twp (iProp Σ) (expr Λ) (val Λ) stuckness
+Local Definition twp_def `{!irisGS Λ Σ} : Twp (iProp Σ) (expr Λ) (val Λ) stuckness
   := λ s E e Φ, bi_least_fixpoint (twp_pre' s) (E,e,Φ).
-Definition twp_aux : seal (@twp_def). Proof. by eexists. Qed.
+Local Definition twp_aux : seal (@twp_def). Proof. by eexists. Qed.
 Definition twp' := twp_aux.(unseal).
 Global Arguments twp' {Λ Σ _}.
 Global Existing Instance twp'.
-Lemma twp_eq `{!irisGS Λ Σ} : twp = @twp_def Λ Σ _.
+Local Lemma twp_unseal `{!irisGS Λ Σ} : twp = @twp_def Λ Σ _.
 Proof. rewrite -twp_aux.(seal_eq) //. Qed.
 
 Section twp.
@@ -76,13 +76,13 @@ Implicit Types e : expr Λ.
 
 (* Weakest pre *)
 Lemma twp_unfold s E e Φ : WP e @ s; E [{ Φ }] ⊣⊢ twp_pre s (twp s) E e Φ.
-Proof. by rewrite twp_eq /twp_def least_fixpoint_unfold. Qed.
+Proof. by rewrite twp_unseal /twp_def least_fixpoint_unfold. Qed.
 Lemma twp_ind s Ψ :
   (∀ n E e, Proper (pointwise_relation _ (dist n) ==> dist n) (Ψ E e)) →
   □ (∀ e E Φ, twp_pre s (λ E e Φ, Ψ E e Φ ∧ WP e @ s; E [{ Φ }]) E e Φ -∗ Ψ E e Φ) -∗
   ∀ e E Φ, WP e @ s; E [{ Φ }] -∗ Ψ E e Φ.
 Proof.
-  iIntros (HΨ). iIntros "#IH" (e E Φ) "H". rewrite twp_eq.
+  iIntros (HΨ). iIntros "#IH" (e E Φ) "H". rewrite twp_unseal.
   set (Ψ' := uncurry3 Ψ :
     prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ).
   assert (NonExpansive Ψ').
@@ -95,7 +95,7 @@ Qed.
 Global Instance twp_ne s E e n :
   Proper (pointwise_relation _ (dist n) ==> dist n) (twp (PROP:=iProp Σ) s E e).
 Proof.
-  intros Φ1 Φ2 HΦ. rewrite !twp_eq. by apply (least_fixpoint_ne _), pair_ne, HΦ.
+  intros Φ1 Φ2 HΦ. rewrite !twp_unseal. by apply (least_fixpoint_ne _), pair_ne, HΦ.
 Qed.
 Global Instance twp_proper s E e :
   Proper (pointwise_relation _ (≡) ==> (≡)) (twp (PROP:=iProp Σ) s E e).

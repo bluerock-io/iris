@@ -26,17 +26,23 @@ Proof. solve_inG. Qed.
 Section definitions.
   Context `{ghost_mapG Σ K V}.
 
-  Definition ghost_map_auth_def (γ : gname) (q : Qp) (m : gmap K V) : iProp Σ :=
+  Local Definition ghost_map_auth_def
+      (γ : gname) (q : Qp) (m : gmap K V) : iProp Σ :=
     own γ (gmap_view_auth (V:=leibnizO V) (DfracOwn q) m).
-  Definition ghost_map_auth_aux : seal (@ghost_map_auth_def). Proof. by eexists. Qed.
+  Local Definition ghost_map_auth_aux : seal (@ghost_map_auth_def).
+  Proof. by eexists. Qed.
   Definition ghost_map_auth := ghost_map_auth_aux.(unseal).
-  Definition ghost_map_auth_eq : @ghost_map_auth = @ghost_map_auth_def := ghost_map_auth_aux.(seal_eq).
+  Local Definition ghost_map_auth_unseal :
+    @ghost_map_auth = @ghost_map_auth_def := ghost_map_auth_aux.(seal_eq).
 
-  Definition ghost_map_elem_def (γ : gname) (k : K) (dq : dfrac) (v : V) : iProp Σ :=
+  Local Definition ghost_map_elem_def
+      (γ : gname) (k : K) (dq : dfrac) (v : V) : iProp Σ :=
     own γ (gmap_view_frag (V:=leibnizO V) k dq v).
-  Definition ghost_map_elem_aux : seal (@ghost_map_elem_def). Proof. by eexists. Qed.
+  Local Definition ghost_map_elem_aux : seal (@ghost_map_elem_def).
+  Proof. by eexists. Qed.
   Definition ghost_map_elem := ghost_map_elem_aux.(unseal).
-  Definition ghost_map_elem_eq : @ghost_map_elem = @ghost_map_elem_def := ghost_map_elem_aux.(seal_eq).
+  Local Definition ghost_map_elem_unseal :
+    @ghost_map_elem = @ghost_map_elem_def := ghost_map_elem_aux.(seal_eq).
 End definitions.
 
 (** FIXME: Refactor these notations using custom entries once Coq bug #13654
@@ -51,8 +57,8 @@ Notation "k ↪[ γ ]□ v" := (k ↪[γ]{DfracDiscarded} v)%I
   (at level 20, γ at level 50) : bi_scope.
 
 Local Ltac unseal := rewrite
-  ?ghost_map_auth_eq /ghost_map_auth_def
-  ?ghost_map_elem_eq /ghost_map_elem_def.
+  ?ghost_map_auth_unseal /ghost_map_auth_def
+  ?ghost_map_elem_unseal /ghost_map_elem_def.
 
 Section lemmas.
   Context `{ghost_mapG Σ K V}.

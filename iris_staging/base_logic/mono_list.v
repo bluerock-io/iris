@@ -32,21 +32,23 @@ Global Instance subG_mono_listΣ {A Σ} :
   subG (mono_listΣ A) Σ → (mono_listG A) Σ.
 Proof. solve_inG. Qed.
 
-Definition mono_list_auth_own_def `{!mono_listG A Σ}
+Local Definition mono_list_auth_own_def `{!mono_listG A Σ}
     (γ : gname) (q : Qp) (l : list A) : iProp Σ :=
   own γ (●ML{#q} (l : listO (leibnizO A))).
-Definition mono_list_auth_own_aux : seal (@mono_list_auth_own_def). Proof. by eexists. Qed.
+Local Definition mono_list_auth_own_aux : seal (@mono_list_auth_own_def).
+Proof. by eexists. Qed.
 Definition mono_list_auth_own := mono_list_auth_own_aux.(unseal).
-Definition mono_list_auth_own_eq :
+Local Definition mono_list_auth_own_unseal :
   @mono_list_auth_own = @mono_list_auth_own_def := mono_list_auth_own_aux.(seal_eq).
 Global Arguments mono_list_auth_own {A Σ _} γ q l.
 
-Definition mono_list_lb_own_def `{!mono_listG A Σ}
+Local Definition mono_list_lb_own_def `{!mono_listG A Σ}
     (γ : gname) (l : list A) : iProp Σ :=
   own γ (◯ML (l : listO (leibnizO A))).
-Definition mono_list_lb_own_aux : seal (@mono_list_lb_own_def). Proof. by eexists. Qed.
+Local Definition mono_list_lb_own_aux : seal (@mono_list_lb_own_def).
+Proof. by eexists. Qed.
 Definition mono_list_lb_own := mono_list_lb_own_aux.(unseal).
-Definition mono_list_lb_own_eq :
+Local Definition mono_list_lb_own_unseal :
   @mono_list_lb_own = @mono_list_lb_own_def := mono_list_lb_own_aux.(seal_eq).
 Global Arguments mono_list_lb_own {A Σ _} γ l.
 
@@ -55,8 +57,8 @@ Definition mono_list_idx_own `{!mono_listG A Σ}
   ∃ l : list A, ⌜ l !! i = Some a ⌝ ∗ mono_list_lb_own γ l.
 
 Local Ltac unseal := rewrite
-  /mono_list_idx_own ?mono_list_auth_own_eq /mono_list_auth_own_def
-  ?mono_list_lb_own_eq /mono_list_lb_own_def.
+  /mono_list_idx_own ?mono_list_auth_own_unseal /mono_list_auth_own_def
+  ?mono_list_lb_own_unseal /mono_list_lb_own_def.
 
 Section mono_list_own.
   Context `{!mono_listG A Σ}.

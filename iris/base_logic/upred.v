@@ -252,32 +252,34 @@ Inductive uPred_entails {M} (P Q : uPred M) : Prop :=
 Global Hint Resolve uPred_mono : uPred_def.
 
 (** logical connectives *)
-Program Definition uPred_pure_def {M} (φ : Prop) : uPred M :=
+Local Program Definition uPred_pure_def {M} (φ : Prop) : uPred M :=
   {| uPred_holds n x := φ |}.
 Solve Obligations with done.
-Definition uPred_pure_aux : seal (@uPred_pure_def). Proof. by eexists. Qed.
+Local Definition uPred_pure_aux : seal (@uPred_pure_def). Proof. by eexists. Qed.
 Definition uPred_pure := uPred_pure_aux.(unseal).
 Global Arguments uPred_pure {M}.
-Definition uPred_pure_eq :
+Local Definition uPred_pure_unseal :
   @uPred_pure = @uPred_pure_def := uPred_pure_aux.(seal_eq).
 
-Program Definition uPred_and_def {M} (P Q : uPred M) : uPred M :=
+Local Program Definition uPred_and_def {M} (P Q : uPred M) : uPred M :=
   {| uPred_holds n x := P n x ∧ Q n x |}.
 Solve Obligations with naive_solver eauto 2 with uPred_def.
-Definition uPred_and_aux : seal (@uPred_and_def). Proof. by eexists. Qed.
+Local Definition uPred_and_aux : seal (@uPred_and_def). Proof. by eexists. Qed.
 Definition uPred_and := uPred_and_aux.(unseal).
 Global Arguments uPred_and {M}.
-Definition uPred_and_eq: @uPred_and = @uPred_and_def := uPred_and_aux.(seal_eq).
+Local Definition uPred_and_unseal :
+  @uPred_and = @uPred_and_def := uPred_and_aux.(seal_eq).
 
-Program Definition uPred_or_def {M} (P Q : uPred M) : uPred M :=
+Local Program Definition uPred_or_def {M} (P Q : uPred M) : uPred M :=
   {| uPred_holds n x := P n x ∨ Q n x |}.
 Solve Obligations with naive_solver eauto 2 with uPred_def.
-Definition uPred_or_aux : seal (@uPred_or_def). Proof. by eexists. Qed.
+Local Definition uPred_or_aux : seal (@uPred_or_def). Proof. by eexists. Qed.
 Definition uPred_or := uPred_or_aux.(unseal).
 Global Arguments uPred_or {M}.
-Definition uPred_or_eq: @uPred_or = @uPred_or_def := uPred_or_aux.(seal_eq).
+Local Definition uPred_or_unseal :
+  @uPred_or = @uPred_or_def := uPred_or_aux.(seal_eq).
 
-Program Definition uPred_impl_def {M} (P Q : uPred M) : uPred M :=
+Local Program Definition uPred_impl_def {M} (P Q : uPred M) : uPred M :=
   {| uPred_holds n x := ∀ n' x',
        x ≼ x' → n' ≤ n → ✓{n'} x' → P n' x' → Q n' x' |}.
 Next Obligation.
@@ -285,51 +287,54 @@ Next Obligation.
   rewrite Hx3 (dist_le _ _ _ _ Hx1'); auto. intros ??.
   eapply HPQ; auto. exists (x2 ⋅ x4); by rewrite assoc.
 Qed.
-Definition uPred_impl_aux : seal (@uPred_impl_def). Proof. by eexists. Qed.
+Local Definition uPred_impl_aux : seal (@uPred_impl_def). Proof. by eexists. Qed.
 Definition uPred_impl := uPred_impl_aux.(unseal).
 Global Arguments uPred_impl {M}.
-Definition uPred_impl_eq :
+Local Definition uPred_impl_unseal :
   @uPred_impl = @uPred_impl_def := uPred_impl_aux.(seal_eq).
 
-Program Definition uPred_forall_def {M A} (Ψ : A → uPred M) : uPred M :=
+Local Program Definition uPred_forall_def {M A} (Ψ : A → uPred M) : uPred M :=
   {| uPred_holds n x := ∀ a, Ψ a n x |}.
 Solve Obligations with naive_solver eauto 2 with uPred_def.
-Definition uPred_forall_aux : seal (@uPred_forall_def). Proof. by eexists. Qed.
+Local Definition uPred_forall_aux : seal (@uPred_forall_def). Proof. by eexists. Qed.
 Definition uPred_forall := uPred_forall_aux.(unseal).
 Global Arguments uPred_forall {M A}.
-Definition uPred_forall_eq :
+Local Definition uPred_forall_unseal :
   @uPred_forall = @uPred_forall_def := uPred_forall_aux.(seal_eq).
 
-Program Definition uPred_exist_def {M A} (Ψ : A → uPred M) : uPred M :=
+Local Program Definition uPred_exist_def {M A} (Ψ : A → uPred M) : uPred M :=
   {| uPred_holds n x := ∃ a, Ψ a n x |}.
 Solve Obligations with naive_solver eauto 2 with uPred_def.
-Definition uPred_exist_aux : seal (@uPred_exist_def). Proof. by eexists. Qed.
+Local Definition uPred_exist_aux : seal (@uPred_exist_def). Proof. by eexists. Qed.
 Definition uPred_exist := uPred_exist_aux.(unseal).
 Global Arguments uPred_exist {M A}.
-Definition uPred_exist_eq: @uPred_exist = @uPred_exist_def := uPred_exist_aux.(seal_eq).
+Local Definition uPred_exist_unseal :
+  @uPred_exist = @uPred_exist_def := uPred_exist_aux.(seal_eq).
 
-Program Definition uPred_internal_eq_def {M} {A : ofe} (a1 a2 : A) : uPred M :=
+Local Program Definition uPred_internal_eq_def {M} {A : ofe} (a1 a2 : A) : uPred M :=
   {| uPred_holds n x := a1 ≡{n}≡ a2 |}.
 Solve Obligations with naive_solver eauto 2 using dist_le.
-Definition uPred_internal_eq_aux : seal (@uPred_internal_eq_def). Proof. by eexists. Qed.
+Local Definition uPred_internal_eq_aux : seal (@uPred_internal_eq_def).
+Proof. by eexists. Qed.
 Definition uPred_internal_eq := uPred_internal_eq_aux.(unseal).
 Global Arguments uPred_internal_eq {M A}.
-Definition uPred_internal_eq_eq:
+Local Definition uPred_internal_eq_unseal :
   @uPred_internal_eq = @uPred_internal_eq_def := uPred_internal_eq_aux.(seal_eq).
 
-Program Definition uPred_sep_def {M} (P Q : uPred M) : uPred M :=
+Local Program Definition uPred_sep_def {M} (P Q : uPred M) : uPred M :=
   {| uPred_holds n x := ∃ x1 x2, x ≡{n}≡ x1 ⋅ x2 ∧ P n x1 ∧ Q n x2 |}.
 Next Obligation.
   intros M P Q n1 n2 x y (x1&x2&Hx&?&?) [z Hy] Hn.
   exists x1, (x2 ⋅ z); split_and?; eauto using uPred_mono, cmra_includedN_l.
   rewrite Hy. eapply dist_le, Hn. by rewrite Hx assoc.
 Qed.
-Definition uPred_sep_aux : seal (@uPred_sep_def). Proof. by eexists. Qed.
+Local Definition uPred_sep_aux : seal (@uPred_sep_def). Proof. by eexists. Qed.
 Definition uPred_sep := uPred_sep_aux.(unseal).
 Global Arguments uPred_sep {M}.
-Definition uPred_sep_eq: @uPred_sep = @uPred_sep_def := uPred_sep_aux.(seal_eq).
+Local Definition uPred_sep_unseal :
+  @uPred_sep = @uPred_sep_def := uPred_sep_aux.(seal_eq).
 
-Program Definition uPred_wand_def {M} (P Q : uPred M) : uPred M :=
+Local Program Definition uPred_wand_def {M} (P Q : uPred M) : uPred M :=
   {| uPred_holds n x := ∀ n' x',
        n' ≤ n → ✓{n'} (x ⋅ x') → P n' x' → Q n' (x ⋅ x') |}.
 Next Obligation.
@@ -337,66 +342,68 @@ Next Obligation.
   eapply uPred_mono with n3 (x1 ⋅ x3);
     eauto using cmra_validN_includedN, cmra_monoN_r, cmra_includedN_le.
 Qed.
-Definition uPred_wand_aux : seal (@uPred_wand_def). Proof. by eexists. Qed.
+Local Definition uPred_wand_aux : seal (@uPred_wand_def). Proof. by eexists. Qed.
 Definition uPred_wand := uPred_wand_aux.(unseal).
 Global Arguments uPred_wand {M}.
-Definition uPred_wand_eq :
+Local Definition uPred_wand_unseal :
   @uPred_wand = @uPred_wand_def := uPred_wand_aux.(seal_eq).
 
 (* Equivalently, this could be `∀ y, P n y`.  That's closer to the intuition
    of "embedding the step-indexed logic in Iris", but the two are equivalent
    because Iris is afine.  The following is easier to work with. *)
-Program Definition uPred_plainly_def {M} (P : uPred M) : uPred M :=
+Local Program Definition uPred_plainly_def {M} (P : uPred M) : uPred M :=
   {| uPred_holds n x := P n ε |}.
 Solve Obligations with naive_solver eauto using uPred_mono, ucmra_unit_validN.
-Definition uPred_plainly_aux : seal (@uPred_plainly_def). Proof. by eexists. Qed.
+Local Definition uPred_plainly_aux : seal (@uPred_plainly_def). Proof. by eexists. Qed.
 Definition uPred_plainly := uPred_plainly_aux.(unseal).
 Global Arguments uPred_plainly {M}.
-Definition uPred_plainly_eq :
+Local Definition uPred_plainly_unseal :
   @uPred_plainly = @uPred_plainly_def := uPred_plainly_aux.(seal_eq).
 
-Program Definition uPred_persistently_def {M} (P : uPred M) : uPred M :=
+Local Program Definition uPred_persistently_def {M} (P : uPred M) : uPred M :=
   {| uPred_holds n x := P n (core x) |}.
 Solve Obligations with naive_solver eauto using uPred_mono, cmra_core_monoN.
-Definition uPred_persistently_aux : seal (@uPred_persistently_def). Proof. by eexists. Qed.
+Local Definition uPred_persistently_aux : seal (@uPred_persistently_def).
+Proof. by eexists. Qed.
 Definition uPred_persistently := uPred_persistently_aux.(unseal).
 Global Arguments uPred_persistently {M}.
-Definition uPred_persistently_eq :
+Local Definition uPred_persistently_unseal :
   @uPred_persistently = @uPred_persistently_def := uPred_persistently_aux.(seal_eq).
 
-Program Definition uPred_later_def {M} (P : uPred M) : uPred M :=
+Local Program Definition uPred_later_def {M} (P : uPred M) : uPred M :=
   {| uPred_holds n x := match n return _ with 0 => True | S n' => P n' x end |}.
 Next Obligation.
   intros M P [|n1] [|n2] x1 x2; eauto using uPred_mono, cmra_includedN_S with lia.
 Qed.
-Definition uPred_later_aux : seal (@uPred_later_def). Proof. by eexists. Qed.
+Local Definition uPred_later_aux : seal (@uPred_later_def). Proof. by eexists. Qed.
 Definition uPred_later := uPred_later_aux.(unseal).
 Global Arguments uPred_later {M}.
-Definition uPred_later_eq :
+Local Definition uPred_later_unseal :
   @uPred_later = @uPred_later_def := uPred_later_aux.(seal_eq).
 
-Program Definition uPred_ownM_def {M : ucmra} (a : M) : uPred M :=
+Local Program Definition uPred_ownM_def {M : ucmra} (a : M) : uPred M :=
   {| uPred_holds n x := a ≼{n} x |}.
 Next Obligation.
   intros M a n1 n2 x1 x [a' Hx1] [x2 Hx] Hn.
   exists (a' ⋅ x2). rewrite Hx. eapply dist_le, Hn. rewrite (assoc op) -Hx1 //.
 Qed.
-Definition uPred_ownM_aux : seal (@uPred_ownM_def). Proof. by eexists. Qed.
+Local Definition uPred_ownM_aux : seal (@uPred_ownM_def). Proof. by eexists. Qed.
 Definition uPred_ownM := uPred_ownM_aux.(unseal).
 Global Arguments uPred_ownM {M}.
-Definition uPred_ownM_eq :
+Local Definition uPred_ownM_unseal :
   @uPred_ownM = @uPred_ownM_def := uPred_ownM_aux.(seal_eq).
 
-Program Definition uPred_cmra_valid_def {M} {A : cmra} (a : A) : uPred M :=
+Local Program Definition uPred_cmra_valid_def {M} {A : cmra} (a : A) : uPred M :=
   {| uPred_holds n x := ✓{n} a |}.
 Solve Obligations with naive_solver eauto 2 using cmra_validN_le.
-Definition uPred_cmra_valid_aux : seal (@uPred_cmra_valid_def). Proof. by eexists. Qed.
+Local Definition uPred_cmra_valid_aux : seal (@uPred_cmra_valid_def).
+Proof. by eexists. Qed.
 Definition uPred_cmra_valid := uPred_cmra_valid_aux.(unseal).
 Global Arguments uPred_cmra_valid {M A}.
-Definition uPred_cmra_valid_eq :
+Local Definition uPred_cmra_valid_unseal :
   @uPred_cmra_valid = @uPred_cmra_valid_def := uPred_cmra_valid_aux.(seal_eq).
 
-Program Definition uPred_bupd_def {M} (Q : uPred M) : uPred M :=
+Local Program Definition uPred_bupd_def {M} (Q : uPred M) : uPred M :=
   {| uPred_holds n x := ∀ k yf,
       k ≤ n → ✓{k} (x ⋅ yf) → ∃ x', ✓{k} (x' ⋅ yf) ∧ Q k x' |}.
 Next Obligation.
@@ -406,10 +413,10 @@ Next Obligation.
   exists (x' ⋅ x3); split; first by rewrite -assoc.
   eauto using uPred_mono, cmra_includedN_l.
 Qed.
-Definition uPred_bupd_aux : seal (@uPred_bupd_def). Proof. by eexists. Qed.
+Local Definition uPred_bupd_aux : seal (@uPred_bupd_def). Proof. by eexists. Qed.
 Definition uPred_bupd := uPred_bupd_aux.(unseal).
 Global Arguments uPred_bupd {M}.
-Definition uPred_bupd_eq :
+Local Definition uPred_bupd_unseal :
   @uPred_bupd = @uPred_bupd_def := uPred_bupd_aux.(seal_eq).
 
 (** Global uPred-specific Notation *)
@@ -419,13 +426,14 @@ Notation "✓ x" := (uPred_cmra_valid x) (at level 20) : bi_scope.
     These are not directly usable later because they do not refer to the BI
     connectives. *)
 Module uPred_primitive.
-Definition unseal_eqs :=
-  (uPred_pure_eq, uPred_and_eq, uPred_or_eq, uPred_impl_eq, uPred_forall_eq,
-  uPred_exist_eq, uPred_internal_eq_eq, uPred_sep_eq, uPred_wand_eq,
-  uPred_plainly_eq, uPred_persistently_eq, uPred_later_eq, uPred_ownM_eq,
-  uPred_cmra_valid_eq, @uPred_bupd_eq).
+Definition uPred_unseal :=
+  (uPred_pure_unseal, uPred_and_unseal, uPred_or_unseal, uPred_impl_unseal,
+  uPred_forall_unseal, uPred_exist_unseal, uPred_internal_eq_unseal,
+  uPred_sep_unseal, uPred_wand_unseal, uPred_plainly_unseal,
+  uPred_persistently_unseal, uPred_later_unseal, uPred_ownM_unseal,
+  uPred_cmra_valid_unseal, @uPred_bupd_unseal).
 Ltac unseal :=
-  rewrite !unseal_eqs /=.
+  rewrite !uPred_unseal /=.
 
 Section primitive.
 Context {M : ucmra}.

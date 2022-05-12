@@ -48,12 +48,11 @@ Section definitions.
     ∃ R, ⌜proph_resolves_in_list R pvs ∧
          dom R ⊆ ps⌝ ∗ ghost_map_auth (proph_map_name pG) 1 R.
 
-  Definition proph_def (p : P) (vs : list V) : iProp Σ :=
+  Local Definition proph_def (p : P) (vs : list V) : iProp Σ :=
     p ↪[proph_map_name pG] vs.
-
-  Definition proph_aux : seal (@proph_def). Proof. by eexists. Qed.
+  Local Definition proph_aux : seal (@proph_def). Proof. by eexists. Qed.
   Definition proph := proph_aux.(unseal).
-  Definition proph_eq : @proph = @proph_def := proph_aux.(seal_eq).
+  Local Definition proph_unseal : @proph = @proph_def := proph_aux.(seal_eq).
 End definitions.
 
 Section list_resolves.
@@ -92,12 +91,12 @@ Section proph_map.
 
   (** General properties of mapsto *)
   Global Instance proph_timeless p vs : Timeless (proph p vs).
-  Proof. rewrite proph_eq /proph_def. apply _. Qed.
+  Proof. rewrite proph_unseal /proph_def. apply _. Qed.
 
   Lemma proph_exclusive p vs1 vs2 :
     proph p vs1 -∗ proph p vs2 -∗ False.
   Proof.
-    rewrite proph_eq /proph_def. iIntros "Hp1 Hp2".
+    rewrite proph_unseal /proph_def. iIntros "Hp1 Hp2".
     by iDestruct (ghost_map_elem_ne with "Hp1 Hp2") as %?.
   Qed.
 
@@ -107,7 +106,7 @@ Section proph_map.
     proph_map_interp pvs ({[p]} ∪ ps) ∗ proph p (proph_list_resolves pvs p).
   Proof.
     iIntros (Hp) "HR". iDestruct "HR" as (R) "[[% %] H●]".
-    rewrite proph_eq /proph_def.
+    rewrite proph_unseal /proph_def.
     iMod (ghost_map_insert p (proph_list_resolves pvs p) with "H●") as "[H● H◯]".
     { apply not_elem_of_dom. set_solver. }
     iModIntro. iFrame.
@@ -122,7 +121,7 @@ Section proph_map.
     ∃vs', ⌜vs = v::vs'⌝ ∗ proph_map_interp pvs ps ∗ proph p vs'.
   Proof.
     iIntros "[HR Hp]". iDestruct "HR" as (R) "[HP H●]". iDestruct "HP" as %[Hres Hdom].
-    rewrite /proph_map_interp proph_eq /proph_def.
+    rewrite /proph_map_interp proph_unseal /proph_def.
     iDestruct (ghost_map_lookup with "H● Hp") as %HR.
     assert (vs = v :: proph_list_resolves pvs p) as ->.
     { rewrite (Hres p vs HR). simpl. by rewrite decide_True. }
