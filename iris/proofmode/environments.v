@@ -78,6 +78,12 @@ Inductive env_Forall2 {A B} (P : A → B → Prop) : env A → env B → Prop :=
   | env_Forall2_snoc Γ1 Γ2 i x y :
      env_Forall2 P Γ1 Γ2 → P x y → env_Forall2 P (Esnoc Γ1 i x) (Esnoc Γ2 i y).
 
+Fixpoint env_map {A B} (f : A → B) (Γ : env A) : env B :=
+  match Γ with
+  | Enil => Enil
+  | Esnoc Γ j x => Esnoc (env_map f Γ) j (f x)
+  end.
+
 Inductive env_subenv {A} : relation (env A) :=
   | env_subenv_nil : env_subenv Enil Enil
   | env_subenv_snoc Γ1 Γ2 i x :
@@ -193,6 +199,10 @@ Proof. intros Γ1 Γ2 HΓ i ? <-; by constructor. Qed.
 Global Instance env_to_list_proper (P : relation A) :
   Proper (env_Forall2 P ==> Forall2 P) env_to_list.
 Proof. induction 1; constructor; auto. Qed.
+Global Instance env_map_proper {B} (P : relation A) (Q : relation B) (f : A → B) :
+  Proper (P ==> Q) f →
+  Proper (env_Forall2 P ==> env_Forall2 Q) (env_map f).
+Proof. intros Hf. induction 1; constructor; auto. Qed.
 
 Lemma env_Forall2_fresh {B} (P : A → B → Prop) Γ Σ i :
   env_Forall2 P Γ Σ → Γ !! i = None → Σ !! i = None.
@@ -208,6 +218,40 @@ Proof. induction 1; inversion_clear 1; eauto using env_subenv_fresh. Qed.
 Global Instance env_to_list_subenv_proper :
   Proper (env_subenv ==> sublist) (@env_to_list A).
 Proof. induction 1; simpl; constructor; auto. Qed.
+
+Lemma env_map_lookup {B} (f : A → B) Γ i :
+  env_map f Γ !! i = f <$> Γ !! i.
+Proof.
+  induction Γ; simpl; first done.
+  case_match; naive_solver.
+Qed.
+Lemma env_map_delete {B} (f : A → B) Γ i :
+  env_map f (env_delete i Γ) = env_delete i (env_map f Γ).
+Proof.
+  induction Γ as [|? IH]; simpl; first done.
+  case_match; first naive_solver.
+  simpl. rewrite IH. done.
+Qed.
+Lemma env_map_app {B} (f : A → B) Γ1 Γ2 :
+  env_app (env_map f Γ1) (env_map f Γ2) = (env_map f) <$> env_app Γ1 Γ2.
+Proof.
+  induction Γ1 as [|Γ1 IH i]; simpl; first done.
+  rewrite IH. clear IH.
+  destruct (env_app Γ1 Γ2) as [Γ'|]; simpl; last done.
+  rewrite env_map_lookup.
+  destruct (Γ' !! i) as [x|]; done.
+Qed.
+Lemma env_map_replace {B} (f : A → B) i Γi Γ :
+  env_replace i (env_map f Γi) (env_map f Γ) = (env_map f) <$> env_replace i Γi Γ.
+Proof.
+  induction Γ as [|Γ IH j]; simpl; first done.
+  case_match.
+  { rewrite env_map_app //. }
+  rewrite IH. clear IH.
+  rewrite env_map_lookup.
+  destruct (Γi !! _) as [x|]; simpl; first done.
+  destruct (env_replace i Γi Γ) as [Γ'|]; done.
+Qed.
 End env.
 
 Record envs (PROP : bi) := Envs {
@@ -220,6 +264,14 @@ Global Arguments Envs {_} _ _ _.
 Global Arguments env_intuitionistic {_} _.
 Global Arguments env_spatial {_} _.
 Global Arguments env_counter {_} _.
+
+Notation env_map_pers Γ := (env_map bi_persistently Γ).
+Global Instance env_persistently_persistent {PROP : bi} (Γ : env PROP) :
+  Persistent ([∧] env_map_pers Γ).
+Proof. induction Γ; simpl; apply _. Qed.
+Global Instance env_persistently_absorbing {PROP : bi} (Γ : env PROP) :
+  Absorbing ([∧] env_map_pers Γ).
+Proof. induction Γ; simpl; apply _. Qed.
 
 (** We now define the judgment [envs_entails Δ Q] for proof mode entailments.
 This judgment expresses that [Q] can be proved under the proof mode environment
@@ -249,7 +301,7 @@ Definition envs_wf {PROP : bi} (Δ : envs PROP) :=
   envs_wf' (env_intuitionistic Δ) (env_spatial Δ).
 
 Definition of_envs' {PROP : bi} (Γp Γs : env PROP) : PROP :=
-  (⌜envs_wf' Γp Γs⌝ ∧ □ [∧] Γp ∗ [∗] Γs)%I.
+  (⌜envs_wf' Γp Γs⌝ ∧ [∧] (env_map_pers Γp) ∧ [∗] Γs)%I.
 Global Instance: Params (@of_envs') 1 := {}.
 Definition of_envs {PROP : bi} (Δ : envs PROP) : PROP :=
   of_envs' (env_intuitionistic Δ) (env_spatial Δ).
@@ -384,13 +436,19 @@ Implicit Types Δ : envs PROP.
 Implicit Types P Q : PROP.
 
 Lemma of_envs_eq Δ :
-  of_envs Δ = (⌜envs_wf Δ⌝ ∧ □ [∧] env_intuitionistic Δ ∗ [∗] env_spatial Δ)%I.
+  of_envs Δ =
+  (⌜envs_wf Δ⌝ ∧
+    [∧] (env_map_pers (env_intuitionistic Δ)) ∧
+    [∗] env_spatial Δ)%I.
 Proof. done. Qed.
 (** An environment is a ∗ of something intuitionistic and the spatial environment.
 TODO: Can we define it as such? *)
 Lemma of_envs_eq' Δ :
-  of_envs Δ ⊣⊢ (⌜envs_wf Δ⌝ ∧ □ [∧] env_intuitionistic Δ) ∗ [∗] env_spatial Δ.
-Proof. rewrite of_envs_eq persistent_and_sep_assoc //. Qed.
+  of_envs Δ ⊣⊢
+  (⌜envs_wf Δ⌝ ∧ <affine> [∧] (env_map_pers (env_intuitionistic Δ))) ∗ [∗] env_spatial Δ.
+Proof.
+  rewrite of_envs_eq [([∧] _ ∧ _)%I]persistent_and_affinely_sep_l persistent_and_sep_assoc //.
+Qed.
 
 Global Instance envs_Forall2_refl (R : relation PROP) :
   Reflexive R → Reflexive (envs_Forall2 R).
@@ -483,18 +541,25 @@ Lemma envs_lookup_sound' Δ rp i p P :
 Proof.
   rewrite /envs_lookup /envs_delete !of_envs_eq=>?.
   apply pure_elim_l=> Hwf.
-  destruct Δ as [Γp Γs], (Γp !! i) eqn:?; simplify_eq/=.
+  destruct Δ as [Γp Γs], (Γp !! i) eqn:Heqo; simplify_eq/=.
   - rewrite pure_True ?left_id; last (destruct Hwf, rp; constructor;
       naive_solver eauto using env_delete_wf, env_delete_fresh).
-    destruct rp.
-    + rewrite (env_lookup_perm Γp) //= intuitionistically_and.
-      by rewrite and_sep_intuitionistically -assoc.
-    + rewrite {1}intuitionistically_sep_dup {1}(env_lookup_perm Γp) //=.
-      by rewrite intuitionistically_and and_elim_l -assoc.
+    rewrite -persistently_and_intuitionistically_sep_l assoc.
+    apply and_mono; last done. apply and_intro.
+    + rewrite (env_lookup_perm (env_map_pers Γp)).
+      2:{ rewrite env_map_lookup. erewrite Heqo. done. }
+      simpl. rewrite and_elim_l. done.
+    + destruct rp; last done.
+      rewrite (env_lookup_perm (env_map_pers Γp)).
+      2:{ rewrite env_map_lookup. erewrite Heqo. done. }
+      simpl. rewrite and_elim_r. rewrite env_map_delete //.
   - destruct (Γs !! i) eqn:?; simplify_eq/=.
     rewrite pure_True ?left_id; last (destruct Hwf; constructor;
       naive_solver eauto using env_delete_wf, env_delete_fresh).
-    rewrite (env_lookup_perm Γs) //=. by rewrite !assoc -(comm _ P).
+    rewrite (env_lookup_perm Γs) //=.
+    rewrite ![(P ∗ _)%I]comm.
+    rewrite persistent_and_sep_assoc.
+    done.
 Qed.
 Lemma envs_lookup_sound Δ i p P :
   envs_lookup i Δ = Some (p,P) →
@@ -509,11 +574,18 @@ Lemma envs_lookup_sound_2 Δ i p P :
 Proof.
   rewrite /envs_lookup !of_envs_eq=>Hwf ?.
   rewrite [⌜envs_wf Δ⌝%I]pure_True // left_id.
-  destruct Δ as [Γp Γs], (Γp !! i) eqn:?; simplify_eq/=.
-  - by rewrite (env_lookup_perm Γp) //= intuitionistically_and
-      and_sep_intuitionistically and_elim_r assoc.
+  destruct Δ as [Γp Γs], (Γp !! i) eqn:Heqo; simplify_eq/=.
+  - rewrite -persistently_and_intuitionistically_sep_l.
+    rewrite (env_lookup_perm (env_map_pers Γp)).
+    2:{ rewrite env_map_lookup. erewrite Heqo. done. }
+    rewrite !assoc. apply and_mono; last done. simpl.
+    rewrite -!assoc. apply and_mono; first done.
+    rewrite and_elim_r. rewrite env_map_delete. done.
   - destruct (Γs !! i) eqn:?; simplify_eq/=.
-    by rewrite (env_lookup_perm Γs) //= and_elim_r !assoc (comm _ P).
+    rewrite (env_lookup_perm Γs) //=.
+    rewrite [(⌜_⌝ ∧ _)%I]and_elim_r.
+    rewrite (comm _ P) -persistent_and_sep_assoc.
+    apply and_mono; first done. rewrite comm //.
 Qed.
 
 Lemma envs_lookup_split Δ i p P :
@@ -575,35 +647,40 @@ Proof.
   - apply and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using Esnoc_wf.
       intros j; destruct (ident_beq_reflect j i); naive_solver.
-    + by rewrite intuitionistically_and and_sep_intuitionistically assoc.
+    + rewrite -persistently_and_intuitionistically_sep_l assoc //.
   - apply and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using Esnoc_wf.
       intros j; destruct (ident_beq_reflect j i); naive_solver.
-    + by rewrite !assoc (comm _ P).
+    + rewrite (comm _ P) -persistent_and_sep_assoc.
+      apply and_mono; first done. rewrite comm //.
 Qed.
 
 Lemma envs_app_sound Δ Δ' p Γ :
   envs_app p Γ Δ = Some Δ' →
-  of_envs Δ ⊢ (if p then □ [∧] Γ else [∗] Γ) -∗ of_envs Δ'.
+  of_envs Δ ⊢ (if p then <affine> [∧] (env_map_pers Γ) else [∗] Γ) -∗ of_envs Δ'.
 Proof.
   rewrite !of_envs_eq /envs_app=> ?; apply pure_elim_l=> Hwf.
   destruct Δ as [Γp Γs], p; simplify_eq/=.
   - destruct (env_app Γ Γs) eqn:Happ,
-      (env_app Γ Γp) as [Γp'|] eqn:?; simplify_eq/=.
+      (env_app Γ Γp) as [Γp'|] eqn:Heqo; simplify_eq/=.
     apply wand_intro_l, and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using env_app_wf.
       intros j. apply (env_app_disjoint _ _ _ j) in Happ.
       naive_solver eauto using env_app_fresh.
-    + rewrite (env_app_perm _ _ Γp') //.
-      rewrite big_opL_app intuitionistically_and and_sep_intuitionistically.
-      by rewrite assoc.
+    + apply and_intro.
+      * rewrite and_elim_l. rewrite (env_app_perm _ _ (env_map_pers Γp')).
+        2:{ erewrite env_map_app. erewrite Heqo. done. }
+        rewrite affinely_elim big_opL_app sep_and. done.
+      * rewrite and_elim_r. rewrite sep_elim_r. done.
   - destruct (env_app Γ Γp) eqn:Happ,
       (env_app Γ Γs) as [Γs'|] eqn:?; simplify_eq/=.
     apply wand_intro_l, and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using env_app_wf.
       intros j. apply (env_app_disjoint _ _ _ j) in Happ.
       naive_solver eauto using env_app_fresh.
-    + by rewrite (env_app_perm _ _ Γs') // big_opL_app !assoc (comm _ ([∗] Γ)%I).
+    + rewrite (env_app_perm _ _ Γs') // big_opL_app. apply and_intro.
+      * rewrite and_elim_l. rewrite sep_elim_r. done.
+      * rewrite and_elim_r. done.
 Qed.
 
 Lemma envs_app_singleton_sound Δ Δ' p j Q :
@@ -612,19 +689,22 @@ Proof. move=> /envs_app_sound. destruct p; by rewrite /= right_id. Qed.
 
 Lemma envs_simple_replace_sound' Δ Δ' i p Γ :
   envs_simple_replace i p Γ Δ = Some Δ' →
-  of_envs (envs_delete true i p Δ) ⊢ (if p then □ [∧] Γ else [∗] Γ) -∗ of_envs Δ'.
+  of_envs (envs_delete true i p Δ) ⊢ (if p then <affine> [∧] (env_map_pers Γ) else [∗] Γ) -∗ of_envs Δ'.
 Proof.
   rewrite /envs_simple_replace /envs_delete !of_envs_eq=> ?.
   apply pure_elim_l=> Hwf. destruct Δ as [Γp Γs], p; simplify_eq/=.
   - destruct (env_app Γ Γs) eqn:Happ,
-      (env_replace i Γ Γp) as [Γp'|] eqn:?; simplify_eq/=.
+      (env_replace i Γ Γp) as [Γp'|] eqn:Heqo; simplify_eq/=.
     apply wand_intro_l, and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using env_replace_wf.
       intros j. apply (env_app_disjoint _ _ _ j) in Happ.
       destruct (decide (i = j)); try naive_solver eauto using env_replace_fresh.
-    + rewrite (env_replace_perm _ _ Γp') //.
-      rewrite big_opL_app intuitionistically_and and_sep_intuitionistically.
-      by rewrite assoc.
+    + rewrite (env_replace_perm _ _ (env_map_pers Γp')).
+      2:{ erewrite env_map_replace. erewrite Heqo. done. }
+      rewrite big_opL_app. apply and_intro; first apply and_intro.
+      * rewrite and_elim_l affinely_elim sep_elim_l. done.
+      * rewrite sep_elim_r and_elim_l. rewrite env_map_delete. done.
+      * rewrite and_elim_r sep_elim_r. done.
   - destruct (env_app Γ Γp) eqn:Happ,
       (env_replace i Γ Γs) as [Γs'|] eqn:?; simplify_eq/=.
     apply wand_intro_l, and_intro; [apply pure_intro|].
@@ -632,7 +712,9 @@ Proof.
       intros j. apply (env_app_disjoint _ _ _ j) in Happ.
       destruct (decide (i = j)); try naive_solver eauto using env_replace_fresh.
     + rewrite (env_replace_perm _ _ Γs') // big_opL_app.
-      by rewrite !assoc (comm _ ([∗] Γ)%I).
+      apply and_intro.
+      * rewrite and_elim_l. rewrite sep_elim_r. done.
+      * rewrite and_elim_r. done.
 Qed.
 
 Lemma envs_simple_replace_singleton_sound' Δ Δ' i p j Q :
@@ -642,12 +724,12 @@ Proof. move=> /envs_simple_replace_sound'. destruct p; by rewrite /= right_id. Q
 
 Lemma envs_simple_replace_sound Δ Δ' i p P Γ :
   envs_lookup i Δ = Some (p,P) → envs_simple_replace i p Γ Δ = Some Δ' →
-  of_envs Δ ⊢ □?p P ∗ ((if p then □ [∧] Γ else [∗] Γ) -∗ of_envs Δ').
+  of_envs Δ ⊢ □?p P ∗ ((if p then <affine> [∧] (env_map_pers Γ) else [∗] Γ) -∗ of_envs Δ').
 Proof. intros. by rewrite envs_lookup_sound// envs_simple_replace_sound'//. Qed.
 
 Lemma envs_simple_replace_maybe_sound Δ Δ' i p P Γ :
   envs_lookup i Δ = Some (p,P) → envs_simple_replace i p Γ Δ = Some Δ' →
-  of_envs Δ ⊢ □?p P ∗ (((if p then □ [∧] Γ else [∗] Γ) -∗ of_envs Δ') ∧ (□?p P -∗ of_envs Δ)).
+  of_envs Δ ⊢ □?p P ∗ (((if p then <affine> [∧] (env_map_pers Γ) else [∗] Γ) -∗ of_envs Δ') ∧ (□?p P -∗ of_envs Δ)).
 Proof.
   intros. apply pure_elim with (envs_wf Δ).
   { rewrite of_envs_eq. apply and_elim_l. }
@@ -666,7 +748,7 @@ Qed.
 
 Lemma envs_replace_sound' Δ Δ' i p q Γ :
   envs_replace i p q Γ Δ = Some Δ' →
-  of_envs (envs_delete true i p Δ) ⊢ (if q then □ [∧] Γ else [∗] Γ) -∗ of_envs Δ'.
+  of_envs (envs_delete true i p Δ) ⊢ (if q then <affine> [∧] (env_map_pers Γ) else [∗] Γ) -∗ of_envs Δ'.
 Proof.
   rewrite /envs_replace; destruct (beq _ _) eqn:Hpq.
   - apply eqb_prop in Hpq as ->. apply envs_simple_replace_sound'.
@@ -680,7 +762,7 @@ Proof. move=> /envs_replace_sound'. destruct q; by rewrite /= ?right_id. Qed.
 
 Lemma envs_replace_sound Δ Δ' i p q P Γ :
   envs_lookup i Δ = Some (p,P) → envs_replace i p q Γ Δ = Some Δ' →
-  of_envs Δ ⊢ □?p P ∗ ((if q then □ [∧] Γ else [∗] Γ) -∗ of_envs Δ').
+  of_envs Δ ⊢ □?p P ∗ ((if q then <affine> [∧] (env_map_pers Γ) else [∗] Γ) -∗ of_envs Δ').
 Proof. intros. by rewrite envs_lookup_sound// envs_replace_sound'//. Qed.
 
 Lemma envs_replace_singleton_sound Δ Δ' i p q P j Q :
@@ -702,16 +784,18 @@ Lemma envs_clear_spatial_sound Δ :
   of_envs Δ ⊢ of_envs (envs_clear_spatial Δ) ∗ [∗] env_spatial Δ.
 Proof.
   rewrite !of_envs_eq /envs_clear_spatial /=. apply pure_elim_l=> Hwf.
-  rewrite right_id -persistent_and_sep_assoc. apply and_intro; [|done].
-  apply pure_intro. destruct Hwf; constructor; simpl; auto using Enil_wf.
+  rewrite -persistent_and_sep_assoc. apply and_intro.
+  - apply pure_intro. destruct Hwf; constructor; simpl; auto using Enil_wf.
+  - rewrite -persistent_and_sep_assoc left_id. done.
 Qed.
 
 Lemma env_spatial_is_nil_intuitionistically Δ :
   env_spatial_is_nil Δ = true → of_envs Δ ⊢ □ of_envs Δ.
 Proof.
   intros. rewrite !of_envs_eq; destruct Δ as [? []]; simplify_eq/=.
-  rewrite !right_id /bi_intuitionistically {1}affinely_and_r persistently_and.
-  by rewrite persistently_affinely_elim persistently_idemp persistently_pure.
+  rewrite /bi_intuitionistically !persistently_and.
+  rewrite persistently_pure persistent_persistently -persistently_emp_2.
+  apply and_intro; last done. rewrite !and_elim_r. done.
 Qed.
 
 Lemma envs_lookup_envs_delete Δ i p P :
@@ -779,11 +863,14 @@ Proof.
   - rewrite /= IH (comm _ Q _) assoc. done.
 Qed.
 
-Lemma env_to_prop_and_sound Γ : env_to_prop_and Γ ⊣⊢ [∧] Γ.
+Lemma env_to_prop_and_pers_sound Γ :
+  □ env_to_prop_and Γ ⊣⊢ <affine> [∧] (env_map_pers Γ).
 Proof.
-  destruct Γ as [|Γ i P]; simpl; first done.
+  destruct Γ as [|Γ i P]; simpl.
+  { rewrite /bi_intuitionistically persistent_persistently //. }
   revert P. induction Γ as [|Γ IH ? Q]=>P; simpl.
   - by rewrite right_id.
-  - rewrite /= IH (comm _ Q _) assoc. done.
+  - rewrite /= IH (comm _ Q _) assoc. f_equiv.
+    rewrite persistently_and. done.
 Qed.
 End envs.

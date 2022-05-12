@@ -1,5 +1,6 @@
 From stdpp Require Import namespaces.
 From iris.bi Require Export bi.
+From iris.proofmode Require Export environments.
 From iris.prelude Require Import options.
 Import bi.
 
@@ -158,14 +159,29 @@ Section modality1.
     modality_spatial_action M = MIEnvId → P ⊢ M P.
   Proof. destruct M as [??? []]; naive_solver. Qed.
 
-  Lemma modality_intuitionistic_forall_big_and C Ps :
+  Lemma modality_intuitionistic_forall_big_and C Γ :
     modality_intuitionistic_action M = MIEnvForall C →
-    Forall C Ps → □ [∧] Ps ⊢ M (□ [∧] Ps).
+    Forall C (env_to_list Γ) →
+    <affine> [∧] (env_map_pers Γ) ⊢ M (<affine> [∧] (env_map_pers Γ)).
   Proof.
-    induction 2 as [|P Ps ? _ IH]; simpl.
-    - by rewrite intuitionistically_True_emp -modality_emp.
-    - rewrite intuitionistically_and -modality_and_forall // -IH.
-      by rewrite {1}(modality_intuitionistic_forall _ P).
+    induction Γ as [|Γ IH i P]; intros ? HΓ; simpl.
+    - rewrite affinely_True_emp. apply modality_emp.
+    - inversion HΓ; subst. clear HΓ.
+      rewrite affinely_and -modality_and_forall //. apply and_mono.
+      + by eapply modality_intuitionistic_forall.
+      + eauto.
+  Qed.
+  Lemma modality_intuitionistic_id_big_and Γ :
+    modality_intuitionistic_action M = MIEnvId →
+    <affine> [∧] (env_map_pers Γ) ⊢ M (<affine> [∧] (env_map_pers Γ)).
+  Proof.
+    intros. induction Γ as [|Γ IH i P]; simpl.
+    - rewrite affinely_True_emp. apply modality_emp.
+    - rewrite affinely_and {1}IH. clear IH.
+      rewrite persistent_and_affinely_sep_l_1.
+      rewrite {1}[(<affine> <pers> P)%I]modality_intuitionistic_id //.
+      rewrite affinely_elim modality_sep. f_equiv.
+      apply: sep_and.
   Qed.
   Lemma modality_spatial_forall_big_sep C Ps :
     modality_spatial_action M = MIEnvForall C →
