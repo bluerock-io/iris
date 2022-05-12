@@ -209,7 +209,7 @@ Qed.
 Global Instance make_affinely_emp : @KnownMakeAffinely PROP emp emp | 0.
 Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_emp. Qed.
 Global Instance make_affinely_True : @KnownMakeAffinely PROP True emp | 0.
-Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_True_emp affinely_emp. Qed.
+Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_True_emp. Qed.
 Global Instance make_affinely_default P : MakeAffinely P (<affine> P) | 100.
 Proof. by rewrite /MakeAffinely. Qed.
 
@@ -249,7 +249,7 @@ Qed.
 Global Instance make_absorbingly_emp : @KnownMakeAbsorbingly PROP emp True | 0.
 Proof.
   by rewrite /KnownMakeAbsorbingly /MakeAbsorbingly
-     -absorbingly_True_emp absorbingly_pure.
+     -absorbingly_emp_True.
 Qed.
 Global Instance make_absorbingly_True : @KnownMakeAbsorbingly PROP True True | 0.
 Proof. by rewrite /KnownMakeAbsorbingly /MakeAbsorbingly absorbingly_pure. Qed.
