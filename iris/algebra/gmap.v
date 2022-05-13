@@ -96,7 +96,7 @@ Lemma insert_idN n m i x :
 Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
 
 Global Instance gmap_dom_ne n :
-  Proper ((≡{n}@{gmap K A}≡) ==> (=)) (dom (gset K)).
+  Proper ((≡{n}@{gmap K A}≡) ==> (=)) dom.
 Proof. intros m1 m2 Hm. apply set_eq=> k. by rewrite !elem_of_dom Hm. Qed.
 End ofe.
 
@@ -421,13 +421,13 @@ Proof.
   - move: (Hm j). by rewrite !lookup_op lookup_delete_ne.
 Qed.
 
-Lemma dom_op m1 m2 : dom (gset K) (m1 ⋅ m2) = dom _ m1 ∪ dom _ m2.
+Lemma dom_op m1 m2 : dom (m1 ⋅ m2) = dom m1 ∪ dom m2.
 Proof.
   apply set_eq=> i; rewrite elem_of_union !elem_of_dom.
   unfold is_Some; setoid_rewrite lookup_op.
   destruct (m1 !! i), (m2 !! i); naive_solver.
 Qed.
-Lemma dom_included m1 m2 : m1 ≼ m2 → dom (gset K) m1 ⊆ dom _ m2.
+Lemma dom_included m1 m2 : m1 ≼ m2 → dom m1 ⊆ dom m2.
 Proof.
   rewrite lookup_included=>? i; rewrite !elem_of_dom. by apply is_Some_included.
 Qed.
@@ -442,15 +442,14 @@ Section freshness.
   Proof.
     move=> /(pred_infinite_set I (C:=gset K)) HP ? HQ.
     apply cmra_total_updateP. intros n mf Hm.
-    destruct (HP (dom (gset K) (m ⋅ mf))) as [i [Hi1 Hi2]].
+    destruct (HP (dom (m ⋅ mf))) as [i [Hi1 Hi2]].
     assert (m !! i = None).
-    { eapply (not_elem_of_dom (D:=gset K)). revert Hi2.
+    { eapply not_elem_of_dom. revert Hi2.
       rewrite dom_op not_elem_of_union. naive_solver. }
     exists (<[i:=f i]>m); split.
     - by apply HQ.
     - rewrite insert_singleton_op //.
-      rewrite -assoc -insert_singleton_op;
-        last by eapply (not_elem_of_dom (D:=gset K)).
+      rewrite -assoc -insert_singleton_op; last by eapply not_elem_of_dom.
     apply insert_validN; [apply cmra_valid_validN|]; auto.
   Qed.
   Lemma alloc_updateP_strong (Q : gmap K A → Prop) (I : K → Prop) m x :

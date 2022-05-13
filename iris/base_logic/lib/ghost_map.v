@@ -266,7 +266,7 @@ Section lemmas.
   Qed.
 
   Theorem ghost_map_update_big {γ m} m0 m1 :
-    dom (gset K) m0 = dom (gset K) m1 →
+    dom m0 = dom m1 →
     ghost_map_auth γ 1 m -∗
     ([∗ map] k↦v ∈ m0, k ↪[γ] v) ==∗
     ghost_map_auth γ 1 (m1 ∪ m) ∗

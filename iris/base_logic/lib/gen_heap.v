@@ -98,7 +98,7 @@ Section definitions.
   Definition gen_heap_interp (σ : gmap L V) : iProp Σ := ∃ m : gmap L gname,
     (* The [⊆] is used to avoid assigning ghost information to the locations in
     the initial heap (see [gen_heap_init]). *)
-    ⌜ dom _ m ⊆ dom (gset L) σ ⌝ ∗
+    ⌜ dom m ⊆ dom σ ⌝ ∗
     ghost_map_auth (gen_heap_name hG) 1 σ ∗
     ghost_map_auth (gen_meta_name hG) 1 m.
 
@@ -256,7 +256,7 @@ Section gen_heap.
     iMod (own_alloc (reservation_map_token ⊤)) as (γm) "Hγm".
     { apply reservation_map_token_valid. }
     iMod (ghost_map_insert_persist l with "Hm") as "[Hm Hlm]".
-    { move: Hσl. rewrite -!(not_elem_of_dom (D:=gset L)). set_solver. }
+    { move: Hσl. rewrite -!not_elem_of_dom. set_solver. }
     iModIntro. iFrame "Hl". iSplitL "Hσ Hm"; last by eauto with iFrame.
     iExists (<[l:=γm]> m). iFrame. iPureIntro.
     rewrite !dom_insert_L. set_solver.
@@ -291,7 +291,7 @@ Section gen_heap.
     iDestruct (ghost_map_lookup with "Hσ Hl") as %Hl.
     iMod (ghost_map_update with "Hσ Hl") as "[Hσ Hl]".
     iModIntro. iFrame "Hl". iExists m. iFrame.
-    iPureIntro. apply (elem_of_dom_2 (D:=gset L)) in Hl.
+    iPureIntro. apply elem_of_dom_2 in Hl.
     rewrite dom_insert_L. set_solver.
   Qed.
 End gen_heap.

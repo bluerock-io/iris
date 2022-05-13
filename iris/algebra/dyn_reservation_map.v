@@ -282,7 +282,7 @@ Section cmra.
     intros [Hmap [Hinf Hdisj]].
     (* Pick a fresh set disjoint from the existing tokens [Ef] and map [mf],
        such that both that set [E1] and the remainder [E2] are infinite. *)
-    edestruct (coPset_split_infinite (⊤ ∖ (Ef ∪ (gset_to_coPset $ dom (gset _) mf)))) as
+    edestruct (coPset_split_infinite (⊤ ∖ (Ef ∪ (gset_to_coPset $ dom mf)))) as
         (E1 & E2 & HEunion & HEdisj & HE1inf & HE2inf).
     { rewrite -difference_difference_L.
       by apply difference_infinite, gset_to_coPset_finite. }
@@ -294,7 +294,7 @@ Section cmra.
     - eapply set_infinite_subseteq, HE2inf. set_solver.
     - intros i. rewrite left_id_L. destruct (Hdisj i) as [?|Hi]; first by left.
       destruct (mf !! i) as [p|] eqn:Hp; last by left.
-      apply (elem_of_dom_2 (D:=gset _)), elem_of_gset_to_coPset in Hp. right. set_solver.
+      apply elem_of_dom_2, elem_of_gset_to_coPset in Hp. right. set_solver.
   Qed.
   Lemma dyn_reservation_map_reserve' :
     ε ~~>: (λ x, ∃ E, set_infinite E ∧ x = dyn_reservation_map_token E).

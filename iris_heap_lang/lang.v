@@ -741,14 +741,14 @@ Proof.
 Qed.
 
 Lemma alloc_fresh v n σ :
-  let l := fresh_locs (dom (gset loc) σ.(heap)) in
+  let l := fresh_locs (dom σ.(heap)) in
   (0 < n)%Z →
   head_step (AllocN ((Val $ LitV $ LitInt $ n)) (Val v)) σ []
             (Val $ LitV $ LitLoc l) (state_init_heap l n v σ) [].
 Proof.
   intros.
   apply AllocNS; first done.
-  intros. apply (not_elem_of_dom (D := gset loc)).
+  intros. apply not_elem_of_dom.
   by apply fresh_locs_fresh.
 Qed.
 

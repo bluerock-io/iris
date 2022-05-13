@@ -379,7 +379,7 @@ Section lemmas.
   Qed.
 
   Lemma gmap_view_update_big m m0 m1 :
-    dom (gset K) m0 = dom (gset K) m1 →
+    dom m0 = dom m1 →
     gmap_view_auth (DfracOwn 1) m ⋅ ([^op map] k↦v ∈ m0, gmap_view_frag k (DfracOwn 1) v) ~~>
       gmap_view_auth (DfracOwn 1) (m1 ∪ m) ⋅ ([^op map] k↦v ∈ m1, gmap_view_frag k (DfracOwn 1) v).
   Proof.
@@ -389,7 +389,7 @@ Section lemmas.
       apply dom_empty_iff_L in Hdom as ->.
       rewrite left_id_L big_opM_empty. done. }
     rewrite dom_insert_L in Hdom.
-    assert (k ∈ dom (gset K) m1) as Hindom by set_solver.
+    assert (k ∈ dom m1) as Hindom by set_solver.
     apply elem_of_dom in Hindom as [v' Hlookup].
     rewrite big_opM_insert //.
     rewrite [gmap_view_frag _ _ _ ⋅ _]comm assoc.

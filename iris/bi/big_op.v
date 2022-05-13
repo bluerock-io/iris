@@ -1645,7 +1645,7 @@ Qed.
 
 Lemma big_sepM_impl_dom_subseteq `{Countable K} {A B}
     (Φ : K → A → PROP) (Ψ : K → B → PROP) (m1 : gmap K A) (m2 : gmap K B) :
-  dom (gset _) m2 ⊆ dom _ m1 →
+  dom m2 ⊆ dom m1 →
   ([∗ map] k↦x ∈ m1, Φ k x) -∗
   □ (∀ (k : K) (x : A) (y : B),
       ⌜m1 !! k = Some x⌝ → ⌜m2 !! k = Some y⌝ →
@@ -1872,7 +1872,7 @@ Section map2.
 
   Lemma big_sepM2_dom Φ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) ⊢
-    ⌜ dom (gset K) m1 = dom (gset K) m2 ⌝.
+    ⌜ dom m1 = dom m2 ⌝.
   Proof.
     rewrite big_sepM2_lookup_iff. apply pure_mono=>Hm.
     apply set_eq=> k. by rewrite !elem_of_dom.
@@ -1993,7 +1993,7 @@ Section map2.
   Lemma big_sepM2_empty_r m2 Φ : ([∗ map] k↦y1;y2 ∈ ∅; m2, Φ k y1 y2) ⊢ ⌜m2 = ∅⌝.
   Proof.
     rewrite big_sepM2_dom dom_empty_L.
-    apply pure_mono=>?. eapply (dom_empty_iff_L (D:=gset K)). eauto.
+    apply pure_mono=>?. eapply dom_empty_iff_L. eauto.
   Qed.
 
   Lemma big_sepM2_insert Φ m1 m2 i x1 x2 :
@@ -2769,7 +2769,7 @@ Section gset.
 End gset.
 
 Lemma big_sepM_dom `{Countable K} {A} (Φ : K → PROP) (m : gmap K A) :
-  ([∗ map] k↦_ ∈ m, Φ k) ⊣⊢ ([∗ set] k ∈ dom _ m, Φ k).
+  ([∗ map] k↦_ ∈ m, Φ k) ⊣⊢ ([∗ set] k ∈ dom m, Φ k).
 Proof. apply big_opM_dom. Qed.
 
 (** ** Big ops over finite multisets *)
