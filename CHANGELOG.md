@@ -5,6 +5,13 @@ lemma.
 
 ## Iris master
 
+**General changes:**
+
+- Rename "unsealing" lemmas from `_eq` to `_unseal`. This particularly
+  affects `envs_entails_eq`, which is commonly used in the definition of
+  custom proof mode tactics. All other unsealing lemmas should be internal, so
+  in principle you should not rely on them.
+
 **Changes in `bi`:**
 
 * Generalize `big_op` lemmas that were previously assuming `Absorbing`ness of
