@@ -9,7 +9,9 @@ difference:
   if we have the authoritative element we can always increase its fraction
   and allocate a new fragment.
 
-  ✓ (a ⋅ b) → ●U_p a ~~> ●U_(p + q) (a ⋅ b) ⋅ ◯U_q b
+<<
+✓ (a ⋅ b) → ●U_p a ~~> ●U_(p + q) (a ⋅ b) ⋅ ◯U_q b
+>>
 
 - We no longer have the [◯U{1} a] is the exclusive fragmental element (cf.
   [frac_auth_frag_validN_op_1_l]).
