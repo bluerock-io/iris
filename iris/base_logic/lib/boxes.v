@@ -108,7 +108,7 @@ Lemma slice_insert_empty E q f Q P :
 Proof.
   iDestruct 1 as (Φ) "[#HeqP Hf]".
   iMod (own_alloc_cofinite (●E false ⋅ ◯E false,
-    Some (to_agree (Next Q))) (dom _ f))
+    Some (to_agree (Next Q))) (dom f))
     as (γ) "[Hdom Hγ]"; first by (split; [apply auth_both_valid_discrete|]).
   rewrite pair_split. iDestruct "Hγ" as "[[Hγ Hγ'] #HγQ]".
   iDestruct "Hdom" as % ?%not_elem_of_dom.

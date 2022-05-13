@@ -83,8 +83,7 @@ Proof.
 Qed.
 
 Lemma test_iRewrite_dom `{!BiInternalEq PROP} {A : ofe} (m1 m2 : gmap nat A) :
-  m1 ≡ m2 ⊢@{PROP}
-  ⌜ dom (gset nat) m1 = dom (gset nat) m2 ⌝.
+  m1 ≡ m2 ⊢@{PROP} ⌜ dom m1 = dom m2 ⌝.
 Proof. iIntros "H". by iRewrite "H". Qed.
 
 Check "test_iDestruct_and_emp".

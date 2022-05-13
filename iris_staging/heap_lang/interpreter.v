@@ -714,7 +714,7 @@ Section interpret_ok.
   Qed.
 
   Lemma state_wf_same_dom s f :
-    (dom (gset loc) (f s.(lang_state)).(heap) = dom _ s.(lang_state).(heap)) →
+    (dom (f s.(lang_state)).(heap) = dom s.(lang_state).(heap)) →
     state_wf s →
     state_wf (modify_lang_state f s).
   Proof.

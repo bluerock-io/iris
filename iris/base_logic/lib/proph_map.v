@@ -46,7 +46,7 @@ Section definitions.
 
   Definition proph_map_interp pvs (ps : gset P) : iProp Σ :=
     ∃ R, ⌜proph_resolves_in_list R pvs ∧
-         dom (gset _) R ⊆ ps⌝ ∗ ghost_map_auth (proph_map_name pG) 1 R.
+         dom R ⊆ ps⌝ ∗ ghost_map_auth (proph_map_name pG) 1 R.
 
   Definition proph_def (p : P) (vs : list V) : iProp Σ :=
     p ↪[proph_map_name pG] vs.
@@ -64,7 +64,7 @@ Section list_resolves.
 
   Lemma resolves_insert pvs p R :
     proph_resolves_in_list R pvs →
-    p ∉ dom (gset _) R →
+    p ∉ dom R →
     proph_resolves_in_list (<[p := proph_list_resolves pvs p]> R) pvs.
   Proof.
     intros Hinlist Hp q vs HEq.
@@ -109,7 +109,7 @@ Section proph_map.
     iIntros (Hp) "HR". iDestruct "HR" as (R) "[[% %] H●]".
     rewrite proph_eq /proph_def.
     iMod (ghost_map_insert p (proph_list_resolves pvs p) with "H●") as "[H● H◯]".
-    { apply (not_elem_of_dom (D:=gset P)). set_solver. }
+    { apply not_elem_of_dom. set_solver. }
     iModIntro. iFrame.
     iExists (<[p := proph_list_resolves pvs p]> R).
     iFrame. iPureIntro. split.
@@ -135,7 +135,7 @@ Section proph_map.
         * rewrite lookup_insert_ne in HEq; last done.
           rewrite (Hres q ws HEq).
           simpl. rewrite decide_False; done.
-      + assert (p ∈ dom (gset P) R) by exact: elem_of_dom_2.
+      + assert (p ∈ dom R) by exact: elem_of_dom_2.
         rewrite dom_insert. set_solver.
   Qed.
 End proph_map.

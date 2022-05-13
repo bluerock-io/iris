@@ -602,7 +602,7 @@ Proof.
 Qed.
 
 Lemma big_opM_dom `{Countable K} {A} (f : K → M) (m : gmap K A) :
-  ([^o map] k↦_ ∈ m, f k) ≡ ([^o set] k ∈ dom _ m, f k).
+  ([^o map] k↦_ ∈ m, f k) ≡ ([^o set] k ∈ dom m, f k).
 Proof.
   induction m as [|i x ?? IH] using map_ind.
   { by rewrite big_opM_eq big_opS_eq dom_empty_L. }
