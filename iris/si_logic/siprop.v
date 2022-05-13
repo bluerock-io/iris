@@ -123,7 +123,7 @@ Local Definition siProp_later_unseal :
     These are not directly usable later because they do not refer to the BI
     connectives. *)
 Module siProp_primitive.
-Definition siProp_unseal :=
+Local Definition siProp_unseal :=
   (siProp_pure_unseal, siProp_and_unseal, siProp_or_unseal,
   siProp_impl_unseal, siProp_forall_unseal, siProp_exist_unseal,
   siProp_internal_eq_unseal, siProp_later_unseal).

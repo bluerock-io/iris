@@ -255,7 +255,7 @@ Notation "'<obj>' P" := (monPred_objectively P) : bi_scope.
 Notation "'<subj>' P" := (monPred_subjectively P) : bi_scope.
 
 Module MonPred.
-Definition monPred_unseal :=
+Local Definition monPred_unseal :=
   (@monPred_and_unseal, @monPred_or_unseal, @monPred_impl_unseal,
    @monPred_forall_unseal, @monPred_exist_unseal, @monPred_sep_unseal,
    @monPred_wand_unseal, @monPred_persistently_unseal, @monPred_later_unseal,

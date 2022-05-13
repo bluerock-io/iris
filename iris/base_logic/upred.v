@@ -426,7 +426,7 @@ Notation "✓ x" := (uPred_cmra_valid x) (at level 20) : bi_scope.
     These are not directly usable later because they do not refer to the BI
     connectives. *)
 Module uPred_primitive.
-Definition uPred_unseal :=
+Local Definition uPred_unseal :=
   (uPred_pure_unseal, uPred_and_unseal, uPred_or_unseal, uPred_impl_unseal,
   uPred_forall_unseal, uPred_exist_unseal, uPred_internal_eq_unseal,
   uPred_sep_unseal, uPred_wand_unseal, uPred_plainly_unseal,
