@@ -149,7 +149,7 @@ Lemma tac_pure_intro Δ Q φ a :
   envs_entails Δ Q.
 Proof.
   intros ???. rewrite envs_entails_unseal -(from_pure a Q). destruct a; simpl.
-  - by rewrite (affine (of_envs Δ)) pure_True // affinely_True_emp affinely_emp.
+  - by rewrite (affine (of_envs Δ)) pure_True // affinely_True_emp.
   - by apply pure_intro.
 Qed.
 
@@ -176,7 +176,7 @@ Lemma tac_pure_revert Δ φ P Q :
   (φ → envs_entails Δ Q).
 Proof.
   rewrite /FromAffinely envs_entails_unseal. intros <- -> ?.
-  by rewrite pure_True // affinely_True_emp affinely_emp left_id.
+  by rewrite pure_True // affinely_True_emp left_id.
 Qed.
 
 (** * Intuitionistic *)
@@ -391,7 +391,7 @@ Proof.
   rewrite envs_entails_unseal=> ?????. rewrite envs_simple_replace_singleton_sound //=.
   rewrite -intuitionistically_if_idemp (into_wand q true) /=.
   rewrite -(from_pure a P1) pure_True //.
-  rewrite -affinely_affinely_if affinely_True_emp affinely_emp.
+  rewrite -affinely_affinely_if affinely_True_emp.
   by rewrite intuitionistically_emp left_id wand_elim_r.
 Qed.
 

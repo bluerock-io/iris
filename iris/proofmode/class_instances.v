@@ -64,7 +64,7 @@ Proof. by rewrite /FromAffinely. Qed.
 
 (** IntoAbsorbingly *)
 Global Instance into_absorbingly_True : @IntoAbsorbingly PROP True emp | 0.
-Proof. by rewrite /IntoAbsorbingly -absorbingly_True_emp absorbingly_pure. Qed.
+Proof. by rewrite /IntoAbsorbingly -absorbingly_emp_True. Qed.
 Global Instance into_absorbingly_absorbing P : Absorbing P → IntoAbsorbingly P P | 1.
 Proof. intros. by rewrite /IntoAbsorbingly absorbing_absorbingly. Qed.
 Global Instance into_absorbingly_intuitionistically P :
@@ -184,7 +184,7 @@ Global Instance into_pure_pure_wand `{!BiPureForall PROP} a (φ1 φ2 : Prop) P1 
 Proof.
   rewrite /FromPure /IntoPure=> <- -> /=. rewrite pure_impl.
   apply impl_intro_l, pure_elim_l=> ?. rewrite (pure_True φ1) //.
-  by rewrite -affinely_affinely_if affinely_True_emp affinely_emp left_id.
+  by rewrite -affinely_affinely_if affinely_True_emp left_id.
 Qed.
 
 Global Instance into_pure_affinely P φ : IntoPure P φ → IntoPure (<affine> P) φ.

@@ -672,7 +672,7 @@ Proof. apply forall_intro=> a. by rewrite (forall_elim a). Qed.
 Lemma affinely_exist {A} (Φ : A → PROP) : <affine> (∃ a, Φ a) ⊣⊢ ∃ a, <affine> (Φ a).
 Proof. by rewrite /bi_affinely and_exist_l. Qed.
 
-Lemma affinely_True_emp : <affine> True ⊣⊢ <affine> emp.
+Lemma affinely_True_emp : <affine> True ⊣⊢ emp.
 Proof. apply (anti_symm _); rewrite /bi_affinely; auto. Qed.
 
 Lemma affinely_and_l P Q : <affine> P ∧ Q ⊣⊢ <affine> (P ∧ Q).
@@ -708,6 +708,8 @@ Proof.
   apply (anti_symm _), absorbingly_intro.
   apply wand_elim_r', pure_elim'=> ?. apply wand_intro_l; auto.
 Qed.
+Lemma absorbingly_True : <absorb> True ⊣⊢ True.
+Proof. apply absorbingly_pure. Qed.
 Lemma absorbingly_or P Q : <absorb> (P ∨ Q) ⊣⊢ <absorb> P ∨ <absorb> Q.
 Proof. by rewrite /bi_absorbingly sep_or_l. Qed.
 Lemma absorbingly_and_1 P Q : <absorb> (P ∧ Q) ⊢ <absorb> P ∧ <absorb> Q.
@@ -719,8 +721,8 @@ Proof. by rewrite /bi_absorbingly sep_exist_l. Qed.
 
 Lemma absorbingly_sep P Q : <absorb> (P ∗ Q) ⊣⊢ <absorb> P ∗ <absorb> Q.
 Proof. by rewrite -{1}absorbingly_idemp /bi_absorbingly !assoc -!(comm _ P) !assoc. Qed.
-Lemma absorbingly_True_emp : <absorb> True ⊣⊢ <absorb> emp.
-Proof. by rewrite absorbingly_pure /bi_absorbingly right_id. Qed.
+Lemma absorbingly_emp_True : <absorb> emp ⊣⊢ True.
+Proof. rewrite /bi_absorbingly right_id //. Qed.
 Lemma absorbingly_wand P Q : <absorb> (P -∗ Q) ⊢ <absorb> P -∗ <absorb> Q.
 Proof. apply wand_intro_l. by rewrite -absorbingly_sep wand_elim_r. Qed.
 
@@ -734,7 +736,7 @@ Proof. by rewrite absorbingly_sep_l absorbingly_sep_r. Qed.
 Lemma affinely_absorbingly_elim `{!BiPositive PROP} P : <affine> <absorb> P ⊣⊢ <affine> P.
 Proof.
   apply (anti_symm _), affinely_mono, absorbingly_intro.
-  by rewrite /bi_absorbingly affinely_sep affinely_True_emp affinely_emp left_id.
+  by rewrite /bi_absorbingly affinely_sep affinely_True_emp left_id.
 Qed.
 
 (* Affine and absorbing propositions *)
@@ -1072,7 +1074,7 @@ Qed.
 Lemma intuitionistically_emp : □ emp ⊣⊢ emp.
 Proof.
   by rewrite /bi_intuitionistically -persistently_True_emp persistently_pure
-             affinely_True_emp affinely_emp.
+             affinely_True_emp.
 Qed.
 Lemma intuitionistically_False : □ False ⊣⊢ False.
 Proof. by rewrite /bi_intuitionistically persistently_pure affinely_False. Qed.
