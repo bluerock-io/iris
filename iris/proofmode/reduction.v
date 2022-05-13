@@ -4,7 +4,9 @@ From iris.prelude Require Import options.
 
 (** Called by all tactics to perform computation to lookup items in the
     context.  We avoid reducing anything user-visible here to make sure we
-    do not reduce e.g. before unification happens in [iApply].*)
+    do not reduce e.g. before unification happens in [iApply].
+    This needs to contain all definitions used in the user-visible statements in
+    [coq_tactics], and their dependencies. *)
 Declare Reduction pm_eval := cbv [
   (* base *)
   base.negb base.beq

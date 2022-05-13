@@ -863,14 +863,13 @@ Proof.
   - rewrite /= IH (comm _ Q _) assoc. done.
 Qed.
 
-Lemma env_to_prop_and_pers_sound Γ :
-  □ env_to_prop_and Γ ⊣⊢ <affine> [∧] (env_map_pers Γ).
+Lemma env_to_prop_and_pers_sound Γ i P :
+  □ env_to_prop_and (Esnoc Γ i P) ⊣⊢ <affine> [∧] (env_map_pers (Esnoc Γ i P)).
 Proof.
-  destruct Γ as [|Γ i P]; simpl.
-  { rewrite /bi_intuitionistically persistent_persistently //. }
   revert P. induction Γ as [|Γ IH ? Q]=>P; simpl.
   - by rewrite right_id.
-  - rewrite /= IH (comm _ Q _) assoc. f_equiv.
-    rewrite persistently_and. done.
+  - rewrite /= IH. clear IH. f_equiv. simpl.
+    rewrite assoc. f_equiv.
+    rewrite persistently_and comm. done.
 Qed.
 End envs.
