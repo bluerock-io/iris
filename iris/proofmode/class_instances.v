@@ -6,7 +6,7 @@ From iris.prelude Require Import options.
 Import bi.
 
 (* FIXME(Coq #6294): needs new unification *)
-(** The lemma [from_assumption_exact is not an instance, but defined using
+(** The lemma [from_assumption_exact] is not an instance, but defined using
 [notypeclasses refine] through [Hint Extern] to enable the better unification
 algorithm. We use [shelve] to avoid the creation of unshelved goals for evars
 by [refine], which otherwise causes TC search to fail. Such unshelved goals are
