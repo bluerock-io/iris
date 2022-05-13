@@ -462,7 +462,7 @@ Section proof_mode.
     envs_entails (Envs Γp Γs n) (atomic_acc Eo Ei α P β Φ) →
     envs_entails (Envs Γp Γs n) (atomic_update Eo Ei α β Φ).
   Proof.
-    intros ? HΓs ->. rewrite environments.envs_entails_unseal of_envs_eq' /atomic_acc /=.
+    intros ? HΓs ->. rewrite envs_entails_unseal of_envs_eq' /atomic_acc /=.
     setoid_rewrite env_to_prop_sound =>HAU.
     apply aupd_intro; [apply _..|]. done.
   Qed.

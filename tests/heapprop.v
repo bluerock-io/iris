@@ -105,7 +105,7 @@ Local Definition heapProp_persistently_unseal:
 step-indexed logics, it can be defined as the identity. *)
 Definition heapProp_later (P : heapProp) : heapProp := P.
 
-Definition heapProp_unseal :=
+Local Definition heapProp_unseal :=
   (heapProp_emp_unseal, heapProp_pure_unseal, heapProp_and_unseal,
    heapProp_or_unseal, heapProp_impl_unseal, heapProp_forall_unseal,
    heapProp_exist_unseal, heapProp_sep_unseal, heapProp_wand_unseal,

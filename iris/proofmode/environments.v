@@ -266,7 +266,7 @@ Local Definition pre_envs_entails_unseal :
 
 Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
   pre_envs_entails  PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
-Local Definition envs_entails_unseal :
+Definition envs_entails_unseal :
   @envs_entails = λ PROP (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
 Proof. by rewrite /envs_entails pre_envs_entails_unseal. Qed.
 Global Arguments envs_entails {PROP} Δ Q%I.

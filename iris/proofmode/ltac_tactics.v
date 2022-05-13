@@ -3426,19 +3426,19 @@ Global Hint Extern 0 (envs_entails _ emp) => iEmpIntro : core.
 (* TODO: look for a more principled way of adding trivial hints like those
 below; see the discussion in !75 for further details. *)
 Global Hint Extern 0 (envs_entails _ (_ ≡ _)) =>
-  rewrite environments.envs_entails_unseal; apply internal_eq_refl : core.
+  rewrite envs_entails_unseal; apply internal_eq_refl : core.
 Global Hint Extern 0 (envs_entails _ (big_opL _ _ _)) =>
-  rewrite environments.envs_entails_unseal; apply (big_sepL_nil' _) : core.
+  rewrite envs_entails_unseal; apply (big_sepL_nil' _) : core.
 Global Hint Extern 0 (envs_entails _ (big_sepL2 _ _ _)) =>
-  rewrite environments.envs_entails_unseal; apply (big_sepL2_nil' _) : core.
+  rewrite envs_entails_unseal; apply (big_sepL2_nil' _) : core.
 Global Hint Extern 0 (envs_entails _ (big_opM _ _ _)) =>
-  rewrite environments.envs_entails_unseal; apply (big_sepM_empty' _) : core.
+  rewrite envs_entails_unseal; apply (big_sepM_empty' _) : core.
 Global Hint Extern 0 (envs_entails _ (big_sepM2 _ _ _)) =>
-  rewrite environments.envs_entails_unseal; apply (big_sepM2_empty' _) : core.
+  rewrite envs_entails_unseal; apply (big_sepM2_empty' _) : core.
 Global Hint Extern 0 (envs_entails _ (big_opS _ _ _)) =>
-  rewrite environments.envs_entails_unseal; apply (big_sepS_empty' _) : core.
+  rewrite envs_entails_unseal; apply (big_sepS_empty' _) : core.
 Global Hint Extern 0 (envs_entails _ (big_opMS _ _ _)) =>
-  rewrite environments.envs_entails_unseal; apply (big_sepMS_empty' _) : core.
+  rewrite envs_entails_unseal; apply (big_sepMS_empty' _) : core.
 
 (* These introduce as much as possible at once, for better performance. *)
 Global Hint Extern 0 (envs_entails _ (∀ _, _)) => iIntros : core.
