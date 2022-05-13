@@ -30,86 +30,87 @@ Inductive heapProp_entails (P Q : heapProp) : Prop :=
   { heapProp_in_entails : ∀ σ, P σ → Q σ }.
 
 (** logical connectives *)
-Definition heapProp_emp_def : heapProp :=
+Local Definition heapProp_emp_def : heapProp :=
   {| heapProp_holds σ := σ = ∅ |}.
-Definition heapProp_emp_aux : seal (@heapProp_emp_def). Proof. by eexists. Qed.
+Local Definition heapProp_emp_aux : seal (@heapProp_emp_def). Proof. by eexists. Qed.
 Definition heapProp_emp := unseal heapProp_emp_aux.
-Definition heapProp_emp_eq :
+Local Definition heapProp_emp_unseal :
   @heapProp_emp = @heapProp_emp_def := seal_eq heapProp_emp_aux.
 
-Definition heapProp_pure_def (φ : Prop) : heapProp :=
+Local Definition heapProp_pure_def (φ : Prop) : heapProp :=
   {| heapProp_holds _ := φ |}.
-Definition heapProp_pure_aux : seal (@heapProp_pure_def). Proof. by eexists. Qed.
+Local Definition heapProp_pure_aux : seal (@heapProp_pure_def). Proof. by eexists. Qed.
 Definition heapProp_pure := unseal heapProp_pure_aux.
-Definition heapProp_pure_eq :
+Local Definition heapProp_pure_unseal :
   @heapProp_pure = @heapProp_pure_def := seal_eq heapProp_pure_aux.
 
-Definition heapProp_and_def (P Q : heapProp) : heapProp :=
+Local Definition heapProp_and_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := P σ ∧ Q σ |}.
-Definition heapProp_and_aux : seal (@heapProp_and_def). Proof. by eexists. Qed.
+Local Definition heapProp_and_aux : seal (@heapProp_and_def). Proof. by eexists. Qed.
 Definition heapProp_and := unseal heapProp_and_aux.
-Definition heapProp_and_eq:
+Local Definition heapProp_and_unseal:
   @heapProp_and = @heapProp_and_def := seal_eq heapProp_and_aux.
 
-Definition heapProp_or_def (P Q : heapProp) : heapProp :=
+Local Definition heapProp_or_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := P σ ∨ Q σ |}.
-Definition heapProp_or_aux : seal (@heapProp_or_def). Proof. by eexists. Qed.
+Local Definition heapProp_or_aux : seal (@heapProp_or_def). Proof. by eexists. Qed.
 Definition heapProp_or := unseal heapProp_or_aux.
-Definition heapProp_or_eq:
+Local Definition heapProp_or_unseal:
   @heapProp_or = @heapProp_or_def := seal_eq heapProp_or_aux.
 
-Definition heapProp_impl_def (P Q : heapProp) : heapProp :=
+Local Definition heapProp_impl_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := P σ → Q σ |}.
-Definition heapProp_impl_aux : seal (@heapProp_impl_def). Proof. by eexists. Qed.
+Local Definition heapProp_impl_aux : seal (@heapProp_impl_def). Proof. by eexists. Qed.
 Definition heapProp_impl := unseal heapProp_impl_aux.
-Definition heapProp_impl_eq :
+Local Definition heapProp_impl_unseal :
   @heapProp_impl = @heapProp_impl_def := seal_eq heapProp_impl_aux.
 
-Definition heapProp_forall_def {A} (Ψ : A → heapProp) : heapProp :=
+Local Definition heapProp_forall_def {A} (Ψ : A → heapProp) : heapProp :=
   {| heapProp_holds σ := ∀ a, Ψ a σ |}.
-Definition heapProp_forall_aux : seal (@heapProp_forall_def). Proof. by eexists. Qed.
+Local Definition heapProp_forall_aux : seal (@heapProp_forall_def). Proof. by eexists. Qed.
 Definition heapProp_forall {A} := unseal heapProp_forall_aux A.
-Definition heapProp_forall_eq :
+Local Definition heapProp_forall_unseal :
   @heapProp_forall = @heapProp_forall_def := seal_eq heapProp_forall_aux.
 
-Definition heapProp_exist_def {A} (Ψ : A → heapProp) : heapProp :=
+Local Definition heapProp_exist_def {A} (Ψ : A → heapProp) : heapProp :=
   {| heapProp_holds σ := ∃ a, Ψ a σ |}.
-Definition heapProp_exist_aux : seal (@heapProp_exist_def). Proof. by eexists. Qed.
+Local Definition heapProp_exist_aux : seal (@heapProp_exist_def). Proof. by eexists. Qed.
 Definition heapProp_exist {A} := unseal heapProp_exist_aux A.
-Definition heapProp_exist_eq :
+Local Definition heapProp_exist_unseal :
   @heapProp_exist = @heapProp_exist_def := seal_eq heapProp_exist_aux.
 
-Definition heapProp_sep_def (P Q : heapProp) : heapProp :=
+Local Definition heapProp_sep_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := ∃ σ1 σ2, σ = σ1 ∪ σ2 ∧ σ1 ##ₘ σ2 ∧ P σ1 ∧ Q σ2 |}.
-Definition heapProp_sep_aux : seal (@heapProp_sep_def). Proof. by eexists. Qed.
+Local Definition heapProp_sep_aux : seal (@heapProp_sep_def). Proof. by eexists. Qed.
 Definition heapProp_sep := unseal heapProp_sep_aux.
-Definition heapProp_sep_eq:
+Local Definition heapProp_sep_unseal:
   @heapProp_sep = @heapProp_sep_def := seal_eq heapProp_sep_aux.
 
-Definition heapProp_wand_def (P Q : heapProp) : heapProp :=
+Local Definition heapProp_wand_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := ∀ σ', σ ##ₘ σ' → P σ' → Q (σ ∪ σ') |}.
-Definition heapProp_wand_aux : seal (@heapProp_wand_def). Proof. by eexists. Qed.
+Local Definition heapProp_wand_aux : seal (@heapProp_wand_def). Proof. by eexists. Qed.
 Definition heapProp_wand := unseal heapProp_wand_aux.
-Definition heapProp_wand_eq:
+Local Definition heapProp_wand_unseal:
   @heapProp_wand = @heapProp_wand_def := seal_eq heapProp_wand_aux.
 
-Definition heapProp_persistently_def (P : heapProp) : heapProp :=
+Local Definition heapProp_persistently_def (P : heapProp) : heapProp :=
   {| heapProp_holds σ := P ∅ |}.
-Definition heapProp_persistently_aux : seal (@heapProp_persistently_def).
+Local Definition heapProp_persistently_aux : seal (@heapProp_persistently_def).
 Proof. by eexists. Qed.
 Definition heapProp_persistently := unseal heapProp_persistently_aux.
-Definition heapProp_persistently_eq:
+Local Definition heapProp_persistently_unseal:
   @heapProp_persistently = @heapProp_persistently_def := seal_eq heapProp_persistently_aux.
 
 (** Iris's [bi] class requires the presence of a later modality, but for non
 step-indexed logics, it can be defined as the identity. *)
 Definition heapProp_later (P : heapProp) : heapProp := P.
 
-Definition unseal_eqs :=
-  (heapProp_emp_eq, heapProp_pure_eq, heapProp_and_eq, heapProp_or_eq,
-   heapProp_impl_eq, heapProp_forall_eq, heapProp_exist_eq,
-   heapProp_sep_eq, heapProp_wand_eq, heapProp_persistently_eq).
-Ltac unseal := rewrite !unseal_eqs /=.
+Local Definition heapProp_unseal :=
+  (heapProp_emp_unseal, heapProp_pure_unseal, heapProp_and_unseal,
+   heapProp_or_unseal, heapProp_impl_unseal, heapProp_forall_unseal,
+   heapProp_exist_unseal, heapProp_sep_unseal, heapProp_wand_unseal,
+   heapProp_persistently_unseal).
+Ltac unseal := rewrite !heapProp_unseal /=.
 
 Section mixins.
   (** Enable [simpl] locally, which is useful for proofs in the model. *)

@@ -7,12 +7,12 @@ From iris.prelude Require Import options.
 Import uPred.
 
 (** Semantic Invariants *)
-Definition inv_def `{!invGS Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
+Local Definition inv_def `{!invGS Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
   □ ∀ E, ⌜↑N ⊆ E⌝ → |={E,E ∖ ↑N}=> ▷ P ∗ (▷ P ={E ∖ ↑N,E}=∗ True).
-Definition inv_aux : seal (@inv_def). Proof. by eexists. Qed.
+Local Definition inv_aux : seal (@inv_def). Proof. by eexists. Qed.
 Definition inv := inv_aux.(unseal).
 Global Arguments inv {Σ _} N P.
-Definition inv_eq : @inv = @inv_def := inv_aux.(seal_eq).
+Local Definition inv_unseal : @inv = @inv_def := inv_aux.(seal_eq).
 Global Instance: Params (@inv) 3 := {}.
 
 (** * Invariants *)
@@ -30,7 +30,8 @@ Section inv.
   Lemma own_inv_acc E N P :
     ↑N ⊆ E → own_inv N P ={E,E∖↑N}=∗ ▷ P ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
-    rewrite uPred_fupd_eq /uPred_fupd_def. iDestruct 1 as (i) "[Hi #HiP]".
+    rewrite fancy_updates.uPred_fupd_unseal /fancy_updates.uPred_fupd_def.
+    iDestruct 1 as (i) "[Hi #HiP]".
     iDestruct "Hi" as % ?%elem_of_subseteq_singleton.
     rewrite {1 4}(union_difference_L (↑ N) E) // ownE_op; last set_solver.
     rewrite {1 5}(union_difference_L {[ i ]} (↑ N)) // ownE_op; last set_solver.
@@ -50,7 +51,8 @@ Section inv.
 
   Lemma own_inv_alloc N E P : ▷ P ={E}=∗ own_inv N P.
   Proof.
-    rewrite uPred_fupd_eq. iIntros "HP [Hw $]".
+    rewrite fancy_updates.uPred_fupd_unseal /fancy_updates.uPred_fupd_def.
+    iIntros "HP [Hw $]".
     iMod (ownI_alloc (.∈ (↑N : coPset)) P with "[$HP $Hw]")
       as (i ?) "[$ ?]"; auto using fresh_inv_name.
     do 2 iModIntro. iExists i. auto.
@@ -60,7 +62,8 @@ Section inv.
   Lemma own_inv_alloc_open N E P :
     ↑N ⊆ E → ⊢ |={E, E∖↑N}=> own_inv N P ∗ (▷P ={E∖↑N, E}=∗ True).
   Proof.
-    rewrite uPred_fupd_eq. iIntros (Sub) "[Hw HE]".
+    rewrite fancy_updates.uPred_fupd_unseal /fancy_updates.uPred_fupd_def.
+    iIntros (Sub) "[Hw HE]".
     iMod (ownI_alloc_open (.∈ (↑N : coPset)) P with "Hw")
       as (i ?) "(Hw & #Hi & HD)"; auto using fresh_inv_name.
     iAssert (ownE {[i]} ∗ ownE (↑ N ∖ {[i]}) ∗ ownE (E ∖ ↑ N))%I
@@ -80,13 +83,13 @@ Section inv.
 
   Lemma own_inv_to_inv M P: own_inv M P -∗ inv M P.
   Proof.
-    iIntros "#I". rewrite inv_eq. iIntros (E H).
+    iIntros "#I". rewrite inv_unseal. iIntros (E H).
     iPoseProof (own_inv_acc with "I") as "H"; eauto.
   Qed.
 
   (** ** Public API of invariants *)
   Global Instance inv_contractive N : Contractive (inv N).
-  Proof. rewrite inv_eq. solve_contractive. Qed.
+  Proof. rewrite inv_unseal. solve_contractive. Qed.
 
   Global Instance inv_ne N : NonExpansive (inv N).
   Proof. apply contractive_ne, _. Qed.
@@ -95,11 +98,11 @@ Section inv.
   Proof. apply ne_proper, _. Qed.
 
   Global Instance inv_persistent N P : Persistent (inv N P).
-  Proof. rewrite inv_eq. apply _. Qed.
+  Proof. rewrite inv_unseal. apply _. Qed.
 
   Lemma inv_alter N P Q : inv N P -∗ ▷ □ (P -∗ Q ∗ (Q -∗ P)) -∗ inv N Q.
   Proof.
-    rewrite inv_eq. iIntros "#HI #HPQ !>" (E H).
+    rewrite inv_unseal. iIntros "#HI #HPQ !>" (E H).
     iMod ("HI" $! E H) as "[HP Hclose]".
     iDestruct ("HPQ" with "HP") as "[$ HQP]".
     iIntros "!> HQ". iApply "Hclose". iApply "HQP". done.
@@ -129,7 +132,7 @@ Section inv.
   Lemma inv_acc E N P :
     ↑N ⊆ E → inv N P ={E,E∖↑N}=∗ ▷ P ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
-    rewrite inv_eq /inv_def; iIntros (?) "#HI". by iApply "HI".
+    rewrite inv_unseal /inv_def; iIntros (?) "#HI". by iApply "HI".
   Qed.
 
   Lemma inv_combine N1 N2 N P Q :
@@ -137,7 +140,7 @@ Section inv.
     ↑N1 ∪ ↑N2 ⊆@{coPset} ↑N →
     inv N1 P -∗ inv N2 Q -∗ inv N (P ∗ Q).
   Proof.
-    rewrite inv_eq. iIntros (??) "#HinvP #HinvQ !>"; iIntros (E ?).
+    rewrite inv_unseal. iIntros (??) "#HinvP #HinvQ !>"; iIntros (E ?).
     iMod ("HinvP" with "[%]") as "[$ HcloseP]"; first set_solver.
     iMod ("HinvQ" with "[%]") as "[$ HcloseQ]"; first set_solver.
     iApply fupd_mask_intro; first set_solver.
@@ -149,7 +152,7 @@ Section inv.
     □ (P -∗ P ∗ P) -∗
     inv N P -∗ inv N Q -∗ inv N (P ∗ Q).
   Proof.
-    rewrite inv_eq. iIntros "#HPdup #HinvP #HinvQ !>" (E ?).
+    rewrite inv_unseal. iIntros "#HPdup #HinvP #HinvQ !>" (E ?).
     iMod ("HinvP" with "[//]") as "[HP HcloseP]".
     iDestruct ("HPdup" with "HP") as "[$ HP]".
     iMod ("HcloseP" with "HP") as %_.
@@ -165,7 +168,7 @@ Section inv.
             (↑N ⊆ E) True (fupd E (E ∖ ↑N)) (fupd (E ∖ ↑N) E)
             (λ _ : (), (▷ P)%I) (λ _ : (), (▷ P)%I) (λ _ : (), None).
   Proof.
-    rewrite inv_eq /IntoAcc /accessor bi.exist_unit.
+    rewrite inv_unseal /IntoAcc /accessor bi.exist_unit.
     iIntros (?) "#Hinv _". iApply "Hinv"; done.
   Qed.
 

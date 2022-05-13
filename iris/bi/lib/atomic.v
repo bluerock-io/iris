@@ -80,16 +80,18 @@ Section definition.
     - intros ??. solve_proper.
   Qed.
 
-  Definition atomic_update_def :=
+  Local Definition atomic_update_def :=
     bi_greatest_fixpoint atomic_update_pre ().
 
 End definition.
 
 (** Seal it *)
-Definition atomic_update_aux : seal (@atomic_update_def). Proof. by eexists. Qed.
+Local Definition atomic_update_aux : seal (@atomic_update_def).
+Proof. by eexists. Qed.
 Definition atomic_update := atomic_update_aux.(unseal).
 Global Arguments atomic_update {PROP _ TA TB}.
-Definition atomic_update_eq : @atomic_update = _ := atomic_update_aux.(seal_eq).
+Local Definition atomic_update_unseal :
+  @atomic_update = _ := atomic_update_aux.(seal_eq).
 
 Global Arguments atomic_acc {PROP _ TA TB} Eo Ei _ _ _ _ : simpl never.
 Global Arguments atomic_update {PROP _ TA TB} Eo Ei _ _ _ : simpl never.
@@ -223,14 +225,14 @@ Section lemmas.
         dist n
     ) (atomic_update (PROP:=PROP) Eo Ei).
   Proof.
-    rewrite atomic_update_eq /atomic_update_def /atomic_update_pre. solve_proper.
+    rewrite atomic_update_unseal /atomic_update_def /atomic_update_pre. solve_proper.
   Qed.
 
   Lemma atomic_update_mask_weaken Eo1 Eo2 Ei α β Φ :
     Eo1 ⊆ Eo2 →
     atomic_update Eo1 Ei α β Φ -∗ atomic_update Eo2 Ei α β Φ.
   Proof.
-    rewrite atomic_update_eq {2}/atomic_update_def /=.
+    rewrite atomic_update_unseal {2}/atomic_update_def /=.
     iIntros (Heo) "HAU".
     iApply (greatest_fixpoint_coiter _ (λ _, atomic_update_def Eo1 Ei α β Φ)); last done.
     iIntros "!> *". rewrite {1}/atomic_update_def /= greatest_fixpoint_unfold.
@@ -243,7 +245,7 @@ Section lemmas.
     atomic_update Eo Ei α β Φ -∗
     atomic_acc Eo Ei α (atomic_update Eo Ei α β Φ) β Φ.
   Proof using Type*.
-    rewrite atomic_update_eq {1}/atomic_update_def /=. iIntros "HUpd".
+    rewrite atomic_update_unseal {1}/atomic_update_def /=. iIntros "HUpd".
     iPoseProof (greatest_fixpoint_unfold_1 with "HUpd") as "HUpd".
     iDestruct (make_laterable_elim with "HUpd") as ">?". done.
   Qed.
@@ -267,7 +269,7 @@ Section lemmas.
   Global Instance aupd_laterable Eo Ei α β Φ :
     Laterable (atomic_update Eo Ei α β Φ).
   Proof.
-    rewrite atomic_update_eq {1}/atomic_update_def greatest_fixpoint_unfold.
+    rewrite atomic_update_unseal {1}/atomic_update_def greatest_fixpoint_unfold.
     apply _.
   Qed.
 
@@ -276,7 +278,7 @@ Section lemmas.
     (P ∗ Q -∗ atomic_acc Eo Ei α Q β Φ) →
     P ∗ Q -∗ atomic_update Eo Ei α β Φ.
   Proof.
-    rewrite atomic_update_eq {1}/atomic_update_def /=.
+    rewrite atomic_update_unseal {1}/atomic_update_def /=.
     iIntros (??? HAU) "[#HP HQ]".
     iApply (greatest_fixpoint_coiter _ (λ _, Q)); last done. iIntros "!>" ([]) "HQ".
     iApply (make_laterable_intro Q with "[] HQ"). iIntros "!> HQ".
@@ -460,7 +462,7 @@ Section proof_mode.
     envs_entails (Envs Γp Γs n) (atomic_acc Eo Ei α P β Φ) →
     envs_entails (Envs Γp Γs n) (atomic_update Eo Ei α β Φ).
   Proof.
-    intros ? HΓs ->. rewrite envs_entails_eq of_envs_eq' /atomic_acc /=.
+    intros ? HΓs ->. rewrite envs_entails_unseal of_envs_eq' /atomic_acc /=.
     setoid_rewrite env_to_prop_sound =>HAU.
     apply aupd_intro; [apply _..|]. done.
   Qed.

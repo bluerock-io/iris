@@ -126,97 +126,127 @@ Program Definition monPred_upclosed (Φ : I → PROP) : monPred :=
   MonPred (λ i, (∀ j, ⌜i ⊑ j⌝ → Φ j)%I) _.
 Next Obligation. solve_proper. Qed.
 
-Definition monPred_embed_def : Embed PROP monPred := λ (P : PROP), MonPred (λ _, P) _.
-Definition monPred_embed_aux : seal (@monPred_embed_def). Proof. by eexists. Qed.
+Local Definition monPred_embed_def : Embed PROP monPred := λ (P : PROP),
+  MonPred (λ _, P) _.
+Local Definition monPred_embed_aux : seal (@monPred_embed_def).
+Proof. by eexists. Qed.
 Definition monPred_embed := monPred_embed_aux.(unseal).
-Definition monPred_embed_eq : @embed _ _ monPred_embed = _ := monPred_embed_aux.(seal_eq).
+Local Definition monPred_embed_unseal :
+  @embed _ _ monPred_embed = _ := monPred_embed_aux.(seal_eq).
 
-Definition monPred_emp_def : monPred := MonPred (λ _, emp)%I _.
-Definition monPred_emp_aux : seal (@monPred_emp_def). Proof. by eexists. Qed.
+Local Definition monPred_emp_def : monPred := MonPred (λ _, emp)%I _.
+Local Definition monPred_emp_aux : seal (@monPred_emp_def). Proof. by eexists. Qed.
 Definition monPred_emp := monPred_emp_aux.(unseal).
-Definition monPred_emp_eq : @monPred_emp = _ := monPred_emp_aux.(seal_eq).
+Local Definition monPred_emp_unseal :
+  @monPred_emp = _ := monPred_emp_aux.(seal_eq).
 
-Definition monPred_pure_def (φ : Prop) : monPred := MonPred (λ _, ⌜φ⌝)%I _.
-Definition monPred_pure_aux : seal (@monPred_pure_def). Proof. by eexists. Qed.
+Local Definition monPred_pure_def (φ : Prop) : monPred := MonPred (λ _, ⌜φ⌝)%I _.
+Local Definition monPred_pure_aux : seal (@monPred_pure_def).
+Proof. by eexists. Qed.
 Definition monPred_pure := monPred_pure_aux.(unseal).
-Definition monPred_pure_eq : @monPred_pure = _ := monPred_pure_aux.(seal_eq).
+Local Definition monPred_pure_unseal :
+  @monPred_pure = _ := monPred_pure_aux.(seal_eq).
 
-Definition monPred_objectively_def P : monPred := MonPred (λ _, ∀ i, P i)%I _.
-Definition monPred_objectively_aux : seal (@monPred_objectively_def). Proof. by eexists. Qed.
+Local Definition monPred_objectively_def P : monPred :=
+  MonPred (λ _, ∀ i, P i)%I _.
+Local Definition monPred_objectively_aux : seal (@monPred_objectively_def).
+Proof. by eexists. Qed.
 Definition monPred_objectively := monPred_objectively_aux.(unseal).
-Definition monPred_objectively_eq : @monPred_objectively = _ := monPred_objectively_aux.(seal_eq).
+Local Definition monPred_objectively_unseal :
+  @monPred_objectively = _ := monPred_objectively_aux.(seal_eq).
 
-Definition monPred_subjectively_def P : monPred := MonPred (λ _, ∃ i, P i)%I _.
-Definition monPred_subjectively_aux : seal (@monPred_subjectively_def). Proof. by eexists. Qed.
+Local Definition monPred_subjectively_def P : monPred := MonPred (λ _, ∃ i, P i)%I _.
+Local Definition monPred_subjectively_aux : seal (@monPred_subjectively_def).
+Proof. by eexists. Qed.
 Definition monPred_subjectively := monPred_subjectively_aux.(unseal).
-Definition monPred_subjectively_eq : @monPred_subjectively = _ := monPred_subjectively_aux.(seal_eq).
+Local Definition monPred_subjectively_unseal :
+  @monPred_subjectively = _ := monPred_subjectively_aux.(seal_eq).
 
-Program Definition monPred_and_def P Q : monPred :=
+Local Program Definition monPred_and_def P Q : monPred :=
   MonPred (λ i, P i ∧ Q i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_and_aux : seal (@monPred_and_def). Proof. by eexists. Qed.
+Local Definition monPred_and_aux : seal (@monPred_and_def).
+Proof. by eexists. Qed.
 Definition monPred_and := monPred_and_aux.(unseal).
-Definition monPred_and_eq : @monPred_and = _ := monPred_and_aux.(seal_eq).
+Local Definition monPred_and_unseal :
+  @monPred_and = _ := monPred_and_aux.(seal_eq).
 
-Program Definition monPred_or_def P Q : monPred :=
+Local Program Definition monPred_or_def P Q : monPred :=
   MonPred (λ i, P i ∨ Q i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_or_aux : seal (@monPred_or_def). Proof. by eexists. Qed.
+Local Definition monPred_or_aux : seal (@monPred_or_def).
+Proof. by eexists. Qed.
 Definition monPred_or := monPred_or_aux.(unseal).
-Definition monPred_or_eq : @monPred_or = _ := monPred_or_aux.(seal_eq).
+Local Definition monPred_or_unseal :
+  @monPred_or = _ := monPred_or_aux.(seal_eq).
 
-Definition monPred_impl_def P Q : monPred :=
+Local Definition monPred_impl_def P Q : monPred :=
   monPred_upclosed (λ i, P i → Q i)%I.
-Definition monPred_impl_aux : seal (@monPred_impl_def). Proof. by eexists. Qed.
+Local Definition monPred_impl_aux : seal (@monPred_impl_def).
+Proof. by eexists. Qed.
 Definition monPred_impl := monPred_impl_aux.(unseal).
-Definition monPred_impl_eq : @monPred_impl = _ := monPred_impl_aux.(seal_eq).
+Local Definition monPred_impl_unseal :
+  @monPred_impl = _ := monPred_impl_aux.(seal_eq).
 
-Program Definition monPred_forall_def A (Φ : A → monPred) : monPred :=
+Local Program Definition monPred_forall_def A (Φ : A → monPred) : monPred :=
   MonPred (λ i, ∀ x : A, Φ x i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_forall_aux : seal (@monPred_forall_def). Proof. by eexists. Qed.
+Local Definition monPred_forall_aux : seal (@monPred_forall_def).
+Proof. by eexists. Qed.
 Definition monPred_forall := monPred_forall_aux.(unseal).
-Definition monPred_forall_eq : @monPred_forall = _ := monPred_forall_aux.(seal_eq).
+Local Definition monPred_forall_unseal :
+  @monPred_forall = _ := monPred_forall_aux.(seal_eq).
 
-Program Definition monPred_exist_def A (Φ : A → monPred) : monPred :=
+Local Program Definition monPred_exist_def A (Φ : A → monPred) : monPred :=
   MonPred (λ i, ∃ x : A, Φ x i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_exist_aux : seal (@monPred_exist_def). Proof. by eexists. Qed.
+Local Definition monPred_exist_aux : seal (@monPred_exist_def).
+Proof. by eexists. Qed.
 Definition monPred_exist := monPred_exist_aux.(unseal).
-Definition monPred_exist_eq : @monPred_exist = _ := monPred_exist_aux.(seal_eq).
+Local Definition monPred_exist_unseal :
+  @monPred_exist = _ := monPred_exist_aux.(seal_eq).
 
-Program Definition monPred_sep_def P Q : monPred :=
+Local Program Definition monPred_sep_def P Q : monPred :=
   MonPred (λ i, P i ∗ Q i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_sep_aux : seal (@monPred_sep_def). Proof. by eexists. Qed.
+Local Definition monPred_sep_aux : seal (@monPred_sep_def).
+Proof. by eexists. Qed.
 Definition monPred_sep := monPred_sep_aux.(unseal).
-Definition monPred_sep_eq : @monPred_sep = _ := monPred_sep_aux.(seal_eq).
+Local Definition monPred_sep_unseal :
+  @monPred_sep = _ := monPred_sep_aux.(seal_eq).
 
-Definition monPred_wand_def P Q : monPred :=
+Local Definition monPred_wand_def P Q : monPred :=
   monPred_upclosed (λ i, P i -∗ Q i)%I.
-Definition monPred_wand_aux : seal (@monPred_wand_def). Proof. by eexists. Qed.
+Local Definition monPred_wand_aux : seal (@monPred_wand_def).
+Proof. by eexists. Qed.
 Definition monPred_wand := monPred_wand_aux.(unseal).
-Definition monPred_wand_eq : @monPred_wand = _ := monPred_wand_aux.(seal_eq).
+Local Definition monPred_wand_unseal :
+  @monPred_wand = _ := monPred_wand_aux.(seal_eq).
 
-Program Definition monPred_persistently_def P : monPred :=
+Local Program Definition monPred_persistently_def P : monPred :=
   MonPred (λ i, <pers> (P i))%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_persistently_aux : seal (@monPred_persistently_def). Proof. by eexists. Qed.
+Local Definition monPred_persistently_aux : seal (@monPred_persistently_def).
+Proof. by eexists. Qed.
 Definition monPred_persistently := monPred_persistently_aux.(unseal).
-Definition monPred_persistently_eq : @monPred_persistently = _ := monPred_persistently_aux.(seal_eq).
+Local Definition monPred_persistently_unseal :
+  @monPred_persistently = _ := monPred_persistently_aux.(seal_eq).
 
-Program Definition monPred_in_def (i0 : I) : monPred :=
+Local Program Definition monPred_in_def (i0 : I) : monPred :=
   MonPred (λ i : I, ⌜i0 ⊑ i⌝%I) _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_in_aux : seal (@monPred_in_def). Proof. by eexists. Qed.
+Local Definition monPred_in_aux : seal (@monPred_in_def). Proof. by eexists. Qed.
 Definition monPred_in := monPred_in_aux.(unseal).
-Definition monPred_in_eq : @monPred_in = _ := monPred_in_aux.(seal_eq).
+Local Definition monPred_in_unseal :
+  @monPred_in = _ := monPred_in_aux.(seal_eq).
 
-Program Definition monPred_later_def P : monPred := MonPred (λ i, ▷ (P i))%I _.
+Local Program Definition monPred_later_def P : monPred := MonPred (λ i, ▷ (P i))%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_later_aux : seal monPred_later_def. Proof. by eexists. Qed.
+Local Definition monPred_later_aux : seal monPred_later_def.
+Proof. by eexists. Qed.
 Definition monPred_later := monPred_later_aux.(unseal).
-Definition monPred_later_eq : monPred_later = _ := monPred_later_aux.(seal_eq).
+Local Definition monPred_later_unseal :
+  monPred_later = _ := monPred_later_aux.(seal_eq).
 End Bi.
 
 Global Arguments monPred_objectively {_ _} _%I.
@@ -225,19 +255,20 @@ Notation "'<obj>' P" := (monPred_objectively P) : bi_scope.
 Notation "'<subj>' P" := (monPred_subjectively P) : bi_scope.
 
 Module MonPred.
-Definition unseal_eqs :=
-  (@monPred_and_eq, @monPred_or_eq, @monPred_impl_eq,
-   @monPred_forall_eq, @monPred_exist_eq, @monPred_sep_eq, @monPred_wand_eq,
-   @monPred_persistently_eq, @monPred_later_eq, @monPred_in_eq,
-   @monPred_embed_eq, @monPred_emp_eq, @monPred_pure_eq,
-   @monPred_objectively_eq, @monPred_subjectively_eq).
+Local Definition monPred_unseal :=
+  (@monPred_and_unseal, @monPred_or_unseal, @monPred_impl_unseal,
+   @monPred_forall_unseal, @monPred_exist_unseal, @monPred_sep_unseal,
+   @monPred_wand_unseal, @monPred_persistently_unseal, @monPred_later_unseal,
+   @monPred_in_unseal, @monPred_embed_unseal, @monPred_emp_unseal,
+   @monPred_pure_unseal, @monPred_objectively_unseal,
+   @monPred_subjectively_unseal).
 Ltac unseal :=
   unfold bi_affinely, bi_absorbingly, bi_except_0, bi_pure, bi_emp,
          monPred_upclosed, bi_and, bi_or,
          bi_impl, bi_forall, bi_exist, bi_sep, bi_wand,
          bi_persistently, bi_affinely, bi_later;
   simpl;
-  rewrite !unseal_eqs /=.
+  rewrite !monPred_unseal /=.
 End MonPred.
 Import MonPred.
 
@@ -764,18 +795,19 @@ Global Instance big_sepMS_objective `{Countable A} (Φ : A → monPred)
 Proof. intros ??. rewrite !monPred_at_big_sepMS. do 2 f_equiv. by apply objective_at. Qed.
 
 (** BUpd *)
-Program Definition monPred_bupd_def `{BiBUpd PROP} (P : monPred) : monPred :=
+Local Program Definition monPred_bupd_def `{BiBUpd PROP} (P : monPred) : monPred :=
   MonPred (λ i, |==> P i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_bupd_aux : seal (@monPred_bupd_def). Proof. by eexists. Qed.
+Local Definition monPred_bupd_aux : seal (@monPred_bupd_def). Proof. by eexists. Qed.
 Definition monPred_bupd := monPred_bupd_aux.(unseal).
 Local Arguments monPred_bupd {_}.
-Lemma monPred_bupd_eq `{BiBUpd PROP} : @bupd _ monPred_bupd = monPred_bupd_def.
+Local Lemma monPred_bupd_unseal `{BiBUpd PROP} :
+  @bupd _ monPred_bupd = monPred_bupd_def.
 Proof. rewrite -monPred_bupd_aux.(seal_eq) //. Qed.
 
 Lemma monPred_bupd_mixin `{BiBUpd PROP} : BiBUpdMixin monPredI monPred_bupd.
 Proof.
-  split; rewrite monPred_bupd_eq.
+  split; rewrite monPred_bupd_unseal.
   - split=>/= i. solve_proper.
   - intros P. split=>/= i. apply bupd_intro.
   - intros P Q HPQ. split=>/= i. by rewrite HPQ.
@@ -786,7 +818,7 @@ Global Instance monPred_bi_bupd `{BiBUpd PROP} : BiBUpd monPredI :=
   {| bi_bupd_mixin := monPred_bupd_mixin |}.
 
 Lemma monPred_at_bupd `{BiBUpd PROP} i P : (|==> P) i ⊣⊢ |==> P i.
-Proof. by rewrite monPred_bupd_eq. Qed.
+Proof. by rewrite monPred_bupd_unseal. Qed.
 
 Global Instance bupd_objective `{BiBUpd PROP} P `{!Objective P} :
   Objective (|==> P).
@@ -830,20 +862,20 @@ Global Instance except0_objective P `{!Objective P} : Objective (◇ P).
 Proof. rewrite /bi_except_0. apply _. Qed.
 
 (** Internal equality *)
-Definition monPred_internal_eq_def `{!BiInternalEq PROP} (A : ofe) (a b : A) : monPred :=
-  MonPred (λ _, a ≡ b)%I _.
-Definition monPred_internal_eq_aux : seal (@monPred_internal_eq_def).
+Local Definition monPred_internal_eq_def `{!BiInternalEq PROP}
+  (A : ofe) (a b : A) : monPred := MonPred (λ _, a ≡ b)%I _.
+Local Definition monPred_internal_eq_aux : seal (@monPred_internal_eq_def).
 Proof. by eexists. Qed.
 Definition monPred_internal_eq := monPred_internal_eq_aux.(unseal).
 Local Arguments monPred_internal_eq {_}.
-Lemma monPred_internal_eq_eq `{!BiInternalEq PROP} :
+Local Lemma monPred_internal_eq_unseal `{!BiInternalEq PROP} :
   @internal_eq _ (@monPred_internal_eq _) = monPred_internal_eq_def.
 Proof. rewrite -monPred_internal_eq_aux.(seal_eq) //. Qed.
 
 Lemma monPred_internal_eq_mixin `{!BiInternalEq PROP} :
   BiInternalEqMixin monPredI (@monPred_internal_eq _).
 Proof.
-  split; rewrite monPred_internal_eq_eq.
+  split; rewrite monPred_internal_eq_unseal.
   - split=> i /=. solve_proper.
   - intros A P a. split=> i /=. apply internal_eq_refl.
   - intros A a b Ψ ?. split=> i /=. unseal.
@@ -860,11 +892,11 @@ Global Instance monPred_bi_internal_eq `{BiInternalEq PROP} : BiInternalEq monPr
 
 Global Instance monPred_bi_embed_internal_eq `{BiInternalEq PROP} :
   BiEmbedInternalEq PROP monPredI.
-Proof. split=> i. rewrite monPred_internal_eq_eq. by unseal. Qed.
+Proof. split=> i. rewrite monPred_internal_eq_unseal. by unseal. Qed.
 
 Lemma monPred_internal_eq_unfold `{!BiInternalEq PROP} :
   @internal_eq monPredI _ = λ A x y, ⎡ x ≡ y ⎤%I.
-Proof. rewrite monPred_internal_eq_eq. by unseal. Qed.
+Proof. rewrite monPred_internal_eq_unseal. by unseal. Qed.
 
 Lemma monPred_at_internal_eq `{!BiInternalEq PROP} {A : ofe} i (a b : A) :
   @monPred_at (a ≡ b) i ⊣⊢ a ≡ b.
@@ -884,19 +916,20 @@ Global Instance internal_eq_objective `{!BiInternalEq PROP} {A : ofe} (x y : A) 
 Proof. intros ??. rewrite monPred_internal_eq_unfold. by unseal. Qed.
 
 (** FUpd  *)
-Program Definition monPred_fupd_def `{BiFUpd PROP} (E1 E2 : coPset)
+Local Program Definition monPred_fupd_def `{BiFUpd PROP} (E1 E2 : coPset)
         (P : monPred) : monPred :=
   MonPred (λ i, |={E1,E2}=> P i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_fupd_aux : seal (@monPred_fupd_def). Proof. by eexists. Qed.
+Local Definition monPred_fupd_aux : seal (@monPred_fupd_def). Proof. by eexists. Qed.
 Definition monPred_fupd := monPred_fupd_aux.(unseal).
 Local Arguments monPred_fupd {_}.
-Lemma monPred_fupd_eq `{BiFUpd PROP} : @fupd _ monPred_fupd = monPred_fupd_def.
+Local Lemma monPred_fupd_unseal `{BiFUpd PROP} :
+  @fupd _ monPred_fupd = monPred_fupd_def.
 Proof. rewrite -monPred_fupd_aux.(seal_eq) //. Qed.
 
 Lemma monPred_fupd_mixin `{BiFUpd PROP} : BiFUpdMixin monPredI monPred_fupd.
 Proof.
-  split; rewrite monPred_fupd_eq.
+  split; rewrite monPred_fupd_unseal.
   - split=>/= i. solve_proper.
   - intros E1 E2 HE12. split=>/= i. by apply fupd_mask_intro_subseteq.
   - intros E1 E2 P. split=>/= i. by rewrite monPred_at_except_0 except_0_fupd.
@@ -910,31 +943,33 @@ Global Instance monPred_bi_fupd `{BiFUpd PROP} : BiFUpd monPredI :=
   {| bi_fupd_mixin := monPred_fupd_mixin |}.
 Global Instance monPred_bi_bupd_fupd `{BiBUpdFUpd PROP} : BiBUpdFUpd monPredI.
 Proof.
-  intros E P. split=>/= i. rewrite monPred_at_bupd monPred_fupd_eq bupd_fupd //=.
+  intros E P. split=>/= i.
+  rewrite monPred_at_bupd monPred_fupd_unseal bupd_fupd //=.
 Qed.
 Global Instance monPred_bi_embed_fupd `{BiFUpd PROP} : BiEmbedFUpd PROP monPredI.
-Proof. split=>i /=. by rewrite monPred_fupd_eq /= !monPred_at_embed. Qed.
+Proof. split=>i /=. by rewrite monPred_fupd_unseal /= !monPred_at_embed. Qed.
 
 Lemma monPred_at_fupd `{BiFUpd PROP} i E1 E2 P :
   (|={E1,E2}=> P) i ⊣⊢ |={E1,E2}=> P i.
-Proof. by rewrite monPred_fupd_eq. Qed.
+Proof. by rewrite monPred_fupd_unseal. Qed.
 
 Global Instance fupd_objective E1 E2 P `{!Objective P} `{BiFUpd PROP} :
   Objective (|={E1,E2}=> P).
 Proof. intros ??. by rewrite !monPred_at_fupd objective_at. Qed.
 
 (** Plainly *)
-Definition monPred_plainly_def `{BiPlainly PROP} P : monPred :=
+Local Definition monPred_plainly_def `{BiPlainly PROP} P : monPred :=
   MonPred (λ _, ∀ i, ■ (P i))%I _.
-Definition monPred_plainly_aux : seal (@monPred_plainly_def). Proof. by eexists. Qed.
+Local Definition monPred_plainly_aux : seal (@monPred_plainly_def). Proof. by eexists. Qed.
 Definition monPred_plainly := monPred_plainly_aux.(unseal).
 Local Arguments monPred_plainly {_}.
-Lemma monPred_plainly_eq `{BiPlainly PROP} : @plainly _ monPred_plainly = monPred_plainly_def.
+Local Lemma monPred_plainly_unseal `{BiPlainly PROP} :
+  @plainly _ monPred_plainly = monPred_plainly_def.
 Proof. rewrite -monPred_plainly_aux.(seal_eq) //. Qed.
 
 Lemma monPred_plainly_mixin `{BiPlainly PROP} : BiPlainlyMixin monPredI monPred_plainly.
 Proof.
-  split; rewrite monPred_plainly_eq; try unseal.
+  split; rewrite monPred_plainly_unseal; try unseal.
   - by (split=> ? /=; repeat f_equiv).
   - intros P Q [?]. split=> i /=. by do 3 f_equiv.
   - intros P. split=> i /=. by rewrite bi.forall_elim plainly_elim_persistently.
@@ -961,7 +996,7 @@ Global Instance minPred_bi_persistently_impl_plainly
      `{!BiPlainly PROP, !BiPersistentlyForall PROP, !BiPersistentlyImplPlainly PROP} :
   BiPersistentlyImplPlainly monPredI.
 Proof.
-  intros P Q. rewrite monPred_plainly_eq. unseal.
+  intros P Q. rewrite monPred_plainly_unseal. unseal.
   split=> i /=. setoid_rewrite bi.pure_impl_forall.
   setoid_rewrite <-plainly_forall.
   do 2 setoid_rewrite bi.persistently_forall. do 4 f_equiv.
@@ -971,7 +1006,8 @@ Qed.
 Global Instance monPred_bi_prop_ext
   `{!BiPlainly PROP, !BiInternalEq PROP, !BiPropExt PROP} : BiPropExt monPredI.
 Proof.
-  intros P Q. split=> i /=. rewrite monPred_plainly_eq monPred_internal_eq_eq /=.
+  intros P Q. split=> i /=.
+  rewrite monPred_plainly_unseal monPred_internal_eq_unseal /=.
   rewrite /bi_wand_iff monPred_equivI. f_equiv=> j. unseal.
   by rewrite prop_ext !(bi.forall_elim j) !bi.pure_True // !bi.True_impl.
 Qed.
@@ -979,7 +1015,8 @@ Qed.
 Global Instance monPred_bi_plainly_exist `{!BiPlainly PROP} `{!BiIndexBottom bot} :
   BiPlainlyExist PROP → BiPlainlyExist monPredI.
 Proof.
-  split=> ? /=. rewrite monPred_plainly_eq /=. setoid_rewrite monPred_at_exist.
+  split=> ? /=. rewrite monPred_plainly_unseal /=.
+  setoid_rewrite monPred_at_exist.
   rewrite (bi.forall_elim bot) plainly_exist_1. do 2 f_equiv.
   apply bi.forall_intro=>?. by do 2 f_equiv.
 Qed.
@@ -987,7 +1024,7 @@ Qed.
 Global Instance monPred_bi_embed_plainly `{BiPlainly PROP} :
   BiEmbedPlainly PROP monPredI.
 Proof.
-  split=> i. rewrite monPred_plainly_eq; unseal. apply (anti_symm _).
+  split=> i. rewrite monPred_plainly_unseal; unseal. apply (anti_symm _).
   - by apply bi.forall_intro.
   - by rewrite (bi.forall_elim inhabitant).
 Qed.
@@ -995,20 +1032,21 @@ Qed.
 Global Instance monPred_bi_bupd_plainly `{BiBUpdPlainly PROP} : BiBUpdPlainly monPredI.
 Proof.
   intros P. split=> /= i.
-  rewrite monPred_at_bupd monPred_plainly_eq /= bi.forall_elim. apply bupd_plainly.
+  rewrite monPred_at_bupd monPred_plainly_unseal /= bi.forall_elim.
+  apply bupd_plainly.
 Qed.
 
 Lemma monPred_plainly_unfold `{BiPlainly PROP} : plainly = λ P, ⎡ ∀ i, ■ (P i) ⎤%I.
-Proof. by rewrite monPred_plainly_eq monPred_embed_eq. Qed.
+Proof. by rewrite monPred_plainly_unseal monPred_embed_unseal. Qed.
 Lemma monPred_at_plainly `{BiPlainly PROP} i P : (■ P) i ⊣⊢ ∀ j, ■ (P j).
-Proof. by rewrite monPred_plainly_eq. Qed.
+Proof. by rewrite monPred_plainly_unseal. Qed.
 
 Global Instance monPred_at_plain `{BiPlainly PROP} P i : Plain P → Plain (P i).
 Proof. move => [] /(_ i). rewrite /Plain monPred_at_plainly bi.forall_elim //. Qed.
 
 Global Instance monPred_bi_fupd_plainly `{BiFUpdPlainly PROP} : BiFUpdPlainly monPredI.
 Proof.
-  split; rewrite !monPred_fupd_eq; try unseal.
+  split; rewrite !monPred_fupd_unseal; try unseal.
   - intros E P. split=>/= i.
     by rewrite monPred_at_plainly (bi.forall_elim i) fupd_plainly_mask_empty.
   - intros E P R. split=>/= i.

@@ -35,7 +35,7 @@ Lemma tac_wp_pure `{!heapGS Σ} Δ Δ' s E K e1 e2 φ n Φ :
   envs_entails Δ' (WP (fill K e2) @ s; E {{ Φ }}) →
   envs_entails Δ (WP (fill K e1) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ??? HΔ'. rewrite into_laterN_env_sound /=.
+  rewrite envs_entails_unseal=> ??? HΔ'. rewrite into_laterN_env_sound /=.
   (* We want [pure_exec_fill] to be available to TC search locally. *)
   pose proof @pure_exec_fill.
   rewrite HΔ' -lifting.wp_pure_step_later //.
@@ -46,7 +46,7 @@ Lemma tac_twp_pure `{!heapGS Σ} Δ s E K e1 e2 φ n Φ :
   envs_entails Δ (WP (fill K e2) @ s; E [{ Φ }]) →
   envs_entails Δ (WP (fill K e1) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> ?? ->.
+  rewrite envs_entails_unseal=> ?? ->.
   (* We want [pure_exec_fill] to be available to TC search locally. *)
   pose proof @pure_exec_fill.
   rewrite -total_lifting.twp_pure_step //.
@@ -54,17 +54,17 @@ Qed.
 
 Lemma tac_wp_value_nofupd `{!heapGS Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E {{ Φ }}).
-Proof. rewrite envs_entails_eq=> ->. by apply wp_value. Qed.
+Proof. rewrite envs_entails_unseal=> ->. by apply wp_value. Qed.
 Lemma tac_twp_value_nofupd `{!heapGS Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
-Proof. rewrite envs_entails_eq=> ->. by apply twp_value. Qed.
+Proof. rewrite envs_entails_unseal=> ->. by apply twp_value. Qed.
 
 Lemma tac_wp_value `{!heapGS Σ} Δ s E (Φ : val → iPropI Σ) v :
   envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E {{ Φ }}).
-Proof. rewrite envs_entails_eq=> ->. by rewrite wp_value_fupd. Qed.
+Proof. rewrite envs_entails_unseal=> ->. by rewrite wp_value_fupd. Qed.
 Lemma tac_twp_value `{!heapGS Σ} Δ s E (Φ : val → iPropI Σ) v :
   envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
-Proof. rewrite envs_entails_eq=> ->. by rewrite twp_value_fupd. Qed.
+Proof. rewrite envs_entails_unseal=> ->. by rewrite twp_value_fupd. Qed.
 
 (** Simplify the goal if it is [WP] of a value.
   If the postcondition already allows a fupd, do not add a second one.
@@ -174,12 +174,12 @@ Lemma tac_wp_bind `{!heapGS Σ} K Δ s E Φ e f :
   f = (λ e, fill K e) → (* as an eta expanded hypothesis so that we can `simpl` it *)
   envs_entails Δ (WP e @ s; E {{ v, WP f (Val v) @ s; E {{ Φ }} }})%I →
   envs_entails Δ (WP fill K e @ s; E {{ Φ }}).
-Proof. rewrite envs_entails_eq=> -> ->. by apply: wp_bind. Qed.
+Proof. rewrite envs_entails_unseal=> -> ->. by apply: wp_bind. Qed.
 Lemma tac_twp_bind `{!heapGS Σ} K Δ s E Φ e f :
   f = (λ e, fill K e) → (* as an eta expanded hypothesis so that we can `simpl` it *)
   envs_entails Δ (WP e @ s; E [{ v, WP f (Val v) @ s; E [{ Φ }] }])%I →
   envs_entails Δ (WP fill K e @ s; E [{ Φ }]).
-Proof. rewrite envs_entails_eq=> -> ->. by apply: twp_bind. Qed.
+Proof. rewrite envs_entails_unseal=> -> ->. by apply: twp_bind. Qed.
 
 Ltac wp_bind_core K :=
   lazymatch eval hnf in K with
@@ -224,7 +224,7 @@ Lemma tac_wp_allocN Δ Δ' s E j K v n Φ :
     end) →
   envs_entails Δ (WP fill K (AllocN (Val $ LitV $ LitInt n) (Val v)) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ? ? HΔ.
+  rewrite envs_entails_unseal=> ? ? HΔ.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_allocN.
   rewrite left_id into_laterN_env_sound; apply later_mono, forall_intro=> l.
   specialize (HΔ l).
@@ -242,7 +242,7 @@ Lemma tac_twp_allocN Δ s E j K v n Φ :
     end) →
   envs_entails Δ (WP fill K (AllocN (Val $ LitV $ LitInt n) (Val v)) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> ? HΔ.
+  rewrite envs_entails_unseal=> ? HΔ.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_allocN.
   rewrite left_id. apply forall_intro=> l.
   specialize (HΔ l).
@@ -261,7 +261,7 @@ Lemma tac_wp_alloc Δ Δ' s E j K v Φ :
     end) →
   envs_entails Δ (WP fill K (Alloc (Val v)) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ? HΔ.
+  rewrite envs_entails_unseal=> ? HΔ.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_alloc.
   rewrite left_id into_laterN_env_sound; apply later_mono, forall_intro=> l.
   specialize (HΔ l).
@@ -278,7 +278,7 @@ Lemma tac_twp_alloc Δ s E j K v Φ :
     end) →
   envs_entails Δ (WP fill K (Alloc (Val v)) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> HΔ.
+  rewrite envs_entails_unseal=> HΔ.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_alloc.
   rewrite left_id. apply forall_intro=> l.
   specialize (HΔ l).
@@ -294,7 +294,7 @@ Lemma tac_wp_free Δ Δ' s E i K l v Φ :
    envs_entails Δ'' (WP fill K (Val $ LitV LitUnit) @ s; E {{ Φ }})) →
   envs_entails Δ (WP fill K (Free (LitV l)) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ? Hlk Hfin.
+  rewrite envs_entails_unseal=> ? Hlk Hfin.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_free.
   rewrite into_laterN_env_sound -later_sep envs_lookup_split //; simpl.
   rewrite -Hfin wand_elim_r (envs_lookup_sound' _ _ _ _ _ Hlk).
@@ -306,7 +306,7 @@ Lemma tac_twp_free Δ s E i K l v Φ :
    envs_entails Δ' (WP fill K (Val $ LitV LitUnit) @ s; E [{ Φ }])) →
   envs_entails Δ (WP fill K (Free (LitV l)) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> Hlk Hfin.
+  rewrite envs_entails_unseal=> Hlk Hfin.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_free.
   rewrite envs_lookup_split //; simpl.
   rewrite -Hfin wand_elim_r (envs_lookup_sound' _ _ _ _ _ Hlk).
@@ -319,7 +319,7 @@ Lemma tac_wp_load Δ Δ' s E i K b l q v Φ :
   envs_entails Δ' (WP fill K (Val v) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (Load (LitV l)) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ?? Hi.
+  rewrite envs_entails_unseal=> ?? Hi.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_load.
   rewrite into_laterN_env_sound -later_sep envs_lookup_split //; simpl.
   apply later_mono.
@@ -332,7 +332,7 @@ Lemma tac_twp_load Δ s E i K b l q v Φ :
   envs_entails Δ (WP fill K (Val v) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (Load (LitV l)) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> ? Hi.
+  rewrite envs_entails_unseal=> ? Hi.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_load.
   rewrite envs_lookup_split //; simpl.
   destruct b; simpl.
@@ -349,7 +349,7 @@ Lemma tac_wp_store Δ Δ' s E i K l v v' Φ :
   end →
   envs_entails Δ (WP fill K (Store (LitV l) (Val v')) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ???.
+  rewrite envs_entails_unseal=> ???.
   destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   rewrite -wp_bind. eapply wand_apply; first by eapply wp_store.
   rewrite into_laterN_env_sound -later_sep envs_simple_replace_sound //; simpl.
@@ -363,7 +363,7 @@ Lemma tac_twp_store Δ s E i K l v v' Φ :
   end →
   envs_entails Δ (WP fill K (Store (LitV l) v') @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq. intros.
+  rewrite envs_entails_unseal. intros.
   destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   rewrite -twp_bind. eapply wand_apply; first by eapply twp_store.
   rewrite envs_simple_replace_sound //; simpl.
@@ -379,7 +379,7 @@ Lemma tac_wp_xchg Δ Δ' s E i K l v v' Φ :
   end →
   envs_entails Δ (WP fill K (Xchg (LitV l) (Val v')) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ???.
+  rewrite envs_entails_unseal=> ???.
   destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   rewrite -wp_bind. eapply wand_apply; first by eapply wp_xchg.
   rewrite into_laterN_env_sound -later_sep envs_simple_replace_sound //; simpl.
@@ -394,7 +394,7 @@ Lemma tac_twp_xchg Δ s E i K l v v' Φ :
   end →
   envs_entails Δ (WP fill K (Xchg (LitV l) v') @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq. intros.
+  rewrite envs_entails_unseal. intros.
   destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   rewrite -twp_bind. eapply wand_apply; first by eapply twp_xchg.
   rewrite envs_simple_replace_sound //; simpl.
@@ -415,7 +415,7 @@ Lemma tac_wp_cmpxchg Δ Δ' s E i K l v v1 v2 Φ :
    envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E {{ Φ }})) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) (Val v1) (Val v2)) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ??? Hsuc Hfail.
+  rewrite envs_entails_unseal=> ??? Hsuc Hfail.
   destruct (envs_simple_replace _ _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   destruct (decide (v = v1)) as [Heq|Hne].
   - rewrite -wp_bind. eapply wand_apply.
@@ -440,7 +440,7 @@ Lemma tac_twp_cmpxchg Δ s E i K l v v1 v2 Φ :
    envs_entails Δ (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E [{ Φ }])) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> ?? Hsuc Hfail.
+  rewrite envs_entails_unseal=> ?? Hsuc Hfail.
   destruct (envs_simple_replace _ _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   destruct (decide (v = v1)) as [Heq|Hne].
   - rewrite -twp_bind. eapply wand_apply.
@@ -460,7 +460,7 @@ Lemma tac_wp_cmpxchg_fail Δ Δ' s E i K l q v v1 v2 Φ :
   envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ?????.
+  rewrite envs_entails_unseal=> ?????.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_cmpxchg_fail.
   rewrite into_laterN_env_sound -later_sep envs_lookup_split //; simpl.
   by apply later_mono, sep_mono_r, wand_mono.
@@ -471,7 +471,7 @@ Lemma tac_twp_cmpxchg_fail Δ s E i K l q v v1 v2 Φ :
   envs_entails Δ (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq. intros. rewrite -twp_bind.
+  rewrite envs_entails_unseal. intros. rewrite -twp_bind.
   eapply wand_apply; first exact: twp_cmpxchg_fail.
   (* [//] solves some evars and enables further simplification. *)
   rewrite envs_lookup_split /= // /=. by do 2 f_equiv.
@@ -488,7 +488,7 @@ Lemma tac_wp_cmpxchg_suc Δ Δ' s E i K l v v1 v2 Φ :
   end →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ?????; subst.
+  rewrite envs_entails_unseal=> ?????; subst.
   destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   rewrite -wp_bind. eapply wand_apply.
   { eapply wp_cmpxchg_suc; eauto. }
@@ -505,7 +505,7 @@ Lemma tac_twp_cmpxchg_suc Δ s E i K l v v1 v2 Φ :
   end →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=>????; subst.
+  rewrite envs_entails_unseal=>????; subst.
   destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   rewrite -twp_bind. eapply wand_apply.
   { eapply twp_cmpxchg_suc; eauto. }
@@ -522,7 +522,7 @@ Lemma tac_wp_faa Δ Δ' s E i K l z1 z2 Φ :
   end →
   envs_entails Δ (WP fill K (FAA (LitV l) (LitV z2)) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ???.
+  rewrite envs_entails_unseal=> ???.
   destruct (envs_simple_replace _ _ _) as [Δ''|] eqn:HΔ''; [ | contradiction ].
   rewrite -wp_bind. eapply wand_apply; first exact: (wp_faa _ _ _ z1 z2).
   rewrite into_laterN_env_sound -later_sep envs_simple_replace_sound //; simpl.
@@ -536,7 +536,7 @@ Lemma tac_twp_faa Δ s E i K l z1 z2 Φ :
   end →
   envs_entails Δ (WP fill K (FAA (LitV l) (LitV z2)) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> ??.
+  rewrite envs_entails_unseal=> ??.
   destruct (envs_simple_replace _ _ _) as [Δ'|] eqn:HΔ'; [ | contradiction ].
   rewrite -twp_bind. eapply wand_apply; first exact: (twp_faa _ _ _ z1 z2).
   rewrite envs_simple_replace_sound //; simpl.

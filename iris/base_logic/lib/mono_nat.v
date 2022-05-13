@@ -21,26 +21,27 @@ Definition mono_natΣ : gFunctors := #[ GFunctor mono_natR ].
 Global Instance subG_mono_natΣ Σ : subG mono_natΣ Σ → mono_natG Σ.
 Proof. solve_inG. Qed.
 
-Definition mono_nat_auth_own_def `{!mono_natG Σ}
+Local Definition mono_nat_auth_own_def `{!mono_natG Σ}
     (γ : gname) (q : Qp) (n : nat) : iProp Σ :=
   own γ (●MN{#q} n).
-Definition mono_nat_auth_own_aux : seal (@mono_nat_auth_own_def). Proof. by eexists. Qed.
+Local Definition mono_nat_auth_own_aux : seal (@mono_nat_auth_own_def).
+Proof. by eexists. Qed.
 Definition mono_nat_auth_own := mono_nat_auth_own_aux.(unseal).
-Definition mono_nat_auth_own_eq :
+Local Definition mono_nat_auth_own_unseal :
   @mono_nat_auth_own = @mono_nat_auth_own_def := mono_nat_auth_own_aux.(seal_eq).
 Global Arguments mono_nat_auth_own {Σ _} γ q n.
 
-Definition mono_nat_lb_own_def `{!mono_natG Σ} (γ : gname) (n : nat): iProp Σ :=
+Local Definition mono_nat_lb_own_def `{!mono_natG Σ} (γ : gname) (n : nat): iProp Σ :=
   own γ (◯MN n).
-Definition mono_nat_lb_own_aux : seal (@mono_nat_lb_own_def). Proof. by eexists. Qed.
+Local Definition mono_nat_lb_own_aux : seal (@mono_nat_lb_own_def). Proof. by eexists. Qed.
 Definition mono_nat_lb_own := mono_nat_lb_own_aux.(unseal).
-Definition mono_nat_lb_own_eq :
+Local Definition mono_nat_lb_own_unseal :
   @mono_nat_lb_own = @mono_nat_lb_own_def := mono_nat_lb_own_aux.(seal_eq).
 Global Arguments mono_nat_lb_own {Σ _} γ n.
 
 Local Ltac unseal := rewrite
-  ?mono_nat_auth_own_eq /mono_nat_auth_own_def
-  ?mono_nat_lb_own_eq /mono_nat_lb_own_def.
+  ?mono_nat_auth_own_unseal /mono_nat_auth_own_def
+  ?mono_nat_lb_own_unseal /mono_nat_lb_own_def.
 
 Section mono_nat.
   Context `{!mono_natG Σ}.

@@ -73,13 +73,13 @@ Proof.
   - by rewrite -IH.
 Qed.
 
-Definition wp_def `{!irisGS Λ Σ} : Wp (iProp Σ) (expr Λ) (val Λ) stuckness :=
+Local Definition wp_def `{!irisGS Λ Σ} : Wp (iProp Σ) (expr Λ) (val Λ) stuckness :=
   λ s : stuckness, fixpoint (wp_pre s).
-Definition wp_aux : seal (@wp_def). Proof. by eexists. Qed.
+Local Definition wp_aux : seal (@wp_def). Proof. by eexists. Qed.
 Definition wp' := wp_aux.(unseal).
 Global Arguments wp' {Λ Σ _}.
 Global Existing Instance wp'.
-Lemma wp_eq `{!irisGS Λ Σ} : wp = @wp_def Λ Σ _.
+Local Lemma wp_unseal `{!irisGS Λ Σ} : wp = @wp_def Λ Σ _.
 Proof. rewrite -wp_aux.(seal_eq) //. Qed.
 
 Section wp.
@@ -93,7 +93,7 @@ Implicit Types e : expr Λ.
 (* Weakest pre *)
 Lemma wp_unfold s E e Φ :
   WP e @ s; E {{ Φ }} ⊣⊢ wp_pre s (wp (PROP:=iProp Σ) s) E e Φ.
-Proof. rewrite wp_eq. apply (fixpoint_unfold (wp_pre s)). Qed.
+Proof. rewrite wp_unseal. apply (fixpoint_unfold (wp_pre s)). Qed.
 
 Global Instance wp_ne s E e n :
   Proper (pointwise_relation _ (dist n) ==> dist n) (wp (PROP:=iProp Σ) s E e).

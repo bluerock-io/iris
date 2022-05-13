@@ -19,14 +19,16 @@ Definition ghost_varΣ (A : Type) : gFunctors :=
 Global Instance subG_ghost_varΣ Σ A : subG (ghost_varΣ A) Σ → ghost_varG Σ A.
 Proof. solve_inG. Qed.
 
-Definition ghost_var_def `{!ghost_varG Σ A} (γ : gname) (q : Qp) (a : A) : iProp Σ :=
+Local Definition ghost_var_def `{!ghost_varG Σ A}
+    (γ : gname) (q : Qp) (a : A) : iProp Σ :=
   own γ (to_frac_agree (A:=leibnizO A) q a).
-Definition ghost_var_aux : seal (@ghost_var_def). Proof. by eexists. Qed.
+Local Definition ghost_var_aux : seal (@ghost_var_def). Proof. by eexists. Qed.
 Definition ghost_var := ghost_var_aux.(unseal).
-Definition ghost_var_eq : @ghost_var = @ghost_var_def := ghost_var_aux.(seal_eq).
+Local Definition ghost_var_unseal :
+  @ghost_var = @ghost_var_def := ghost_var_aux.(seal_eq).
 Global Arguments ghost_var {Σ A _} γ q a.
 
-Local Ltac unseal := rewrite ?ghost_var_eq /ghost_var_def.
+Local Ltac unseal := rewrite ?ghost_var_unseal /ghost_var_def.
 
 Section lemmas.
   Context `{!ghost_varG Σ A}.

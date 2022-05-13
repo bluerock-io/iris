@@ -623,7 +623,7 @@ Proof.
      right order, namely the order in which they appear in map_to_list.  Here,
      we achieve this by unfolding [big_opM] and doing induction over that list
      instead. *)
-  rewrite big_opM_eq /big_opM_def -{2}(list_to_map_to_list m).
+  rewrite big_op.big_opM_unseal /big_op.big_opM_def -{2}(list_to_map_to_list m).
   assert (NoDup (map_to_list m).*1) as Hnodup by apply NoDup_fst_map_to_list.
   revert Hnodup. induction (map_to_list m) as [|[k x] l IH]; csimpl; first done.
   intros [??]%NoDup_cons. rewrite IH //.

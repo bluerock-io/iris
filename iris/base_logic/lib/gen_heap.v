@@ -102,26 +102,27 @@ Section definitions.
     ghost_map_auth (gen_heap_name hG) 1 σ ∗
     ghost_map_auth (gen_meta_name hG) 1 m.
 
-  Definition mapsto_def (l : L) (dq : dfrac) (v: V) : iProp Σ :=
+  Local Definition mapsto_def (l : L) (dq : dfrac) (v: V) : iProp Σ :=
     l ↪[gen_heap_name hG]{dq} v.
-  Definition mapsto_aux : seal (@mapsto_def). Proof. by eexists. Qed.
+  Local Definition mapsto_aux : seal (@mapsto_def). Proof. by eexists. Qed.
   Definition mapsto := mapsto_aux.(unseal).
-  Definition mapsto_eq : @mapsto = @mapsto_def := mapsto_aux.(seal_eq).
+  Local Definition mapsto_unseal : @mapsto = @mapsto_def := mapsto_aux.(seal_eq).
 
-  Definition meta_token_def (l : L) (E : coPset) : iProp Σ :=
+  Local Definition meta_token_def (l : L) (E : coPset) : iProp Σ :=
     ∃ γm, l ↪[gen_meta_name hG]□ γm ∗ own γm (reservation_map_token E).
-  Definition meta_token_aux : seal (@meta_token_def). Proof. by eexists. Qed.
+  Local Definition meta_token_aux : seal (@meta_token_def). Proof. by eexists. Qed.
   Definition meta_token := meta_token_aux.(unseal).
-  Definition meta_token_eq : @meta_token = @meta_token_def := meta_token_aux.(seal_eq).
+  Local Definition meta_token_unseal :
+    @meta_token = @meta_token_def := meta_token_aux.(seal_eq).
 
   (** TODO: The use of [positives_flatten] violates the namespace abstraction
   (see the proof of [meta_set]. *)
-  Definition meta_def `{Countable A} (l : L) (N : namespace) (x : A) : iProp Σ :=
+  Local Definition meta_def `{Countable A} (l : L) (N : namespace) (x : A) : iProp Σ :=
     ∃ γm, l ↪[gen_meta_name hG]□ γm ∗
           own γm (reservation_map_data (positives_flatten N) (to_agree (encode x))).
-  Definition meta_aux : seal (@meta_def). Proof. by eexists. Qed.
+  Local Definition meta_aux : seal (@meta_def). Proof. by eexists. Qed.
   Definition meta := meta_aux.(unseal).
-  Definition meta_eq : @meta = @meta_def := meta_aux.(seal_eq).
+  Local Definition meta_unseal : @meta = @meta_def := meta_aux.(seal_eq).
 End definitions.
 Global Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
@@ -147,37 +148,37 @@ Section gen_heap.
 
   (** General properties of mapsto *)
   Global Instance mapsto_timeless l dq v : Timeless (l ↦{dq} v).
-  Proof. rewrite mapsto_eq. apply _. Qed.
+  Proof. rewrite mapsto_unseal. apply _. Qed.
   Global Instance mapsto_fractional l v : Fractional (λ q, l ↦{#q} v)%I.
-  Proof. rewrite mapsto_eq. apply _. Qed.
+  Proof. rewrite mapsto_unseal. apply _. Qed.
   Global Instance mapsto_as_fractional l q v :
     AsFractional (l ↦{#q} v) (λ q, l ↦{#q} v)%I q.
-  Proof. rewrite mapsto_eq. apply _. Qed.
+  Proof. rewrite mapsto_unseal. apply _. Qed.
   Global Instance mapsto_persistent l v : Persistent (l ↦□ v).
-  Proof. rewrite mapsto_eq. apply _. Qed.
+  Proof. rewrite mapsto_unseal. apply _. Qed.
 
   Lemma mapsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝%Qp.
-  Proof. rewrite mapsto_eq. apply ghost_map_elem_valid. Qed.
+  Proof. rewrite mapsto_unseal. apply ghost_map_elem_valid. Qed.
   Lemma mapsto_valid_2 l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
-  Proof. rewrite mapsto_eq. apply ghost_map_elem_valid_2. Qed.
+  Proof. rewrite mapsto_unseal. apply ghost_map_elem_valid_2. Qed.
   (** Almost all the time, this is all you really need. *)
   Lemma mapsto_agree l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜v1 = v2⌝.
-  Proof. rewrite mapsto_eq. apply ghost_map_elem_agree. Qed.
+  Proof. rewrite mapsto_unseal. apply ghost_map_elem_agree. Qed.
 
   Lemma mapsto_combine l dq1 dq2 v1 v2 :
     l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ l ↦{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
-  Proof. rewrite mapsto_eq. apply ghost_map_elem_combine. Qed.
+  Proof. rewrite mapsto_unseal. apply ghost_map_elem_combine. Qed.
 
   Lemma mapsto_frac_ne l1 l2 dq1 dq2 v1 v2 :
     ¬ ✓(dq1 ⋅ dq2) → l1 ↦{dq1} v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
-  Proof. rewrite mapsto_eq. apply ghost_map_elem_frac_ne. Qed.
+  Proof. rewrite mapsto_unseal. apply ghost_map_elem_frac_ne. Qed.
   Lemma mapsto_ne l1 l2 dq2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
-  Proof. rewrite mapsto_eq. apply ghost_map_elem_ne. Qed.
+  Proof. rewrite mapsto_unseal. apply ghost_map_elem_ne. Qed.
 
   (** Permanently turn any points-to predicate into a persistent
       points-to predicate. *)
   Lemma mapsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
-  Proof. rewrite mapsto_eq. apply ghost_map_elem_persist. Qed.
+  Proof. rewrite mapsto_unseal. apply ghost_map_elem_persist. Qed.
 
   (** Framing support *)
   Global Instance frame_mapsto p l v q1 q2 RES :
@@ -187,23 +188,23 @@ Section gen_heap.
 
   (** General properties of [meta] and [meta_token] *)
   Global Instance meta_token_timeless l N : Timeless (meta_token l N).
-  Proof. rewrite meta_token_eq. apply _. Qed.
+  Proof. rewrite meta_token_unseal. apply _. Qed.
   Global Instance meta_timeless `{Countable A} l N (x : A) : Timeless (meta l N x).
-  Proof. rewrite meta_eq. apply _. Qed.
+  Proof. rewrite meta_unseal. apply _. Qed.
   Global Instance meta_persistent `{Countable A} l N (x : A) : Persistent (meta l N x).
-  Proof. rewrite meta_eq. apply _. Qed.
+  Proof. rewrite meta_unseal. apply _. Qed.
 
   Lemma meta_token_union_1 l E1 E2 :
     E1 ## E2 → meta_token l (E1 ∪ E2) -∗ meta_token l E1 ∗ meta_token l E2.
   Proof.
-    rewrite meta_token_eq /meta_token_def. intros ?. iDestruct 1 as (γm1) "[#Hγm Hm]".
+    rewrite meta_token_unseal /meta_token_def. intros ?. iDestruct 1 as (γm1) "[#Hγm Hm]".
     rewrite reservation_map_token_union //. iDestruct "Hm" as "[Hm1 Hm2]".
     iSplitL "Hm1"; eauto.
   Qed.
   Lemma meta_token_union_2 l E1 E2 :
     meta_token l E1 -∗ meta_token l E2 -∗ meta_token l (E1 ∪ E2).
   Proof.
-    rewrite meta_token_eq /meta_token_def.
+    rewrite meta_token_unseal /meta_token_def.
     iIntros "(%γm1 & #Hγm1 & Hm1) (%γm2 & #Hγm2 & Hm2)".
     iDestruct (ghost_map_elem_valid_2 with "Hγm1 Hγm2") as %[_ ->].
     iDestruct (own_valid_2 with "Hm1 Hm2") as %?%reservation_map_token_valid_op.
@@ -226,7 +227,7 @@ Section gen_heap.
   Lemma meta_agree `{Countable A} l i (x1 x2 : A) :
     meta l i x1 -∗ meta l i x2 -∗ ⌜x1 = x2⌝.
   Proof.
-    rewrite meta_eq /meta_def.
+    rewrite meta_unseal /meta_def.
     iIntros "(%γm1 & Hγm1 & Hm1) (%γm2 & Hγm2 & Hm2)".
     iDestruct (ghost_map_elem_valid_2 with "Hγm1 Hγm2") as %[_ ->].
     iDestruct (own_valid_2 with "Hm1 Hm2") as %Hγ; iPureIntro.
@@ -236,12 +237,13 @@ Section gen_heap.
   Lemma meta_set `{Countable A} E l (x : A) N :
     ↑ N ⊆ E → meta_token l E ==∗ meta l N x.
   Proof.
-    rewrite meta_token_eq meta_eq /meta_token_def /meta_def.
+    rewrite meta_token_unseal meta_unseal /meta_token_def /meta_def.
     iDestruct 1 as (γm) "[Hγm Hm]". iExists γm. iFrame "Hγm".
     iApply (own_update with "Hm").
     apply reservation_map_alloc; last done.
     cut (positives_flatten N ∈@{coPset} ↑N); first by set_solver.
-    rewrite nclose_eq. apply elem_coPset_suffixes.
+    (* TODO: Avoid unsealing here. *)
+    rewrite namespaces.nclose_unseal. apply elem_coPset_suffixes.
     exists 1%positive. by rewrite left_id_L.
   Qed.
 
@@ -250,7 +252,7 @@ Section gen_heap.
     σ !! l = None →
     gen_heap_interp σ ==∗ gen_heap_interp (<[l:=v]>σ) ∗ l ↦ v ∗ meta_token l ⊤.
   Proof.
-    iIntros (Hσl). rewrite /gen_heap_interp mapsto_eq /mapsto_def meta_token_eq /meta_token_def /=.
+    iIntros (Hσl). rewrite /gen_heap_interp mapsto_unseal /mapsto_def meta_token_unseal /meta_token_def /=.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
     iMod (ghost_map_insert l with "Hσ") as "[Hσ Hl]"; first done.
     iMod (own_alloc (reservation_map_token ⊤)) as (γm) "Hγm".
@@ -279,7 +281,7 @@ Section gen_heap.
   Lemma gen_heap_valid σ l dq v : gen_heap_interp σ -∗ l ↦{dq} v -∗ ⌜σ !! l = Some v⌝.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ _]". iIntros "Hl".
-    rewrite /gen_heap_interp mapsto_eq.
+    rewrite /gen_heap_interp mapsto_unseal.
     by iDestruct (ghost_map_lookup with "Hσ Hl") as %?.
   Qed.
 
@@ -287,7 +289,7 @@ Section gen_heap.
     gen_heap_interp σ -∗ l ↦ v1 ==∗ gen_heap_interp (<[l:=v2]>σ) ∗ l ↦ v2.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
-    iIntros "Hl". rewrite /gen_heap_interp mapsto_eq /mapsto_def.
+    iIntros "Hl". rewrite /gen_heap_interp mapsto_unseal /mapsto_def.
     iDestruct (ghost_map_lookup with "Hσ Hl") as %Hl.
     iMod (ghost_map_update with "Hσ Hl") as "[Hσ Hl]".
     iModIntro. iFrame "Hl". iExists m. iFrame.
