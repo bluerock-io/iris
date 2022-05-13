@@ -19,6 +19,9 @@ lemma.
   `Absorbing` instance. This breaks uses where an `Absorbing` instance was
   provided without relying on TC search (e.g. in `by apply ...`; a possible fix
   is `by apply: ...`). (by Glen Mével, Bedrock Systems)
+* Change statement of `affinely_True_emp` to also remove the affinely modality.
+* Rename `absorbingly_True_emp` to `absorbingly_emp_True` and make statement
+  consistent with `affinely_True_emp`: `<absorb> emp ⊣⊢ True`.
 
 **Changes in `proofmode`:**
 
