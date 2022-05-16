@@ -35,10 +35,10 @@ Section box_defs.
     box_own_prop γ P ∗ inv N (slice_inv γ P).
 
   Definition box (f : gmap slice_name bool) (P : iProp Σ) : iProp Σ :=
-    ∃ Φ : slice_name → iProp Σ,
+    tc_opaque (∃ Φ : slice_name → iProp Σ,
       ▷ (P ≡ [∗ map] γ ↦ _ ∈ f, Φ γ) ∗
       [∗ map] γ ↦ b ∈ f, box_own_auth γ (◯E b) ∗ box_own_prop γ (Φ γ) ∗
-                         inv N (slice_inv γ (Φ γ)).
+                         inv N (slice_inv γ (Φ γ)))%I.
 End box_defs.
 
 Global Instance: Params (@box_own_prop) 3 := {}.
