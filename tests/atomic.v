@@ -1,9 +1,20 @@
+Require Import stdpp.coPset.
+Require Import iris.bi.telescopes.
+Require Import iris.bi.lib.atomic.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export atomic.
 From iris.heap_lang Require Import proofmode notation atomic_heap.
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
+
+Section definition.
+  Context `{BiFUpd PROP} {TA TB : tele} (Eo Ei : coPset).
+
+  Definition AU_tele_quantify_iris : Prop :=
+    ⊢ ∀ (TA TB : tele) (α : TA → PROP) (β Φ : TA → TB → PROP),
+        atomic_update Eo Ei α β Φ.
+End definition.
 
 Section tests.
   Context `{!heapGS Σ} {aheap: atomic_heap Σ}.
