@@ -344,12 +344,12 @@
   \; #4 \;%
   \copy1{#5}\copy2}
 
-\newcommand{\bracket}[4][]{%
+\newcommand{\irisbracketgen}[4][]{%
   \setbox0=\hbox{$\mathsurround=0pt{#1}{#4}\mathstrut$}%
   \scalerel*[1ex]{#2}{\copy0}%
   {#4}%
   \scalerel*[1ex]{#3}{\copy0}}
-\newcommand{\curlybracket}[2][]{\bracket[{#1}]\{\}{#2}}
+\newcommand{\curlybracket}[2][]{\irisbracketgen[{#1}]\{\}{#2}}
 
 \NewDocumentCommand \hoare {m m m O{}}{
 	\curlybracket{#1}\spac #2 \spac \curlybracket{#3}_{#4}%
