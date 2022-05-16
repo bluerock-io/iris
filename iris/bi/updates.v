@@ -240,6 +240,10 @@ Section bupd_derived.
     by rewrite -bupd_intro -or_intro_l.
   Qed.
 
+  Global Instance bupd_absorbing P :
+    Absorbing P → Absorbing (|==> P).
+  Proof. rewrite /Absorbing /bi_absorbingly bupd_frame_l =>-> //. Qed.
+
   Section bupd_plainly.
     Context `{!BiPlainly PROP, !BiBUpdPlainly PROP}.
 
@@ -325,6 +329,10 @@ Section fupd_derived.
   Proof. by rewrite fupd_frame_l wand_elim_l. Qed.
   Lemma fupd_wand_r E1 E2 P Q : (|={E1,E2}=> P) ∗ (P -∗ Q) ={E1,E2}=∗ Q.
   Proof. by rewrite fupd_frame_r wand_elim_r. Qed.
+
+  Global Instance fupd_absorbing E1 E2 P :
+    Absorbing P → Absorbing (|={E1,E2}=> P).
+  Proof. rewrite /Absorbing /bi_absorbingly fupd_frame_l =>-> //. Qed.
 
   Lemma fupd_trans_frame E1 E2 E3 P Q :
     ((Q ={E2,E3}=∗ emp) ∗ |={E1,E2}=> (Q ∗ P)) ={E1,E3}=∗ P.
