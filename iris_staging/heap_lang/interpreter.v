@@ -749,15 +749,15 @@ Section interpret_ok.
       (repeat case_match; subst; try errored;
        success;
        eauto using state_wf_upd).
-    - constructor; intros.
-      simpl.
-      apply state_wf_holds; auto.
     - match goal with
       | H: interp_alloc _ _ = (_, _) |- _ => invc H
       end.
       apply state_wf_init_alloc; eauto.
       lia.
     - apply state_wf_same_dom; eauto.
+    - constructor; intros.
+      simpl.
+      apply state_wf_holds; auto.
   Qed.
 
   Local Hint Resolve interpret_wf : core.
@@ -792,13 +792,6 @@ Section interpret_ok.
       lazymatch goal with
       | |- context[Case (Val ?v)] => destruct v; try errored; step_atomic; eauto
       end.
-    - (* Fork *)
-      eapply rtc_once. exists [].
-      lazymatch goal with
-      | |- context[Fork ?e] => eapply (step_atomic _ _ _ _ [e] []); simpl; eauto
-      end.
-      apply head_prim_step; simpl.
-      eauto using head_step.
     - (* AllocN *)
       lazymatch goal with
       | H: interp_alloc _ _ = _ |- _ => invc H
@@ -806,6 +799,13 @@ Section interpret_ok.
       eapply atomic_step. constructor; auto; intros.
       simpl. apply state_wf_holds; eauto.
       simpl; lia.
+    - (* Fork *)
+      eapply rtc_once. exists [].
+      lazymatch goal with
+      | |- context[Fork ?e] => eapply (step_atomic _ _ _ _ [e] []); simpl; eauto
+      end.
+      apply head_prim_step; simpl.
+      eauto using head_step.
   Qed.
 
   (** * Theory for expressions that are stuck after some execution steps. *)
