@@ -66,6 +66,10 @@ We will leave away the disambiguating subscript when it is clear from the contex
 All of this lets us define $\ofval$ as simply applying the value injection (the very first syntactic form of $\Expr$), which makes a lot of things in Coq much simpler.
 $\toval$ is defined recursively in the obvious way.
 
+\langkw{Alloc} takes as first argument the number of heap cells to allocate (must be strictly positive), and as second argument the default value to use for these heap cells.
+This lets one allocate arrays.
+$\Ptradd$ implements pointer arithmetic (the left operand must be a pointer, the right operand an integer), which is used to access array elements.
+
 For our set of states and observations, we pick
 \begin{align*}
   \loc \ni \Loc \eqdef{}& \integer \\
