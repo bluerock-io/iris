@@ -37,7 +37,7 @@ The grammar of HeapLang, and in particular its set \Expr{} of \emph{expressions}
   {}\\ &
   \Inl(\expr)_\exprForm \mid
   \Inr(\expr)_\exprForm \mid
-  \MatchCore \expr with \expr_1 | \expr_2 end \mid
+  \Match \expr with \Inl => \expr_1 | \Inr => \expr_2 end \mid
   {}\\ &
   \Alloc(\expr_1,\expr_2) \mid
   \Free(\expr) \mid
@@ -54,6 +54,10 @@ The grammar of HeapLang, and in particular its set \Expr{} of \emph{expressions}
 \HLOp_2 \bnfdef{}& + \mid - \mid \Ptradd \mid \mathop{=} \mid \ldots ~~\text{(list incomplete)}
 \end{align*}
 (Note that \langkw{match} contains a literal $|$ that is not part of the BNF but part of HeapLang syntax.)
+
+To simplify the formalization, the only binders occur in \langkw{rec}.
+\langkw{match} has a closure in each arm which will be applied to the value of the left/right variant, respectively.
+(See the syntactic sugar defined later.)
 
 Recursive abstractions, pairs, and the injections exist both as a value form and an expression form.
 The expression forms will reduce to the value form once all their arguments are values.
@@ -93,7 +97,7 @@ The HeapLang operational semantics is defined via the use of \emph{evaluation co
   {}\\ &
   \Inl(\lctx) \mid
   \Inr(\lctx) \mid
-  \MatchCore \lctx with \expr_1 | \expr_2 end \mid
+  \Match \lctx with \Inl => \expr_1 | \Inr => \expr_2 end \mid
   {}\\ &
   \Alloc(\expr, \lctx) \mid
   \Alloc(\lctx, \val) \mid
@@ -175,9 +179,9 @@ The intention of this is to forbid directly comparing large values such as pairs
   (\val_1, \state, \nil) \\
 (\Snd((\val_1, \val_2)_\valForm), \state) \hstep[\nil]{}&
   (\val_2, \state, \nil) \\
-(\MatchCore \Inl(\val)_\valForm with \expr_1 | \expr_2 end, \state) \hstep[\nil]{}&
+(\Match \Inl(\val)_\valForm with \Inl => \expr_1 | \Inr => \expr_2 end, \state) \hstep[\nil]{}&
   (\expr_1(\val), \state, \nil) \\
-(\MatchCore \Inr(\val)_\valForm with \expr_1 | \expr_2 end, \state) \hstep[\nil]{}&
+(\Match \Inr(\val)_\valForm with \Inl => \expr_1 | \Inr => \expr_2 end, \state) \hstep[\nil]{}&
   (\expr_2(\val), \state, \nil)
 \end{align*}
 \caption{HeapLang pure and boxed reduction rules. \\ \small
@@ -272,6 +276,8 @@ We recover many of the common language operations as syntactic sugar.
   \Skip \eqdef{}& \TT; \TT \\
   \expr_1 \mathop{\&\&} \expr_2 \eqdef{}& \If \expr_1 then \expr_2 \Else \False \\
   \expr_1 \mathop{||} \expr_2 \eqdef{}& \If \expr_1 then \True \Else \expr_2 \\
+  \Match \expr with \Inl(\lvar) => \expr_1 | \Inr(\lvarB) => \expr_2 end \eqdef {}&
+    \Match \expr with \Inl => \Lam\lvar. \expr_1 | \Inr => \Lam\lvarB. \expr_2 end \\
   \Ref(\expr) \eqdef{}& \Alloc(1,\expr) \\
   \CAS(\expr_1, \expr_2, \expr_3) \eqdef{}& \Snd(\CmpXchg(\expr_1, \expr_2, \expr_3)) \\
   \Resolve \expr_1 to \expr_2 \eqdef{}& \ResolveWith \Skip at \expr_1 to \expr_2
