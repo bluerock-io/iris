@@ -270,6 +270,8 @@ We recover many of the common language operations as syntactic sugar.
   \Let \lvar = \expr in \expr' \eqdef{}& (\Lam \lvar. \expr')(\expr) \\
   \expr; \expr' \eqdef{}& \Let \any = \expr in \expr' \\
   \Skip \eqdef{}& \TT; \TT \\
+  \expr_1 \mathop{\&\&} \expr_2 \eqdef{}& \If \expr_1 then \expr_2 \Else \False \\
+  \expr_1 \mathop{||} \expr_2 \eqdef{}& \If \expr_1 then \True \Else \expr_2 \\
   \Ref(\expr) \eqdef{}& \Alloc(1,\expr) \\
   \CAS(\expr_1, \expr_2, \expr_3) \eqdef{}& \Snd(\CmpXchg(\expr_1, \expr_2, \expr_3)) \\
   \Resolve \expr_1 to \expr_2 \eqdef{}& \ResolveWith \Skip at \expr_1 to \expr_2
