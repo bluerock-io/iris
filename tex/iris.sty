@@ -362,6 +362,30 @@
 	\end{aligned}}%
 }
 
+%% Logical atomicity
+%Limit bracket width to 2ex
+\newcommand{\anglebracket}[1]{{\scaleleftright[2ex]{\langle}{#1}{\rangle}}}
+
+\NewDocumentCommand \ahoare {m m m O{}}{
+	\anglebracket{#1}\spac #2 \spac \anglebracket{#3}_{#4}%
+}
+
+\NewDocumentCommand \ahoareV {O{c} m m m O{}}{
+		{\begin{aligned}[#1]
+		&\anglebracket{#2} \\
+		&\quad{#3} \\
+		&{\anglebracket{#4}}_{#5}
+		\end{aligned}}%
+}
+
+\NewDocumentCommand \ahoareHV {O{c} m m m O{}}{
+	{\begin{aligned}[#1]
+	&\anglebracket{#2}\; {#3} \\
+	&{\anglebracket{#4}}_{#5}
+	\end{aligned}}%
+}
+
+
 
 %% Some commonly used identifiers
 \newcommand{\inhabited}[1]{\textlog{inhabited}(#1)}
