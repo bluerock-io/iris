@@ -332,24 +332,8 @@
 
 %% Hoare Triples
 
-\newcommand*{\hoaresizebox}[1]{%
-  \hbox{$\mathsurround=0pt{#1}\mathstrut$}}
-\newcommand*{\hoarescalebox}[2]{%
-  \hbox{\scalerel*[1ex]{#1}{#2}}}
-\newcommand{\triple}[5]{%
-  \setbox0=\hoaresizebox{{#3}{#5}}%
-  \setbox1=\hoarescalebox{#1}{\copy0}%
-  \setbox2=\hoarescalebox{#2}{\copy0}%
-  \copy1{#3}\copy2%
-  \; #4 \;%
-  \copy1{#5}\copy2}
-
-\newcommand{\irisbracketgen}[4][]{%
-  \setbox0=\hbox{$\mathsurround=0pt{#1}{#4}\mathstrut$}%
-  \scalerel*[1ex]{#2}{\copy0}%
-  {#4}%
-  \scalerel*[1ex]{#3}{\copy0}}
-\newcommand{\curlybracket}[2][]{\irisbracketgen[{#1}]\{\}{#2}}
+% needs extra {...} for some weird reason
+\newcommand{\curlybracket}[1]{{\left\{#1\right\}}}
 
 \NewDocumentCommand \hoare {m m m O{}}{
 	\curlybracket{#1}\spac #2 \spac \curlybracket{#3}_{#4}%
