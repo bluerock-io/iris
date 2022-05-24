@@ -22,6 +22,11 @@ lemma.
 * Change statement of `affinely_True_emp` to also remove the affinely modality.
 * Rename `absorbingly_True_emp` to `absorbingly_emp_True` and make statement
   consistent with `affinely_True_emp`: `<absorb> emp ⊣⊢ True`.
+* Change the notation for atomic updates and atomic accessors (`AU`, `AACC`) to
+  swap the quantifiers: the first quantifier is logically an existential, the
+  second a universal, so let's use the appropriate notation. Also use double
+  quantifiers (`∀∀`, `∃∃`) to make it clear that these are not normal
+  quantifiers (the latter change was also applied to logically atomic triples).
 
 **Changes in `proofmode`:**
 
