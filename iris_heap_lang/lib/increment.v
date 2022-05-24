@@ -21,7 +21,7 @@ Section increment_physical.
          else "incr" "l".
 
   Lemma incr_phy_spec (l: loc) :
-    ⊢ <<< ∀ (v : Z), l ↦ #v >>> incr_phy #l @ ∅ <<< l ↦ #(v + 1), RET #v >>>.
+    ⊢ <<< ∀∀ (v : Z), l ↦ #v >>> incr_phy #l @ ∅ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
     iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     wp_bind (!_)%E. iMod "AU" as (v) "[Hl [Hclose _]]".
@@ -52,7 +52,7 @@ Section increment.
   (** A proof of the incr specification that unfolds the definition of atomic
       accessors.  This is the style that most logically atomic proofs take. *)
   Lemma incr_spec_direct (l: loc) :
-    ⊢ <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ∅ <<< l ↦ #(v + 1), RET #v >>>.
+    ⊢ <<< ∀∀ (v : Z), l ↦ #v >>> incr #l @ ∅ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
     iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     awp_apply load_spec.
@@ -91,7 +91,7 @@ Section increment.
       prove are in 1:1 correspondence; most logically atomic proofs will not be
       able to use them. *)
   Lemma incr_spec (l: loc) :
-    ⊢ <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ∅ <<< l ↦ #(v + 1), RET #v >>>.
+    ⊢ <<< ∀∀ (v : Z), l ↦ #v >>> incr #l @ ∅ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
     iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     awp_apply load_spec.
@@ -125,7 +125,7 @@ Section increment.
      connective that works on [option Qp] (the type of 1-q). *)
   Lemma weak_incr_spec (l: loc) (v : Z) :
     l ↦{#1/2} #v -∗
-    <<< ∀ (v' : Z), l ↦{#1/2} #v' >>>
+    <<< ∀∀ (v' : Z), l ↦{#1/2} #v' >>>
       weak_incr #l @ ∅
     <<< ⌜v = v'⌝ ∗ l ↦ #(v + 1), RET #v >>>.
   Proof.
