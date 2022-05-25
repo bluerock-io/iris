@@ -1,0 +1,48 @@
+\documentclass[10pt]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\input{setup}
+
+
+\title{The Iris TeX Test Document}
+\begin{document}
+\maketitle
+
+Here we put a bunch of uses of the macros in \texttt{iris.sty} that we can visually test to ensure they still work when those macros are changed.
+
+\begin{mathpar}
+{  \hoare{P}{\expr}{Q} }
+
+{  \ahoare{P}{\expr}{Q} }
+\end{mathpar}
+
+{
+\newcommand{\mapstoDisk}{\mapsto_d}
+\newcommand{\mapstoOp}{\mapsto_{\mathit{op}}}
+\newcommand{\mapstoLftd}{\mapsto_d^{\mathrm{lftd}}}
+
+\begin{align*}
+  \hoareV{ \begin{aligned}
+              &\dom(m) = \dom(m') * {} \\
+  &\left( \Sep_{(a,o) \in m} a \mapstoLftd o \right) * %
+  \left( \Sep_{(a,o') \in m'} a \mapstoOp o' \right)
+            \end{aligned}} %
+  {\mathit{op}.\texttt{Commit}()}%
+  {\left( \Sep_{(a,o) \in m} a \mapstoDisk o \right) \lor
+    \left( \Sep_{(a,o') \in m'} a \mapstoDisk o' \right) }
+\end{align*}
+\begin{align*}
+  \ahoareV{ \begin{aligned}
+              &\dom(m) = \dom(m') * {} \\
+  &\left( \Sep_{(a,o) \in m} a \mapstoLftd o \right) * %
+  \left( \Sep_{(a,o') \in m'} a \mapstoOp o' \right)
+            \end{aligned}} %
+  {\mathit{op}.\texttt{Commit}()}%
+  {\left( \Sep_{(a,o) \in m} a \mapstoDisk o \right) \lor
+    \left( \Sep_{(a,o') \in m'} a \mapstoDisk o' \right) }
+\end{align*}
+}
+
+\end{document}
