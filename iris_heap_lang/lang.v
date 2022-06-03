@@ -107,8 +107,6 @@ Inductive expr :=
   | InjL (e : expr)
   | InjR (e : expr)
   | Case (e0 : expr) (e1 : expr) (e2 : expr)
-  (* Concurrency *)
-  | Fork (e : expr)
   (* Heap *)
   | AllocN (e1 e2 : expr) (* array length (positive number), initial value *)
   | Free (e : expr)
@@ -117,6 +115,8 @@ Inductive expr :=
   | CmpXchg (e0 : expr) (e1 : expr) (e2 : expr) (* Compare-exchange *)
   | Xchg (e0 : expr) (e1 : expr) (* exchange *)
   | FAA (e1 : expr) (e2 : expr) (* Fetch-and-add *)
+  (* Concurrency *)
+  | Fork (e : expr)
   (* Prophecy *)
   | NewProph
   | Resolve (e0 : expr) (e1 : expr) (e2 : expr) (* wrapped expr, proph, val *)
@@ -243,7 +243,6 @@ Proof.
      | InjR e, InjR e' => cast_if (decide (e = e'))
      | Case e0 e1 e2, Case e0' e1' e2' =>
         cast_if_and3 (decide (e0 = e0')) (decide (e1 = e1')) (decide (e2 = e2'))
-     | Fork e, Fork e' => cast_if (decide (e = e'))
      | AllocN e1 e2, AllocN e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
      | Free e, Free e' =>
@@ -257,6 +256,7 @@ Proof.
         cast_if_and (decide (e0 = e0')) (decide (e1 = e1'))
      | FAA e1 e2, FAA e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
+     | Fork e, Fork e' => cast_if (decide (e = e'))
      | NewProph, NewProph => left _
      | Resolve e0 e1 e2, Resolve e0' e1' e2' =>
         cast_if_and3 (decide (e0 = e0')) (decide (e1 = e1')) (decide (e2 = e2'))
@@ -410,6 +410,11 @@ Canonical Structure valO := leibnizO val.
 Canonical Structure exprO := leibnizO expr.
 
 (** Evaluation contexts *)
+(** Note that [ResolveLCtx] is not by itself an evaluation context item: we do
+not reduce directly under Resolve's first argument. We only reduce things nested
+further down. Once no nested contexts exist any more, the expression must take
+exactly one more step to a value, and Resolve then (atomically) also uses that
+value for prophecy resolution.  *)
 Inductive ectx_item :=
   | AppLCtx (v2 : val)
   | AppRCtx (e1 : expr)
@@ -498,7 +503,6 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | InjL e => InjL (subst x v e)
   | InjR e => InjR (subst x v e)
   | Case e0 e1 e2 => Case (subst x v e0) (subst x v e1) (subst x v e2)
-  | Fork e => Fork (subst x v e)
   | AllocN e1 e2 => AllocN (subst x v e1) (subst x v e2)
   | Free e => Free (subst x v e)
   | Load e => Load (subst x v e)
@@ -506,6 +510,7 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | Store e1 e2 => Store (subst x v e1) (subst x v e2)
   | CmpXchg e0 e1 e2 => CmpXchg (subst x v e0) (subst x v e1) (subst x v e2)
   | FAA e1 e2 => FAA (subst x v e1) (subst x v e2)
+  | Fork e => Fork (subst x v e)
   | NewProph => NewProph
   | Resolve ex e1 e2 => Resolve (subst x v ex) (subst x v e1) (subst x v e2)
   end.
@@ -661,8 +666,6 @@ Inductive head_step : expr → state → list observation → expr → state →
      head_step (Case (Val $ InjLV v) e1 e2) σ [] (App e1 (Val v)) σ []
   | CaseRS v e1 e2 σ :
      head_step (Case (Val $ InjRV v) e1 e2) σ [] (App e2 (Val v)) σ []
-  | ForkS e σ:
-     head_step (Fork e) σ [] (Val $ LitV LitUnit) σ [e]
   | AllocNS n v σ l :
      (0 < n)%Z →
      (∀ i, (0 ≤ i)%Z → (i < n)%Z → σ.(heap) !! (l +ₗ i) = None) →
@@ -707,6 +710,8 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV $ LitInt i1) (state_upd_heap <[l:=Some $ LitV (LitInt (i1 + i2))]>σ)
                []
+  | ForkS e σ:
+     head_step (Fork e) σ [] (Val $ LitV LitUnit) σ [e]
   | NewProphS σ p :
      p ∉ σ.(used_proph_id) →
      head_step NewProph σ
