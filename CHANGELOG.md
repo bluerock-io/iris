@@ -12,6 +12,12 @@ lemma.
   custom proof mode tactics. All other unsealing lemmas should be internal, so
   in principle you should not rely on them.
 
+**Changes in `algebra`:**
+
+* Add some missing algebra functors: `dfrac_agreeRF`, `excl_authURF`, `excl_authRF`,
+  `frac_authURF`, `frac_authRF`, `ufrac_authURF`, `ufrac_authRF`, `max_prefix_listURF`,
+  `max_prefix_listRF`, `mono_listURF`, and `mono_listRF`.
+
 **Changes in `bi`:**
 
 * Generalize `big_op` lemmas that were previously assuming `Absorbing`ness of

@@ -69,3 +69,17 @@ Section excl_auth.
     intros. by apply auth_update, option_local_update, exclusive_local_update.
   Qed.
 End excl_auth.
+
+Definition excl_authURF (F : oFunctor) : urFunctor :=
+  authURF (optionURF (exclRF F)).
+
+Global Instance excl_authURF_contractive F :
+  oFunctorContractive F → urFunctorContractive (excl_authURF F).
+Proof. apply _. Qed.
+
+Definition excl_authRF (F : oFunctor) : rFunctor :=
+  authRF (optionURF (exclRF F)).
+
+Global Instance excl_authRF_contractive F :
+  oFunctorContractive F → rFunctorContractive (excl_authRF F).
+Proof. apply _. Qed.

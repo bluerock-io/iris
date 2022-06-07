@@ -171,3 +171,17 @@ Section max_prefix_list.
     apply to_max_prefix_list_validN.
   Qed.
 End max_prefix_list.
+
+Definition max_prefix_listURF (F : oFunctor) : urFunctor :=
+  gmapURF nat (agreeRF F).
+
+Global Instance max_prefix_listURF_contractive F :
+  oFunctorContractive F → urFunctorContractive (max_prefix_listURF F).
+Proof. apply _. Qed.
+
+Definition max_prefix_listRF (F : oFunctor) : rFunctor :=
+  gmapRF nat (agreeRF F).
+
+Global Instance max_prefix_listRF_contractive F :
+  oFunctorContractive F → rFunctorContractive (max_prefix_listRF F).
+Proof. apply _. Qed.

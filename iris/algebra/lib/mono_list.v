@@ -182,3 +182,17 @@ Section mono_list_props.
     by apply auth_update_auth_persist.
   Qed.
 End mono_list_props.
+
+Definition mono_listURF (F : oFunctor) : urFunctor :=
+  authURF (max_prefix_listURF F).
+
+Global Instance mono_listURF_contractive F :
+  oFunctorContractive F → urFunctorContractive (mono_listURF F).
+Proof. apply _. Qed.
+
+Definition mono_listRF (F : oFunctor) : rFunctor :=
+  authRF (max_prefix_listURF F).
+
+Global Instance mono_listRF_contractive F :
+  oFunctorContractive F → rFunctorContractive (mono_listRF F).
+Proof. apply _. Qed.
