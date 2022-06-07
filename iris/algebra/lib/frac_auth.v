@@ -119,3 +119,17 @@ Section frac_auth.
     intros. by apply auth_update, option_local_update, exclusive_local_update.
   Qed.
 End frac_auth.
+
+Definition frac_authURF (F : rFunctor) : urFunctor :=
+  authURF (optionURF (prodRF (constRF fracR) F)).
+
+Global Instance frac_authURF_contractive F :
+  rFunctorContractive F → urFunctorContractive (frac_authURF F).
+Proof. apply _. Qed.
+
+Definition frac_authRF (F : rFunctor) : rFunctor :=
+  authRF (optionURF (prodRF (constRF fracR) F)).
+
+Global Instance frac_authRF_contractive F :
+  rFunctorContractive F → rFunctorContractive (frac_authRF F).
+Proof. apply _. Qed.

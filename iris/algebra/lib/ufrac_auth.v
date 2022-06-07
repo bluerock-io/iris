@@ -147,3 +147,17 @@ Section ufrac_auth.
       destruct m; simpl; [rewrite left_id | rewrite right_id]; done.
   Qed.
 End ufrac_auth.
+
+Definition ufrac_authURF (F : rFunctor) : urFunctor :=
+  authURF (optionURF (prodRF (constRF ufracR) F)).
+
+Global Instance ufrac_authURF_contractive F :
+  rFunctorContractive F → urFunctorContractive (ufrac_authURF F).
+Proof. apply _. Qed.
+
+Definition ufrac_authRF (F : rFunctor) : rFunctor :=
+  authRF (optionURF (prodRF (constRF ufracR) F)).
+
+Global Instance ufrac_authRF_contractive F :
+  rFunctorContractive F → rFunctorContractive (ufrac_authRF F).
+Proof. apply _. Qed.
