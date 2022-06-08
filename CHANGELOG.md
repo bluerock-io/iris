@@ -17,6 +17,17 @@ lemma.
 * Add some missing algebra functors: `dfrac_agreeRF`, `excl_authURF`, `excl_authRF`,
   `frac_authURF`, `frac_authRF`, `ufrac_authURF`, `ufrac_authRF`, `max_prefix_listURF`,
   `max_prefix_listRF`, `mono_listURF`, and `mono_listRF`.
+* Make validy lemmas for `excl_auth` more consistent with `auth`.
+  - Rename `excl_auth_frag_validN_op_1_l` into `excl_auth_frag_op_validN` and
+    `excl_auth_frag_valid_op_1_l` into `excl_auth_frag_op_valid` (similar to
+    `auth_auth_op_valid`), and make them bi-implications.
+  - Add `excl_auth_auth_op_validN` and `excl_auth_auth_op_valid`.
+* Make validy lemmas for `(u)frac_auth` more consistent with `auth`.
+  - Remove unidirectional lemmas with `1` fraction `frac_auth_frag_validN_op_1_l`
+    and `frac_auth_frag_valid_op_1_l`
+  - Add `frac_auth_frag_op_validN` and `frac_auth_frag_op_valid`, which are
+    bi-implications with arbitrary fractions.
+  - Add `ufrac_auth_frag_op_validN` and `ufrac_auth_frag_op_valid`.
 
 **Changes in `bi`:**
 
@@ -100,6 +111,17 @@ lemma.
     This precludes usage of the laws in `BiFUpdPlainly` in the HeapLang instance of Iris.
   + `heap_total` provides the additional assumption `HasNoLc`, which needs to be
     introduced by clients and needs to be kept around to use the laws in `BiFUpdPlainly`.
+
+The following `sed` script helps adjust your code to the renaming (on macOS,
+replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
+Note that the script is not idempotent, do not run it twice.
+```
+sed -i -E -f- $(find theories -name "*.v") <<EOF
+# excl_auth
+s/\bexcl_auth_frag_validN_op_1_l\b/excl_auth_frag_op_validN/g
+s/\bexcl_auth_frag_valid_op_1_l\b/excl_auth_frag_op_valid/g
+EOF
+```
 
 ## Iris 3.6.0 (2022-01-22)
 
