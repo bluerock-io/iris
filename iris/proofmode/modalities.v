@@ -159,29 +159,25 @@ Section modality1.
     modality_spatial_action M = MIEnvId → P ⊢ M P.
   Proof. destruct M as [??? []]; naive_solver. Qed.
 
-  Lemma modality_intuitionistic_forall_big_and C Γ :
+  Lemma modality_intuitionistic_forall_big_and C Ps :
     modality_intuitionistic_action M = MIEnvForall C →
-    Forall C (env_to_list Γ) →
-    <affine> [∧] (env_map_pers Γ) ⊢ M (<affine> [∧] (env_map_pers Γ)).
+    Forall C Ps →
+    (<affine> [∧ list] P ∈ Ps, <pers> P) ⊢ M (<affine> [∧ list] P ∈ Ps, <pers> P).
   Proof.
-    induction Γ as [|Γ IH i P]; intros ? HΓ; simpl.
-    - rewrite affinely_True_emp. apply modality_emp.
-    - inversion HΓ; subst. clear HΓ.
-      rewrite affinely_and -modality_and_forall //. apply and_mono.
-      + by eapply modality_intuitionistic_forall.
-      + eauto.
+    induction 2 as [|P Ps ? _ IH]; simpl.
+    { rewrite affinely_True_emp. apply modality_emp. }
+    rewrite affinely_and -modality_and_forall //. apply and_mono, IH.
+    by eapply modality_intuitionistic_forall.
   Qed.
-  Lemma modality_intuitionistic_id_big_and Γ :
+  Lemma modality_intuitionistic_id_big_and Ps :
     modality_intuitionistic_action M = MIEnvId →
-    <affine> [∧] (env_map_pers Γ) ⊢ M (<affine> [∧] (env_map_pers Γ)).
+    (<affine> [∧ list] P ∈ Ps, <pers> P) ⊢ M (<affine> [∧ list] P ∈ Ps, <pers> P).
   Proof.
-    intros. induction Γ as [|Γ IH i P]; simpl.
-    - rewrite affinely_True_emp. apply modality_emp.
-    - rewrite affinely_and {1}IH. clear IH.
-      rewrite persistent_and_affinely_sep_l_1.
-      rewrite {1}[(<affine> <pers> P)%I]modality_intuitionistic_id //.
-      rewrite affinely_elim modality_sep. f_equiv.
-      apply: sep_and.
+    intros. induction Ps as [|P Ps IH]; simpl.
+    { rewrite affinely_True_emp. apply modality_emp. }
+    rewrite -affinely_and_r. rewrite {1}IH {IH}.
+    rewrite !persistently_and_intuitionistically_sep_l.
+    by rewrite {1}(modality_intuitionistic_id P) // modality_sep.
   Qed.
   Lemma modality_spatial_forall_big_sep C Ps :
     modality_spatial_action M = MIEnvForall C →

@@ -464,7 +464,8 @@ Section proof_mode.
   Proof.
     intros ? HΓs ->. rewrite envs_entails_unseal of_envs_eq' /atomic_acc /=.
     setoid_rewrite env_to_prop_sound =>HAU.
-    apply aupd_intro; [apply _..|]. done.
+    rewrite bi.persistent_and_sep_assoc. apply: aupd_intro.
+    by rewrite -bi.persistent_and_sep_assoc.
   Qed.
 End proof_mode.
 
