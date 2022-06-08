@@ -1014,6 +1014,13 @@ Section and_list.
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_and PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
 
+  Global Instance big_andL_nil_absorbing Φ :
+    Absorbing ([∧ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_andL_absorbing Φ l :
+    (∀ k x, Absorbing (Φ k x)) → Absorbing ([∧ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
   Global Instance big_andL_nil_persistent Φ :
     Persistent ([∧ list] k↦x ∈ [], Φ k x).
   Proof. simpl; apply _. Qed.
