@@ -6,3 +6,5 @@ s/subgoal/goal/g
 /[0-9]* focused goals\?$/{N;s/\n */ /;}
 # locations in Fail added in https://github.com/coq/coq/pull/15174
 /^File/d
+# extra space removed in https://github.com/coq/coq/pull/16130
+s/= $/=/
