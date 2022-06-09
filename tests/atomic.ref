@@ -1,3 +1,5 @@
+The command has indeed failed with message:
+Tactic failure: iAuIntro: spacial context empty, and emp not laterable.
 1 goal
   
   Σ : gFunctors
