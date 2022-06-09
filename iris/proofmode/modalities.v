@@ -160,12 +160,23 @@ Section modality1.
 
   Lemma modality_intuitionistic_forall_big_and C Ps :
     modality_intuitionistic_action M = MIEnvForall C →
-    Forall C Ps → □ [∧] Ps ⊢ M (□ [∧] Ps).
+    Forall C Ps →
+    (<affine> [∧ list] P ∈ Ps, <pers> P) ⊢ M (<affine> [∧ list] P ∈ Ps, <pers> P).
   Proof.
     induction 2 as [|P Ps ? _ IH]; simpl.
-    - by rewrite intuitionistically_True_emp -modality_emp.
-    - rewrite intuitionistically_and -modality_and_forall // -IH.
-      by rewrite {1}(modality_intuitionistic_forall _ P).
+    { rewrite affinely_True_emp. apply modality_emp. }
+    rewrite affinely_and -modality_and_forall //. apply and_mono, IH.
+    by eapply modality_intuitionistic_forall.
+  Qed.
+  Lemma modality_intuitionistic_id_big_and Ps :
+    modality_intuitionistic_action M = MIEnvId →
+    (<affine> [∧ list] P ∈ Ps, <pers> P) ⊢ M (<affine> [∧ list] P ∈ Ps, <pers> P).
+  Proof.
+    intros. induction Ps as [|P Ps IH]; simpl.
+    { rewrite affinely_True_emp. apply modality_emp. }
+    rewrite -affinely_and_r. rewrite {1}IH {IH}.
+    rewrite !persistently_and_intuitionistically_sep_l.
+    by rewrite {1}(modality_intuitionistic_id P) // modality_sep.
   Qed.
   Lemma modality_spatial_forall_big_sep C Ps :
     modality_spatial_action M = MIEnvForall C →

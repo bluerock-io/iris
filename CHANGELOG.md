@@ -44,6 +44,10 @@ lemma.
   `Forall2` (for example, for trees with finite branching).
 * Change `iRevert` of a pure hypothesis to generate a magic wand instead of an
   implication.
+* Change `of_envs` such that when the persistent context is empty, the
+  persistence modality no longer appears at all. This is a step towards using
+  the proofmode in logics without a persistence modality.
+  The lemma `of_envs_alt` shows equivalence with the old version.
 
 **Changes in `base_logic`:**
 

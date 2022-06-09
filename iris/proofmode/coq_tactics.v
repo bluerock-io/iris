@@ -17,7 +17,7 @@ Implicit Types P Q : PROP.
 Lemma tac_start P : envs_entails (Envs Enil Enil 1) P → ⊢ P.
 Proof.
   rewrite envs_entails_unseal !of_envs_eq /=.
-  rewrite intuitionistically_True_emp left_id=><-.
+  rewrite left_id=><-.
   apply and_intro=> //. apply pure_intro; repeat constructor.
 Qed.
 
@@ -29,10 +29,13 @@ Lemma tac_stop Δ P :
    end ⊢ P) →
   envs_entails Δ P.
 Proof.
-  rewrite envs_entails_unseal !of_envs_eq. intros <-.
-  rewrite and_elim_r -env_to_prop_and_sound -env_to_prop_sound.
-  destruct (env_intuitionistic Δ), (env_spatial Δ);
-    by rewrite /= ?intuitionistically_True_emp ?left_id ?right_id.
+  rewrite envs_entails_unseal !of_envs_eq. intros <-. rewrite and_elim_r.
+  destruct (env_intuitionistic Δ).
+  { rewrite env_to_prop_sound and_elim_r //. }
+  cbv zeta. destruct (env_spatial Δ).
+  - rewrite env_to_prop_and_pers_sound. rewrite comm. done.
+  - rewrite env_to_prop_and_pers_sound env_to_prop_sound.
+    rewrite /bi_affinely [(emp ∧ _)%I]comm -persistent_and_sep_assoc left_id //.
 Qed.
 
 (** * Basic rules *)
@@ -652,7 +655,8 @@ Lemma tac_and_destruct Δ i p j1 j2 P P1 P2 Q :
 Proof.
   destruct (envs_simple_replace _ _ _ _) as [Δ'|] eqn:Hrep; last done.
   rewrite envs_entails_unseal. intros. rewrite envs_simple_replace_sound //=. destruct p.
-  - by rewrite (into_and _ P) /= right_id -(comm _ P1) wand_elim_r.
+  - rewrite (into_and _ P) /= right_id (comm _ P1).
+    rewrite -persistently_and wand_elim_r //.
   - by rewrite /= (into_sep P) right_id -(comm _ P1) wand_elim_r.
 Qed.
 
@@ -812,7 +816,7 @@ Lemma tac_accu Δ P :
   envs_entails Δ P.
 Proof.
   rewrite envs_entails_unseal=><-.
-  rewrite env_to_prop_sound !of_envs_eq and_elim_r sep_elim_r //.
+  rewrite env_to_prop_sound !of_envs_eq and_elim_r and_elim_r //.
 Qed.
 
 (** * Invariants *)
@@ -918,7 +922,7 @@ Class TransformIntuitionisticEnv {PROP1 PROP2} (M : modality PROP1 PROP2)
   transform_intuitionistic_env :
     (∀ P Q, C P Q → □ P ⊢ M (□ Q)) →
     (∀ P Q, M P ∧ M Q ⊢ M (P ∧ Q)) →
-    □ ([∧] Γin) ⊢ M (□ ([∧] Γout));
+    <affine> env_and_persistently Γin ⊢ M (<affine> env_and_persistently Γout);
   transform_intuitionistic_env_wf : env_wf Γin → env_wf Γout;
   transform_intuitionistic_env_dom i : Γin !! i = None → Γout !! i = None;
 }.
@@ -1015,7 +1019,7 @@ Section tac_modal_intro.
   Global Instance transform_intuitionistic_env_nil C : TransformIntuitionisticEnv M C Enil Enil.
   Proof.
     split; [|eauto using Enil_wf|done]=> /= ??.
-    rewrite !intuitionistically_True_emp -modality_emp //.
+    rewrite !affinely_True_emp -modality_emp //.
   Qed.
   Global Instance transform_intuitionistic_env_snoc (C : PROP2 → PROP1 → Prop) Γ Γ' i P Q :
     C P Q →
@@ -1023,8 +1027,11 @@ Section tac_modal_intro.
     TransformIntuitionisticEnv M C (Esnoc Γ i P) (Esnoc Γ' i Q).
   Proof.
     intros ? [HΓ Hwf Hdom]; split; simpl.
-    - intros HC Hand. rewrite intuitionistically_and HC // HΓ //.
-      by rewrite Hand -intuitionistically_and.
+    - intros HC Hand. rewrite -Hand. apply and_intro.
+      + rewrite -modality_emp affinely_elim_emp. done.
+      + rewrite affinely_and HΓ //.
+        rewrite /bi_intuitionistically in HC. rewrite HC //.
+        rewrite !affinely_elim. eauto.
     - inversion 1; constructor; auto.
     - intros j. destruct (ident_beq _ _); naive_solver.
   Qed.
@@ -1090,34 +1097,32 @@ Section tac_modal_intro.
         assert (∀ i, Γs !! i = None → Γs' !! i = None).
         { destruct HΓs as [| |?????? []| |]; eauto. }
         naive_solver. }
-    assert (□ [∧] Γp ⊢ M (□ [∧] Γp'))%I as HMp.
-    { remember (modality_intuitionistic_action M).
+    trans (<absorb>?fi Q')%I; last first.
+    { destruct fi; last done. apply: absorbing. }
+    simpl. rewrite -(HQ' Hφ). rewrite -HQ pure_True // left_id. clear HQ' HQ.
+    rewrite !persistent_and_affinely_sep_l.
+    rewrite -modality_sep absorbingly_if_sep. f_equiv.
+    - rewrite -absorbingly_if_intro.
+      remember (modality_intuitionistic_action M).
       destruct HΓp as [? M|M C Γp ?%TCForall_Forall|? M C Γp Γp' []|? M Γp|M Γp]; simpl.
-      - rewrite {1}intuitionistically_elim_emp (modality_emp M)
-          intuitionistically_True_emp //.
-      - eauto using modality_intuitionistic_forall_big_and.
-      - eauto using modality_intuitionistic_transform,
+      + rewrite !affinely_True_emp. apply modality_emp.
+      + eauto using modality_intuitionistic_forall_big_and.
+      + eauto using modality_intuitionistic_transform,
           modality_and_transform.
-      - by rewrite {1}intuitionistically_elim_emp (modality_emp M)
-          intuitionistically_True_emp.
-      - eauto using modality_intuitionistic_id. }
-    move: HQ'; rewrite -HQ pure_True // left_id HMp=> HQ' {HQ Hwf HMp}.
-    remember (modality_spatial_action M).
-    destruct HΓs as [? M|M C Γs ?%TCForall_Forall|? M C Γs Γs' fi []|? M Γs|M Γs]; simpl.
-    - by rewrite -HQ' //= !right_id.
-    - rewrite -HQ' // {1}(modality_spatial_forall_big_sep _ _ Γs) //.
-      by rewrite modality_sep.
-    - destruct fi.
-      + rewrite -(absorbing Q') /bi_absorbingly -HQ' // (comm _ True%I).
-        rewrite -modality_sep -assoc. apply sep_mono_r.
-        eauto using modality_spatial_transform.
-      + rewrite -HQ' // -modality_sep. apply sep_mono_r.
-        rewrite -(right_id emp%I bi_sep (M _)).
-        eauto using modality_spatial_transform.
-    - rewrite -HQ' //= right_id comm -{2}(modality_spatial_clear M) //.
-      by rewrite (True_intro ([∗] Γs)).
-    - rewrite -HQ' // {1}(modality_spatial_id M ([∗] Γs)) //.
-      by rewrite -modality_sep.
+      + by rewrite {1}affinely_elim_emp affinely_True_emp (modality_emp M).
+      + eauto using modality_intuitionistic_id_big_and.
+    - remember (modality_spatial_action M).
+      destruct HΓs as [? M|M C Γs ?%TCForall_Forall|? M C Γs Γs' fi []|? M Γs|M Γs]; simpl.
+      + by rewrite modality_emp.
+      + rewrite {1}(modality_spatial_forall_big_sep _ _ Γs) //.
+      + destruct fi.
+        * rewrite /= /bi_absorbingly (comm _ True%I).
+          eauto using modality_spatial_transform.
+        * rewrite /= -(right_id emp%I bi_sep (M _)).
+          eauto using modality_spatial_transform.
+      + rewrite -{1}(modality_spatial_clear M) // -modality_emp.
+        rewrite absorbingly_emp_True. apply True_intro.
+      + rewrite {1}(modality_spatial_id M ([∗] Γs)) //.
   Qed.
 End tac_modal_intro.
 
@@ -1141,7 +1146,9 @@ Proof. by split. Qed.
 Lemma into_laterN_env_sound {PROP : bi} n (Δ1 Δ2 : envs PROP) :
   MaybeIntoLaterNEnvs n Δ1 Δ2 → of_envs Δ1 ⊢ ▷^n (of_envs Δ2).
 Proof.
-  intros [[Hp ??] [Hs ??]]; rewrite !of_envs_eq /= !laterN_and !laterN_sep.
+  intros [[Hp ??] [Hs ??]]; rewrite !of_envs_eq.
+  rewrite ![(env_and_persistently _ ∧ _)%I]persistent_and_affinely_sep_l.
+  rewrite !laterN_and !laterN_sep.
   rewrite -{1}laterN_intro. apply and_mono, sep_mono.
   - apply pure_mono; destruct 1; constructor; naive_solver.
   - apply Hp; rewrite /= /MaybeIntoLaterN.
