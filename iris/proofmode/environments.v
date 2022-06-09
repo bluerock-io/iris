@@ -391,15 +391,19 @@ Lemma of_envs_eq Δ :
     env_and_persistently (env_intuitionistic Δ) ∧
     [∗] env_spatial Δ)%I.
 Proof. done. Qed.
-(** An environment is a ∗ of something intuitionistic and the spatial environment.
-TODO: Can we define it as such? *)
-Lemma of_envs_eq' Δ :
-  of_envs Δ ⊣⊢
-  ⌜envs_wf Δ⌝ ∧ <affine> env_and_persistently (env_intuitionistic Δ) ∗ [∗] env_spatial Δ.
+
+Lemma of_envs'_alt Γp Γs :
+  of_envs' Γp Γs ⊣⊢ ⌜envs_wf' Γp Γs⌝ ∧ □ [∧] Γp ∗ [∗] Γs.
 Proof.
-  rewrite of_envs_eq [(env_and_persistently _ ∧ _)%I]persistent_and_affinely_sep_l.
-  rewrite persistent_and_sep_assoc //.
+  rewrite /of_envs'. f_equiv.
+  rewrite -persistent_and_affinely_sep_l. f_equiv.
+  clear. induction Γp as [|Γp IH ? Q]; simpl.
+  { apply (anti_symm (⊢)); last by apply True_intro. apply persistently_True. }
+  rewrite IH persistently_and. done.
 Qed.
+Lemma of_envs_alt Δ :
+  of_envs Δ ⊣⊢ ⌜envs_wf Δ⌝ ∧ □ [∧] env_intuitionistic Δ ∗ [∗] env_spatial Δ.
+Proof. rewrite /of_envs of_envs'_alt //. Qed.
 
 Global Instance envs_Forall2_refl (R : relation PROP) :
   Reflexive R → Reflexive (envs_Forall2 R).

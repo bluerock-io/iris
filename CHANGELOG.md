@@ -47,6 +47,7 @@ lemma.
 * Change `of_envs` such that when the persistent context is empty, the
   persistence modality no longer appears at all. This is a step towards using
   the proofmode in logics without a persistence modality.
+  The lemma `of_envs_alt` shows equivalence with the old version.
 
 **Changes in `base_logic`:**
 

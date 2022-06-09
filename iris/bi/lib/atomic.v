@@ -274,15 +274,15 @@ Section lemmas.
   Qed.
 
   Lemma aupd_intro P Q α β Eo Ei Φ :
-    Affine P → Persistent P → Laterable Q →
-    (P ∗ Q -∗ atomic_acc Eo Ei α Q β Φ) →
-    P ∗ Q -∗ atomic_update Eo Ei α β Φ.
+    Absorbing P → Persistent P → Laterable Q →
+    (P ∧ Q -∗ atomic_acc Eo Ei α Q β Φ) →
+    P ∧ Q -∗ atomic_update Eo Ei α β Φ.
   Proof.
     rewrite atomic_update_unseal {1}/atomic_update_def /=.
     iIntros (??? HAU) "[#HP HQ]".
     iApply (greatest_fixpoint_coiter _ (λ _, Q)); last done. iIntros "!>" ([]) "HQ".
     iApply (make_laterable_intro Q with "[] HQ"). iIntros "!> HQ".
-    iApply HAU. by iFrame.
+    iApply HAU. iSplit; by iFrame.
   Qed.
 
   Lemma aacc_intro Eo Ei α P β Φ :
@@ -462,10 +462,9 @@ Section proof_mode.
     envs_entails (Envs Γp Γs n) (atomic_acc Eo Ei α P β Φ) →
     envs_entails (Envs Γp Γs n) (atomic_update Eo Ei α β Φ).
   Proof.
-    intros ? HΓs ->. rewrite envs_entails_unseal of_envs_eq' /atomic_acc /=.
+    intros ? HΓs ->. rewrite envs_entails_unseal of_envs_eq /atomic_acc /=.
     setoid_rewrite env_to_prop_sound =>HAU.
-    rewrite bi.persistent_and_sep_assoc. apply: aupd_intro.
-    by rewrite -bi.persistent_and_sep_assoc.
+    rewrite assoc. apply: aupd_intro. by rewrite -assoc.
   Qed.
 End proof_mode.
 
