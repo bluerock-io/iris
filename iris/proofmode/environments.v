@@ -248,10 +248,10 @@ Record envs_wf' {PROP : bi} (Γp Γs : env PROP) := {
 Definition envs_wf {PROP : bi} (Δ : envs PROP) :=
   envs_wf' (env_intuitionistic Δ) (env_spatial Δ).
 
-Notation env_and_pers Γ := ([∧ list] P ∈ env_to_list Γ, <pers> P)%I.
+Notation env_and_persistently Γ := ([∧ list] P ∈ env_to_list Γ, <pers> P)%I.
 
 Definition of_envs' {PROP : bi} (Γp Γs : env PROP) : PROP :=
-  (⌜envs_wf' Γp Γs⌝ ∧ env_and_pers Γp ∧ [∗] Γs)%I.
+  (⌜envs_wf' Γp Γs⌝ ∧ env_and_persistently Γp ∧ [∗] Γs)%I.
 Global Instance: Params (@of_envs') 1 := {}.
 Definition of_envs {PROP : bi} (Δ : envs PROP) : PROP :=
   of_envs' (env_intuitionistic Δ) (env_spatial Δ).
@@ -388,16 +388,16 @@ Implicit Types P Q : PROP.
 Lemma of_envs_eq Δ :
   of_envs Δ =
   (⌜envs_wf Δ⌝ ∧
-    env_and_pers (env_intuitionistic Δ) ∧
+    env_and_persistently (env_intuitionistic Δ) ∧
     [∗] env_spatial Δ)%I.
 Proof. done. Qed.
 (** An environment is a ∗ of something intuitionistic and the spatial environment.
 TODO: Can we define it as such? *)
 Lemma of_envs_eq' Δ :
   of_envs Δ ⊣⊢
-  ⌜envs_wf Δ⌝ ∧ <affine> env_and_pers (env_intuitionistic Δ) ∗ [∗] env_spatial Δ.
+  ⌜envs_wf Δ⌝ ∧ <affine> env_and_persistently (env_intuitionistic Δ) ∗ [∗] env_spatial Δ.
 Proof.
-  rewrite of_envs_eq [(env_and_pers _ ∧ _)%I]persistent_and_affinely_sep_l.
+  rewrite of_envs_eq [(env_and_persistently _ ∧ _)%I]persistent_and_affinely_sep_l.
   rewrite persistent_and_sep_assoc //.
 Qed.
 
@@ -600,7 +600,7 @@ Qed.
 
 Lemma envs_app_sound Δ Δ' p Γ :
   envs_app p Γ Δ = Some Δ' →
-  of_envs Δ ⊢ (if p then <affine> env_and_pers Γ else [∗] Γ) -∗ of_envs Δ'.
+  of_envs Δ ⊢ (if p then <affine> env_and_persistently Γ else [∗] Γ) -∗ of_envs Δ'.
 Proof.
   rewrite !of_envs_eq /envs_app=> ?; apply pure_elim_l=> Hwf.
   destruct Δ as [Γp Γs], p; simplify_eq/=.
@@ -632,7 +632,7 @@ Proof. move=> /envs_app_sound. destruct p; by rewrite /= right_id. Qed.
 Lemma envs_simple_replace_sound' Δ Δ' i p Γ :
   envs_simple_replace i p Γ Δ = Some Δ' →
   of_envs (envs_delete true i p Δ) ⊢
-  (if p then <affine> env_and_pers Γ else [∗] Γ) -∗ of_envs Δ'.
+  (if p then <affine> env_and_persistently Γ else [∗] Γ) -∗ of_envs Δ'.
 Proof.
   rewrite /envs_simple_replace /envs_delete !of_envs_eq=> ?.
   apply pure_elim_l=> Hwf. destruct Δ as [Γp Γs], p; simplify_eq/=.
@@ -666,13 +666,13 @@ Proof. move=> /envs_simple_replace_sound'. destruct p; by rewrite /= right_id. Q
 
 Lemma envs_simple_replace_sound Δ Δ' i p P Γ :
   envs_lookup i Δ = Some (p,P) → envs_simple_replace i p Γ Δ = Some Δ' →
-  of_envs Δ ⊢ □?p P ∗ ((if p then <affine> env_and_pers Γ else [∗] Γ) -∗ of_envs Δ').
+  of_envs Δ ⊢ □?p P ∗ ((if p then <affine> env_and_persistently Γ else [∗] Γ) -∗ of_envs Δ').
 Proof. intros. by rewrite envs_lookup_sound// envs_simple_replace_sound'//. Qed.
 
 Lemma envs_simple_replace_maybe_sound Δ Δ' i p P Γ :
   envs_lookup i Δ = Some (p,P) → envs_simple_replace i p Γ Δ = Some Δ' →
   of_envs Δ ⊢
-  □?p P ∗ (((if p then <affine> env_and_pers Γ else [∗] Γ) -∗ of_envs Δ') ∧
+  □?p P ∗ (((if p then <affine> env_and_persistently Γ else [∗] Γ) -∗ of_envs Δ') ∧
            (□?p P -∗ of_envs Δ)).
 Proof.
   intros. apply pure_elim with (envs_wf Δ).
@@ -693,7 +693,7 @@ Qed.
 Lemma envs_replace_sound' Δ Δ' i p q Γ :
   envs_replace i p q Γ Δ = Some Δ' →
   of_envs (envs_delete true i p Δ) ⊢
-  (if q then <affine> env_and_pers Γ else [∗] Γ) -∗ of_envs Δ'.
+  (if q then <affine> env_and_persistently Γ else [∗] Γ) -∗ of_envs Δ'.
 Proof.
   rewrite /envs_replace; destruct (beq _ _) eqn:Hpq.
   - apply eqb_prop in Hpq as ->. apply envs_simple_replace_sound'.
@@ -707,7 +707,7 @@ Proof. move=> /envs_replace_sound'. destruct q; by rewrite /= ?right_id. Qed.
 
 Lemma envs_replace_sound Δ Δ' i p q P Γ :
   envs_lookup i Δ = Some (p,P) → envs_replace i p q Γ Δ = Some Δ' →
-  of_envs Δ ⊢ □?p P ∗ ((if q then <affine> env_and_pers Γ else [∗] Γ) -∗ of_envs Δ').
+  of_envs Δ ⊢ □?p P ∗ ((if q then <affine> env_and_persistently Γ else [∗] Γ) -∗ of_envs Δ').
 Proof. intros. by rewrite envs_lookup_sound// envs_replace_sound'//. Qed.
 
 Lemma envs_replace_singleton_sound Δ Δ' i p q P j Q :
@@ -809,7 +809,7 @@ Proof.
 Qed.
 
 Lemma env_to_prop_and_pers_sound Γ i P :
-  □ env_to_prop_and (Esnoc Γ i P) ⊣⊢ <affine> env_and_pers (Esnoc Γ i P).
+  □ env_to_prop_and (Esnoc Γ i P) ⊣⊢ <affine> env_and_persistently (Esnoc Γ i P).
 Proof.
   revert P. induction Γ as [|Γ IH ? Q]=>P; simpl.
   - by rewrite right_id.

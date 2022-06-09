@@ -922,7 +922,7 @@ Class TransformIntuitionisticEnv {PROP1 PROP2} (M : modality PROP1 PROP2)
   transform_intuitionistic_env :
     (∀ P Q, C P Q → □ P ⊢ M (□ Q)) →
     (∀ P Q, M P ∧ M Q ⊢ M (P ∧ Q)) →
-    <affine> env_and_pers Γin ⊢ M (<affine> env_and_pers Γout);
+    <affine> env_and_persistently Γin ⊢ M (<affine> env_and_persistently Γout);
   transform_intuitionistic_env_wf : env_wf Γin → env_wf Γout;
   transform_intuitionistic_env_dom i : Γin !! i = None → Γout !! i = None;
 }.
@@ -1147,7 +1147,7 @@ Lemma into_laterN_env_sound {PROP : bi} n (Δ1 Δ2 : envs PROP) :
   MaybeIntoLaterNEnvs n Δ1 Δ2 → of_envs Δ1 ⊢ ▷^n (of_envs Δ2).
 Proof.
   intros [[Hp ??] [Hs ??]]; rewrite !of_envs_eq.
-  rewrite ![(env_and_pers _ ∧ _)%I]persistent_and_affinely_sep_l.
+  rewrite ![(env_and_persistently _ ∧ _)%I]persistent_and_affinely_sep_l.
   rewrite !laterN_and !laterN_sep.
   rewrite -{1}laterN_intro. apply and_mono, sep_mono.
   - apply pure_mono; destruct 1; constructor; naive_solver.

@@ -1,6 +1,5 @@
 From stdpp Require Import namespaces.
 From iris.bi Require Export bi.
-From iris.proofmode Require Export environments.
 From iris.prelude Require Import options.
 Import bi.
 
