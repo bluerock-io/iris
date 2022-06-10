@@ -456,15 +456,18 @@ Section proof_mode.
   Proof. rewrite make_laterable_id_eq. done. Qed.
 
   Lemma tac_aupd_intro Γp Γs n α β Eo Ei Φ P :
-    Laterable (PROP:=PROP) emp →
+    match Γs with Enil => Laterable (PROP:=PROP) emp | _ => TCTrue end →
     TCForall Laterable (env_to_list Γs) →
     P = env_to_prop Γs →
     envs_entails (Envs Γp Γs n) (atomic_acc Eo Ei α P β Φ) →
     envs_entails (Envs Γp Γs n) (atomic_update Eo Ei α β Φ).
   Proof.
-    intros ? HΓs ->. rewrite envs_entails_unseal of_envs_eq /atomic_acc /=.
+    intros Hemp HΓs ->. rewrite envs_entails_unseal of_envs_eq /atomic_acc /=.
     setoid_rewrite env_to_prop_sound =>HAU.
-    rewrite assoc. apply: aupd_intro. by rewrite -assoc.
+    rewrite assoc. apply: aupd_intro.
+    { destruct Γs as [|Γs i P]; first done.
+      inversion HΓs. simpl. apply big_sep_sepL_laterable; done. }
+    by rewrite -assoc.
   Qed.
 End proof_mode.
 
@@ -475,18 +478,23 @@ Local Ltac iMakeLaterable :=
   iApply make_laterable_id_elim; iModIntro.
 
 Tactic Notation "iAuIntro" :=
-  iMakeLaterable; notypeclasses refine (tac_aupd_intro _ _ _ _ _ _ _ _ _ _ _ _ _); [
-    iSolveTC || fail "iAuIntro: emp not laterable"
-  | iSolveTC || fail "iAuIntro: context not laterable; this should not happen, please report a bug"
-  | (* P = ...: make the P pretty *) pm_reflexivity
-  | (* the new proof mode goal *) ].
+  iMakeLaterable;
+  match goal with
+  | |- envs_entails (Envs ?Γp ?Γs _) (atomic_update _ _ _ _ ?Φ) =>
+      notypeclasses refine (tac_aupd_intro Γp Γs _ _ _ _ _ Φ _ _ _ _ _); [
+        (* The [match Γs] precondition *)
+        iSolveTC || fail "iAuIntro: spacial context empty, and emp not laterable"
+      | iSolveTC || fail "iAuIntro: context not laterable; this should not happen, please report a bug"
+      | (* P = ...: make the P pretty *) pm_reflexivity
+      | (* the new proof mode goal *) ]
+  end.
 
 (** Tactic to apply [aacc_intro]. This only really works well when you have
 [α ?] already and pass it as [iAaccIntro with "Hα"]. Doing
 [rewrite /atomic_acc /=] is an entirely legitimate alternative. *)
 Tactic Notation "iAaccIntro" "with" constr(sel) :=
   iStartProof; lazymatch goal with
-  | |- environments.envs_entails _ (@atomic_acc ?PROP ?H ?TA ?TB ?Eo ?Ei ?α ?P ?β ?Φ) =>
+  | |- envs_entails _ (@atomic_acc ?PROP ?H ?TA ?TB ?Eo ?Ei ?α ?P ?β ?Φ) =>
     iApply (@aacc_intro PROP H TA TB Eo Ei α P β Φ with sel);
     first try solve_ndisj; last iSplit
   | _ => fail "iAAccIntro: Goal is not an atomic accessor"

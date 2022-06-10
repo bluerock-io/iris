@@ -6,7 +6,7 @@ From iris.prelude Require Import options.
 
 Unset Mangle Names.
 
-Section definition.
+Section general_bi_tests.
   Context `{BiFUpd PROP} {TA TB : tele} (Eo Ei : coPset).
 
   (** We can quantify over telescopes *inside* Iris and use them with atomic
@@ -14,7 +14,17 @@ Section definition.
   Definition AU_tele_quantify_iris : Prop :=
     ⊢ ∀ (TA TB : tele) (α : TA → PROP) (β Φ : TA → TB → PROP),
         atomic_update Eo Ei α β Φ.
-End definition.
+
+  (** iAuIntro works with non-empty laterable spacial context without any further
+  assumptions. *)
+  Lemma au_intro_1 (P : PROP) `{!Laterable P} (α : TA → PROP) (β Φ : TA → TB → PROP) :
+    P -∗ atomic_update Eo Ei α β Φ.
+  Proof. iIntros "HP". iAuIntro. Abort.
+  (** But in an empty context, it fails, since [emp] now needs to be laterable. *)
+  Lemma au_intro_2 (α : TA → PROP) (β Φ : TA → TB → PROP) :
+    ⊢ atomic_update Eo Ei α β Φ.
+  Proof. Fail iAuIntro. Abort.
+End general_bi_tests.
 
 Section tests.
   Context `{!heapGS Σ} {aheap: atomic_heap Σ}.

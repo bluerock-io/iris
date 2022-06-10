@@ -88,11 +88,25 @@ Section instances.
     iExists Q. iIntros "{$HQ} !> HQ". iExists x. by iApply "HΦ".
   Qed.
 
+  Lemma big_sep_sepL_laterable Q Ps :
+    Laterable Q →
+    TCForall Laterable Ps →
+    Laterable (Q ∗ [∗] Ps).
+  Proof.
+    intros HQ HPs. revert Q HQ. induction HPs as [|P Ps ?? IH]; intros Q HQ.
+    { simpl. rewrite right_id. done. }
+    simpl. rewrite assoc. apply IH; by apply _.
+  Qed.
+
   Global Instance big_sepL_laterable Ps :
     Laterable (PROP:=PROP) emp →
     TCForall Laterable Ps →
     Laterable ([∗] Ps).
-  Proof. induction 2; simpl; apply _. Qed.
+  Proof.
+    intros. assert (Laterable (emp ∗ [∗] Ps)) as Hlater.
+    { apply big_sep_sepL_laterable; done. }
+    rewrite ->left_id in Hlater; last by apply _. done.
+  Qed.
 
   (** A wrapper to obtain a weaker, laterable form of any assertion.
      Alternatively: the modality corresponding to [Laterable].
