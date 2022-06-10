@@ -273,6 +273,8 @@ Section lemmas.
     apply _.
   Qed.
 
+  (** The introduction lemma for atomic_update. This should usually not be used
+  directly; use the [iAuIntro] tactic instead. *)
   Lemma aupd_intro P Q α β Eo Ei Φ :
     Absorbing P → Persistent P → Laterable Q →
     (P ∧ Q -∗ atomic_acc Eo Ei α Q β Φ) →
