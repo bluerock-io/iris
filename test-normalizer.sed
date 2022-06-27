@@ -8,3 +8,5 @@ s/subgoal/goal/g
 /^File/d
 # extra space removed in https://github.com/coq/coq/pull/16130
 s/= $/=/
+# coq/coq#16208 (this regex deletes an empty line followed by the "uses section variable" line)
+/^$/{N;/.* uses section variable.*/d}
