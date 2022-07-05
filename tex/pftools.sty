@@ -11,6 +11,12 @@
 \RequirePackage{xparse}
 \RequirePackage{xcolor}
 
+%% COLOR DEFINITIONS
+\definecolor{rescolor}{HTML}{005504}
+\definecolor{prescolor}{HTML}{d16100} % "persistent" resources. also good: b35f00, maybe: c84e00
+\definecolor{codecolor}{HTML}{2767c0}
+
+
 %% Biimplication inference rules
 % \biimp above below
 % The double lines obtained by the simpler
@@ -38,7 +44,7 @@
 % \textlabel label text: Print and label text.
 \newcommand*{\textlabel}[2]{{#2}\savelabel{#1}{\detokenize{#2}}} % added \detokenize to make "Löb" title work
 % \rulenamestyle visible
-\newcommand*{\rulenamestyle}[1]{{\TirNameStyle{#1}}}	% From mathpartir.sty.
+\newcommand*{\rulenamestyle}[1]{{\textsc{#1}}}	% From mathpartir.sty.
 % \ruleref [discharged] lab
 \def\optionaldischarge#1{%
 	\if\relax\detokenize{#1}\relax\else\ensuremath{^{#1}}\fi}
@@ -48,17 +54,18 @@
 \newcommand*{\rulename}[1]{\rulenamestyle{\textlabel{#1}{#1}}}
 % \inferhref name lab premise conclusion
 \newcommand*{\inferhref}[4]{%
-	\inferrule*[lab=\textlabel{#2}{#1}]{#3}{#4}%
+	\inferrule*[lab=\textlabel{#2}{#1},vcenter]{#3}{#4}%
 }
 % \infernH name premise conclusion, if name a valid label.
 \newcommand*{\inferH}[3]{\inferhref{#1}{#1}{#2}{#3}}
-\newcommand*{\axiom}[1]{\infer{}{#1}}
+\newcommand*{\axiom}[2][]{\infer[#1]{}{#2}}
 \newcommand*{\axiomhref}[3]{\inferhref{#1}{#2}{}{#3}}
 \newcommand*{\axiomH}[2]{\inferH{#1}{}{#2}}
+\newcommand*{\axiomname}[2]{\inferrule*[lab=#1]{}{#2}}
 \newcommand*{\inferhrefB}[4]{{\BIIMP\inferhref{#1}{#2}{#3}{#4}}}
 \newcommand*{\inferB}[3][]{{\BIIMP\infer[#1]{#2}{#3}}}
 \newcommand*{\inferHB}[3]{{\BIIMP\inferH{#1}{#2}{#3}}}
-\newcommand*{\taghref}[2]{\label{#2}\tag{\rulenamestyle{#1}}}
+\newcommand*{\taghref}[2]{\label{#2}\tag{\textsc{#1}}}
 \newcommand*{\tagH}[1]{\taghref{#1}{#1}}
 
 % The sanity checks in \lbind and \llabel
@@ -69,10 +76,10 @@
 
 \newcommand*{\tagL}[1]{\lbind{#1}\tag*{\llabel{#1}}}
 
-\newcommand*\ind[1][\quad]{#1\TAB=\TAB+}
+\newcommand*\ind[1][\quad\quad]{#1\TAB=\TAB+}
 \newcommand*\unind{\TAB-}
 
-\newcommand\IND[1][\quad]{\\*\ind[#1]}
+\newcommand\IND[1][\quad\quad]{\\*\ind[#1]}
 \newcommand\UNIND{\unind \\}
 
 % Attribution: http://tex.stackexchange.com/questions/119473/tabbing-and-line-wrapping
@@ -83,35 +90,39 @@
 	\addtolength\pf@width{-\dimen\@curtab}%
 	\parbox[t]{\pf@width}{\nobelowdisplayskip{#1}\ifhmode\strut\fi}}
 
-\colorlet{rescolor}{rgb:red,0;green,30;blue,55}
-\colorlet{ctxcolor}{black}
-\colorlet{codecolor}{rgb:red,76;green,177;blue,36}
-
-\newcommand*\res[1]{{\color{rescolor}\ensuremath{#1}}}
+% \res overwrites \langkw to not change the color
+\newcommand*\res[1]{{\makeatletter\@namedef{langkw}##1{\textlang{##1}}\makeatother%
+      \color{rescolor}\ensuremath{#1}}}
 %When \left\{ … \right\} looks ugly, remember Dave says you want \bracket.
+%2020-05-08 RJ: actually this looks much better than \bracket... (switching triples to \left...\right now, too)
 \NewDocumentCommand{\RES}{s m O{}}{%
-	$\displaystyle{{\left\{\res{%
+	\ensuremath{\displaystyle{\res{{\left\{%
 				\IfBooleanTF{#1}{\begin{inbox}[l]#2\end{inbox}}{#2}%
-			}\right\}}_{#3}}$}
+			\right\}}_{#3}}}}}
 
 \NewDocumentCommand{\ARES}{m O{}}{%
 	${\displaystyle{\bracket\langle\rangle{\color{rescolor}{#1}}}_{#2}}$}
+\newcommand*{\COMMENT}[1]{\text{#1}}
 
+% \res overwrites \langkw to not change the color
 \newcommand*{\CODE}[1]{%
-	${\displaystyle{\color{codecolor}#1}}$}
+	{{\makeatletter\@namedef{langkw}##1{\textlang{##1}}\makeatother%
+          \color{codecolor}\ensuremath{\displaystyle{#1}}}}}
 
-\newcommand*{\VARS}[1]{%
-	Vars: ${\color{ctxcolor}\displaystyle{#1}}$}
-\newcommand*{\CTX}[1]{%
-	Context: ${\color{ctxcolor}\displaystyle{#1}}$}
+\NewDocumentCommand{\GOAL}{s m}{%
+	\textbf{Goal:} ${\displaystyle{\res{\IfBooleanTF{#1}{\begin{inbox}[t]#2\end{inbox}}{#2}}}}$}
+% \newcommand*{\SUFF}[1]{%
+% 	Suff: ${\displaystyle{#1}}$}
 
-\newcommand*{\GOAL}[1]{%
-	Goal: ${\displaystyle{#1}}$}
-\newcommand*{\SUFF}[1]{%
-	Suff: ${\displaystyle{#1}}$}
+% \newcommand*{\PFHAVE}[1]{%
+% 	Have: ${\displaystyle{#1}}$}
 
-\newcommand*{\PFHAVE}[1]{%
-	Have: ${\displaystyle{#1}}$}
+% Persistent resources
+% (extra {...} to contain effect of \color)
+\newcommand\PRES[1]{\ensuremath{{\color{prescolor}#1}}}
+
+% Define abbreviation
+\newcommand{\ABBRV}[2]{\ensuremath{{\llabel{#1}} \spac #2}}
 
 \let\pf@origqedhere\qedhere
 \def\pf@setup{%
