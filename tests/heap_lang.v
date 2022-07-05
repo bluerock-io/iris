@@ -452,4 +452,4 @@ End error_tests.
 
 (* Test a closed proof *)
 Lemma heap_e_adequate σ : adequate NotStuck heap_e σ (λ v _, v = #2).
-Proof. eapply (heap_adequacy heapΣ)=> ?. iIntros "_". by iApply heap_e_spec. Qed.
+Proof. eapply (heap_adequacy heapΣ)=> ??. iIntros "_". by iApply heap_e_spec. Qed.

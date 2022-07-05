@@ -309,7 +309,7 @@
       {#2}_{#1}%
     }{%
       % Two masks
-      \tensor*[^{#1}]{#2}{^{#3}}
+      \tensor*[_{#1}]{#2}{_{#3}}
     }%
   }}%
 \NewDocumentCommand \vs {O{} O{}} {\vsGen[#1]{\Rrightarrow}[#2]}
@@ -329,6 +329,19 @@
 \NewDocumentCommand \upd {} {\mathop{\dispdot[-0.2ex]{\mid\kern-0.4ex\Rrightarrow\kern-0.25ex}}}
 
 \NewDocumentCommand\Acc{O{} O{} m m}{#3 \mathrel{~\vsGen[#1]{\propto}[#2]~} #4}
+
+%% Later credits
+\newcommand{\laterCredit}[1]{\text{\textsterling}\hskip 0.1em \ensuremath{#1}}
+\newcommand{\laterCreditSupply}[1]{\text{\textsterling}_{\!\bullet}\hskip 0.1em \ensuremath{#1}}
+% macro for oversetting a character with custom spacing
+% \makeatletter
+% \newcommand{\osetCharacter}[3][0ex]{%
+%   \mathrel{\mathop{#3}\limits^{
+%     \vbox to#1{\kern-2\ex@
+%     \hbox{$\scriptstyle#2$}\vss}}}}
+% \makeatother
+\newcommand{\creditUpd}{\mathop{\pvs^{\!\!\textsterling}}}
+\newcommand{\LaterCreditsFlag}{\textsf{UseLaterCredits}}
 
 
 %% Hoare Triples
