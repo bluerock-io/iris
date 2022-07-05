@@ -104,7 +104,7 @@ Proof.
   iApply (twptp_app [_] with "(IH' [//])"). by iApply "IH".
 Qed.
 
-Lemma twptp_total σ ns nt t :
+Lemma twptp_total `{!HasNoLc Σ} σ ns nt t :
   state_interp σ ns [] nt -∗ twptp t ={⊤}=∗ ▷ ⌜sn erased_step (t, σ)⌝.
 Proof.
   iIntros "Hσ Ht". iRevert (σ ns nt) "Hσ". iRevert (t) "Ht".
@@ -117,7 +117,7 @@ Qed.
 End adequacy.
 
 Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ n :
-  (∀ `{Hinv : !invGS Σ},
+  (∀ `{Hinv : !invGS Σ} `{!HasNoLc Σ},
      ⊢ |={⊤}=> ∃
          (stateI : state Λ → nat → list (observation Λ) → nat → iProp Σ)
          (** We abstract over any instance of [irisG], and thus any value of
@@ -134,9 +134,9 @@ Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ n :
   sn erased_step ([e], σ). (* i.e. ([e], σ) is strongly normalizing *)
 Proof.
   intros Hwp. apply (soundness (M:=iResUR Σ) _  1); simpl.
-  apply (fupd_plain_soundness ⊤ ⊤ _)=> Hinv.
+  apply (fupd_plain_soundness_no_lc ⊤ ⊤ _)=> Hinv HNC.
   iMod (Hwp) as (stateI num_laters_per_step fork_post stateI_mono) "[Hσ H]".
   set (iG := IrisG _ _ Hinv stateI fork_post num_laters_per_step stateI_mono).
-  iApply (@twptp_total _ _ iG _ n with "Hσ").
+  iApply (@twptp_total _ _ iG _ _ n with "Hσ").
   by iApply (@twp_twptp _ _ (IrisG _ _ Hinv _ fork_post _ _)).
 Qed.

@@ -53,6 +53,36 @@ lemma.
 
 * Make the `inG` instances for `libG` fields local, so they are only used inside
   the library that defines the `libG`.
+* Prepare for supporting later credits, by adding a resource `£ n` describing
+  ownership of `n` credits that can be eliminated at fancy updates.
+  Note that the definition of WP has not yet been updated with support for later
+  credits, so it is not yet possible to actually generate any credits.
+  To retain backwards compatibility with the interaction laws of fancy updates
+  with the plainly modality (`BiFUpdPlainly`), which are incompatible with
+  later credits, the logic is parameterized by two typeclasses, `HasLc`
+  and `HasNoLc`, that allow opting for either later credits or `BiFUpdPlainly`.
+  The soundness lemmas for the fancy update modality are available in two versions,
+  with later credits (suffix `_lc`) and without later credits (suffix `_no_lc`).
+  The lemma `step_fupdN_soundness_gen` is generic over this choice.
+
+**Changes in `program_logic`:**
+
+* In line with the preliminary support for later credits (see `base_logic`), the
+  adequacy statements have been changed to account for `HasLc` and `HasNoLc`:
+  + The lemma `twp_total` (total adequacy) provides an additional assumption `HasNoLc`.
+    Clients of the adequacy proof will need to introduce this additional assumption and
+    keep it around in case `BiFUpdPlainly` is used.
+  + The adequacy lemmas for the partial WP, in particular `wp_adequacy`,
+    `wp_strong_adequacy` and `wp_invariance`, are now available in two flavors,
+    one providing `HasLc` to enable the use of later credits in the future (suffix `_lc`),
+    and one without support for later credits, providing `HasNoLc` (suffix `_no_lc`).
+    Clients of the adequacy proof will need to opt for either of these and introduce
+    the additional assumptions.
+  + The parameter for the stuckness bit `s` in `wp_strong_adequacy{_lc, _no_lc}` has
+    moved up and is now universally quantified in the lemma instead of being existentially
+    quantified at the Iris-level. For clients that already previously quantified over `s`
+    at the Coq level, the only required change should be to remove the instantiation
+    of the existential quantifier.
 
 **Changes in `iris_heap_lang`:**
 
@@ -61,6 +91,14 @@ lemma.
   number of steps taken so far. This number is tied to ghost state in the state
   interpretation, which is exposed, updated, and used with new lemmas
   `wp_lb_init`, `wp_lb_update`, and `wp_step_fupdN_lb`. (by Jonas Kastberg Hinrichsen)
+* In line with the preliminary support for later credits (see `base_logic`), the
+  adequacy statements for HeapLang have been changed:
+  + `heap_adequacy` provides the additional assumption `HasLc`, which needs to be
+    introduced by clients and will enable using new proof rules for later credits
+    in the future.
+    This precludes usage of the laws in `BiFUpdPlainly` in the HeapLang instance of Iris.
+  + `heap_total` provides the additional assumption `HasNoLc`, which needs to be
+    introduced by clients and needs to be kept around to use the laws in `BiFUpdPlainly`.
 
 ## Iris 3.6.0 (2022-01-22)
 
