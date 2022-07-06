@@ -277,3 +277,25 @@ Section greatest_coind.
     - iApply (greatest_fixpoint_strong_mono with "[] Hgfp"); eauto.
   Qed.
 End greatest_coind.
+
+(** Establishing persistence of fixpoints. *)
+Section persistent.
+  Context {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
+  Context `{!BiAffine PROP}.
+
+  (** If [F] preserves persistence, then its fixpoint is persistent. *)
+  Lemma least_fixpoint_persistent :
+    (∀ Φ : A → PROP, (∀ a, Persistent (Φ a)) → (∀ a, Persistent (F Φ a))) →
+    ∀ a, Persistent (bi_least_fixpoint F a).
+  Proof using Type*.
+    intros Hpreserve. rewrite /Persistent.
+    iApply least_fixpoint_iter; first solve_proper.
+    iIntros "!# %y".
+    assert (Persistent (F (λ x : A, <pers> bi_least_fixpoint F x) y)%I).
+    { apply Hpreserve. apply _. }
+    iIntros "#HF !>".
+    iApply least_fixpoint_unfold.
+    iApply (bi_mono_pred with "[] HF"); first solve_proper.
+    iClear "#". iIntros "!# %x #HF". done.
+  Qed.
+End persistent.
