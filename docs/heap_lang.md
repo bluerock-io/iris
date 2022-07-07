@@ -104,6 +104,8 @@ Further tactics:
 - `wp_apply pm_trm`: Apply a lemma whose conclusion is a `WP`, automatically
   applying `wp_bind` as needed.  See the [ProofMode docs](./proof_mode.md) for an
   explanation of `pm_trm`.
+- `wp_smart_apply pm_trm`: like `wp_apply`, but also performs pure reduction
+  steps (same as `wp_pure`) to reveal a redex that matches `pm_trm`.
 
 There is no tactic for `Fork`, just do `wp_apply wp_fork`.
 
