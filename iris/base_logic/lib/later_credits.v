@@ -145,7 +145,7 @@ Module le_upd.
   Definition le_upd := le_upd_aux.(unseal).
   Local Definition le_upd_unseal : @le_upd = @le_upd_def := le_upd_aux.(seal_eq).
   Global Arguments le_upd {_ _} _.
-  Notation "'|==£>' P" := (le_upd P) (at level 99, P at level 200, format "|==£>  P").
+  Notation "'|==£>' P" := (le_upd P%I) (at level 99, P at level 200, format "|==£>  P") : bi_scope.
 
   Local Lemma le_upd_unfold `{!lcGS Σ} P:
     (|==£> P) ⊣⊢
