@@ -150,7 +150,7 @@ Section cmra.
     exists (discrete_fun_singleton x y2); split; [by apply HQ|].
     intros x'; destruct (decide (x' = x)) as [->|].
     - by rewrite discrete_fun_lookup_op discrete_fun_lookup_singleton.
-    - rewrite discrete_fun_lookup_op discrete_fun_lookup_singleton_ne //. apply Hg.
+    - rewrite discrete_fun_lookup_op discrete_fun_lookup_singleton_ne //; by apply Hg.
   Qed.
   Lemma discrete_fun_singleton_updateP_empty' x (P : B x → Prop) :
     ε ~~>: P → ε ~~>: λ g, ∃ y2, g = discrete_fun_singleton x y2 ∧ P y2.
