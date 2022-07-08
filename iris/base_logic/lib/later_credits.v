@@ -213,6 +213,14 @@ Module le_upd.
       intros Hent. iApply le_upd_bind.
       iIntros "P"; iApply le_upd_intro; by iApply Hent.
     Qed.
+
+    Global Instance le_upd_mono' : Proper ((⊢) ==> (⊢)) le_upd.
+    Proof. intros P Q PQ; by apply le_upd_mono. Qed.
+    Global Instance le_upd_flip_mono' : Proper (flip (⊢) ==> flip (⊢)) le_upd.
+    Proof. intros P Q PQ; by apply le_upd_mono. Qed.
+    Global Instance le_upd_equiv_proper : Proper ((≡) ==> (≡)) le_upd.
+    Proof. apply ne_proper. apply _. Qed.
+
     Lemma le_upd_trans P :  (|==£> |==£> P) -∗ |==£> P.
     Proof.
       iIntros "HP". iApply le_upd_bind; eauto.
@@ -222,6 +230,8 @@ Module le_upd.
       iIntros "[Hupd R]". iApply (le_upd_bind with "[R]"); last done.
       iIntros "P". iApply le_upd_intro. by iFrame.
     Qed.
+    Lemma le_upd_frame_l P R : R ∗ (|==£> P) -∗ |==£> R ∗ P.
+    Proof. rewrite comm le_upd_frame_r comm //. Qed.
 
     Lemma le_upd_later P :
       £ 1 -∗ ▷ P -∗ |==£> P.
@@ -230,12 +240,11 @@ Module le_upd.
       iNext. by iApply le_upd_intro.
     Qed.
 
-    Global Instance le_upd_mono' : Proper ((⊢) ==> (⊢)) le_upd.
-    Proof. intros P Q PQ; by apply le_upd_mono. Qed.
-    Global Instance le_upd_flip_mono' : Proper (flip (⊢) ==> flip (⊢)) le_upd.
-    Proof. intros P Q PQ; by apply le_upd_mono. Qed.
-    Global Instance le_upd_equiv_proper : Proper ((≡) ==> (≡)) le_upd.
-    Proof. apply ne_proper. apply _. Qed.
+    Lemma except_0_le_upd P : ◇ (le_upd P) ⊢ le_upd (◇ P).
+    Proof.
+      rewrite /bi_except_0. apply or_elim; eauto using le_upd_mono, or_intro_r.
+      by rewrite -le_upd_intro -or_intro_l.
+    Qed.
 
     (** A safety check that later-elimination updates can replace basic updates *)
     (** We do not use this to build an instance, because it would conflict
@@ -291,9 +300,52 @@ Module le_upd.
       iIntros "Hupd". iMod "Hupd". iModIntro. iMod "Hupd".
       iNext. iDestruct "Hupd" as "[%m (_ & _ & $)]".
     Qed.
+
+    (** Proof mode class instances internally needed for people defining their
+    [fupd] with [le_upd]. *)
+    Global Instance elim_bupd_le_upd p P Q :
+      ElimModal True p false (bupd P) P (le_upd Q) (le_upd Q)%I.
+    Proof.
+      rewrite /ElimModal bi.intuitionistically_if_elim //=.
+      rewrite bupd_le_upd. iIntros "_ [HP HPQ]".
+      iApply (le_upd_bind with "HPQ HP").
+    Qed.
+
+    Global Instance from_assumption_le_upd p P Q :
+      FromAssumption p P Q → KnownRFromAssumption p P (le_upd Q).
+    Proof.
+      rewrite /KnownRFromAssumption /FromAssumption=>->. apply le_upd_intro.
+    Qed.
+
+    Global Instance from_pure_le_upd a P φ :
+      FromPure a P φ → FromPure a (le_upd P) φ.
+    Proof. rewrite /FromPure=> <-. apply le_upd_intro. Qed.
+
+    Global Instance is_except_0_le_upd P : IsExcept0 P → IsExcept0 (le_upd P).
+    Proof.
+      rewrite /IsExcept0=> HP.
+      by rewrite -{2}HP -(except_0_idemp P) -except_0_le_upd -(except_0_intro P).
+    Qed.
+
+    Global Instance from_modal_le_upd P :
+      FromModal True modality_id (le_upd P) (le_upd P) P.
+    Proof. by rewrite /FromModal /= -le_upd_intro. Qed.
+
+    Global Instance elim_modal_le_upd p P Q :
+      ElimModal True p false (le_upd P) P (le_upd Q) (le_upd Q).
+    Proof.
+      by rewrite /ElimModal
+        intuitionistically_if_elim le_upd_frame_r wand_elim_r le_upd_trans.
+    Qed.
+
+    Global Instance frame_le_upd p R P Q :
+      Frame p R P Q → Frame p R (le_upd P) (le_upd Q).
+    Proof. rewrite /Frame=><-. by rewrite le_upd_frame_l. Qed.
   End le_upd.
 
-  Lemma lc_alloc `{!lcGpreS Σ} n :
+  (** You probably do NOT want to use this lemma; use [lc_soundness] if you want
+  to actually use [le_upd]! *)
+  Local Lemma lc_alloc `{!lcGpreS Σ} n :
     ⊢ |==> ∃ _ : lcGS Σ, lc_supply n ∗ £ n.
   Proof.
     rewrite lc_unseal /lc_def lc_supply_unseal /lc_supply_def.
