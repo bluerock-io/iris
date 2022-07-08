@@ -116,7 +116,8 @@ Lemma fupd_plain_soundness_no_lc `{!invGpreS Σ} E1 E2 (P: iProp Σ) `{!Plain P}
   (∀ `{Hinv: !invGS Σ} `{!HasNoLc Σ}, ⊢ |={E1,E2}=> P) → ⊢ P.
 Proof.
   iIntros (Hfupd). apply later_soundness. iMod wsat_alloc as (Hw) "[Hw HE]".
-  iMod (lc_alloc 0) as (Hc) "[_ _]".
+  (* We don't actually want any credits, but we need the [lcGS]. *)
+  iMod (later_credits.le_upd.lc_alloc 0) as (Hc) "[_ _]".
   set (Hi := InvG _ Hw Hc false).
   iAssert (|={⊤,E2}=> P)%I as "H".
   { iMod (fupd_mask_subseteq E1) as "_"; first done. iApply Hfupd. by constructor. }

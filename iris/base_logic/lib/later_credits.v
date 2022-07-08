@@ -345,7 +345,7 @@ Module le_upd.
 
   (** You probably do NOT want to use this lemma; use [lc_soundness] if you want
   to actually use [le_upd]! *)
-  Lemma lc_alloc `{!lcGpreS Σ} n :
+  Local Lemma lc_alloc `{!lcGpreS Σ} n :
     ⊢ |==> ∃ _ : lcGS Σ, lc_supply n ∗ £ n.
   Proof.
     rewrite lc_unseal /lc_def lc_supply_unseal /lc_supply_def.
