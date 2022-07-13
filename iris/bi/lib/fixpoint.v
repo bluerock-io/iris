@@ -74,7 +74,8 @@ Section least.
   Qed.
 End least.
 
-Lemma least_fixpoint_strong_mono {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}
+Lemma least_fixpoint_strong_mono
+    {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}
     (G : (A → PROP) → (A → PROP)) `{!BiMonoPred G} :
   □ (∀ Φ x, F Φ x -∗ G Φ x) -∗
   ∀ x, bi_least_fixpoint F x -∗ bi_least_fixpoint G x.
@@ -84,23 +85,26 @@ Proof.
   by iApply "Hmon".
 Qed.
 
-(**
-  In addition to [least_fixpoint_iter], we provide two derived, stronger induction principles.
-  - [least_fixpoint_ind] allows to assume [F (λ x, Φ x ∧ bi_least_fixpoint F x) y] when proving
-    the inductive step.
-    Intuitively, it does not only offer the induction hypothesis ([Φ] under an application of [F]),
-    but also the induction predicate [bi_least_fixpoint F] itself (under an application of [F]).
-  - [least_fixpoint_ind_wf] intuitively corresponds to a kind of well-founded induction.
-    It provides the hypothesis [F (bi_least_fixpoint (λ Ψ a, Φ a ∧ F Ψ a)) y] and thus allows
-    to assume the induction hypothesis not just below one application of [F], but below any
-    positive number (by unfolding the least fixpoint).
-    The unfolding lemma [least_fixpoint_unfold] as well as [least_fixpoint_strong_mono] can be useful
-    to work with the hypothesis.
- *)
+(** In addition to [least_fixpoint_iter], we provide two derived, stronger
+induction principles:
+
+- [least_fixpoint_ind] allows to assume [F (λ x, Φ x ∧ bi_least_fixpoint F x) y]
+  when proving the inductive step.
+  Intuitively, it does not only offer the induction hypothesis ([Φ] under an
+  application of [F]), but also the induction predicate [bi_least_fixpoint F]
+  itself (under an application of [F]).
+- [least_fixpoint_ind_wf] intuitively corresponds to a kind of well-founded
+  induction. It provides the hypothesis [F (bi_least_fixpoint (λ Ψ a, Φ a ∧ F Ψ a)) y]
+  and thus allows to assume the induction hypothesis not just below one
+  application of [F], but below any positive number (by unfolding the least
+  fixpoint). The unfolding lemma [least_fixpoint_unfold] as well as
+  [least_fixpoint_strong_mono] can be useful to work with the hypothesis. *)
+
 Section least_ind.
   Context {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
 
-  Let wf_pred_mono `{!NonExpansive Φ} : BiMonoPred (λ (Ψ : A → PROP) (a : A), Φ a ∧ F Ψ a)%I.
+  Let wf_pred_mono `{!NonExpansive Φ} :
+    BiMonoPred (λ (Ψ : A → PROP) (a : A), Φ a ∧ F Ψ a)%I.
   Proof using Type*.
     split; last solve_proper.
     intros Ψ Ψ' Hne Hne'. iIntros "#Mon" (x) "Ha". iSplit; first by iDestruct "Ha" as "[$ _]".
@@ -190,7 +194,8 @@ Section greatest.
   Proof. iIntros "#HΦ" (x) "Hx". iExists (OfeMor Φ). auto. Qed.
 End greatest.
 
-Lemma greatest_fixpoint_strong_mono {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}
+Lemma greatest_fixpoint_strong_mono {PROP : bi} {A : ofe}
+  (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}
   (G : (A → PROP) → (A → PROP)) `{!BiMonoPred G} :
   □ (∀ Φ x, F Φ x -∗ G Φ x) -∗
   ∀ x, bi_greatest_fixpoint F x -∗ bi_greatest_fixpoint G x.
@@ -200,42 +205,44 @@ Proof using Type*.
   by iApply "Hmon".
 Qed.
 
-(**
-  In addition to [greatest_fixpoint_coiter], we provide two derived, stronger coinduction principles.
-  - [greatest_fixpoint_coind] requires to prove [F (λ x, Φ x ∨ bi_greatest_fixpoint F x) y]
-    in the coinductive step instead of [F Φ y] and thus instead allows to prove the original
-    fixpoint again, after taking one step.
-  - [greatest_fixpoint_paco] allows for so-called parameterized coinduction, a stronger coinduction
-    principle, where [F (bi_greatest_fixpoint (λ Ψ a, Φ a ∨ F Ψ a)) y] needs to be established in
-    the coinductive step. It allows to prove the hypothesis [Φ] not just after one step,
-    but after any positive number of unfoldings of the greatest fixpoint.
-    This encodes a way of accumulating "knowledge" in the coinduction hypothesis:
-      if you return to the "initial point" [Φ] of the coinduction after some number of
-      unfoldings (not just one), the proof is done.
-    (interestingly, this is the dual to [least_fixpoint_ind_wf]).
-    The unfolding lemma [greatest_fixpoint_unfold] and [greatest_fixpoint_strong_mono] may be useful
-    when using this lemma.
+(** In addition to [greatest_fixpoint_coiter], we provide two derived, stronger
+coinduction principles:
 
-    Example use case:
-      Suppose that [F] defines a coinductive simulation relation, e.g.,
-        [F rec '(e_t, e_s) :=
-          (is_val e_s ∧ is_val e_t ∧ post e_t e_s) ∨
-          (safe e_t ∧ ∀ e_t', step e_t e_t' → ∃ e_s', step e_s e_s' ∧ rec e_t' e_s')],
-      and [sim e_t e_s := bi_greatest_fixpoint F].
-      Suppose you want to show a simulation of two loops,
-        [sim (while ...) (while ...)],
-      i.e. [Φ '(e_t, e_s) := e_t = while ... ∧ e_s = while ...].
-      Then the standard coinduction principle [greatest_fixpoint_iter]
-      requires to establish the coinduction hypothesis [Φ] after precisely
-      one unfolding of [sim], which is clearly not strong enough if the
-      loop takes multiple steps of computation per iteration.
-      But [greatest_fixpoint_paco] allows to establish a fixpoint to which [Φ] has
-      been added as a disjunct.
-      This fixpoint can be unfolded arbitrarily many times, allowing to establish the
-      coinduction hypothesis after any number of steps.
-      This enables to take multiple simulation steps, before closing the coinduction
-      by establishing the hypothesis [Φ] again.
- *)
+- [greatest_fixpoint_coind] requires to prove
+  [F (λ x, Φ x ∨ bi_greatest_fixpoint F x) y] in the coinductive step instead of
+  [F Φ y] and thus instead allows to prove the original fixpoint again, after
+  taking one step.
+- [greatest_fixpoint_paco] allows for so-called parameterized coinduction, a
+  stronger coinduction principle, where [F (bi_greatest_fixpoint (λ Ψ a, Φ a ∨ F Ψ a)) y]
+  needs to be established in the coinductive step. It allows to prove the
+  hypothesis [Φ] not just after one step, but after any positive number of
+  unfoldings of the greatest fixpoint. This encodes a way of accumulating
+  "knowledge" in the coinduction hypothesis: if you return to the "initial
+  point" [Φ] of the coinduction after some number of unfoldings (not just one),
+  the proof is done. (Interestingly, this is the dual to [least_fixpoint_ind_wf]).
+  The unfolding lemma [greatest_fixpoint_unfold] and
+  [greatest_fixpoint_strong_mono] may be useful when using this lemma.
+
+*Example use case:*
+
+Suppose that [F] defines a coinductive simulation relation, e.g.,
+  [F rec '(e_t, e_s) :=
+    (is_val e_s ∧ is_val e_t ∧ post e_t e_s) ∨
+    (safe e_t ∧ ∀ e_t', step e_t e_t' → ∃ e_s', step e_s e_s' ∧ rec e_t' e_s')],
+and [sim e_t e_s := bi_greatest_fixpoint F].
+Suppose you want to show a simulation of two loops,
+  [sim (while ...) (while ...)],
+i.e., [Φ '(e_t, e_s) := e_t = while ... ∧ e_s = while ...].
+Then the standard coinduction principle [greatest_fixpoint_iter] requires to
+establish the coinduction hypothesis [Φ] after precisely one unfolding of [sim],
+which is clearly not strong enough if the loop takes multiple steps of
+computation per iteration. But [greatest_fixpoint_paco] allows to establish a
+fixpoint to which [Φ] has been added as a disjunct. This fixpoint can be
+unfolded arbitrarily many times, allowing to establish the coinduction
+hypothesis after any number of steps. This enables to take multiple simulation
+steps, before closing the coinduction by establishing the hypothesis [Φ]
+again. *)
+
 Section greatest_coind.
   Context {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
 
