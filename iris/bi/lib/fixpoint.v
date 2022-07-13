@@ -72,6 +72,52 @@ Section least.
   Proof.
     iIntros "#HΦ" (x) "HF". by iApply ("HF" $! (OfeMor Φ) with "[#]").
   Qed.
+
+  Lemma least_fixpoint_affine :
+    (∀ x, Affine (F (λ _, emp%I) x)) →
+    ∀ x, Affine (bi_least_fixpoint F x).
+  Proof.
+    intros ?. rewrite /Affine. iApply least_fixpoint_iter.
+    by iIntros "!> %y HF".
+  Qed.
+
+  Lemma least_fixpoint_absorbing :
+    (∀ Φ, (∀ x, Absorbing (Φ x)) → (∀ x, Absorbing (F Φ x))) →
+    ∀ x, Absorbing (bi_least_fixpoint F x).
+  Proof using Type*.
+    intros ? x. rewrite /Absorbing /bi_absorbingly.
+    apply wand_elim_r'. revert x.
+    iApply least_fixpoint_iter; first solve_proper.
+    iIntros "!> %y HF Htrue". iApply least_fixpoint_unfold.
+    iAssert (F (λ x : A, True -∗ bi_least_fixpoint F x) y)%I with "[-]" as "HF".
+    { by iClear "Htrue". }
+    iApply (bi_mono_pred with "[] HF"); first solve_proper.
+    iIntros "!> %x HF". by iApply "HF".
+  Qed.
+
+ Lemma least_fixpoint_persistent_affine :
+    (∀ Φ, (∀ x, Affine (Φ x)) → (∀ x, Affine (F Φ x))) →
+    (∀ Φ, (∀ x, Persistent (Φ x)) → (∀ x, Persistent (F Φ x))) →
+    ∀ x, Persistent (bi_least_fixpoint F x).
+  Proof using Type*.
+    intros ?? x. rewrite /Persistent -intuitionistically_into_persistently_1.
+    revert x. iApply least_fixpoint_iter; first solve_proper.
+    iIntros "!> %y #HF !>". iApply least_fixpoint_unfold.
+    iApply (bi_mono_pred with "[] HF"); first solve_proper.
+    by iIntros "!# %x #?".
+  Qed.
+
+ Lemma least_fixpoint_persistent_absorbing :
+    (∀ Φ, (∀ x, Absorbing (Φ x)) → (∀ x, Absorbing (F Φ x))) →
+    (∀ Φ, (∀ x, Persistent (Φ x)) → (∀ x, Persistent (F Φ x))) →
+    ∀ x, Persistent (bi_least_fixpoint F x).
+  Proof using Type*.
+    intros ??. pose proof (least_fixpoint_absorbing _). unfold Persistent.
+    iApply least_fixpoint_iter; first solve_proper.
+    iIntros "!> %y #HF !>". rewrite least_fixpoint_unfold.
+    iApply (bi_mono_pred with "[] HF"); first solve_proper.
+    by iIntros "!# %x #?".
+  Qed.
 End least.
 
 Lemma least_fixpoint_strong_mono
@@ -192,6 +238,18 @@ Section greatest.
   Lemma greatest_fixpoint_coiter (Φ : A → PROP) `{!NonExpansive Φ} :
     □ (∀ y, Φ y -∗ F Φ y) -∗ ∀ x, Φ x -∗ bi_greatest_fixpoint F x.
   Proof. iIntros "#HΦ" (x) "Hx". iExists (OfeMor Φ). auto. Qed.
+
+  Lemma greatest_fixpoint_absorbing :
+    (∀ Φ, (∀ x, Absorbing (Φ x)) → (∀ x, Absorbing (F Φ x))) →
+    ∀ x, Absorbing (bi_greatest_fixpoint F x).
+  Proof using Type*.
+    intros ?. rewrite /Absorbing.
+    iApply greatest_fixpoint_coiter; first solve_proper.
+    iIntros "!> %y >HF". iDestruct (greatest_fixpoint_unfold with "HF") as "HF".
+    iApply (bi_mono_pred with "[] HF"); first solve_proper.
+    by iIntros "!> %x HF !>".
+  Qed.
+
 End greatest.
 
 Lemma greatest_fixpoint_strong_mono {PROP : bi} {A : ofe}
@@ -277,25 +335,3 @@ Section greatest_coind.
     - iApply (greatest_fixpoint_strong_mono with "[] Hgfp"); eauto.
   Qed.
 End greatest_coind.
-
-(** Establishing persistence of fixpoints. *)
-Section persistent.
-  Context {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
-  Context `{!BiAffine PROP}.
-
-  (** If [F] preserves persistence, then its fixpoint is persistent. *)
-  Lemma least_fixpoint_persistent :
-    (∀ Φ : A → PROP, (∀ a, Persistent (Φ a)) → (∀ a, Persistent (F Φ a))) →
-    ∀ a, Persistent (bi_least_fixpoint F a).
-  Proof using Type*.
-    intros Hpreserve. rewrite /Persistent.
-    iApply least_fixpoint_iter; first solve_proper.
-    iIntros "!# %y".
-    assert (Persistent (F (λ x : A, <pers> bi_least_fixpoint F x) y)%I).
-    { apply Hpreserve. apply _. }
-    iIntros "#HF !>".
-    iApply least_fixpoint_unfold.
-    iApply (bi_mono_pred with "[] HF"); first solve_proper.
-    iClear "#". iIntros "!# %x #HF". done.
-  Qed.
-End persistent.
