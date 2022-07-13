@@ -105,7 +105,10 @@ Further tactics:
   applying `wp_bind` as needed.  See the [ProofMode docs](./proof_mode.md) for an
   explanation of `pm_trm`.
 - `wp_smart_apply pm_trm`: like `wp_apply`, but also performs pure reduction
-  steps (same as `wp_pure`) to reveal a redex that matches `pm_trm`.
+  steps to reveal a redex that matches `pm_trm`. Precisely, if applying the
+  lemma fails, `wp_smart_apply` will perform a step of pure reduction (via
+  `wp_pure`), and repeat. (This means that `wp_smart_apply` is not the same
+  as `wp_pures; wp_apply`.)
 
 There is no tactic for `Fork`, just do `wp_apply wp_fork`.
 
