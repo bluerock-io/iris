@@ -112,40 +112,44 @@ Proof.
     by iFrame.
 Qed.
 
-Lemma fupd_plain_soundness_no_lc `{!invGpreS Σ} E1 E2 (P: iProp Σ) `{!Plain P} :
-  (∀ `{Hinv: !invGS Σ} `{!HasNoLc Σ}, ⊢ |={E1,E2}=> P) → ⊢ P.
+(** Note: the [_no_lc] soundness lemmas also allow generating later credits, but
+  these cannot be used for anything. They are merely provided to enable making
+  the adequacy proof generic in whether later credits are used. *)
+Lemma fupd_plain_soundness_no_lc `{!invGpreS Σ} E1 E2 (P: iProp Σ) `{!Plain P} m :
+  (∀ `{Hinv: !invGS Σ} `{!HasNoLc Σ}, £ m ⊢ |={E1,E2}=> P) → ⊢ P.
 Proof.
   iIntros (Hfupd). apply later_soundness. iMod wsat_alloc as (Hw) "[Hw HE]".
   (* We don't actually want any credits, but we need the [lcGS]. *)
-  iMod (later_credits.le_upd.lc_alloc 0) as (Hc) "[_ _]".
+  iMod (later_credits.le_upd.lc_alloc m) as (Hc) "[_ Hc]".
   set (Hi := InvG _ Hw Hc false).
-  iAssert (|={⊤,E2}=> P)%I as "H".
-  { iMod (fupd_mask_subseteq E1) as "_"; first done. iApply Hfupd. by constructor. }
+  iAssert (|={⊤,E2}=> P)%I with "[Hc]" as "H" .
+  { iMod (fupd_mask_subseteq E1) as "_"; first done. iApply Hfupd; last done. by constructor. }
   rewrite uPred_fupd_unseal /uPred_fupd_def.
   iMod ("H" with "[$]") as "[Hw [HE >H']]"; iFrame.
 Qed.
 
-Lemma step_fupdN_soundness_no_lc `{!invGpreS Σ} φ n :
-  (∀ `{Hinv: !invGS Σ} `{!HasNoLc Σ}, ⊢@{iPropI Σ} |={⊤,∅}=> |={∅}▷=>^n ⌜ φ ⌝) →
+Lemma step_fupdN_soundness_no_lc `{!invGpreS Σ} φ n m :
+  (∀ `{Hinv: !invGS Σ} `{!HasNoLc Σ}, £ m ⊢@{iPropI Σ} |={⊤,∅}=> |={∅}▷=>^n ⌜ φ ⌝) →
   φ.
 Proof.
   intros Hiter.
   apply (soundness (M:=iResUR Σ) _  (S n)); simpl.
-  apply (fupd_plain_soundness_no_lc ⊤ ⊤ _)=> Hinv hc.
+  apply (fupd_plain_soundness_no_lc ⊤ ⊤ _ m)=> Hinv hc. iIntros "Hc".
   iPoseProof (Hiter Hinv) as "H". clear Hiter.
-  iApply fupd_plainly_mask_empty. iMod "H".
-  iMod (step_fupdN_plain with "H") as "H". iModIntro.
+  iApply fupd_plainly_mask_empty. iSpecialize ("H" with "Hc").
+  iMod (step_fupdN_plain with "H") as "H". iMod "H". iModIntro.
   rewrite -later_plainly -laterN_plainly -later_laterN laterN_later.
   iNext. iMod "H" as %Hφ. auto.
 Qed.
 
-Lemma step_fupdN_soundness_no_lc' `{!invGpreS Σ} φ n :
-  (∀ `{Hinv: !invGS Σ} `{!HasNoLc Σ}, ⊢@{iPropI Σ} |={⊤}[∅]▷=>^n ⌜ φ ⌝) →
+Lemma step_fupdN_soundness_no_lc' `{!invGpreS Σ} φ n m :
+  (∀ `{Hinv: !invGS Σ} `{!HasNoLc Σ}, £ m ⊢@{iPropI Σ} |={⊤}[∅]▷=>^n ⌜ φ ⌝) →
   φ.
 Proof.
-  iIntros (Hiter). eapply (step_fupdN_soundness_no_lc _ n)=>Hinv Hc. destruct n as [|n].
+  iIntros (Hiter). eapply (step_fupdN_soundness_no_lc _ n m)=>Hinv Hc.
+  iIntros "Hcred". destruct n as [|n].
   { by iApply fupd_mask_intro_discard; [|iApply (Hiter Hinv)]. }
-   simpl in Hiter |- *. iMod Hiter as "H". iIntros "!>!>!>".
+   simpl in Hiter |- *. iMod (Hiter with "Hcred") as "H". iIntros "!>!>!>".
   iMod "H". clear. iInduction n as [|n] "IH"; [by iApply fupd_mask_intro_discard|].
   simpl. iMod "H". iIntros "!>!>!>". iMod "H". by iApply "IH".
 Qed.
@@ -228,7 +232,7 @@ Qed.
 Lemma step_fupdN_soundness_gen `{!invGpreS Σ} (φ : Prop)
     (use_credits : bool) (n m : nat) :
   (∀ `{Hinv : invGS Σ} `{Hc : if use_credits then HasLc Σ else HasNoLc Σ},
-    (if use_credits then £ m else True) ={⊤,∅}=∗ |={∅}▷=>^n ⌜φ⌝) →
+    £ m ={⊤,∅}=∗ |={∅}▷=>^n ⌜φ⌝) →
   φ.
 Proof.
   destruct use_credits.

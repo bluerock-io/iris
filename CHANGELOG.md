@@ -63,7 +63,8 @@ lemma.
   and `HasNoLc`, that allow opting for either later credits or `BiFUpdPlainly`.
   The soundness lemmas for the fancy update modality are available in two versions,
   with later credits (suffix `_lc`) and without later credits (suffix `_no_lc`).
-  The lemma `step_fupdN_soundness_gen` is generic over this choice.
+  The lemmas without later credits still generate credits, but they cannot be used
+  in any meaningful way. The lemma `step_fupdN_soundness_gen` is generic over this choice.
 
 **Changes in `program_logic`:**
 
