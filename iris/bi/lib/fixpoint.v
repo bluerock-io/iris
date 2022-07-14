@@ -104,7 +104,7 @@ Section least.
     revert x. iApply least_fixpoint_iter; first solve_proper.
     iIntros "!> %y #HF !>". iApply least_fixpoint_unfold.
     iApply (bi_mono_pred with "[] HF"); first solve_proper.
-    by iIntros "!# %x #?".
+    by iIntros "!> %x #?".
   Qed.
 
  Lemma least_fixpoint_persistent_absorbing :
@@ -116,7 +116,7 @@ Section least.
     iApply least_fixpoint_iter; first solve_proper.
     iIntros "!> %y #HF !>". rewrite least_fixpoint_unfold.
     iApply (bi_mono_pred with "[] HF"); first solve_proper.
-    by iIntros "!# %x #?".
+    by iIntros "!> %x #?".
   Qed.
 End least.
 
