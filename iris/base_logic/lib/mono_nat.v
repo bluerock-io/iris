@@ -97,6 +97,10 @@ Section mono_nat.
     mono_nat_lb_own γ n -∗ mono_nat_lb_own γ n'.
   Proof. unseal. intros. by apply own_mono, mono_nat_lb_mono. Qed.
 
+  Lemma mono_nat_lb_own_0 γ :
+    ⊢ |==> mono_nat_lb_own γ 0.
+  Proof. unseal. iApply own_unit. Qed.
+
   Lemma mono_nat_own_alloc n :
     ⊢ |==> ∃ γ, mono_nat_auth_own γ 1 n ∗ mono_nat_lb_own γ n.
   Proof.
