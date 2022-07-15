@@ -1,6 +1,6 @@
 From iris.base_logic.lib Require Import gen_inv_heap invariants.
 From iris.program_logic Require Export weakestpre total_weakestpre.
-From iris.heap_lang Require Import lang adequacy proofmode notation.
+From iris.heap_lang Require Import lang adequacy total_adequacy proofmode notation.
 (* Import lang *again*. This used to break notation. *)
 From iris.heap_lang Require Import lang.
 From iris.prelude Require Import options.
@@ -453,3 +453,10 @@ End error_tests.
 (* Test a closed proof *)
 Lemma heap_e_adequate σ : adequate NotStuck heap_e σ (λ v _, v = #2).
 Proof. eapply (heap_adequacy heapΣ)=> ??. iIntros "_". by iApply heap_e_spec. Qed.
+
+Lemma heap_e_totally_adequate σ : sn erased_step ([heap_e], σ).
+Proof.
+  eapply (heap_total heapΣ NotStuck _ _ (const True))=> ??. iIntros "_".
+  rewrite /heap_e /=.
+  wp_alloc l. wp_load. wp_store. wp_load. auto.
+Qed.
