@@ -106,23 +106,23 @@ Section later_credit_theory.
   Qed.
 
   Global Instance from_sep_lc_add n m :
-    FromSep (£ (n + m)) (£ n) (£ m).
+    FromSep (£ (n + m)) (£ n) (£ m) | 0.
   Proof.
     by rewrite /FromSep lc_split.
   Qed.
   Global Instance from_sep_lc_S n :
-    FromSep (£ (S n)) (£ 1) (£ n).
+    FromSep (£ (S n)) (£ 1) (£ n) | 1.
   Proof.
     by rewrite /FromSep (lc_succ n).
   Qed.
 
   Global Instance into_sep_lc_add n m :
-    IntoSep (£ (n + m)) (£ n) (£ m).
+    IntoSep (£ (n + m)) (£ n) (£ m) | 0.
   Proof.
     by rewrite /IntoSep lc_split.
   Qed.
   Global Instance into_sep_lc_S n :
-    IntoSep (£ (S n)) (£ 1) (£ n).
+    IntoSep (£ (S n)) (£ 1) (£ n) | 1.
   Proof.
     by rewrite /IntoSep (lc_succ n).
   Qed.
