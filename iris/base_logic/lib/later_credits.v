@@ -105,6 +105,8 @@ Section later_credit_theory.
     rewrite lc_unseal /lc_def. apply _.
   Qed.
 
+  (** Make sure that the rule for [+] is used before [S], otherwise Coq's
+  unification applies the [S] hint too eagerly. See Iris issue #470. *)
   Global Instance from_sep_lc_add n m :
     FromSep (£ (n + m)) (£ n) (£ m) | 0.
   Proof.
