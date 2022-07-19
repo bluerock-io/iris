@@ -21,6 +21,8 @@ Section frac.
 
   Lemma frac_valid p : ✓ p ↔ (p ≤ 1)%Qp.
   Proof. done. Qed.
+  Lemma frac_valid_1 : ✓ 1%Qp.
+  Proof. done. Qed.
   Lemma frac_op p q : p ⋅ q = (p + q)%Qp.
   Proof. done. Qed.
   Lemma frac_included p q : p ≼ q ↔ (p < q)%Qp.

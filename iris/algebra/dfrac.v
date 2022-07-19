@@ -160,6 +160,8 @@ Section dfrac.
 
   Lemma dfrac_valid_own p : ✓ DfracOwn p ↔ (p ≤ 1)%Qp.
   Proof. done. Qed.
+  Lemma dfrac_valid_own_1 : ✓ DfracOwn 1.
+  Proof. done. Qed.
 
   Lemma dfrac_valid_own_r dq q : ✓ (dq ⋅ DfracOwn q) → (q < 1)%Qp.
   Proof.
