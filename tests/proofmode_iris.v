@@ -250,6 +250,15 @@ Section iris_tests.
     iIntros "H H'". Fail iDestruct "H'" as ">H".
   Abort.
 
+  (** Make sure that the splitting rule for [+] gets priority over the one for
+  [S]. See issue #470. *)
+  Check "test_iIntros_lc".
+  Lemma test_iIntros_lc n m : £ (S n + m) -∗ £ (S n).
+  Proof. iIntros "[Hlc1 Hlc2]". Show. iExact "Hlc1". Qed.
+
+  Check "lc_iSplit_lc".
+  Lemma lc_iSplit_lc n m : £ (S n) -∗ £ m -∗ £ (S n + m).
+  Proof. iIntros "Hlc1 Hlc2". iSplitL "Hlc1". Show. all: done. Qed.
 End iris_tests.
 
 Section monpred_tests.
