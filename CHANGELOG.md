@@ -65,6 +65,10 @@ lemma.
   with later credits (suffix `_lc`) and without later credits (suffix `_no_lc`).
   The lemmas without later credits still generate credits, but they cannot be used
   in any meaningful way. The lemma `step_fupdN_soundness_gen` is generic over this choice.
+* Add discardable fractions `dfrac` to `saved_anything_own`, `saved_prop_own`,
+  and `saved_pred_own`, so they can be updated. The previous persistent versions
+  can be recovered with the fraction `DfracDiscarded`. Allocation lemmas now take
+  a `dq` parameter to define the initial fraction.
 
 **Changes in `program_logic`:**
 
