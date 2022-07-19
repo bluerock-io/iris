@@ -57,8 +57,9 @@ Tactic failure: iFrame: cannot frame (P i).
 1 goal
   
   I : biIndex
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   N : namespace
   𝓟 : iProp Σ
   ============================
@@ -69,8 +70,9 @@ Tactic failure: iFrame: cannot frame (P i).
 1 goal
   
   I : biIndex
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   N : namespace
   𝓟 : iProp Σ
   ============================

@@ -53,7 +53,7 @@ Section base_logic_tests.
 End base_logic_tests.
 
 Section iris_tests.
-  Context `{!invGS Σ, !cinvG Σ, !na_invG Σ}.
+  Context `{!invGS_gen hlc Σ, !cinvG Σ, !na_invG Σ}.
   Implicit Types P Q R : iProp Σ.
 
   Lemma test_masks  N E P Q R :
@@ -262,7 +262,7 @@ Section iris_tests.
 End iris_tests.
 
 Section monpred_tests.
-  Context `{!invGS Σ}.
+  Context `{!invGS_gen hlc Σ}.
   Context {I : biIndex}.
   Local Notation monPred := (monPred I (iPropI Σ)).
   Local Notation monPredI := (monPredI I (iPropI Σ)).

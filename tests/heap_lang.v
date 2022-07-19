@@ -452,11 +452,11 @@ End error_tests.
 
 (* Test a closed proof *)
 Lemma heap_e_adequate σ : adequate NotStuck heap_e σ (λ v _, v = #2).
-Proof. eapply (heap_adequacy heapΣ)=> ??. iIntros "_". by iApply heap_e_spec. Qed.
+Proof. eapply (heap_adequacy heapΣ). iIntros (?) "_". by iApply heap_e_spec. Qed.
 
 Lemma heap_e_totally_adequate σ : sn erased_step ([heap_e], σ).
 Proof.
-  eapply (heap_total heapΣ NotStuck _ _ (const True))=> ??. iIntros "_".
-  rewrite /heap_e /=.
+  eapply (heap_total heapΣ NotStuck _ _ (const True)).
+  iIntros (?) "_". rewrite /heap_e /=.
   wp_alloc l. wp_load. wp_store. wp_load. auto.
 Qed.

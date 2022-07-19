@@ -52,7 +52,7 @@ Proof. solve_inG. Qed.
 
 Section definitions.
   Context {L V : Type} `{Countable L}.
-  Context `{!invGS Σ, !gen_heapGS L V Σ, gG: !inv_heapGS L V Σ}.
+  Context `{!invGS_gen hlc Σ, !gen_heapGS L V Σ, gG: !inv_heapGS L V Σ}.
 
   Definition inv_heap_inv_P : iProp Σ :=
     ∃ h : gmap L (V * (V -d> PropO)),
@@ -77,7 +77,7 @@ Local Notation "l '↦_' I □" := (inv_mapsto l I%stdpp%type)
 
 (* [inv_heap_inv] has no parameters to infer the types from, so we need to
    make them explicit. *)
-Global Arguments inv_heap_inv _ _ {_ _ _ _ _ _}.
+Global Arguments inv_heap_inv _ _ {_ _ _ _ _ _ _}.
 
 Global Instance: Params (@inv_mapsto_own) 8 := {}.
 Global Instance: Params (@inv_mapsto) 7 := {}.
@@ -114,7 +114,7 @@ Section to_inv_heap.
   Qed.
 End to_inv_heap.
 
-Lemma inv_heap_init (L V : Type) `{Countable L, !invGS Σ, !gen_heapGS L V Σ, !inv_heapGpreS L V Σ} E :
+Lemma inv_heap_init (L V : Type) `{Countable L, !invGS_gen hlc Σ, !gen_heapGS L V Σ, !inv_heapGpreS L V Σ} E :
   ⊢ |==> ∃ _ : inv_heapGS L V Σ, |={E}=> inv_heap_inv L V.
 Proof.
   iMod (own_alloc (● (to_inv_heap ∅))) as (γ) "H●".
@@ -128,7 +128,7 @@ Qed.
 
 Section inv_heap.
   Context {L V : Type} `{Countable L}.
-  Context `{!invGS Σ, !gen_heapGS L V Σ, gG: !inv_heapGS L V Σ}.
+  Context `{!invGS_gen hlc Σ, !gen_heapGS L V Σ, gG: !inv_heapGS L V Σ}.
   Implicit Types (l : L) (v : V) (I : V → Prop).
   Implicit Types (h : gmap L (V * (V -d> PropO))).
 

@@ -14,7 +14,7 @@ Global Instance subG_cinvΣ {Σ} : subG cinvΣ Σ → cinvG Σ.
 Proof. solve_inG. Qed.
 
 Section defs.
-  Context `{!invGS Σ, !cinvG Σ}.
+  Context `{!invGS_gen hlc Σ, !cinvG Σ}.
 
   Definition cinv_own (γ : gname) (p : frac) : iProp Σ := own γ p.
 
@@ -25,7 +25,7 @@ End defs.
 Global Instance: Params (@cinv) 5 := {}.
 
 Section proofs.
-  Context `{!invGS Σ, !cinvG Σ}.
+  Context `{!invGS_gen hlc Σ, !cinvG Σ}.
 
   Global Instance cinv_own_timeless γ p : Timeless (cinv_own γ p).
   Proof. rewrite /cinv_own; apply _. Qed.

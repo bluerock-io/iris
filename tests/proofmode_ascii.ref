@@ -1,7 +1,8 @@
 1 goal
   
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   N : namespace
@@ -13,8 +14,9 @@
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> ▷ P)
 1 goal
   
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   N : namespace
@@ -28,8 +30,9 @@
   |={⊤ ∖ ↑N,⊤}=> ▷ P
 1 goal
   
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   γ : gname
@@ -45,8 +48,9 @@
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> cinv_own γ p ∗ ▷ P)
 1 goal
   
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   γ : gname
@@ -63,8 +67,9 @@
   |={⊤ ∖ ↑N,⊤}=> cinv_own γ p ∗ ▷ P
 1 goal
   
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   t : na_inv_pool_name
@@ -83,8 +88,9 @@
     (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
 1 goal
   
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   cinvG0 : cinvG Σ
   na_invG0 : na_invG Σ
   t : na_inv_pool_name
@@ -113,8 +119,9 @@ Tactic failure: iInv: invariant "H2" not found.
      : string
 1 goal
   
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   I : biIndex
   N : namespace
   E : coPset
@@ -128,8 +135,9 @@ Tactic failure: iInv: invariant "H2" not found.
      : string
 1 goal
   
+  hlc : has_lc
   Σ : gFunctors
-  invGS0 : invGS Σ
+  invGS_gen0 : invGS_gen hlc Σ
   I : biIndex
   N : namespace
   E : coPset

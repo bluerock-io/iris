@@ -11,8 +11,8 @@ From iris.heap_lang Require Export class_instances.
 From iris.heap_lang Require Import tactics notation.
 From iris.prelude Require Import options.
 
-Class heapGS Σ := HeapGS {
-  heapGS_invGS : invGS Σ;
+Class heapGS_gen hlc Σ := HeapGS {
+  heapGS_invGS : invGS_gen hlc Σ;
   heapGS_gen_heapGS :> gen_heapGS loc (option val) Σ;
   heapGS_inv_heapGS :> inv_heapGS loc (option val) Σ;
   heapGS_proph_mapGS :> proph_mapGS proph_id (val * val) Σ;
@@ -21,8 +21,10 @@ Class heapGS Σ := HeapGS {
 }.
 Local Existing Instance heapGS_step_cnt.
 
+Notation heapGS := (heapGS_gen HasLc).
+
 Section steps.
-  Context `{!heapGS Σ}.
+  Context `{!heapGS_gen hlc Σ}.
 
   Local Definition steps_auth (n : nat) : iProp Σ :=
     mono_nat_auth_own heapGS_step_name 1 n.
@@ -58,7 +60,7 @@ Section steps.
 
 End steps.
 
-Global Program Instance heapGS_irisGS `{heapGS Σ} : irisGS heap_lang Σ := {
+Global Program Instance heapGS_irisGS `{!heapGS_gen hlc Σ} : irisGS_gen hlc heap_lang Σ := {
   iris_invGS := heapGS_invGS;
   state_interp σ step_cnt κs _ :=
     (gen_heap_interp σ.(heap) ∗ proph_map_interp κs σ.(used_proph_id) ∗
@@ -67,7 +69,7 @@ Global Program Instance heapGS_irisGS `{heapGS Σ} : irisGS heap_lang Σ := {
   num_laters_per_step n := n;
 }.
 Next Obligation.
-  iIntros (?? σ ns κs nt)  "/= ($ & $ & H)".
+  iIntros (??? σ ns κs nt)  "/= ($ & $ & H)".
   by iMod (steps_auth_update_S with "H") as "$".
 Qed.
 
@@ -88,7 +90,7 @@ Notation "l ↦ v" := (mapsto (L:=loc) (V:=option val) l (DfracOwn 1) (Some v%V)
 make setoid rewriting in the predicate [I] work we need actual definitions
 here. *)
 Section definitions.
-  Context `{!heapGS Σ}.
+  Context `{!heapGS_gen hlc Σ}.
   Definition inv_mapsto_own (l : loc) (v : val) (I : val → Prop) : iProp Σ :=
     inv_mapsto_own l (Some v) (from_option I False).
   Definition inv_mapsto (l : loc) (I : val → Prop) : iProp Σ :=
@@ -105,7 +107,7 @@ Notation "l ↦_ I v" := (inv_mapsto_own l v I%stdpp%type)
   (at level 20, I at level 9, format "l  ↦_ I  v") : bi_scope.
 
 Section lifting.
-Context `{!heapGS Σ}.
+Context `{!heapGS_gen hlc Σ}.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ Ψ : val → iProp Σ.
 Implicit Types efs : list expr.

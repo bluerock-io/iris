@@ -7,8 +7,8 @@ From iris.bi Require Export weakestpre.
 From iris.prelude Require Import options.
 Import uPred.
 
-Class irisGS (Λ : language) (Σ : gFunctors) := IrisG {
-  iris_invGS :> invGS Σ;
+Class irisGS_gen (hlc : has_lc) (Λ : language) (Σ : gFunctors) := IrisG {
+  iris_invGS :> invGS_gen hlc Σ;
 
   (** The state interpretation is an invariant that should hold in
   between each step of reduction. Here [Λstate] is the global state,
@@ -46,6 +46,9 @@ Class irisGS (Λ : language) (Σ : gFunctors) := IrisG {
     state_interp σ ns κs nt ={∅}=∗ state_interp σ (S ns) κs nt
 }.
 Global Opaque iris_invGS.
+Global Arguments IrisG {hlc Λ Σ}.
+
+Notation irisGS := (irisGS_gen HasLc).
 
 (** The predicate we take the fixpoint of in order to define the WP. *)
 (** In the step case, we both provide [S (num_laters_per_step ns)]
@@ -60,7 +63,7 @@ Global Opaque iris_invGS.
     can only be used by exactly one client.
   - The step-taking update can even be used by clients that opt out of
     later credits, e.g. because they use [BiFUpdPlainly]. *)
-Definition wp_pre `{!irisGS Λ Σ} (s : stuckness)
+Definition wp_pre `{!irisGS_gen hlc Λ Σ} (s : stuckness)
     (wp : coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ) :
     coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ := λ E e1 Φ,
   match to_val e1 with
@@ -76,7 +79,7 @@ Definition wp_pre `{!irisGS Λ Σ} (s : stuckness)
          [∗ list] i ↦ ef ∈ efs, wp ⊤ ef fork_post
   end%I.
 
-Local Instance wp_pre_contractive `{!irisGS Λ Σ} s : Contractive (wp_pre s).
+Local Instance wp_pre_contractive `{!irisGS_gen hlc Λ Σ} s : Contractive (wp_pre s).
 Proof.
   rewrite /wp_pre /= => n wp wp' Hwp E e1 Φ.
   do 25 (f_contractive || f_equiv).
@@ -87,17 +90,17 @@ Proof.
   - by rewrite -IH.
 Qed.
 
-Local Definition wp_def `{!irisGS Λ Σ} : Wp (iProp Σ) (expr Λ) (val Λ) stuckness :=
+Local Definition wp_def `{!irisGS_gen hlc Λ Σ} : Wp (iProp Σ) (expr Λ) (val Λ) stuckness :=
   λ s : stuckness, fixpoint (wp_pre s).
 Local Definition wp_aux : seal (@wp_def). Proof. by eexists. Qed.
 Definition wp' := wp_aux.(unseal).
-Global Arguments wp' {Λ Σ _}.
+Global Arguments wp' {hlc Λ Σ _}.
 Global Existing Instance wp'.
-Local Lemma wp_unseal `{!irisGS Λ Σ} : wp = @wp_def Λ Σ _.
+Local Lemma wp_unseal `{!irisGS_gen hlc Λ Σ} : wp = @wp_def hlc Λ Σ _.
 Proof. rewrite -wp_aux.(seal_eq) //. Qed.
 
 Section wp.
-Context `{!irisGS Λ Σ}.
+Context `{!irisGS_gen hlc Λ Σ}.
 Implicit Types s : stuckness.
 Implicit Types P : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
@@ -415,7 +418,7 @@ End wp.
 
 (** Proofmode class instances *)
 Section proofmode_classes.
-  Context `{!irisGS Λ Σ}.
+  Context `{!irisGS_gen hlc Λ Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val Λ → iProp Σ.
   Implicit Types v : val Λ.
