@@ -38,7 +38,7 @@ End increment_physical.
 (** Next: logically atomic increment on top of an arbitrary logically atomic heap *)
 
 Section increment.
-  Context `{!heapGS Σ} {aheap: atomic_heap Σ}.
+  Context `{!heapGS Σ, !atomic_heap}.
 
   Import atomic_heap.notation.
 

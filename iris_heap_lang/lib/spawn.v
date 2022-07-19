@@ -29,7 +29,7 @@ Proof. solve_inG. Qed.
 
 (** Now we come to the Iris part of the proof. *)
 Section proof.
-Context `{!heapGS Σ, !spawnG Σ} (N : namespace).
+Context `{!heapGS_gen hlc Σ, !spawnG Σ} (N : namespace).
 
 Definition spawn_inv (γ : gname) (l : loc) (Ψ : val → iProp Σ) : iProp Σ :=
   ∃ lv, l ↦ lv ∗ (⌜lv = NONEV⌝ ∨

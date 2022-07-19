@@ -5,8 +5,18 @@ From iris.heap_lang Require Export derived_laws.
 From iris.heap_lang Require Import notation proofmode.
 From iris.prelude Require Import options.
 
-(** A general logically atomic interface for a heap. *)
-Class atomic_heap {Σ} `{!heapGS Σ} := AtomicHeap {
+(** A general logically atomic interface for a heap.
+All parameters are implicit, since it is expected that there is only one
+[heapGS_gen] in scope that could possibly apply. For example:
+  
+  Context `{!heapGS_gen hlc Σ, !atomic_heap}.
+
+Or, for libraries that require later credits:
+
+  Context `{!heapGS Σ, !atomic_heap}.
+
+*)
+Class atomic_heap `{!heapGS_gen hlc Σ} := AtomicHeap {
   (* -- operations -- *)
   alloc : val;
   free : val;
@@ -45,7 +55,7 @@ Class atomic_heap {Σ} `{!heapGS Σ} := AtomicHeap {
       <<< if decide (v = w1) then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
         RET (v, #if decide (v = w1) then true else false) >>>;
 }.
-Global Arguments atomic_heap _ {_}.
+Global Hint Mode atomic_heap + + + : typeclass_instances.
 
 (** Notation for heap primitives, in a module so you can import it separately. *)
 (** FIXME: Refactor these notations using custom entries once Coq bug #13654
@@ -69,7 +79,7 @@ Module notation.
 End notation.
 
 Section derived.
-  Context `{!heapGS Σ, !atomic_heap Σ}.
+  Context `{!heapGS_gen hlc Σ, !atomic_heap}.
 
   Import notation.
 
@@ -99,7 +109,7 @@ Definition primitive_cmpxchg : val :=
   λ: "l" "e1" "e2", CmpXchg "l" "e1" "e2".
 
 Section proof.
-  Context `{!heapGS Σ}.
+  Context `{!heapGS_gen hlc Σ}.
 
   Lemma primitive_alloc_spec (v : val) :
     {{{ True }}} primitive_alloc v {{{ l, RET #l; l ↦ v }}}.
@@ -148,7 +158,7 @@ End proof.
 
 (* NOT an instance because users should choose explicitly to use it
      (using [Explicit Instance]). *)
-Definition primitive_atomic_heap `{!heapGS Σ} : atomic_heap Σ :=
+Definition primitive_atomic_heap `{!heapGS_gen hlc Σ} : atomic_heap :=
   {| alloc_spec := primitive_alloc_spec;
      free_spec := primitive_free_spec;
      load_spec := primitive_load_spec;
