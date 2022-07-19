@@ -33,6 +33,10 @@ lemma.
   second a universal, so let's use the appropriate notation. Also use double
   quantifiers (`∀∀`, `∃∃`) to make it clear that these are not normal
   quantifiers (the latter change was also applied to logically atomic triples).
+* Add some lemmas to show properties of functions defined via monotonoe fixpoints:
+  `least_fixpoint_affine`, `least_fixpoint_absorbing`,
+  `least_fixpoint_persistent_affine`, `least_fixpoint_persistent_absorbing`,
+  `greatest_fixpoint_absorbing`.
 
 **Changes in `proofmode`:**
 
