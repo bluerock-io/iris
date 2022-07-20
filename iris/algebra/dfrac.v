@@ -173,7 +173,7 @@ Section dfrac.
   Lemma dfrac_valid_own_l dq q : ✓ (DfracOwn q ⋅ dq) → (q < 1)%Qp.
   Proof. rewrite comm. apply dfrac_valid_own_r. Qed.
 
-  Lemma dfrac_valid_discarded p : ✓ DfracDiscarded.
+  Lemma dfrac_valid_discarded : ✓ DfracDiscarded.
   Proof. done. Qed.
 
   Lemma dfrac_valid_own_discarded q :

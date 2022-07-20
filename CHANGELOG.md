@@ -73,6 +73,7 @@ lemma.
   and `saved_pred_own`, so they can be updated. The previous persistent versions
   can be recovered with the fraction `DfracDiscarded`. Allocation lemmas now take
   a `dq` parameter to define the initial fraction.
+* Remove an unused fraction argument to `dfrac_valid_discarded`.
 
 **Changes in `program_logic`:**
 
