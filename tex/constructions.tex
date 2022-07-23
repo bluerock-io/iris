@@ -124,12 +124,12 @@ Given some infinite countable $K$ and some camera $\monoid$, the set of finite p
 We obtain the following frame-preserving updates:
 \begin{mathpar}
   \inferH{fpfn-alloc-strong}
-  {\text{$G$ infinite} \and \mvalFull(\melt)}
-  {\emptyset \mupd \setComp{\mapsingleton \gname \melt}{\gname \in G}}
+  {\text{$G \subseteq K$ infinite} \and \mvalFull(\melt)}
+  {\emptyset \mupd \setComp{\mapsingleton i \melt}{i \in G}}
 
   \inferH{fpfn-alloc}
   {\mvalFull(\melt)}
-  {\emptyset \mupd \setComp{\mapsingleton \gname \melt}{\gname \in K}}
+  {\emptyset \mupd \setComp{\mapsingleton i \melt}{i \in K}}
 
   \inferH{fpfn-update}
   {\melt \mupd_\monoid \meltsB}
