@@ -59,9 +59,14 @@ Section excl_auth.
   Lemma excl_auth_agree_L `{!LeibnizEquiv A} a b : ✓ (●E a ⋅ ◯E b) → a = b.
   Proof. intros. by apply leibniz_equiv, excl_auth_agree. Qed.
 
-  Lemma excl_auth_frag_validN_op_1_l n a b : ✓{n} (◯E a ⋅ ◯E b) → False.
+  Lemma excl_auth_auth_op_validN n a b : ✓{n} (●E a ⋅ ●E b) ↔ False.
+  Proof. apply auth_auth_op_validN. Qed.
+  Lemma excl_auth_auth_op_valid a b : ✓ (●E a ⋅ ●E b) ↔ False.
+  Proof. apply auth_auth_op_valid. Qed.
+
+  Lemma excl_auth_frag_op_validN n a b : ✓{n} (◯E a ⋅ ◯E b) ↔ False.
   Proof. by rewrite -auth_frag_op auth_frag_validN. Qed.
-  Lemma excl_auth_frag_valid_op_1_l a b : ✓ (◯E a ⋅ ◯E b) → False.
+  Lemma excl_auth_frag_op_valid a b : ✓ (◯E a ⋅ ◯E b) ↔ False.
   Proof. by rewrite -auth_frag_op auth_frag_valid. Qed.
 
   Lemma excl_auth_update a b a' : ●E a ⋅ ◯E b ~~> ●E a' ⋅ ◯E a'.
