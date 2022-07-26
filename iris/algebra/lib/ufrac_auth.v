@@ -13,8 +13,8 @@ difference:
 ✓ (a ⋅ b) → ●U_p a ~~> ●U_(p + q) (a ⋅ b) ⋅ ◯U_q b
 >>
 
-- We no longer have the [◯U{1} a] is the exclusive fragmental element (cf.
-  [frac_auth_frag_validN_op_1_l]).
+- We no longer have the [◯U_1 a] is an exclusive fragmental element. That is,
+  while [◯F{1} a ⋅ ◯F{q} b] is vacuously false, [◯U_1 a ⋅ ◯U_q2 b] is not.
 *)
 From iris.algebra Require Export auth frac updates local_updates.
 From iris.algebra Require Import ufrac proofmode_classes.
