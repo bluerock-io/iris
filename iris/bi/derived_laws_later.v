@@ -183,7 +183,7 @@ Lemma later_laterN n P : ▷^(S n) P ⊣⊢ ▷ ▷^n P.
 Proof. done. Qed.
 Lemma laterN_later n P : ▷^(S n) P ⊣⊢ ▷^n ▷ P.
 Proof. induction n; f_equiv/=; auto. Qed.
-Lemma laterN_plus n1 n2 P : ▷^(n1 + n2) P ⊣⊢ ▷^n1 ▷^n2 P.
+Lemma laterN_add n1 n2 P : ▷^(n1 + n2) P ⊣⊢ ▷^n1 ▷^n2 P.
 Proof. induction n1; f_equiv/=; auto. Qed.
 Lemma laterN_le n1 n2 P : n1 ≤ n2 → ▷^n1 P ⊢ ▷^n2 P.
 Proof. induction 1; simpl; by rewrite -?later_intro. Qed.
