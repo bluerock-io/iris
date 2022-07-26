@@ -118,6 +118,13 @@ Section ufrac_auth.
   Lemma ufrac_auth_frag_op q1 q2 a1 a2 : ◯U_(q1+q2) (a1 ⋅ a2) ≡ ◯U_q1 a1 ⋅ ◯U_q2 a2.
   Proof. done. Qed.
 
+  Lemma ufrac_auth_frag_op_validN n q1 q2 a b :
+    ✓{n} (◯U_q1 a ⋅ ◯U_q2 b) ↔ ✓{n} (a ⋅ b).
+  Proof. by rewrite -ufrac_auth_frag_op ufrac_auth_frag_validN. Qed.
+  Lemma ufrac_auth_frag_op_valid q1 q2 a b :
+    ✓ (◯U_q1 a ⋅ ◯U_q2 b) ↔ ✓ (a ⋅ b).
+  Proof. by rewrite -ufrac_auth_frag_op ufrac_auth_frag_valid. Qed.
+
   Global Instance ufrac_auth_is_op q q1 q2 a a1 a2 :
     IsOp q q1 q2 → IsOp a a1 a2 → IsOp' (◯U_q a) (◯U_q1 a1) (◯U_q2 a2).
   Proof. by rewrite /IsOp' /IsOp=> /leibniz_equiv_iff -> ->. Qed.
