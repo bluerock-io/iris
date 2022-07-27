@@ -161,7 +161,7 @@ Qed.
   where ["Hcredit"] is a credit available in the context and ["HP"] is the
   assumption from which a later should be stripped. *)
 Lemma lc_fupd_elim_later `{!invGS Σ} `{!HasLc Σ} E P :
-   £1 -∗ (▷ P) -∗ |={E}=> P.
+   £ 1 -∗ (▷ P) -∗ |={E}=> P.
 Proof.
   iIntros "Hf Hupd".
   rewrite uPred_fupd_unseal /uPred_fupd_def has_credits.
@@ -174,7 +174,7 @@ Qed.
   This is typically used as [iApply (lc_fupd_add_later with "Hcredit")],
   where ["Hcredit"] is a credit available in the context. *)
 Lemma lc_fupd_add_later `{!invGS Σ} `{!HasLc Σ} E1 E2 P :
-  £1 -∗ (▷ |={E1, E2}=> P) -∗ |={E1, E2}=> P.
+  £ 1 -∗ (▷ |={E1, E2}=> P) -∗ |={E1, E2}=> P.
 Proof.
   iIntros "Hf Hupd". iApply (fupd_trans E1 E1).
   iApply (lc_fupd_elim_later with "Hf Hupd").
