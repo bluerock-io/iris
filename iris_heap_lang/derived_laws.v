@@ -384,8 +384,8 @@ Lemma wp_resolve_proph s E (p : proph_id) (pvs : list (val * val)) v :
   {{{ pvs', RET (LitV LitUnit); ⌜pvs = (LitV LitUnit, v)::pvs'⌝ ∗ proph p pvs' }}}.
 Proof.
   iIntros (Φ) "Hp HΦ". iApply (wp_resolve with "Hp"); first done.
-  iApply lifting.wp_pure_step_later; first done. iApply wp_value.
-  iIntros "!>" (vs') "HEq Hp". iApply "HΦ". iFrame.
+  iApply lifting.wp_pure_step_later; first done.
+  iIntros "!> _". iApply wp_value. iIntros (vs') "HEq Hp". iApply "HΦ". iFrame.
 Qed.
 
 Lemma wp_resolve_cmpxchg_suc s E l (p : proph_id) (pvs : list (val * val)) v1 v2 v :

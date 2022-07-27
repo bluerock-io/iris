@@ -140,8 +140,8 @@ Proof.
   iDestruct (steps_lb_valid with "Hsteps Hlb") as %?.
   iMod ("Hwp" $! σ1 ns κ κs m with "[$Hσ $Hκ $Hsteps]") as "[%Hs Hwp]".
   iModIntro. iSplit; [done|].
-  iIntros (e2 σ2 efs Hstep).
-  iMod ("Hwp" with "[//]") as "Hwp".
+  iIntros (e2 σ2 efs Hstep) "Hcred".
+  iMod ("Hwp" with "[//] Hcred") as "Hwp".
   iIntros "!> !>". iMod "Hwp" as "Hwp". iIntros "!>".
   iApply (step_fupdN_wand with "Hwp").
   iIntros "Hwp". iMod "Hwp" as "(($ & $ & Hsteps)& Hwp & $)".
@@ -178,7 +178,7 @@ Lemma wp_rec_löb s E f x e Φ Ψ :
 Proof.
   iIntros "#Hrec". iLöb as "IH". iIntros (v) "HΨ".
   iApply lifting.wp_pure_step_later; first done.
-  iNext. iApply ("Hrec" with "[] HΨ"). iIntros "!>" (w) "HΨ".
+  iIntros "!> _". iApply ("Hrec" with "[] HΨ"). iIntros "!>" (w) "HΨ".
   iApply ("IH" with "HΨ").
 Qed.
 
@@ -188,7 +188,7 @@ Lemma wp_fork s E e Φ :
 Proof.
   iIntros "He HΦ". iApply wp_lift_atomic_head_step; [done|].
   iIntros (σ1 ns κ κs nt) "(?&?&Hsteps) !>"; iSplit; first by eauto with head_step.
-  iIntros "!>" (v2 σ2 efs Hstep); inv_head_step.
+  iIntros "!>" (v2 σ2 efs Hstep) "_"; inv_head_step.
   iMod (steps_auth_update_S with "Hsteps") as "Hsteps".
   by iFrame.
 Qed.
@@ -513,7 +513,7 @@ Lemma wp_new_proph s E :
 Proof.
   iIntros (Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; first done.
   iIntros (σ1 ns κ κs nt) "(Hσ & HR & Hsteps) !>". iSplit; first by eauto with head_step.
-  iIntros "!>" (v2 σ2 efs Hstep). inv_head_step.
+  iIntros "!>" (v2 σ2 efs Hstep) "_". inv_head_step.
   rename select proph_id into p.
   iMod (steps_auth_update_S with "Hsteps") as "Hsteps".
   iMod (proph_map_new_proph p with "HR") as "[HR Hp]"; first done.
@@ -582,9 +582,9 @@ Proof.
   - rewrite -assoc.
     iMod ("WPe" $! σ1 ns _ _ nt with "[$Hσ $Hκ $Hsteps]") as "[Hs WPe]". iModIntro. iSplit.
     { iDestruct "Hs" as %?. iPureIntro. destruct s; [ by apply resolve_reducible | done]. }
-    iIntros (e2 σ2 efs step). apply step_resolve in step; last done.
+    iIntros (e2 σ2 efs step) "Hcred". apply step_resolve in step; last done.
     inv_head_step; simplify_list_eq.
-    iMod ("WPe" $! (Val w') σ2 efs with "[%]") as "WPe".
+    iMod ("WPe" $! (Val w') σ2 efs with "[%] Hcred") as "WPe".
     { by eexists [] _ _. }
     iModIntro. iNext. iMod "WPe" as "WPe". iModIntro.
     iApply (step_fupdN_wand with "WPe"); iIntros "> [($ & Hκ & $) WPe]".

@@ -366,7 +366,7 @@ Section fupd_derived.
     by replace (E1 ∪ E ∖ E1) with E by (by apply union_difference_L).
   Qed.
   (* A variant of [fupd_mask_frame] that works well for accessors: Tailored to
-     elliminate updates of the form [|={E1,E1∖E2}=> Q] and provides a way to
+     eliminate updates of the form [|={E1,E1∖E2}=> Q] and provides a way to
      transform the closing view shift instead of letting you prove the same
      side-conditions twice. *)
   Lemma fupd_mask_frame_acc E E' E1(*Eo*) E2(*Em*) P Q :
@@ -529,6 +529,24 @@ Section fupd_derived.
   Proof.
     induction n as [|n IH]; simpl; [done|].
     rewrite step_fupd_frame_l IH //=.
+  Qed.
+
+  Lemma step_fupdN_add n m Eo Ei P :
+    (|={Eo}[Ei]▷=>^(n+m) P) ⊣⊢ (|={Eo}[Ei]▷=>^n |={Eo}[Ei]▷=>^m P).
+  Proof.
+    induction n as [ | n IH]; simpl; [done | by rewrite IH].
+  Qed.
+
+  (** The sidecondition [Ei ⊆ Eo] is needed because for [n = 0],
+    this lemma introduces updates in the same way as [step_fupdN_intro]
+    (in fact, for [n = 0] it is essentially [step_fupdN_intro], modulo laters). *)
+  Lemma step_fupdN_le n m Eo Ei P :
+    n ≤ m → Ei ⊆ Eo → (|={Eo}[Ei]▷=>^n P) -∗ (|={Eo}[Ei]▷=>^m P).
+  Proof.
+    intros ??. replace m with ((m - n) + n) by lia.
+    rewrite step_fupdN_add.
+    rewrite -(step_fupdN_intro _ _ (m - n)); last done.
+    by rewrite -laterN_intro.
   Qed.
 
   Section fupd_plainly_derived.

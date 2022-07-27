@@ -19,30 +19,34 @@ Notation wptp s t Φs := ([∗ list] e;Φ ∈ t;Φs, WP e @ s; ⊤ {{ Φ }})%I.
 
 Lemma wp_step s e1 σ1 ns κ κs e2 σ2 efs nt Φ :
   prim_step e1 σ1 κ e2 σ2 efs →
-  state_interp σ1 ns (κ ++ κs) nt -∗ WP e1 @ s; ⊤ {{ Φ }}
+  state_interp σ1 ns (κ ++ κs) nt -∗
+  £ (S (num_laters_per_step ns)) -∗
+  WP e1 @ s; ⊤ {{ Φ }}
     ={⊤,∅}=∗ |={∅}▷=>^(S $ num_laters_per_step ns) |={∅,⊤}=>
     state_interp σ2 (S ns) κs (nt + length efs) ∗ WP e2 @ s; ⊤ {{ Φ }} ∗
     wptp s efs (replicate (length efs) fork_post).
 Proof.
-  rewrite {1}wp_unfold /wp_pre. iIntros (?) "Hσ H".
+  rewrite {1}wp_unfold /wp_pre. iIntros (?) "Hσ Hcred H".
   rewrite (val_stuck e1 σ1 κ e2 σ2 efs) //.
   iMod ("H" $! σ1 ns with "Hσ") as "(_ & H)". iModIntro.
-  iApply (step_fupdN_wand with "[H]"); first by iApply "H". iIntros ">H".
+  iApply (step_fupdN_wand with "(H [//] Hcred)"). iIntros ">H".
   by rewrite Nat.add_comm big_sepL2_replicate_r.
 Qed.
 
 Lemma wptp_step s es1 es2 κ κs σ1 ns σ2 Φs nt :
   step (es1,σ1) κ (es2, σ2) →
-  state_interp σ1 ns (κ ++ κs) nt -∗ wptp s es1 Φs -∗
+  state_interp σ1 ns (κ ++ κs) nt -∗
+  £ (S (num_laters_per_step ns)) -∗
+  wptp s es1 Φs -∗
   ∃ nt', |={⊤,∅}=> |={∅}▷=>^(S $ num_laters_per_step$ ns) |={∅,⊤}=>
          state_interp σ2 (S ns) κs (nt + nt') ∗
          wptp s es2 (Φs ++ replicate nt' fork_post).
 Proof.
-  iIntros (Hstep) "Hσ Ht".
+  iIntros (Hstep) "Hσ Hcred Ht".
   destruct Hstep as [e1' σ1' e2' σ2' efs t2' t3 Hstep]; simplify_eq/=.
   iDestruct (big_sepL2_app_inv_l with "Ht") as (Φs1 Φs2 ->) "[? Ht]".
   iDestruct (big_sepL2_cons_inv_l with "Ht") as (Φ Φs3 ->) "[Ht ?]".
-  iExists _. iMod (wp_step with "Hσ Ht") as "H"; first done. iModIntro.
+  iExists _. iMod (wp_step with "Hσ Hcred Ht") as "H"; first done. iModIntro.
   iApply (step_fupdN_wand with "H"). iIntros ">($ & He2 & Hefs) !>".
   rewrite -(assoc_L app) -app_comm_cons. iFrame.
 Qed.
@@ -58,20 +62,23 @@ Local Fixpoint steps_sum (num_laters_per_step : nat → nat) (start ns : nat) : 
 
 Lemma wptp_steps s n es1 es2 κs κs' σ1 ns σ2 Φs nt :
   nsteps n (es1, σ1) κs (es2, σ2) →
-  state_interp σ1 ns (κs ++ κs') nt -∗ wptp s es1 Φs
+  state_interp σ1 ns (κs ++ κs') nt -∗
+  £ (steps_sum num_laters_per_step ns n) -∗
+  wptp s es1 Φs
   ={⊤,∅}=∗ |={∅}▷=>^(steps_sum num_laters_per_step ns n) |={∅,⊤}=> ∃ nt',
     state_interp σ2 (n + ns) κs' (nt + nt') ∗
     wptp s es2 (Φs ++ replicate nt' fork_post).
 Proof.
   revert nt es1 es2 κs κs' σ1 ns σ2 Φs.
   induction n as [|n IH]=> nt es1 es2 κs κs' σ1 ns σ2 Φs /=.
-  { inversion_clear 1; iIntros "? ?"; iExists 0=> /=.
+  { inversion_clear 1; iIntros "? ? ?"; iExists 0=> /=.
     rewrite Nat.add_0_r right_id_L. iFrame. by iApply fupd_mask_subseteq. }
-  iIntros (Hsteps) "Hσ He". inversion_clear Hsteps as [|?? [t1' σ1']].
-  rewrite -(assoc_L (++)) Nat_iter_add plus_n_Sm.
-  iDestruct (wptp_step with "Hσ He") as (nt') ">H"; first eauto; simplify_eq.
+  iIntros (Hsteps) "Hσ Hcred He". inversion_clear Hsteps as [|?? [t1' σ1']].
+  rewrite -(assoc_L (++)) Nat_iter_add -{1}plus_Sn_m plus_n_Sm.
+  rewrite lc_split. iDestruct "Hcred" as "[Hc1 Hc2]".
+  iDestruct (wptp_step with "Hσ Hc1 He") as (nt') ">H"; first eauto; simplify_eq.
   iModIntro. iApply step_fupdN_S_fupd. iApply (step_fupdN_wand with "H").
-  iIntros ">(Hσ & He)". iMod (IH with "Hσ He") as "IH"; first done. iModIntro.
+  iIntros ">(Hσ & He)". iMod (IH with "Hσ Hc2 He") as "IH"; first done. iModIntro.
   iApply (step_fupdN_wand with "IH"). iIntros ">IH".
   iDestruct "IH" as (nt'') "[??]".
   rewrite -Nat.add_assoc -(assoc_L app) -replicate_plus. by eauto with iFrame.
@@ -89,12 +96,14 @@ Qed.
 
 Local Lemma wptp_strong_adequacy Φs κs' s n es1 es2 κs σ1 ns σ2 nt:
   nsteps n (es1, σ1) κs (es2, σ2) →
-  state_interp σ1 ns (κs ++ κs') nt -∗ wptp s es1 Φs
+  state_interp σ1 ns (κs ++ κs') nt -∗
+  £ (steps_sum num_laters_per_step ns n) -∗
+  wptp s es1 Φs
   ={⊤,∅}=∗ |={∅}▷=>^(steps_sum num_laters_per_step ns n) |={∅,⊤}=> ∃ nt',
     state_interp σ2 (n + ns) κs' (nt + nt') ∗
     [∗ list] e;Φ ∈ es2;Φs ++ replicate nt' fork_post, from_option Φ True (to_val e).
 Proof.
-  iIntros (Hstep) "Hσ He". iMod (wptp_steps with "Hσ He") as "Hwp"; first done.
+  iIntros (Hstep) "Hσ Hcred He". iMod (wptp_steps with "Hσ Hcred He") as "Hwp"; first done.
   iModIntro. iApply (step_fupdN_wand with "Hwp").
   iMod 1 as (nt') "(Hσ & Ht)"; simplify_eq/=.
   iExists _. iFrame "Hσ".
@@ -110,10 +119,11 @@ Local Lemma wptp_progress Φs κs' n es1 es2 κs σ1 ns σ2 nt e2 :
   nsteps n (es1, σ1) κs (es2, σ2) →
   e2 ∈ es2 →
   state_interp σ1 ns (κs ++ κs') nt -∗
+  £ (steps_sum num_laters_per_step ns n) -∗
   wptp NotStuck es1 Φs
   ={⊤,∅}=∗ |={∅}▷=>^(steps_sum num_laters_per_step ns n) |={∅}=> ⌜not_stuck e2 σ2⌝.
 Proof.
-  iIntros (Hstep Hel) "Hσ He". iMod (wptp_steps with "Hσ He") as "Hwp"; first done.
+  iIntros (Hstep Hel) "Hσ Hcred He". iMod (wptp_steps with "Hσ Hcred He") as "Hwp"; first done.
   iModIntro. iApply (step_fupdN_wand with "Hwp").
   iMod 1 as (nt') "(Hσ & Ht)"; simplify_eq/=.
   eapply elem_of_list_lookup in Hel as [i Hlook].
@@ -145,13 +155,14 @@ Local Lemma wp_progress_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} es σ1 n 
   not_stuck e2 σ2.
 Proof.
   iIntros (Hwp ??).
-  eapply (step_fupdN_soundness_gen _ use_credits (steps_sum num_laters_per_step 0 n) 0).
-  iIntros (Hinv Hc) "_".
+  eapply (step_fupdN_soundness_gen _ use_credits (steps_sum num_laters_per_step 0 n)
+    (steps_sum num_laters_per_step 0 n)).
+  iIntros (Hinv Hc) "Hcred".
   iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp)"; first done.
   iDestruct (big_sepL2_length with "Hwp") as %Hlen1.
   iMod (@wptp_progress _ _
        (IrisG _ _ Hinv stateI fork_post num_laters_per_step state_interp_mono) _ []
-    with "[Hσ] Hwp") as "H"; [done| done |by rewrite right_id_L|].
+    with "[Hσ] Hcred  Hwp") as "H"; [done| done |by rewrite right_id_L|].
   iAssert (|={∅}▷=>^(steps_sum num_laters_per_step 0 n) |={∅}=> ⌜not_stuck e2 σ2⌝)%I
     with "[-]" as "H"; last first.
   { destruct steps_sum; [done|]. by iApply step_fupdN_S_fupd. }
@@ -202,13 +213,14 @@ Lemma wp_strong_adequacy_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} s es σ1
   φ.
 Proof.
   iIntros (Hwp ?).
-  eapply (step_fupdN_soundness_gen _ use_credits (steps_sum num_laters_per_step 0 n) 0).
-  iIntros (Hinv Hc) "_". (* no credit generation for now *)
+  eapply (step_fupdN_soundness_gen _ use_credits (steps_sum num_laters_per_step 0 n)
+    (steps_sum num_laters_per_step 0 n)).
+  iIntros (Hinv Hc) "Hcred".
   iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp & Hφ)"; first done.
   iDestruct (big_sepL2_length with "Hwp") as %Hlen1.
   iMod (@wptp_strong_adequacy _ _
        (IrisG _ _ Hinv stateI fork_post num_laters_per_step state_interp_mono) _ []
-    with "[Hσ] Hwp") as "H"; [done|by rewrite right_id_L|].
+    with "[Hσ] Hcred Hwp") as "H"; [done|by rewrite right_id_L|].
   iAssert (|={∅}▷=>^(steps_sum num_laters_per_step 0 n) |={∅}=> ⌜φ⌝)%I
     with "[-]" as "H"; last first.
   { destruct steps_sum; [done|]. by iApply step_fupdN_S_fupd. }

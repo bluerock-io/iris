@@ -13,7 +13,7 @@ Class irisGS (Λ : language) (Σ : gFunctors) := IrisG {
   (** The state interpretation is an invariant that should hold in
   between each step of reduction. Here [Λstate] is the global state,
   the first [nat] is the number of steps already performed by the
-  program, [list Λobservation] are the remaining observations, and the
+  program, [list (observation Λ)] are the remaining observations, and the
   last [nat] is the number of forked-off threads (not the total number
   of threads, which is one higher because there is always a main
   thread). *)
@@ -24,11 +24,11 @@ Class irisGS (Λ : language) (Σ : gFunctors) := IrisG {
   keep track of resources precisely, as in e.g. Iron. *)
   fork_post : val Λ → iProp Σ;
 
-  (** Number of additional logical steps (i.e., later modality in the
-  definition of WP) per physical step, depending on the physical steps
-  counter. In addition to these steps, the definition of WP adds one
-  extra later per physical step to make sure that there is at least
-  one later for each physical step. *)
+  (** The number of additional logical steps (i.e., later modality in the
+  definition of WP) and later credits per physical step is
+  [S (num_laters_per_step ns)], where [ns] is the number of physical steps
+  executed so far. We add one to [num_laters_per_step] to ensure that there
+  is always at least one later and later credit for each physical step. *)
   num_laters_per_step : nat → nat;
 
   (** When performing pure steps, the state interpretation needs to be
@@ -47,6 +47,19 @@ Class irisGS (Λ : language) (Σ : gFunctors) := IrisG {
 }.
 Global Opaque iris_invGS.
 
+(** The predicate we take the fixpoint of in order to define the WP. *)
+(** In the step case, we both provide [S (num_laters_per_step ns)]
+  later credits, as well as an iterated update modality that allows
+  stripping as many laters, where [ns] is the number of steps already taken.
+  We have both as each of these provides distinct advantages:
+  - Later credits do not have to be used right away, but can be kept to
+    eliminate laters at a later point.
+  - The step-taking update composes well in parallel: we can independently
+    compose two clients who want to eliminate their laters for the same
+    physical step, which is not possible with later credits, as they
+    can only be used by exactly one client.
+  - The step-taking update can even be used by clients that opt out of
+    later credits, e.g. because they use [BiFUpdPlainly]. *)
 Definition wp_pre `{!irisGS Λ Σ} (s : stuckness)
     (wp : coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ) :
     coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ := λ E e1 Φ,
@@ -55,7 +68,8 @@ Definition wp_pre `{!irisGS Λ Σ} (s : stuckness)
   | None => ∀ σ1 ns κ κs nt,
      state_interp σ1 ns (κ ++ κs) nt ={E,∅}=∗
        ⌜if s is NotStuck then reducible e1 σ1 else True⌝ ∗
-       ∀ e2 σ2 efs, ⌜prim_step e1 σ1 κ e2 σ2 efs⌝
+       ∀ e2 σ2 efs, ⌜prim_step e1 σ1 κ e2 σ2 efs⌝ -∗
+         £ (S (num_laters_per_step ns))
          ={∅}▷=∗^(S $ num_laters_per_step ns) |={∅,E}=>
          state_interp σ2 (S ns) κs (length efs + nt) ∗
          wp E e2 Φ ∗
@@ -65,7 +79,7 @@ Definition wp_pre `{!irisGS Λ Σ} (s : stuckness)
 Local Instance wp_pre_contractive `{!irisGS Λ Σ} s : Contractive (wp_pre s).
 Proof.
   rewrite /wp_pre /= => n wp wp' Hwp E e1 Φ.
-  do 24 (f_contractive || f_equiv).
+  do 25 (f_contractive || f_equiv).
   (* FIXME : simplify this proof once we have a good definition and a
      proper instance for step_fupdN. *)
   induction num_laters_per_step as [|k IH]; simpl.
@@ -103,7 +117,7 @@ Proof.
   (* FIXME: figure out a way to properly automate this proof *)
   (* FIXME: reflexivity, as being called many times by f_equiv and f_contractive
   is very slow here *)
-  do 24 (f_contractive || f_equiv).
+  do 25 (f_contractive || f_equiv).
   (* FIXME : simplify this proof once we have a good definition and a
      proper instance for step_fupdN. *)
   induction num_laters_per_step as [|k IHk]; simpl; last by rewrite IHk.
@@ -119,7 +133,7 @@ Global Instance wp_contractive s E e n :
   Proper (pointwise_relation _ (dist_later n) ==> dist n) (wp (PROP:=iProp Σ) s E e).
 Proof.
   intros He Φ Ψ HΦ. rewrite !wp_unfold /wp_pre He /=.
-  do 23 (f_contractive || f_equiv).
+  do 24 (f_contractive || f_equiv).
   (* FIXME : simplify this proof once we have a good definition and a
      proper instance for step_fupdN. *)
   induction num_laters_per_step as [|k IHk]; simpl; last by rewrite IHk.
@@ -140,8 +154,8 @@ Proof.
   iIntros (σ1 ns κ κs nt) "Hσ".
   iMod (fupd_mask_subseteq E1) as "Hclose"; first done.
   iMod ("H" with "[$]") as "[% H]".
-  iModIntro. iSplit; [by destruct s1, s2|]. iIntros (e2 σ2 efs Hstep).
-  iMod ("H" with "[//]") as "H". iIntros "!> !>".  iMod "H". iModIntro.
+  iModIntro. iSplit; [by destruct s1, s2|]. iIntros (e2 σ2 efs Hstep) "Hcred".
+  iMod ("H" with "[//] Hcred") as "H". iIntros "!> !>".  iMod "H". iModIntro.
   iApply (step_fupdN_wand with "[H]"); first by iApply "H".
   iIntros ">($ & H & Hefs)". iMod "Hclose" as "_". iModIntro. iSplitR "Hefs".
   - iApply ("IH" with "[//] H HΦ").
@@ -165,8 +179,8 @@ Proof.
   destruct (to_val e) as [v|] eqn:He.
   { by iDestruct "H" as ">>> $". }
   iIntros (σ1 ns κ κs nt) "Hσ". iMod "H". iMod ("H" $! σ1 with "Hσ") as "[$ H]".
-  iModIntro. iIntros (e2 σ2 efs Hstep).
-  iApply (step_fupdN_wand with "[H]"); first by iApply "H".
+  iModIntro. iIntros (e2 σ2 efs Hstep) "Hcred".
+  iApply (step_fupdN_wand with "(H [//] Hcred)").
   iIntros ">(Hσ & H & Hefs)". destruct s.
   - rewrite !wp_unfold /wp_pre. destruct (to_val e2) as [v2|] eqn:He2.
     + iDestruct "H" as ">> $". by iFrame.
@@ -175,6 +189,49 @@ Proof.
   - destruct (atomic _ _ _ _ _ Hstep) as [v <-%of_to_val].
     rewrite wp_value_fupd'. iMod "H" as ">H".
     iModIntro. iFrame "Hσ Hefs". by iApply wp_value_fupd'.
+Qed.
+
+(** This lemma gives us access to the later credits that are generated in each step,
+  assuming that we have instantiated [num_laters_per_step] with a non-trivial (e.g. linear)
+  function.
+  This lemma can be used to provide a "regeneration" mechanism for later credits.
+  [state_interp] will have to be defined in a way that involves the required regneration
+  tokens. TODO: point to an example of how this is used.
+
+  In detail, a client can use this lemma as follows:
+  * the client obtains the state interpretation [state_interp _ ns _ _],
+  * it uses some ghost state wired up to the interpretation to know that
+    [ns = k + m], and update the state interpretation to [state_interp _ m _ _],
+  * _after_ [e] has finally stepped, we get [num_laters_per_step k] later credits
+    that we can use to prove [P] in the postcondition, and we have to update
+    the state interpretation from [state_interp _ (S m) _ _] to
+    [state_interp _ (S ns) _ _] again. *)
+Lemma wp_credit_access s E e Φ P :
+  TCEq (to_val e) None →
+  (∀ m k, num_laters_per_step m + num_laters_per_step k ≤ num_laters_per_step (m + k)) →
+  (∀ σ1 ns κs nt, state_interp σ1 ns κs nt ={E}=∗
+    ∃ k m, state_interp σ1 m κs nt ∗ ⌜ns = (m + k)%nat⌝ ∗
+    (∀ nt σ2 κs, £ (num_laters_per_step k) -∗ state_interp σ2 (S m) κs nt ={E}=∗
+      state_interp σ2 (S ns) κs nt ∗ P)) -∗
+  WP e @ s; E {{ v, P ={E}=∗ Φ v }} -∗
+  WP e @ s; E {{ Φ }}.
+Proof.
+  rewrite !wp_unfold /wp_pre /=. iIntros (-> Htri) "Hupd Hwp".
+  iIntros (σ1 ns κ κs nt) "Hσ1".
+  iMod ("Hupd" with "Hσ1") as (k m) "(Hσ1 & -> & Hpost)".
+  iMod ("Hwp" with "Hσ1") as "[$ Hwp]". iModIntro.
+  iIntros (e2 σ2 efs Hstep) "Hc".
+  iDestruct "Hc" as "[Hone Hc]".
+  iPoseProof (lc_weaken with "Hc") as "Hc"; first apply Htri.
+  iDestruct "Hc" as "[Hm Hk]".
+  iCombine "Hone Hm" as "Hm".
+  iApply (step_fupd_wand with "(Hwp [//] Hm)"). iIntros "Hwp".
+  iApply (step_fupdN_le (num_laters_per_step m)); [ | done | ].
+  { etrans; last apply Htri. lia. }
+  iApply (step_fupdN_wand with "Hwp"). iIntros ">(SI & Hwp & $)".
+  iMod ("Hpost" with "Hk SI") as "[$ HP]". iModIntro.
+  iApply (wp_strong_mono with "Hwp"); [by auto..|].
+  iIntros (v) "HΦ". iApply ("HΦ" with "HP").
 Qed.
 
 (** In this stronger version of [wp_step_fupdN], the masks in the
@@ -202,7 +259,7 @@ Proof.
   destruct (decide (n ≤ num_laters_per_step ns)) as [Hn|Hn]; first last.
   { iDestruct "H" as "[Hn _]". iMod ("Hn" with "Hσ") as %?. lia. }
   iDestruct "H" as "[_ [>HP Hwp]]". iMod ("Hwp" with "[$]") as "[$ H]". iMod "HP".
-  iIntros "!>" (e2 σ2 efs Hstep). iMod ("H" $! e2 σ2 efs with "[% //]") as "H".
+  iIntros "!>" (e2 σ2 efs Hstep) "Hcred". iMod ("H" $! e2 σ2 efs with "[% //] Hcred") as "H".
   iIntros "!>!>". iMod "H". iMod "HP". iModIntro.
   revert n Hn. generalize (num_laters_per_step ns)=>n0 n Hn.
   iInduction n as [|n] "IH" forall (n0 Hn).
@@ -224,9 +281,9 @@ Proof.
   iIntros (σ1 step κ κs n) "Hσ". iMod ("H" with "[$]") as "[% H]".
   iModIntro; iSplit.
   { destruct s; eauto using reducible_fill. }
-  iIntros (e2 σ2 efs Hstep).
+  iIntros (e2 σ2 efs Hstep) "Hcred".
   destruct (fill_step_inv e σ1 κ e2 σ2 efs) as (e2'&->&?); auto.
-  iMod ("H" $! e2' σ2 efs with "[//]") as "H". iIntros "!>!>".
+  iMod ("H" $! e2' σ2 efs with "[//] Hcred") as "H". iIntros "!>!>".
   iMod "H". iModIntro. iApply (step_fupdN_wand with "H"). iIntros "H".
   iMod "H" as "($ & H & $)". iModIntro. by iApply "IH".
 Qed.
@@ -241,8 +298,8 @@ Proof.
   iIntros (σ1 ns κ κs nt) "Hσ". iMod ("H" with "[$]") as "[% H]".
   iModIntro; iSplit.
   { destruct s; eauto using reducible_fill_inv. }
-  iIntros (e2 σ2 efs Hstep).
-  iMod ("H" $! _ _ _ with "[]") as "H"; first eauto using fill_step.
+  iIntros (e2 σ2 efs Hstep) "Hcred".
+  iMod ("H" $! _ _ _ with "[] Hcred") as "H"; first eauto using fill_step.
   iIntros "!> !>". iMod "H". iModIntro. iApply (step_fupdN_wand with "H").
   iIntros "H". iMod "H" as "($ & H & $)". iModIntro. by iApply "IH".
 Qed.

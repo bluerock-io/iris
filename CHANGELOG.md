@@ -70,8 +70,7 @@ lemma.
   the library that defines the `libG`.
 * Prepare for supporting later credits, by adding a resource `£ n` describing
   ownership of `n` credits that can be eliminated at fancy updates.
-  Note that the definition of WP has not yet been updated with support for later
-  credits, so it is not yet possible to actually generate any credits.
+  Note that HeapLang has not yet been equipped with support for later credits.
   To retain backwards compatibility with the interaction laws of fancy updates
   with the plainly modality (`BiFUpdPlainly`), which are incompatible with
   later credits, the logic is parameterized by two typeclasses, `HasLc`
@@ -88,8 +87,17 @@ lemma.
 
 **Changes in `program_logic`:**
 
-* In line with the preliminary support for later credits (see `base_logic`), the
-  adequacy statements have been changed to account for `HasLc` and `HasNoLc`:
+* The definition of the weakest precondition has been changed to generate later credits
+  (see `base_logic`) for each step:
+  + The member `num_laters_per_step` of the `irisGS` class now also determines the number
+    of later credits that are generated: `S (num_laters_per_step ns)` if `ns` steps
+    have been taken.
+  + The weakest precondition offers credits after a `prim_step` has been proven.
+  + All lifting lemmas have been altered to provide credits.
+    `wp_lift_step_fupdN` provides `S (num_laters_per_step ns)` credits, while all other
+    lemmas always provide one credit.
+* In line with the support for later credits (see `base_logic`), the adequacy statements
+  have been changed to account for `HasLc` and `HasNoLc`:
   + The lemma `twp_total` (total adequacy) provides an additional assumption `HasNoLc`.
     Clients of the adequacy proof will need to introduce this additional assumption and
     keep it around in case `BiFUpdPlainly` is used.
@@ -112,14 +120,15 @@ lemma.
   number of steps taken so far. This number is tied to ghost state in the state
   interpretation, which is exposed, updated, and used with new lemmas
   `wp_lb_init`, `wp_lb_update`, and `wp_step_fupdN_lb`. (by Jonas Kastberg Hinrichsen)
-* In line with the preliminary support for later credits (see `base_logic`), the
-  adequacy statements for HeapLang have been changed:
+* In line with the support for later credits (see `base_logic`), the adequacy statements
+  for HeapLang have been changed:
   + `heap_adequacy` provides the additional assumption `HasLc`, which needs to be
     introduced by clients and will enable using new proof rules for later credits
     in the future.
     This precludes usage of the laws in `BiFUpdPlainly` in the HeapLang instance of Iris.
   + `heap_total` provides the additional assumption `HasNoLc`, which needs to be
     introduced by clients and needs to be kept around to use the laws in `BiFUpdPlainly`.
+  Currently, the primitive laws for HeapLang do not yet provide later credits.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).

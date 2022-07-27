@@ -89,8 +89,8 @@ Section later_credit_theory.
     £ (S n) ⊣⊢ £ 1 ∗ £ n.
   Proof. rewrite -lc_split //=. Qed.
 
-  Lemma lc_weaken n m :
-    m ≤ n → (£ n -∗ £ m).
+  Lemma lc_weaken {n} m :
+    m ≤ n → £ n -∗ £ m.
   Proof.
     intros [k ->]%nat_le_sum. rewrite lc_split. iIntros "[$ _]".
   Qed.

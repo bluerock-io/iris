@@ -204,7 +204,7 @@ Proof.
   iIntros (σ1 ns κ κs nt) "Hσ". iMod ("H" with "Hσ") as "[% H]".
   iIntros "!>". iSplitR.
   { destruct s; eauto using reducible_no_obs_reducible. }
-  iIntros (e2 σ2 efs) "Hstep". iMod ("H" with "Hstep") as (->) "(Hσ & H & Hfork)".
+  iIntros (e2 σ2 efs) "Hstep _". iMod ("H" with "Hstep") as (->) "(Hσ & H & Hfork)".
   iApply fupd_mask_intro; [set_solver+|]. iIntros "Hclose".
   iIntros "!>!>". iApply step_fupdN_intro=>//. iModIntro. iMod "Hclose" as "_".
   iModIntro. iFrame "Hσ". iSplitL "H".
