@@ -39,6 +39,7 @@ Proof.
   (* We want [pure_exec_fill] to be available to TC search locally. *)
   pose proof @pure_exec_fill.
   rewrite HΔ' -lifting.wp_pure_step_later //.
+  iIntros "Hwp !> _" => //.
 Qed.
 Lemma tac_twp_pure `{!heapGS Σ} Δ s E K e1 e2 φ n Φ :
   PureExec φ n e1 e2 →

@@ -85,6 +85,7 @@ Qed.
 
 
 (** Lifting *)
+(** All lifting lemmas defined here discard later credits.*)
 Section lifting.
   Context `{!ownPGS Λ Σ}.
   Implicit Types s : stuckness.
@@ -121,7 +122,7 @@ Section lifting.
     - iApply wp_lift_step; [done|]; iIntros (σ1 ns κ κs nt) "Hσκs".
       iMod "H" as (σ1' ?) "[>Hσf H]".
       iDestruct (ownP_eq with "Hσκs Hσf") as %<-.
-      iModIntro; iSplit; [by destruct s|]; iNext; iIntros (e2 σ2 efs Hstep).
+      iModIntro; iSplit; [by destruct s|]; iNext; iIntros (e2 σ2 efs Hstep) "Hcred".
       iDestruct "Hσκs" as "Hσ". rewrite /ownP.
       iMod (own_update_2 with "Hσ Hσf") as "[Hσ Hσf]".
       { apply excl_auth_update. }
@@ -152,7 +153,7 @@ Section lifting.
     { specialize (Hsafe inhabitant). destruct s; last done.
       by eapply reducible_not_val. }
     iIntros (σ1 ns κ κs nt) "Hσ". iApply fupd_mask_intro; first set_solver.
-    iIntros "Hclose". iSplit; [by destruct s|]; iNext; iIntros (e2 σ2 efs ?).
+    iIntros "Hclose". iSplit; [by destruct s|]; iNext; iIntros (e2 σ2 efs ?) "Hcred".
     destruct (Hstep σ1 κ e2 σ2 efs); auto; subst.
     by iMod "Hclose"; iModIntro; iFrame; iApply "H".
   Qed.
@@ -205,7 +206,8 @@ Section lifting.
     (∀ σ1 κ e2' σ2 efs', prim_step e1 σ1 κ e2' σ2 efs' → κ = [] ∧ σ2 = σ1 ∧ e2' = e2 ∧ efs' = []) →
     ▷ WP e2 @ s; E {{ Φ }} ⊢ WP e1 @ s; E {{ Φ }}.
   Proof.
-    intros. rewrite -(wp_lift_pure_det_step_no_fork e1 e2) //; eauto.
+    intros. rewrite -(wp_lift_pure_det_step_no_fork e1 e2) //.
+    iIntros "Hwp". iApply step_fupd_intro; first done. iNext. by iIntros "_".
   Qed.
 End lifting.
 
