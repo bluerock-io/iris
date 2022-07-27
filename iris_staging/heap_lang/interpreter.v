@@ -418,9 +418,9 @@ Section interpreter.
     repeat (case_match; simplify_eq/=; auto).
     - pose proof (explain_vals_compare_safe_fail_wf v1 v2).
       intuition eauto.
-    - pose proof (explain_vals_compare_safe_fail_wf v1 v2) as H.
-      replace (explain_vals_compare_safe_fail v1 v2) in H.
-      rewrite -> is_Some_alt in H.
+    - pose proof (explain_vals_compare_safe_fail_wf v1 v2) as Hwf.
+      replace (explain_vals_compare_safe_fail v1 v2) in Hwf.
+      rewrite -> is_Some_alt in Hwf.
       intuition eauto.
   Qed.
 
