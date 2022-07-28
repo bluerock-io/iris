@@ -176,7 +176,7 @@ Lemma wp_pure_step_credits_lb ϕ e1 e2 s E n Φ :
   PureExec ϕ 1 e1 e2 →
   ϕ →
   steps_lb n -∗
-  (£ (S n) -∗ steps_lb (S n) -∗ WP e2 @ s; E {{ Φ }}) -∗
+  ▷ (£ (S n) -∗ steps_lb (S n) -∗ WP e2 @ s; E {{ Φ }}) -∗
   WP e1 @ s; E {{ Φ }}.
 Proof.
   iIntros (Hpure Hphi) "Hlb Hwp".
@@ -203,7 +203,7 @@ Qed.
 Lemma wp_pure_step_credit s E e1 e2 ϕ Φ :
   PureExec ϕ 1 e1 e2 →
   ϕ →
-  (£ 1 -∗ WP e2 @ s; E {{ Φ }}) -∗
+  ▷ (£ 1 -∗ WP e2 @ s; E {{ Φ }}) -∗
   WP e1 @ s; E {{ Φ }}.
 Proof.
   iIntros (Hexec Hphi) "Hwp".

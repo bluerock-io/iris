@@ -336,6 +336,45 @@ Section tests.
     Show.
     Unset Printing All.
   Abort.
+
+  Check "test_wp_pure_credit_succeed".
+  Lemma test_wp_pure_credit_succeed :
+    ⊢ WP #42 + #420 {{ v, True }}.
+  Proof.
+    wp_pure as "Hcred". Show. done.
+  Qed.
+
+  Check "test_wp_pure_credit_fail".
+  Lemma test_wp_pure_credit_fail :
+    ⊢ True -∗ WP #42 + #420 {{ v, True }}.
+  Proof.
+    iIntros "Hcred".
+    Fail wp_pure as "Hcred".
+  Abort.
+
+  Check "test_wp_pure_credits_lb_succeed".
+  Lemma test_wp_pure_credits_lb_succeed n :
+    ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
+  Proof.
+    iIntros "Hlb".
+    wp_pure with "Hlb" as "Hcred". Show. done.
+  Qed.
+
+  Check "test_wp_pure_credits_lb_fail1".
+  Lemma test_wp_pure_credits_lb_fail1 n :
+    ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
+  Proof.
+    iIntros "Hlb".
+    Fail wp_pure with "Hl" as "Hcred".
+  Abort.
+
+  Check "test_wp_pure_credits_lb_fail2".
+  Lemma test_wp_pure_credits_lb_fail2 n :
+    ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
+  Proof.
+    iIntros "Hlb".
+    Fail wp_pure with "Hlb" as "Hlb".
+  Abort.
 End tests.
 
 Section mapsto_tests.
