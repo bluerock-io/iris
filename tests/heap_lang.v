@@ -352,11 +352,19 @@ Section tests.
     Fail wp_pure as "Hcred".
   Abort.
 
-  Check "test_wp_pure_credits_lb_succeed".
-  Lemma test_wp_pure_credits_lb_succeed n :
+  Check "test_wp_pure_credits_lb_succeed_spatial".
+  Lemma test_wp_pure_credits_lb_succeed_spatial n :
     ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
   Proof.
     iIntros "Hlb".
+    wp_pure with "Hlb" as "Hcred". Show. done.
+  Qed.
+
+  Check "test_wp_pure_credits_lb_succeed_intuit".
+  Lemma test_wp_pure_credits_lb_succeed_intuit n :
+    ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
+  Proof.
+    iIntros "#Hlb".
     wp_pure with "Hlb" as "Hcred". Show. done.
   Qed.
 

@@ -193,7 +193,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
      : string
 The command has indeed failed with message:
 Tactic failure: wp_pure:  "Hcred"  is not fresh.
-"test_wp_pure_credits_lb_succeed"
+"test_wp_pure_credits_lb_succeed_spatial"
      : string
 1 goal
   
@@ -202,6 +202,19 @@ Tactic failure: wp_pure:  "Hcred"  is not fresh.
   n : nat
   ============================
   "Hlb" : steps_lb (S n)
+  "Hcred" : £ (S n)
+  --------------------------------------∗
+  |={⊤}=> True
+"test_wp_pure_credits_lb_succeed_intuit"
+     : string
+1 goal
+  
+  Σ : gFunctors
+  heapGS0 : heapGS Σ
+  n : nat
+  ============================
+  "Hlb" : steps_lb (S n)
+  --------------------------------------□
   "Hcred" : £ (S n)
   --------------------------------------∗
   |={⊤}=> True

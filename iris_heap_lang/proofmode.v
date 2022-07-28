@@ -81,12 +81,12 @@ Local Lemma wp_pure_step_credits_lb' `{!heapGS_gen hlc Σ} ϕ e1 e2 s E n Φ :
 Proof.
   iIntros (??) "[>Ha Hb]". by iApply (wp_pure_step_credits_lb with "Ha Hb").
 Qed.
-Lemma tac_wp_pure_credits_lb `{!heapGS_gen hlc Σ} Δ Δ' s E i j K e1 e2 ϕ n Φ :
+Lemma tac_wp_pure_credits_lb `{!heapGS_gen hlc Σ} Δ Δ' s E i j K e1 e2 ϕ n b Φ :
   PureExec ϕ 1 e1 e2 →
   ϕ →
   MaybeIntoLaterNEnvs 1 Δ Δ' →
-  envs_lookup i Δ' = Some (false, steps_lb n)%I →
-  (match envs_simple_replace i false (Esnoc Enil i (steps_lb (S n))) Δ' with
+  envs_lookup i Δ' = Some (b, steps_lb n)%I →
+  (match envs_simple_replace i b (Esnoc Enil i (steps_lb (S n))) Δ' with
   | Some Δ'' =>
      match envs_app false (Esnoc Enil j (£ (S n))) Δ'' with
      | Some Δ''' => envs_entails Δ''' (WP fill K e2 @ s; E {{ Φ }})
@@ -103,12 +103,16 @@ Proof.
   destruct (envs_simple_replace _ _ _) as [Δ'''|] eqn:HΔ'''; [ | contradiction ].
   destruct (envs_app _ _ _) as [Δ''|] eqn:HΔ'; [ | contradiction ].
   rewrite envs_simple_replace_sound; [ | done..]. simpl.
-  rewrite right_id !later_sep.
-  apply sep_mono; first done.
-  apply later_mono. apply wand_intro_r. apply wand_intro_r.
-  rewrite -sep_assoc sep_comm -sep_assoc.
-  rewrite wand_elim_r.
-  rewrite envs_app_sound // /= right_id wand_elim_r //.
+  rewrite intuitionistically_if_elim.
+  destruct b.
+  all: rewrite right_id !later_sep.
+  all: apply sep_mono; first done.
+  all: apply later_mono, wand_intro_r, wand_intro_r.
+  all: rewrite -sep_assoc sep_comm -sep_assoc.
+  1: fold (bi_intuitionistically (steps_lb (S n))).
+  1: rewrite -(intuitionistically_intro (steps_lb (S n)) (steps_lb (S n))); last done.
+  all: rewrite wand_elim_r.
+  all: rewrite envs_app_sound // /= right_id wand_elim_r //.
 Qed.
 
 Lemma tac_wp_value_nofupd `{!heapGS_gen hlc Σ} Δ s E Φ v :
