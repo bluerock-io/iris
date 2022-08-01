@@ -425,7 +425,7 @@ commands and keyboard shortcuts.
 To use unicode you need a font that supports all the symbols, such as [Fira
 Code](https://github.com/tonsky/FiraCode/wiki/Installing). Download and install
 the font, and in VS Code press `Cmd ,` or `Ctrl ,` to go to the settings, search
-for "font", and use "FiraCode-Retina" as the font-family and optionally enable
+for "font", and use "FiraCode-Retina" on macOS or "Fira Code Retina" on Linux as the font-family and optionally enable
 ligatures.
 
 ### Unicode input setup
