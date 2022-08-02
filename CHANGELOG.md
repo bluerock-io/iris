@@ -11,6 +11,8 @@ lemma.
   affects `envs_entails_eq`, which is commonly used in the definition of
   custom proof mode tactics. All other unsealing lemmas should be internal, so
   in principle you should not rely on them.
+- Rename `coq-iris-staging` package to `coq-iris-unstable`, and also change the
+  import path from `iris.staging` to `iris.unstable`.
 
 **Changes in `algebra`:**
 
@@ -138,6 +140,8 @@ sed -i -E -f- $(find theories -name "*.v") <<EOF
 # excl_auth
 s/\bexcl_auth_frag_validN_op_1_l\b/excl_auth_frag_op_validN/g
 s/\bexcl_auth_frag_valid_op_1_l\b/excl_auth_frag_op_valid/g
+# staging → unstable
+s/\biris\.staging\b/iris.unstable/g
 EOF
 ```
 

@@ -1,7 +1,7 @@
 (* This is just an integration file for [iris_staging.algebra.list];
 both should be stabilized together. *)
 From iris.algebra Require Import cmra.
-From iris.staging.algebra Require Import list monotone.
+From iris.unstable.algebra Require Import list monotone.
 From iris.base_logic Require Import bi derived.
 From iris.prelude Require Import options.
 
