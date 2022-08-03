@@ -32,13 +32,26 @@ Section tada.
   }.
   
   Definition tada_lock_state (γ : tada_lock_name) (s : state) : iProp Σ :=
-    ghost_var γ.(tada_lock_name_state) (1/2) s ∗
+    ghost_var γ.(tada_lock_name_state) (3/4) s ∗
     if s is Locked then
-      l.(locked) γ.(tada_lock_name_lock) ∗ ghost_var γ.(tada_lock_name_state) (1/2) Locked
+      l.(locked) γ.(tada_lock_name_lock) ∗ ghost_var γ.(tada_lock_name_state) (1/4) Locked
     else True.
   Definition tada_is_lock (γ : tada_lock_name) (lk : val) : iProp Σ :=
     l.(is_lock) γ.(tada_lock_name_lock) lk
-      (ghost_var γ.(tada_lock_name_state) (1/2) Free).
+      (ghost_var γ.(tada_lock_name_state) (1/4) Free).
+
+  Global Instance tada_is_lock_persistent γ lk : Persistent (tada_is_lock γ lk).
+  Proof. apply _. Qed.
+  Global Instance tada_lock_state_timeless γ s : Timeless (tada_lock_state γ s).
+  Proof. destruct s; apply _. Qed.
+
+  Lemma tada_lock_state_exclusive γ s1 s2 :
+    tada_lock_state γ s1 -∗ tada_lock_state γ s2 -∗ False.
+  Proof.
+    iIntros "[Hvar1 _] [Hvar2 _]".
+    iDestruct (ghost_var_valid_2 with "Hvar1 Hvar2") as %[Hval _].
+    exfalso. done.
+  Qed.
 
   Lemma newlock_tada_spec :
     {{{ True }}}
@@ -46,7 +59,10 @@ Section tada.
     {{{ lk γ, RET lk; tada_is_lock γ lk ∗ tada_lock_state γ Free }}}.
   Proof.
     iIntros (Φ) "_ HΦ".
-    iMod (ghost_var_alloc Free) as (γvar) "[Hvar1 Hvar2]".
+    iMod (ghost_var_alloc Free) as (γvar) "Hvar".
+    replace 1%Qp with (3/4 + 1/4)%Qp; last first.
+    { rewrite Qp_three_quarter_quarter //. }
+    iDestruct "Hvar" as "[Hvar1 Hvar2]".
     wp_apply (l.(newlock_spec) with "Hvar2").
     iIntros (lk γlock) "Hlock".
     iApply ("HΦ" $! lk (TadaLockName _ _)).
@@ -64,7 +80,8 @@ Section tada.
     iIntros "[Hlocked Hvar1]".
     iMod "AU" as (s) "[[Hvar2 _] [_ Hclose]]".
     iDestruct (ghost_var_agree with "Hvar1 Hvar2") as %<-.
-    iMod (ghost_var_update_halves Locked with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
+    iMod (ghost_var_update_2 Locked with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
+    { rewrite Qp_quarter_three_quarter //. }
     iMod ("Hclose" with "[$Hvar2 $Hlocked $Hvar1]"). done.
   Qed.
 
@@ -76,10 +93,13 @@ Section tada.
   Proof.
     iIntros "#Hislock %Φ AU". iApply fupd_wp.
     iMod "AU" as "[[Hvar1 [Hlocked Hvar2]] [_ Hclose]]".
-    iMod (ghost_var_update_halves Free with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
-    iMod ("Hclose" with "[$Hvar2]"). iModIntro.
-    wp_apply (l.(release_spec) with "[$Hislock $Hlocked $Hvar1]").
+    iMod (ghost_var_update_2 Free with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
+    { rewrite Qp_three_quarter_quarter //. }
+    iMod ("Hclose" with "[$Hvar1]"). iModIntro.
+    wp_apply (l.(release_spec) with "[$Hislock $Hlocked $Hvar2]").
     auto.
   Qed.
 
 End tada.
+
+Typeclasses Opaque tada_is_lock tada_lock_state.
