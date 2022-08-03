@@ -24,7 +24,7 @@ Section base_logic_tests.
 End base_logic_tests.
 
 Section iris_tests.
-  Context `{!invGS Σ}.
+  Context `{!invGS_gen hlc Σ}.
   Implicit Types P Q R : iProp Σ.
 
   (* Test scopes for bupd and fupd *)

@@ -51,11 +51,11 @@ Global Instance: Params (@ownP) 3 := {}.
 
 (* Adequacy *)
 Theorem ownP_adequacy Σ `{!ownPGpreS Λ Σ} s e σ φ :
-  (∀ `{!ownPGS Λ Σ, !HasLc Σ}, ownP σ ⊢ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
+  (∀ `{!ownPGS Λ Σ}, ownP σ ⊢ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
   adequate s e σ (λ v _, φ v).
 Proof.
-  intros Hwp. apply (wp_adequacy_lc Σ _).
-  iIntros (? ? κs).
+  intros Hwp. apply (wp_adequacy Σ _).
+  iIntros (? κs).
   iMod (own_alloc (●E σ ⋅ ◯E σ)) as (γσ) "[Hσ Hσf]";
     first by apply excl_auth_valid.
   iModIntro. iExists (λ σ κs, own γσ (●E σ))%I, (λ _, True%I).
@@ -64,14 +64,14 @@ Proof.
 Qed.
 
 Theorem ownP_invariance Σ `{!ownPGpreS Λ Σ} s e σ1 t2 σ2 φ :
-  (∀ `{!ownPGS Λ Σ, !HasLc Σ},
+  (∀ `{!ownPGS Λ Σ},
       ownP σ1 ={⊤}=∗ WP e @ s; ⊤ {{ _, True }} ∗
       |={⊤,∅}=> ∃ σ', ownP σ' ∧ ⌜φ σ'⌝) →
   rtc erased_step ([e], σ1) (t2, σ2) →
   φ σ2.
 Proof.
-  intros Hwp Hsteps. eapply (wp_invariance_lc Σ Λ s e σ1 t2 σ2 _)=> //.
-  iIntros (? ? κs).
+  intros Hwp Hsteps. eapply (wp_invariance Σ Λ s e σ1 t2 σ2 _)=> //.
+  iIntros (? κs).
   iMod (own_alloc (●E σ1 ⋅ ◯E σ1)) as (γσ) "[Hσ Hσf]";
     first by apply auth_both_valid_discrete.
   iExists (λ σ κs' _, own γσ (●E σ))%I, (λ _, True%I).

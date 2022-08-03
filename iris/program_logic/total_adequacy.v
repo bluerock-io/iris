@@ -6,7 +6,7 @@ From iris.prelude Require Import options.
 Import uPred.
 
 Section adequacy.
-Context `{!irisGS Λ Σ}.
+Context `{!irisGS_gen HasNoLc Λ Σ}.
 Implicit Types e : expr Λ.
 
 Definition twptp_pre (twptp : list (expr Λ) → iProp Σ)
@@ -104,7 +104,7 @@ Proof.
   iApply (twptp_app [_] with "(IH' [//])"). by iApply "IH".
 Qed.
 
-Lemma twptp_total `{!HasNoLc Σ} σ ns nt t :
+Lemma twptp_total σ ns nt t :
   state_interp σ ns [] nt -∗ twptp t ={⊤}=∗ ▷ ⌜sn erased_step (t, σ)⌝.
 Proof.
   iIntros "Hσ Ht". iRevert (σ ns nt) "Hσ". iRevert (t) "Ht".
@@ -117,7 +117,7 @@ Qed.
 End adequacy.
 
 Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ n :
-  (∀ `{Hinv : !invGS Σ} `{!HasNoLc Σ},
+  (∀ `{Hinv : !invGS_gen HasNoLc Σ},
      ⊢ |={⊤}=> ∃
          (stateI : state Λ → nat → list (observation Λ) → nat → iProp Σ)
          (** We abstract over any instance of [irisG], and thus any value of
@@ -127,16 +127,16 @@ Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ n :
          (num_laters_per_step : nat → nat)
          (fork_post : val Λ → iProp Σ)
          state_interp_mono,
-       let _ : irisGS Λ Σ :=
-           IrisG _ _ Hinv stateI fork_post num_laters_per_step state_interp_mono
+       let _ : irisGS_gen HasNoLc Λ Σ :=
+           IrisG Hinv stateI fork_post num_laters_per_step state_interp_mono
        in
        stateI σ n [] 0 ∗ WP e @ s; ⊤ [{ Φ }]) →
   sn erased_step ([e], σ). (* i.e. ([e], σ) is strongly normalizing *)
 Proof.
   intros Hwp. apply (soundness (M:=iResUR Σ) _  1); simpl.
-  apply (fupd_plain_soundness_no_lc ⊤ ⊤ _ 0)=> Hinv HNC. iIntros "_".
+  apply (fupd_plain_soundness_no_lc ⊤ ⊤ _ 0)=> Hinv. iIntros "_".
   iMod (Hwp) as (stateI num_laters_per_step fork_post stateI_mono) "[Hσ H]".
-  set (iG := IrisG _ _ Hinv stateI fork_post num_laters_per_step stateI_mono).
-  iApply (@twptp_total _ _ iG _ _ n with "Hσ").
-  by iApply (@twp_twptp _ _ (IrisG _ _ Hinv _ fork_post _ _)).
+  set (iG := IrisG Hinv stateI fork_post num_laters_per_step stateI_mono).
+  iApply (@twptp_total _ _ iG _ n with "Hσ").
+  by iApply (@twp_twptp _ _ (IrisG Hinv _ fork_post _ _)).
 Qed.

@@ -170,13 +170,13 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
 1 goal
   
   Σ : gFunctors
-  heapGS0 : heapGS Σ
+  heapGS0 : heapGS_gen HasLc Σ
   ============================
   @bi_emp_valid (uPredI (iResUR Σ))
     (@fupd (bi_car (uPredI (iResUR Σ)))
        (@bi_fupd_fupd (uPredI (iResUR Σ))
-          (@uPred_bi_fupd Σ
-             (@iris_invGS heap_lang Σ (@heapGS_irisGS Σ heapGS0))))
+          (@uPred_bi_fupd HasLc Σ
+             (@iris_invGS HasLc heap_lang Σ (@heapGS_irisGS HasLc Σ heapGS0))))
        (@top coPset coPset_top) (@top coPset coPset_top)
        (@bi_pure (uPredI (iResUR Σ)) True))
 1 goal

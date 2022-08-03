@@ -50,7 +50,7 @@ Definition array_init : val :=
     "src".
 
 Section proof.
-  Context `{!heapGS Σ}.
+  Context `{!heapGS_gen hlc Σ}.
 
   Lemma twp_array_free s E l vs (n : Z) :
     n = length vs →

@@ -27,7 +27,7 @@ Proof. reflexivity. Qed.
 Global Instance test_cofe {Σ} : Cofe (iPrePropO Σ) := _.
 
 Section tests.
-  Context `{!invGS Σ}.
+  Context `{!invGS_gen hlc Σ}.
 
   Program Definition test : (iPropO Σ -n> iPropO Σ) -n> (iPropO Σ -n> iPropO Σ) :=
     λne P v, (▷ (P v))%I.

@@ -23,7 +23,7 @@ Global Instance subG_lockΣ {Σ} : subG lockΣ Σ → lockG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.
-  Context `{!heapGS Σ, !lockG Σ}.
+  Context `{!heapGS_gen hlc Σ, !lockG Σ}.
   Let N := nroot .@ "spin_lock".
 
   Definition lock_inv (γ : gname) (l : loc) (R : iProp Σ) : iProp Σ :=
@@ -104,7 +104,7 @@ End proof.
 
 Typeclasses Opaque is_lock locked.
 
-Canonical Structure spin_lock `{!heapGS Σ, !lockG Σ} : lock Σ :=
+Canonical Structure spin_lock `{!heapGS_gen hlc Σ, !lockG Σ} : lock :=
   {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
      lock.newlock_spec := newlock_spec;
      lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.

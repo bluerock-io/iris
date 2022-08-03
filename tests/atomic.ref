@@ -4,7 +4,7 @@ Tactic failure: iAuIntro: spacial context empty, and emp not laterable.
   
   Σ : gFunctors
   heapGS0 : heapGS Σ
-  aheap : atomic_heap Σ
+  aheap : atomic_heap
   Q : iProp Σ
   l : loc
   v : val
@@ -20,7 +20,7 @@ Tactic failure: iAuIntro: spacial context empty, and emp not laterable.
   
   Σ : gFunctors
   heapGS0 : heapGS Σ
-  aheap : atomic_heap Σ
+  aheap : atomic_heap
   P : iProp Σ
   l : loc
   ============================
@@ -33,7 +33,7 @@ Tactic failure: iAuIntro: spacial context empty, and emp not laterable.
   
   Σ : gFunctors
   heapGS0 : heapGS Σ
-  aheap : atomic_heap Σ
+  aheap : atomic_heap
   P : iProp Σ
   l : loc
   ============================

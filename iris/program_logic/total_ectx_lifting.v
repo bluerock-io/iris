@@ -4,7 +4,7 @@ From iris.program_logic Require Export ectx_language total_weakestpre total_lift
 From iris.prelude Require Import options.
 
 Section wp.
-Context {Λ : ectxLanguage} `{!irisGS Λ Σ} {Hinh : Inhabited (state Λ)}.
+Context {Λ : ectxLanguage} `{!irisGS_gen hlc Λ Σ} {Hinh : Inhabited (state Λ)}.
 Implicit Types P : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
 Implicit Types v : val Λ.

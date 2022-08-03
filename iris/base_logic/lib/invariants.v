@@ -8,17 +8,17 @@ Import uPred.
 Import le_upd_if.
 
 (** Semantic Invariants *)
-Local Definition inv_def `{!invGS Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
+Local Definition inv_def `{!invGS_gen hlc Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
   □ ∀ E, ⌜↑N ⊆ E⌝ → |={E,E ∖ ↑N}=> ▷ P ∗ (▷ P ={E ∖ ↑N,E}=∗ True).
 Local Definition inv_aux : seal (@inv_def). Proof. by eexists. Qed.
 Definition inv := inv_aux.(unseal).
-Global Arguments inv {Σ _} N P.
+Global Arguments inv {hlc Σ _} N P.
 Local Definition inv_unseal : @inv = @inv_def := inv_aux.(seal_eq).
 Global Instance: Params (@inv) 3 := {}.
 
 (** * Invariants *)
 Section inv.
-  Context `{!invGS Σ}.
+  Context `{!invGS_gen hlc Σ}.
   Implicit Types i : positive.
   Implicit Types N : namespace.
   Implicit Types E : coPset.

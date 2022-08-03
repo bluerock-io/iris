@@ -27,7 +27,7 @@ Section general_bi_tests.
 End general_bi_tests.
 
 Section tests.
-  Context `{!heapGS Σ} {aheap: atomic_heap Σ}.
+  Context `{!heapGS Σ} {aheap: atomic_heap}.
   Import atomic_heap.notation.
 
   (* FIXME: removing the `val` type annotation breaks printing. *)
@@ -41,7 +41,7 @@ End tests.
 
 (* Test if we get reasonable error messages with non-laterable assertions in the context. *)
 Section error.
-  Context `{!heapGS Σ} {aheap: atomic_heap Σ}.
+  Context `{!heapGS Σ} {aheap: atomic_heap}.
   Import atomic_heap.notation.
 
   Check "non_laterable".

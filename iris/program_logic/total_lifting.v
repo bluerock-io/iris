@@ -4,7 +4,7 @@ From iris.program_logic Require Export total_weakestpre.
 From iris.prelude Require Import options.
 
 Section lifting.
-Context `{!irisGS Λ Σ}.
+Context `{!irisGS_gen hlc Λ Σ}.
 Implicit Types v : val Λ.
 Implicit Types e : expr Λ.
 Implicit Types σ : state Λ.

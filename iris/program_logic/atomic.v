@@ -8,7 +8,7 @@ From iris.prelude Require Import options.
 
 (* This hard-codes the inner mask to be empty, because we have yet to find an
 example where we want it to be anything else. *)
-Definition atomic_wp `{!irisGS Λ Σ} {TA TB : tele}
+Definition atomic_wp `{!irisGS_gen hlc Λ Σ} {TA TB : tele}
   (e: expr Λ) (* expression *)
   (E : coPset) (* *implementation* mask *)
   (α: TA → iProp Σ) (* atomic pre-condition *)
@@ -83,7 +83,7 @@ Notation "'<<<' α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
 
 (** Theory *)
 Section lemmas.
-  Context `{!irisGS Λ Σ} {TA TB : tele}.
+  Context `{!irisGS_gen hlc Λ Σ} {TA TB : tele}.
   Notation iProp := (iProp Σ).
   Implicit Types (α : TA → iProp) (β : TA → TB → iProp) (f : TA → TB → val Λ).
 

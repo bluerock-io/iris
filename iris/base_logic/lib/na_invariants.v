@@ -18,7 +18,7 @@ Global Instance subG_na_invG {Σ} : subG na_invΣ Σ → na_invG Σ.
 Proof. solve_inG. Qed.
 
 Section defs.
-  Context `{!invGS Σ, !na_invG Σ}.
+  Context `{!invGS_gen hlc Σ, !na_invG Σ}.
 
   Definition na_own (p : na_inv_pool_name) (E : coPset) : iProp Σ :=
     own p (CoPset E, GSet ∅).
@@ -32,7 +32,7 @@ Global Instance: Params (@na_inv) 3 := {}.
 Typeclasses Opaque na_own na_inv.
 
 Section proofs.
-  Context `{!invGS Σ, !na_invG Σ}.
+  Context `{!invGS_gen hlc Σ, !na_invG Σ}.
 
   Global Instance na_own_timeless p E : Timeless (na_own p E).
   Proof. rewrite /na_own; apply _. Qed.

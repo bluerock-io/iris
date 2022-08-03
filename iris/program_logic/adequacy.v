@@ -9,7 +9,7 @@ Import uPred.
 we prove a number of auxilary results. *)
 
 Section adequacy.
-Context `{!irisGS Λ Σ}.
+Context `{!irisGS_gen hlc Λ Σ}.
 Implicit Types e : expr Λ.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
@@ -137,15 +137,15 @@ Proof.
 Qed.
 End adequacy.
 
-Local Lemma wp_progress_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} es σ1 n κs t2 σ2 e2
+Local Lemma wp_progress_gen (hlc : has_lc) Σ Λ `{!invGpreS Σ} es σ1 n κs t2 σ2 e2
         (num_laters_per_step : nat → nat)  :
-    (∀ `{Hinv : !invGS Σ} `{Hc : if use_credits then HasLc Σ else HasNoLc Σ},
+    (∀ `{Hinv : !invGS_gen hlc Σ},
     ⊢ |={⊤}=> ∃
          (stateI : state Λ → nat → list (observation Λ) → nat → iProp Σ)
          (Φs : list (val Λ → iProp Σ))
          (fork_post : val Λ → iProp Σ)
          state_interp_mono,
-       let _ : irisGS Λ Σ := IrisG _ _ Hinv stateI fork_post num_laters_per_step
+       let _ : irisGS_gen hlc Λ Σ := IrisG Hinv stateI fork_post num_laters_per_step
                                   state_interp_mono
        in
        stateI σ1 0 κs 0 ∗
@@ -155,13 +155,13 @@ Local Lemma wp_progress_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} es σ1 n 
   not_stuck e2 σ2.
 Proof.
   iIntros (Hwp ??).
-  eapply (step_fupdN_soundness_gen _ use_credits (steps_sum num_laters_per_step 0 n)
+  eapply (step_fupdN_soundness_gen _ hlc (steps_sum num_laters_per_step 0 n)
     (steps_sum num_laters_per_step 0 n)).
-  iIntros (Hinv Hc) "Hcred".
-  iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp)"; first done.
+  iIntros (Hinv) "Hcred".
+  iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp)".
   iDestruct (big_sepL2_length with "Hwp") as %Hlen1.
-  iMod (@wptp_progress _ _
-       (IrisG _ _ Hinv stateI fork_post num_laters_per_step state_interp_mono) _ []
+  iMod (@wptp_progress _ _ _
+       (IrisG Hinv stateI fork_post num_laters_per_step state_interp_mono) _ []
     with "[Hσ] Hcred  Hwp") as "H"; [done| done |by rewrite right_id_L|].
   iAssert (|={∅}▷=>^(steps_sum num_laters_per_step 0 n) |={∅}=> ⌜not_stuck e2 σ2⌝)%I
     with "[-]" as "H"; last first.
@@ -169,14 +169,13 @@ Proof.
   iApply (step_fupdN_wand with "H"). iIntros "$".
 Qed.
 
-
 (** Iris's generic adequacy result *)
 (** The lemma is parameterized by [use_credits] over whether to make later credits available or not.
   Below, two specific instances are provided. *)
-Lemma wp_strong_adequacy_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} s es σ1 n κs t2 σ2 φ
+Lemma wp_strong_adequacy_gen (hlc : has_lc) Σ Λ `{!invGpreS Σ} s es σ1 n κs t2 σ2 φ
         (num_laters_per_step : nat → nat) :
   (* WP *)
-  (∀ `{Hinv : !invGS Σ} `{Hc : if use_credits then HasLc Σ else HasNoLc Σ},
+  (∀ `{Hinv : !invGS_gen hlc Σ},
       ⊢ |={⊤}=> ∃
          (stateI : state Λ → nat → list (observation Λ) → nat → iProp Σ)
          (Φs : list (val Λ → iProp Σ))
@@ -184,7 +183,7 @@ Lemma wp_strong_adequacy_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} s es σ1
          (* Note: existentially quantifying over Iris goal! [iExists _] should
          usually work. *)
          state_interp_mono,
-       let _ : irisGS Λ Σ := IrisG _ _ Hinv stateI fork_post num_laters_per_step
+       let _ : irisGS_gen hlc Λ Σ := IrisG Hinv stateI fork_post num_laters_per_step
                                   state_interp_mono
        in
        stateI σ1 0 κs 0 ∗
@@ -213,13 +212,13 @@ Lemma wp_strong_adequacy_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} s es σ1
   φ.
 Proof.
   iIntros (Hwp ?).
-  eapply (step_fupdN_soundness_gen _ use_credits (steps_sum num_laters_per_step 0 n)
+  eapply (step_fupdN_soundness_gen _ hlc (steps_sum num_laters_per_step 0 n)
     (steps_sum num_laters_per_step 0 n)).
-  iIntros (Hinv Hc) "Hcred".
-  iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp & Hφ)"; first done.
+  iIntros (Hinv) "Hcred".
+  iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp & Hφ)".
   iDestruct (big_sepL2_length with "Hwp") as %Hlen1.
-  iMod (@wptp_strong_adequacy _ _
-       (IrisG _ _ Hinv stateI fork_post num_laters_per_step state_interp_mono) _ []
+  iMod (@wptp_strong_adequacy _ _ _
+       (IrisG Hinv stateI fork_post num_laters_per_step state_interp_mono) _ []
     with "[Hσ] Hcred Hwp") as "H"; [done|by rewrite right_id_L|].
   iAssert (|={∅}▷=>^(steps_sum num_laters_per_step 0 n) |={∅}=> ⌜φ⌝)%I
     with "[-]" as "H"; last first.
@@ -235,20 +234,16 @@ Proof.
   { by rewrite big_sepL2_replicate_r // big_sepL_omap. }
   (* we run the adequacy proof again to get this assumption *)
   iPureIntro. intros e2 -> Hel.
-  eapply (wp_progress_gen use_credits);
+  eapply (wp_progress_gen hlc);
     [ done | clear stateI Φ fork_post state_interp_mono Hlen1 Hlen3 | done|done].
-  iIntros (??).
-  iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp & Hφ)"; first done.
+  iIntros (?).
+  iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp & Hφ)".
   iModIntro. iExists _, _, _, _. iFrame.
 Qed.
 
-(** Adequacy when using later credits *)
-Definition wp_strong_adequacy_lc := wp_strong_adequacy_gen true.
-Global Arguments wp_strong_adequacy_lc _ _ {_}.
-(** Adequacy when using no later credits *)
-Definition wp_strong_adequacy_no_lc := wp_strong_adequacy_gen false.
-Global Arguments wp_strong_adequacy_no_lc _ _ {_}.
-
+(** Adequacy when using later credits (the default) *)
+Definition wp_strong_adequacy := wp_strong_adequacy_gen HasLc.
+Global Arguments wp_strong_adequacy _ _ {_}.
 
 (** Since the full adequacy statement is quite a mouthful, we prove some more
 intuitive and simpler corollaries. These lemmas are morover stated in terms of
@@ -303,21 +298,21 @@ of laters per step must be 0, and the proof of [state_interp_mono] must have
 this specific proof term.
 *)
 (** Again, we first prove a lemma generic over the usage of credits. *)
-Lemma wp_adequacy_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} s e σ φ :
-  (∀ `{Hinv : !invGS Σ} `{!if use_credits then HasLc Σ else HasNoLc Σ} κs,
+Lemma wp_adequacy_gen (hlc : has_lc) Σ Λ `{!invGpreS Σ} s e σ φ :
+  (∀ `{Hinv : !invGS_gen hlc Σ} κs,
      ⊢ |={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → iProp Σ)
          (fork_post : val Λ → iProp Σ),
-       let _ : irisGS Λ Σ :=
-           IrisG _ _ Hinv (λ σ _ κs _, stateI σ κs) fork_post (λ _, 0)
+       let _ : irisGS_gen hlc Λ Σ :=
+           IrisG Hinv (λ σ _ κs _, stateI σ κs) fork_post (λ _, 0)
                  (λ _ _ _ _, fupd_intro _ _)
        in
        stateI σ κs ∗ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
   adequate s e σ (λ v _, φ v).
 Proof.
   intros Hwp. apply adequate_alt; intros t2 σ2 [n [κs ?]]%erased_steps_nsteps.
-  eapply (wp_strong_adequacy_gen use_credits Σ _); [ | done]=> ??.
-  iMod Hwp as (stateI fork_post) "[Hσ Hwp]"; first done.
+  eapply (wp_strong_adequacy_gen hlc Σ _); [ | done]=> ?.
+  iMod Hwp as (stateI fork_post) "[Hσ Hwp]".
   iExists (λ σ _ κs _, stateI σ κs), [(λ v, ⌜φ v⌝%I)], fork_post, _ => /=.
   iIntros "{$Hσ $Hwp} !>" (e2 t2' -> ? ?) "_ H _".
   iApply fupd_mask_intro_discard; [done|]. iSplit; [|done].
@@ -327,19 +322,15 @@ Proof.
 Qed.
 
 (** Instance for using credits *)
-Definition wp_adequacy_lc := wp_adequacy_gen true.
-Global Arguments wp_adequacy_lc _ _ {_}.
-(** Instance for no credits  *)
-Definition wp_adequacy_no_lc := wp_adequacy_gen false.
-Global Arguments wp_adequacy_no_lc _ _ {_}.
+Definition wp_adequacy := wp_adequacy_gen HasLc.
+Global Arguments wp_adequacy _ _ {_}.
 
-
-Lemma wp_invariance_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} s e1 σ1 t2 σ2 φ :
-  (∀ `{Hinv : !invGS Σ} `{!if use_credits then HasLc Σ else HasNoLc Σ} κs,
+Lemma wp_invariance_gen (hlc : has_lc) Σ Λ `{!invGpreS Σ} s e1 σ1 t2 σ2 φ :
+  (∀ `{Hinv : !invGS_gen hlc Σ} κs,
      ⊢ |={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
-       let _ : irisGS Λ Σ := IrisG _ _ Hinv (λ σ _, stateI σ) fork_post
+       let _ : irisGS_gen hlc Λ Σ := IrisG Hinv (λ σ _, stateI σ) fork_post
               (λ _, 0) (λ _ _ _ _, fupd_intro _ _) in
        stateI σ1 κs 0 ∗ WP e1 @ s; ⊤ {{ _, True }} ∗
        (stateI σ2 [] (pred (length t2)) -∗ ∃ E, |={⊤,E}=> ⌜φ⌝)) →
@@ -347,8 +338,8 @@ Lemma wp_invariance_gen (use_credits : bool) Σ Λ `{!invGpreS Σ} s e1 σ1 t2 �
   φ.
 Proof.
   intros Hwp [n [κs ?]]%erased_steps_nsteps.
-  eapply (wp_strong_adequacy_gen use_credits Σ); [done| |done]=> ? Hc.
-  iMod (Hwp _ Hc κs) as (stateI fork_post) "(Hσ & Hwp & Hφ)".
+  eapply (wp_strong_adequacy_gen hlc Σ); [done| |done]=> ?.
+  iMod (Hwp _ κs) as (stateI fork_post) "(Hσ & Hwp & Hφ)".
   iExists (λ σ _, stateI σ), [(λ _, True)%I], fork_post, _ => /=.
   iIntros "{$Hσ $Hwp} !>" (e2 t2' -> _ _) "Hσ H _ /=".
   iDestruct (big_sepL2_cons_inv_r with "H") as (? ? ->) "[_ H]".
@@ -357,7 +348,5 @@ Proof.
   by iApply fupd_mask_intro_discard; first set_solver.
 Qed.
 
-Definition wp_invariance_lc := wp_invariance_gen true.
-Global Arguments wp_invariance_lc _ _ {_}.
-Definition wp_invariance_no_lc := wp_invariance_gen false.
-Global Arguments wp_invariance_no_lc _ _ {_}.
+Definition wp_invariance := wp_invariance_gen HasLc.
+Global Arguments wp_invariance _ _ {_}.
