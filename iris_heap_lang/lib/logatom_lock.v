@@ -1,0 +1,85 @@
+(** A TaDA-style logically atomic specification for a lock, derived for an
+    arbitrary implementation of the lock interfacne. The opposite direction
+    could also be derived rather easily, as shown in the TaDA paper.
+
+    In essence, this is an instance of the general fact that 'invariant-based'
+    ("HoCAP-style") logically atomic specifications are equivalent to TaDA-style
+    logically atomic specifications; see
+    <https://gitlab.mpi-sws.org/iris/examples/-/blob/master/theories/logatom/elimination_stack/hocap_spec.v>
+    for that being worked out and explained in more detail for a stack specification.
+*)
+
+From iris.proofmode Require Import proofmode.
+From iris.base_logic.lib Require Import ghost_var.
+From iris.program_logic Require Export atomic.
+From iris.heap_lang Require Import proofmode notation atomic_heap lock.
+From iris.prelude Require Import options.
+
+Inductive state := Free | Locked.
+
+Class lockG Σ := LockG { lock_tokG : ghost_varG Σ state }.
+Local Existing Instance lock_tokG.
+Definition lockΣ : gFunctors := #[ghost_varΣ state].
+Global Instance subG_lockΣ {Σ} : subG lockΣ Σ → lockG Σ.
+Proof. solve_inG. Qed.
+
+Section tada.
+  Context `{!heapGS Σ, !lockG Σ} (l : lock).
+
+  Record tada_lock_name := TadaLockName {
+      tada_lock_name_state : gname;
+      tada_lock_name_lock : l.(name);
+  }.
+  
+  Definition tada_lock_state (γ : tada_lock_name) (s : state) : iProp Σ :=
+    ghost_var γ.(tada_lock_name_state) (1/2) s ∗
+    if s is Locked then
+      l.(locked) γ.(tada_lock_name_lock) ∗ ghost_var γ.(tada_lock_name_state) (1/2) Locked
+    else True.
+  Definition tada_is_lock (γ : tada_lock_name) (lk : val) : iProp Σ :=
+    l.(is_lock) γ.(tada_lock_name_lock) lk
+      (ghost_var γ.(tada_lock_name_state) (1/2) Free).
+
+  Lemma newlock_tada_spec :
+    {{{ True }}}
+      l.(newlock) #()
+    {{{ lk γ, RET lk; tada_is_lock γ lk ∗ tada_lock_state γ Free }}}.
+  Proof.
+    iIntros (Φ) "_ HΦ".
+    iMod (ghost_var_alloc Free) as (γvar) "[Hvar1 Hvar2]".
+    wp_apply (l.(newlock_spec) with "Hvar2").
+    iIntros (lk γlock) "Hlock".
+    iApply ("HΦ" $! lk (TadaLockName _ _)).
+    iFrame.
+  Qed.
+
+  Lemma acquire_tada_spec γ lk :
+    tada_is_lock γ lk -∗
+    <<< ∀∀ s, tada_lock_state γ s >>>
+      l.(acquire) lk @ ∅
+    <<< tada_lock_state γ Locked, RET #() >>>.
+  Proof.
+    iIntros "#Hislock %Φ AU". iApply wp_fupd.
+    wp_apply (l.(acquire_spec) with "Hislock").
+    iIntros "[Hlocked Hvar1]".
+    iMod "AU" as (s) "[[Hvar2 _] [_ Hclose]]".
+    iDestruct (ghost_var_agree with "Hvar1 Hvar2") as %<-.
+    iMod (ghost_var_update_halves Locked with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
+    iMod ("Hclose" with "[$Hvar2 $Hlocked $Hvar1]"). done.
+  Qed.
+
+  Lemma release_tada_spec γ lk :
+    tada_is_lock γ lk -∗
+    <<< tada_lock_state γ Locked >>>
+      l.(release) lk @ ∅
+    <<< tada_lock_state γ Free, RET #() >>>.
+  Proof.
+    iIntros "#Hislock %Φ AU". iApply fupd_wp.
+    iMod "AU" as "[[Hvar1 [Hlocked Hvar2]] [_ Hclose]]".
+    iMod (ghost_var_update_halves Free with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
+    iMod ("Hclose" with "[$Hvar2]"). iModIntro.
+    wp_apply (l.(release_spec) with "[$Hislock $Hlocked $Hvar1]").
+    auto.
+  Qed.
+
+End tada.
