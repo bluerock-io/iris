@@ -71,14 +71,19 @@ lemma.
 * Prepare for supporting later credits, by adding a resource `£ n` describing
   ownership of `n` credits that can be eliminated at fancy updates.
   Note that HeapLang has not yet been equipped with support for later credits.
-  To retain backwards compatibility with the interaction laws of fancy updates
-  with the plainly modality (`BiFUpdPlainly`), which are incompatible with
-  later credits, the logic is parameterized by two typeclasses, `HasLc`
-  and `HasNoLc`, that allow opting for either later credits or `BiFUpdPlainly`.
-  The soundness lemmas for the fancy update modality are available in two versions,
-  with later credits (suffix `_lc`) and without later credits (suffix `_no_lc`).
-  The lemmas without later credits still generate credits, but they cannot be used
-  in any meaningful way. The lemma `step_fupdN_soundness_gen` is generic over this choice.
+  + To retain backwards compatibility with the interaction laws of fancy updates
+    with the plainly modality (`BiFUpdPlainly`), which are incompatible with
+    later credits, the logic has a new parameter of type `has_lc`, which is
+    either `HasLc` or `HasNoLc`. The parameter is an index of the `invGS_gen`
+    typeclass; the old `invGS` is an alias for `invGS_gen HasLc` so that
+    developments default to having later credits available. Libraries that want
+    to be generic over whether credits are available or not, and proofs that
+    need `BiFUpdPlainly`, need to be changed to use `invGS_gen` rather than
+    `invGS`.
+  + The core soundness lemma `step_fupdN_soundness_gen` similarly takes a `has_lc`
+    parameter to control how the logic is supposed to be instantiated. The lemma
+    always generates credits, but they cannot be used in any meaningful way unless
+    `HasLc` is picked.
 * Add discardable fractions `dfrac` to `saved_anything_own`, `saved_prop_own`,
   and `saved_pred_own`, so they can be updated. The previous persistent versions
   can be recovered with the fraction `DfracDiscarded`. Allocation lemmas now take
@@ -96,17 +101,16 @@ lemma.
   + All lifting lemmas have been altered to provide credits.
     `wp_lift_step_fupdN` provides `S (num_laters_per_step ns)` credits, while all other
     lemmas always provide one credit.
-* In line with the support for later credits (see `base_logic`), the adequacy statements
-  have been changed to account for `HasLc` and `HasNoLc`:
-  + The lemma `twp_total` (total adequacy) provides an additional assumption `HasNoLc`.
-    Clients of the adequacy proof will need to introduce this additional assumption and
-    keep it around in case `BiFUpdPlainly` is used.
+* In line with the support for later credits (see `base_logic`), `irisGS_gen`
+  now also has a `has_lc` parameter and the adequacy statements have been
+  changed to account for that:
+  + The lemma `twp_total` (total adequacy) provides `irisGS_gen HasNoLc`. Clients
+    of the adequacy proof will need to make sure to be either generic over the
+    choice of `has_lc` or explicitly opt-out of later credits.
   + The adequacy lemmas for the partial WP, in particular `wp_adequacy`,
-    `wp_strong_adequacy` and `wp_invariance`, are now available in two flavors,
-    one providing `HasLc` to enable the use of later credits in the future (suffix `_lc`),
-    and one without support for later credits, providing `HasNoLc` (suffix `_no_lc`).
-    Clients of the adequacy proof will need to opt for either of these and introduce
-    the additional assumptions.
+    `wp_strong_adequacy` and `wp_invariance`, are now available in two flavors:
+    the old names generate `irisGS` (a short-hand for `irisGS_gen HasLc`); new
+    lemmas with a `_gen` suffix leave the choice of `has_lc` to the user.
   + The parameter for the stuckness bit `s` in `wp_strong_adequacy{_lc, _no_lc}` has
     moved up and is now universally quantified in the lemma instead of being existentially
     quantified at the Iris-level. For clients that already previously quantified over `s`
@@ -120,14 +124,13 @@ lemma.
   number of steps taken so far. This number is tied to ghost state in the state
   interpretation, which is exposed, updated, and used with new lemmas
   `wp_lb_init`, `wp_lb_update`, and `wp_step_fupdN_lb`. (by Jonas Kastberg Hinrichsen)
-* In line with the support for later credits (see `base_logic`), the adequacy statements
-  for HeapLang have been changed:
-  + `heap_adequacy` provides the additional assumption `HasLc`, which needs to be
-    introduced by clients and will enable using new proof rules for later credits
-    in the future.
+* In line with the support for later credits (see `base_logic`), `heapGS_gen`
+  now takes an additional `has_lc` parameter, and `heapGS` is a short-hand for
+  `heapGS_gen HasLc`. The adequacy statements for HeapLang have been changed
+  accordingly:
+  + `heap_adequacy` provides `heapGS`, thus enabling the use of later credits.
     This precludes usage of the laws in `BiFUpdPlainly` in the HeapLang instance of Iris.
-  + `heap_total` provides the additional assumption `HasNoLc`, which needs to be
-    introduced by clients and needs to be kept around to use the laws in `BiFUpdPlainly`.
+  + `heap_total` provides `heapGS_gen HasNoLc`.
   Currently, the primitive laws for HeapLang do not yet provide later credits.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
