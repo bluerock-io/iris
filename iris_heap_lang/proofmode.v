@@ -153,6 +153,8 @@ Tactic Notation "wp_pure" open_constr(efoc) :=
     || fail "wp_pure: cannot find" efoc "in" e "or" efoc "is not a redex"
   | _ => fail "wp_pure: not a 'wp'"
   end.
+Tactic Notation "wp_pure" :=
+  wp_pure _.
 
 Tactic Notation "wp_pure" open_constr(efoc) "credit:" constr(H) :=
   iStartProof;
