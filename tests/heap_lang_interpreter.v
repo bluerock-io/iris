@@ -1,5 +1,5 @@
 From iris.heap_lang Require Import notation.
-From iris.staging.heap_lang Require Import interpreter.
+From iris.unstable.heap_lang Require Import interpreter.
 
 Example test_1 :
   exec 1000 ((λ: "x", "x" + #1) #2) = inl #3.

@@ -18,5 +18,5 @@ depends: [
   "coq-iris-heap-lang" {= version}
 ]
 
-build: ["./make-package" "iris_staging" "-j%{jobs}%"]
-install: ["./make-package" "iris_staging" "install"]
+build: ["./make-package" "iris_unstable" "-j%{jobs}%"]
+install: ["./make-package" "iris_unstable" "install"]

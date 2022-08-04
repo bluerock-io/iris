@@ -8,7 +8,7 @@
 -Q iris/base_logic iris.base_logic
 -Q iris/program_logic iris.program_logic
 -Q iris_heap_lang iris.heap_lang
--Q iris_staging iris.staging
+-Q iris_unstable iris.unstable
 -Q iris_deprecated iris.deprecated
 # We sometimes want to locally override notation, and there is no good way to do that with scopes.
 -arg -w -arg -notation-overridden
@@ -176,11 +176,11 @@ iris_heap_lang/lib/arith.v
 iris_heap_lang/lib/array.v
 iris_heap_lang/lib/logatom_lock.v
 
-iris_staging/algebra/list.v
-iris_staging/base_logic/algebra.v
-iris_staging/base_logic/mono_list.v
-iris_staging/heap_lang/interpreter.v
-iris_staging/algebra/monotone.v
+iris_unstable/algebra/list.v
+iris_unstable/base_logic/algebra.v
+iris_unstable/base_logic/mono_list.v
+iris_unstable/heap_lang/interpreter.v
+iris_unstable/algebra/monotone.v
 
 iris_deprecated/base_logic/auth.v
 iris_deprecated/base_logic/sts.v
