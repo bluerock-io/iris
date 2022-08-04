@@ -1,6 +1,7 @@
 (** A TaDA-style logically atomic specification for a lock, derived for an
     arbitrary implementation of the lock interfacne. The opposite direction
-    could also be derived rather easily, as shown in the TaDA paper.
+    could also be derived rather easily (modulo a later in the [acquire] postcondition
+    or a restriction to timeless lock invariants), as shown in the TaDA paper.
 
     In essence, this is an instance of the general fact that 'invariant-based'
     ("HoCAP-style") logically atomic specifications are equivalent to TaDA-style
@@ -27,8 +28,8 @@ Section tada.
   Context `{!heapGS Σ, !lockG Σ} (l : lock).
 
   Record tada_lock_name := TadaLockName {
-      tada_lock_name_state : gname;
-      tada_lock_name_lock : l.(name);
+    tada_lock_name_state : gname;
+    tada_lock_name_lock : l.(name);
   }.
   
   Definition tada_lock_state (γ : tada_lock_name) (s : state) : iProp Σ :=
