@@ -170,36 +170,8 @@ Proof.
   iIntros "_". iPureIntro. rewrite /num_laters_per_step /=. lia.
 Qed.
 
-(** This lemma allows to get [S n] credits on a pure step,
-  when a lower bound of [n] on the number of steps taken is available. *)
-Lemma wp_pure_step_credits_lb ϕ e1 e2 s E n Φ :
-  PureExec ϕ 1 e1 e2 →
-  ϕ →
-  steps_lb n -∗
-  ▷ (£ (S n) -∗ steps_lb (S n) -∗ WP e2 @ s; E {{ Φ }}) -∗
-  WP e1 @ s; E {{ Φ }}.
-Proof.
-  iIntros (Hpure Hphi) "Hlb Hwp".
-  specialize (Hpure Hphi) as [Hsafe Hdet]%nsteps_once_inv.
-  iApply wp_lift_step_fupdN.
-  { eapply (reducible_not_val _ inhabitant). by apply reducible_no_obs_reducible. }
-  iIntros (σ1 ns κ κs nt) "(Hσ & Hκ & Hsteps)".
-  iDestruct (steps_lb_valid with "Hsteps Hlb") as %?.
-  iApply fupd_mask_intro; first set_solver. iIntros "Hcl".
-  iSplitR. { iPureIntro. destruct s; eauto using reducible_no_obs_reducible. }
-  iIntros (? σ2 efs (-> & -> & -> & ->)%Hdet) "Hcred".
-  iApply step_fupdN_intro; first done. iNext. iNext.
-  iMod "Hcl" as "_".
-  iPoseProof (lc_weaken (S n) with "Hcred") as "Hcred".
-  { rewrite /num_laters_per_step /=. lia. }
-  iMod (steps_auth_update_S with "Hsteps") as "Hsteps".
-  iPoseProof (steps_lb_get with "Hsteps") as "#HlbS".
-  iModIntro. iFrame. iSplitL; last done.
-  iDestruct (steps_lb_le _ (S n) with "HlbS") as "HlbS'"; [lia|].
-  iApply ("Hwp" with "Hcred HlbS'").
-Qed.
-
-(** This just re-exports the lifting lemma when one wants to generate a single credit during a pure step. *)
+(** This just re-exports the lifting lemma when one wants to generate a single
+credit during a pure step. *)
 Lemma wp_pure_step_credit s E e1 e2 ϕ Φ :
   PureExec ϕ 1 e1 e2 →
   ϕ →

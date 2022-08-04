@@ -341,7 +341,7 @@ Section tests.
   Lemma test_wp_pure_credit_succeed :
     ⊢ WP #42 + #420 {{ v, True }}.
   Proof.
-    wp_pure as "Hcred". Show. done.
+    wp_pure credit: "Hcred". Show. done.
   Qed.
 
   Check "test_wp_pure_credit_fail".
@@ -349,40 +349,9 @@ Section tests.
     ⊢ True -∗ WP #42 + #420 {{ v, True }}.
   Proof.
     iIntros "Hcred".
-    Fail wp_pure as "Hcred".
+    Fail wp_pure credit: "Hcred".
   Abort.
 
-  Check "test_wp_pure_credits_lb_succeed_spatial".
-  Lemma test_wp_pure_credits_lb_succeed_spatial n :
-    ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
-  Proof.
-    iIntros "Hlb".
-    wp_pure with "Hlb" as "Hcred". Show. done.
-  Qed.
-
-  Check "test_wp_pure_credits_lb_succeed_intuit".
-  Lemma test_wp_pure_credits_lb_succeed_intuit n :
-    ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
-  Proof.
-    iIntros "#Hlb".
-    wp_pure with "Hlb" as "Hcred". Show. done.
-  Qed.
-
-  Check "test_wp_pure_credits_lb_fail1".
-  Lemma test_wp_pure_credits_lb_fail1 n :
-    ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
-  Proof.
-    iIntros "Hlb".
-    Fail wp_pure with "Hl" as "Hcred".
-  Abort.
-
-  Check "test_wp_pure_credits_lb_fail2".
-  Lemma test_wp_pure_credits_lb_fail2 n :
-    ⊢ steps_lb n -∗ WP #42 + #420 {{ v, True }}.
-  Proof.
-    iIntros "Hlb".
-    Fail wp_pure with "Hlb" as "Hlb".
-  Abort.
 End tests.
 
 Section mapsto_tests.
