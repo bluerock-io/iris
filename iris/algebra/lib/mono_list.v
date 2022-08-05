@@ -50,6 +50,8 @@ Section mono_list_props.
   (** * Operation *)
   Global Instance mono_list_lb_core_id l : CoreId (◯ML l).
   Proof. rewrite /mono_list_lb. apply _. Qed.
+  Global Instance mono_list_auth_core_id l : CoreId (●ML□ l).
+  Proof. rewrite /mono_list_auth. apply _. Qed.
 
   Lemma mono_list_auth_dfrac_op dq1 dq2 l :
     ●ML{dq1 ⋅ dq2} l ≡ ●ML{dq1} l ⋅ ●ML{dq2} l.

@@ -134,6 +134,8 @@ Section auth.
   Proof. rewrite /auth_auth. apply _. Qed.
   Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
   Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_both_core_id a1 a2 : CoreId a2 → CoreId (●□ a1 ⋅ ◯ a2).
+  Proof. rewrite /auth_auth /auth_frag. apply _. Qed.
   Global Instance auth_frag_is_op a b1 b2 :
     IsOp a b1 b2 → IsOp' (◯ a) (◯ b1) (◯ b2).
   Proof. rewrite /auth_frag. apply _. Qed.
