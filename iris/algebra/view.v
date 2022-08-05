@@ -209,6 +209,15 @@ Section cmra.
       | Some (dq, ag) => ✓{n} dq ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x)
       | None => ∃ a, rel n a (view_frag_proj x)
       end := eq_refl _.
+  Local Definition view_pcore_eq :
+      pcore = λ x, Some (View (core (view_auth_proj x)) (core (view_frag_proj x)))
+    := eq_refl _.
+  Local Definition view_core_eq :
+      core = λ x, View (core (view_auth_proj x)) (core (view_frag_proj x))
+    := eq_refl _.
+  Local Definition view_op_eq :
+      op = λ x y, View (view_auth_proj x ⋅ view_auth_proj y) (view_frag_proj x ⋅ view_frag_proj y)
+    := eq_refl _.
 
   Lemma view_cmra_mixin : CmraMixin (view rel).
   Proof.
@@ -285,6 +294,13 @@ Section cmra.
   Proof. intros [c ->]. rewrite view_frag_op. apply cmra_included_l. Qed.
   Lemma view_frag_core b : core (◯V b) = ◯V (core b).
   Proof. done. Qed.
+  Lemma view_both_core_discarded a b :
+    core (●V{DfracDiscarded} a ⋅ ◯V b) ≡ ●V{DfracDiscarded} a ⋅ ◯V (core b).
+  Proof. rewrite view_core_eq view_op_eq /= !left_id //. Qed.
+  Lemma view_both_core_frac q a b :
+    core (●V{#q} a ⋅ ◯V b) ≡ ◯V (core b).
+  Proof. rewrite view_core_eq view_op_eq /= !left_id //. Qed.
+
   Global Instance view_auth_core_id a : CoreId (●V□ a).
   Proof. do 2 constructor; simpl; auto. apply: core_id_core. Qed.
   Global Instance view_frag_core_id b : CoreId b → CoreId (◯V b).
