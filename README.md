@@ -64,7 +64,7 @@ We do not guarantee backwards-compatibility, so upgrading Iris may break your
 Iris-using developments.  If you want to be notified of breaking changes, please
 let us know your account name on the
 [MPI-SWS GitLab](https://gitlab.mpi-sws.org/) so we can add you to the
-notification group.  Note that this excludes the "staging" and "deprecated"
+notification group.  Note that this excludes the "unstable" and "deprecated"
 packages (see below).
 
 #### Use of Iris in submitted artifacts
@@ -123,7 +123,7 @@ modules in separate folders.
     constructions within this language, e.g., parallel composition.
     For more examples of using Iris and heap_lang, have a look at the
     [Iris Examples](https://gitlab.mpi-sws.org/iris/examples).
-* The [iris_staging](iris_staging) package contains libraries that are not yet
+* The [iris_unstable](iris_unstable) package contains libraries that are not yet
   ready for inclusion in Iris proper. For each library, there is a corresponding
   "tracking issue" in the Iris issue tracker (also linked from the library
   itself) which tracks the work that still needs to be done before moving the
