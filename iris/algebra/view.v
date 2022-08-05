@@ -289,6 +289,8 @@ Section cmra.
   Proof. do 2 constructor; simpl; auto. apply: core_id_core. Qed.
   Global Instance view_frag_core_id b : CoreId b → CoreId (◯V b).
   Proof. do 2 constructor; simpl; auto. apply: core_id_core. Qed.
+  Global Instance view_both_core_id a b : CoreId b → CoreId (●V□ a ⋅ ◯V b).
+  Proof. do 2 constructor; simpl; auto. rewrite !left_id. apply: core_id_core. Qed.
   Global Instance view_frag_is_op b b1 b2 :
     IsOp b b1 b2 → IsOp' (◯V b) (◯V b1) (◯V b2).
   Proof. done. Qed.

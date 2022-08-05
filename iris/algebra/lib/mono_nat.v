@@ -32,6 +32,8 @@ Section mono_nat.
 
   Global Instance mono_nat_lb_core_id n : CoreId (◯MN n).
   Proof. apply _. Qed.
+  Global Instance mono_nat_auth_core_id l : CoreId (●MN□ l).
+  Proof. apply _. Qed.
 
   Lemma mono_nat_auth_dfrac_op dq1 dq2 n :
     ●MN{dq1 ⋅ dq2} n ≡ ●MN{dq1} n ⋅ ●MN{dq2} n.
