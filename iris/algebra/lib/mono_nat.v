@@ -55,6 +55,13 @@ Section mono_nat.
     rewrite Nat.max_id //.
   Qed.
 
+  Global Instance mono_nat_auth_dfrac_is_op dq dq1 dq2 n :
+    IsOp dq dq1 dq2 → IsOp' (●MN{dq} n) (●MN{dq1} n) (●MN{dq2} n).
+  Proof. rewrite /IsOp' /IsOp=> ->. rewrite mono_nat_auth_dfrac_op //. Qed.
+  Global Instance mono_nat_lb_max_is_op n n1 n2 :
+    IsOp (MaxNat n) (MaxNat n1) (MaxNat n2) → IsOp' (◯MN n) (◯MN n1) (◯MN n2).
+  Proof. rewrite /IsOp' /IsOp /mono_nat_lb=> ->. done. Qed.
+
   (** rephrasing of [mono_nat_lb_op] useful for weakening a fragment to a
   smaller lower-bound *)
   Lemma mono_nat_lb_op_le_l n n' :

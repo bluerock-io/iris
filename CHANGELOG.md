@@ -30,6 +30,9 @@ lemma.
   - Add `frac_auth_frag_op_validN` and `frac_auth_frag_op_valid`, which are
     bi-implications with arbitrary fractions.
   - Add `ufrac_auth_frag_op_validN` and `ufrac_auth_frag_op_valid`.
+* Remove `mono_list_lb_is_op` instance for `IsOp' (◯ML l) (◯ML l) (◯ML l)`; we
+  don't usually have such instances for duplicable resources and it was added by
+  accident.
 
 **Changes in `bi`:**
 
