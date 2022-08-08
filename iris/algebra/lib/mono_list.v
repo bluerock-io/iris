@@ -70,7 +70,7 @@ Section mono_list_props.
 
   Global Instance mono_list_auth_dfrac_is_op dq dq1 dq2 l :
     IsOp dq dq1 dq2 → IsOp' (●ML{dq} l) (●ML{dq1} l) (●ML{dq2} l).
-  Proof. rewrite /IsOp' /IsOp=>->. rewrite mono_list_auth_dfrac_op //. Qed.
+  Proof. rewrite /IsOp' /IsOp=> ->. rewrite mono_list_auth_dfrac_op //. Qed.
 
   (** * Validity *)
   Lemma mono_list_auth_dfrac_validN n dq l : ✓{n} (●ML{dq} l) ↔ ✓ dq.
