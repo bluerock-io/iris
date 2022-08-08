@@ -130,6 +130,13 @@ Section auth.
   Proof. apply view_frag_mono. Qed.
   Lemma auth_frag_core a : core (◯ a) = ◯ (core a).
   Proof. apply view_frag_core. Qed.
+  Lemma auth_both_core_discarded a b :
+    core (●□ a ⋅ ◯ b) ≡ ●□ a ⋅ ◯ (core b).
+  Proof. apply view_both_core_discarded. Qed.
+  Lemma auth_both_core_frac q a b :
+    core (●{#q} a ⋅ ◯ b) ≡ ◯ (core b).
+  Proof. apply view_both_core_frac. Qed.
+
   Global Instance auth_auth_core_id a : CoreId (●□ a).
   Proof. rewrite /auth_auth. apply _. Qed.
   Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
