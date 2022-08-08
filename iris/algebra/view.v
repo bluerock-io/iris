@@ -296,7 +296,7 @@ Section cmra.
   Lemma view_frag_core b : core (◯V b) = ◯V (core b).
   Proof. done. Qed.
   Lemma view_both_core_discarded a b :
-    core (●V{DfracDiscarded} a ⋅ ◯V b) ≡ ●V{DfracDiscarded} a ⋅ ◯V (core b).
+    core (●V□ a ⋅ ◯V b) ≡ ●V□ a ⋅ ◯V (core b).
   Proof. rewrite view_core_eq view_op_eq /= !left_id //. Qed.
   Lemma view_both_core_frac q a b :
     core (●V{#q} a ⋅ ◯V b) ≡ ◯V (core b).

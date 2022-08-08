@@ -131,7 +131,7 @@ Section auth.
   Lemma auth_frag_core a : core (◯ a) = ◯ (core a).
   Proof. apply view_frag_core. Qed.
   Lemma auth_both_core_discarded a b :
-    core (●{DfracDiscarded} a ⋅ ◯ b) ≡ ●{DfracDiscarded} a ⋅ ◯ (core b).
+    core (●□ a ⋅ ◯ b) ≡ ●□ a ⋅ ◯ (core b).
   Proof. apply view_both_core_discarded. Qed.
   Lemma auth_both_core_frac q a b :
     core (●{#q} a ⋅ ◯ b) ≡ ◯ (core b).
