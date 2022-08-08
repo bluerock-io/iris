@@ -216,7 +216,8 @@ Section cmra.
       core = λ x, View (core (view_auth_proj x)) (core (view_frag_proj x))
     := eq_refl _.
   Local Definition view_op_eq :
-      op = λ x y, View (view_auth_proj x ⋅ view_auth_proj y) (view_frag_proj x ⋅ view_frag_proj y)
+      op = λ x y, View (view_auth_proj x ⋅ view_auth_proj y)
+                       (view_frag_proj x ⋅ view_frag_proj y)
     := eq_refl _.
 
   Lemma view_cmra_mixin : CmraMixin (view rel).
