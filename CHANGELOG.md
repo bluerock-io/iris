@@ -33,6 +33,7 @@ lemma.
 * Remove `mono_list_lb_is_op` instance for `IsOp' (◯ML l) (◯ML l) (◯ML l)`; we
   don't usually have such instances for duplicable resources and it was added by
   accident.
+* Rename `pos_op_plus` into `pos_op_add`.
 
 **Changes in `bi`:**
 
@@ -53,6 +54,7 @@ lemma.
   `least_fixpoint_affine`, `least_fixpoint_absorbing`,
   `least_fixpoint_persistent_affine`, `least_fixpoint_persistent_absorbing`,
   `greatest_fixpoint_absorbing`.
+* Rename `laterN_plus` into `laterN_add`.
 
 **Changes in `proofmode`:**
 
@@ -151,6 +153,9 @@ s/\bexcl_auth_frag_validN_op_1_l\b/excl_auth_frag_op_validN/g
 s/\bexcl_auth_frag_valid_op_1_l\b/excl_auth_frag_op_valid/g
 # staging → unstable
 s/\biris\.staging\b/iris.unstable/g
+# plus → add
+s/\blaterN_plus\b/laterN_add/g
+s/\bpos_op_plus\b/pos_op_add/g
 EOF
 ```
 

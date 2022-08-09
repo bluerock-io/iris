@@ -288,7 +288,7 @@ Global Instance into_laterN_later only_head n n' m' P Q lQ :
 Proof.
   rewrite /MakeLaterN /IntoLaterN /MaybeIntoLaterN /NatCancel.
   move=> Hn [_ ->|->] <-;
-    by rewrite -later_laterN -laterN_plus -Hn Nat.add_comm.
+    by rewrite -later_laterN -laterN_add -Hn Nat.add_comm.
 Qed.
 Global Instance into_laterN_laterN only_head n m n' m' P Q lQ :
   NatCancel n m n' m' →
@@ -297,7 +297,7 @@ Global Instance into_laterN_laterN only_head n m n' m' P Q lQ :
   IntoLaterN only_head n (▷^m P) lQ | 1.
 Proof.
   rewrite /MakeLaterN /IntoLaterN /MaybeIntoLaterN /NatCancel.
-  move=> Hn [_ ->|->] <-; by rewrite -!laterN_plus -Hn Nat.add_comm.
+  move=> Hn [_ ->|->] <-; by rewrite -!laterN_add -Hn Nat.add_comm.
 Qed.
 
 Global Instance into_laterN_and_l n P1 P2 Q1 Q2 :

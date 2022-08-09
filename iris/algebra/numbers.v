@@ -163,7 +163,7 @@ Section positive.
   Local Instance pos_validN_instance : ValidN positive := λ n x, True.
   Local Instance pos_pcore_instance : PCore positive := λ x, None.
   Local Instance pos_op_instance : Op positive := Pos.add.
-  Definition pos_op_plus x y : x ⋅ y = (x + y)%positive := eq_refl.
+  Definition pos_op_add x y : x ⋅ y = (x + y)%positive := eq_refl.
   Lemma pos_included (x y : positive) : x ≼ y ↔ (x < y)%positive.
   Proof. by rewrite Plt_sum. Qed.
   Lemma pos_ra_mixin : RAMixin positive.
