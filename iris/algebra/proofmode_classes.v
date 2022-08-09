@@ -20,7 +20,7 @@ To achieve this, there are various classes with different modes:
 
 - [IsOp a b1 b2]. This class has no mode, so it can be used even to
   combine/merge evars. This class has only one direct instance
-  [IsOp (a ⋅ b) a b] with priority 100 (so it is used last), ensuring that the
+  [IsOp (a ⋅ b) a b] with cost 100 (so it is used last), ensuring that the
   "op" rule is used last when merging.
 - [IsOp' a b1 b2]. This class requires either [a] OR both [b1] and [b2] to be inputs.
   All usual instances should be of this class to avoid loops.
