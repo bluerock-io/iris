@@ -180,7 +180,6 @@ Class FromAnd {PROP : bi} (P Q1 Q2 : PROP) := from_and : Q1 ∧ Q2 ⊢ P.
 Global Arguments FromAnd {_} _%I _%I _%I : simpl never.
 Global Arguments from_and {_} _%I _%I _%I {_}.
 Global Hint Mode FromAnd + ! - - : typeclass_instances.
-Global Hint Mode FromAnd + - ! ! : typeclass_instances. (* For iCombine *)
 
 (** The [IntoAnd p P Q1 Q2] class is used to handle some [[H1 H2]] intro
 patterns:
@@ -626,10 +625,16 @@ Global Instance from_wand_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   FromWand P Q1 Q2 → FromWand (tc_opaque P) Q1 Q2 := id.
 Global Instance into_wand_tc_opaque {PROP : bi} p q (R P Q : PROP) :
   IntoWand p q R P Q → IntoWand p q (tc_opaque R) P Q := id.
-(* Higher cost than [from_and_sep] so that [iCombine] does not loop.
-   FIXME: this comment is outdated and [from_and_sep] does not exist any more. *)
+
+(* This instance has a very high cost. The tactic [iCombine] will look for
+[FromSep ?P Q1 Q2]. If the cost of this instance is low (and in particular,
+lower than the default instance [from_sep_sep], which picks [?P := Q1 * Q2]),
+then TC search would diverge. *)
+Global Instance from_sep_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
+  FromSep P Q1 Q2 → FromSep (tc_opaque P) Q1 Q2 | 102 := id.
+
 Global Instance from_and_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
-  FromAnd P Q1 Q2 → FromAnd (tc_opaque P) Q1 Q2 | 102 := id.
+  FromAnd P Q1 Q2 → FromAnd (tc_opaque P) Q1 Q2 := id.
 Global Instance into_and_tc_opaque {PROP : bi} p (P Q1 Q2 : PROP) :
   IntoAnd p P Q1 Q2 → IntoAnd p (tc_opaque P) Q1 Q2 := id.
 Global Instance into_sep_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
