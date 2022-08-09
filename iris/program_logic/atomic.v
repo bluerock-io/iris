@@ -87,12 +87,12 @@ Section lemmas.
   Notation iProp := (iProp Σ).
   Implicit Types (α : TA → iProp) (β : TA → TB → iProp) (f : TA → TB → val Λ).
 
-  (* Atomic triples imply sequential triples if the precondition is laterable. *)
-  Lemma atomic_wp_seq e E α β f {HL : ∀.. x, Laterable (α x)} :
+  (* Atomic triples imply sequential triples. *)
+  Lemma atomic_wp_seq e E α β f :
     atomic_wp e E α β f -∗
     ∀ Φ, ∀.. x, α x -∗ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e {{ Φ }}.
   Proof.
-    rewrite ->tforall_forall in HL. iIntros "Hwp" (Φ x) "Hα HΦ".
+    iIntros "Hwp" (Φ x) "Hα HΦ".
     iApply (wp_frame_wand with "HΦ"). iApply "Hwp".
     iAuIntro. iAaccIntro with "Hα"; first by eauto. iIntros (y) "Hβ !>".
     (* FIXME: Using ssreflect rewrite does not work, see Coq bug #7773. *)
@@ -101,7 +101,7 @@ Section lemmas.
 
   (** This version matches the Texan triple, i.e., with a later in front of the
   [(∀.. y, β x y -∗ Φ (f x y))]. *)
-  Lemma atomic_wp_seq_step e E α β f {HL : ∀.. x, Laterable (α x)} :
+  Lemma atomic_wp_seq_step e E α β f :
     TCEq (to_val e) None →
     atomic_wp e E α β f -∗
     ∀ Φ, ∀.. x, α x -∗ ▷ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e {{ Φ }}.
@@ -109,7 +109,7 @@ Section lemmas.
     iIntros (?) "H"; iIntros (Φ x) "Hα HΦ".
     iApply (wp_step_fupd _ _ ⊤ _ (∀.. y : TB, β x y -∗ Φ (f x y))
       with "[$HΦ //]"); first done.
-    iApply (atomic_wp_seq with "H Hα"); first done.
+    iApply (atomic_wp_seq with "H Hα").
     iIntros (y) "Hβ HΦ". by iApply "HΦ".
   Qed.
 
