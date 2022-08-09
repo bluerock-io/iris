@@ -244,7 +244,7 @@ Proof.
 Qed.
 
 (** AddModal *)
-(* High priority to add a [▷] rather than a [◇] when [P] is timeless. *)
+(* Low cost to add a [▷] rather than a [◇] when [P] is timeless. *)
 Global Instance add_modal_later_except_0 P Q :
   Timeless P → AddModal (▷ P) P (◇ Q) | 0.
 Proof.

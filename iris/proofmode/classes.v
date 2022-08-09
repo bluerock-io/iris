@@ -626,7 +626,8 @@ Global Instance from_wand_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   FromWand P Q1 Q2 → FromWand (tc_opaque P) Q1 Q2 := id.
 Global Instance into_wand_tc_opaque {PROP : bi} p q (R P Q : PROP) :
   IntoWand p q R P Q → IntoWand p q (tc_opaque R) P Q := id.
-(* Higher precedence than [from_and_sep] so that [iCombine] does not loop. *)
+(* Higher cost than [from_and_sep] so that [iCombine] does not loop.
+   FIXME: this comment is outdated and [from_and_sep] does not exist any more. *)
 Global Instance from_and_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   FromAnd P Q1 Q2 → FromAnd (tc_opaque P) Q1 Q2 | 102 := id.
 Global Instance into_and_tc_opaque {PROP : bi} p (P Q1 Q2 : PROP) :
