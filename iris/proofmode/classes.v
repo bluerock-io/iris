@@ -180,7 +180,6 @@ Class FromAnd {PROP : bi} (P Q1 Q2 : PROP) := from_and : Q1 ∧ Q2 ⊢ P.
 Global Arguments FromAnd {_} _%I _%I _%I : simpl never.
 Global Arguments from_and {_} _%I _%I _%I {_}.
 Global Hint Mode FromAnd + ! - - : typeclass_instances.
-Global Hint Mode FromAnd + - ! ! : typeclass_instances. (* For iCombine *)
 
 (** The [IntoAnd p P Q1 Q2] class is used to handle some [[H1 H2]] intro
 patterns:
