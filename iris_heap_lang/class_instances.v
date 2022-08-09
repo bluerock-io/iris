@@ -134,7 +134,7 @@ Section pure_exec.
   Global Instance pure_binop op v1 v2 v' :
     PureExec (bin_op_eval op v1 v2 = Some v') 1 (BinOp op (Val v1) (Val v2)) (Val v') | 10.
   Proof. solve_pure_exec. Qed.
-  (* Higher-priority instance for [EqOp]. *)
+  (* Lower-cost instance for [EqOp]. *)
   Global Instance pure_eqop v1 v2 :
     PureExec (vals_compare_safe v1 v2) 1
       (BinOp EqOp (Val v1) (Val v2))

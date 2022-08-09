@@ -759,8 +759,8 @@ Global Instance into_sep_intuitionistically `{BiPositive PROP} P Q1 Q2 :
   IntoSep P Q1 Q2 → IntoSep (□ P) (□ Q1) (□ Q2) | 0.
 Proof. rewrite /IntoSep /= => ->. by rewrite intuitionistically_sep. Qed.
 (* FIXME: This instance is kind of strange, it just gets rid of the bi_affinely.
-Also, it overlaps with `into_sep_affinely_later`, and hence has lower
-precedence. *)
+Also, it overlaps with `into_sep_affinely_later`, and hence has higher
+cost. *)
 Global Instance into_sep_affinely_trim P Q1 Q2 :
   IntoSep P Q1 Q2 → IntoSep (<affine> P) Q1 Q2 | 20.
 Proof. rewrite /IntoSep /= => ->. by rewrite affinely_elim. Qed.

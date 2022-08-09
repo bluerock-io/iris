@@ -250,7 +250,7 @@ Section iris_tests.
     iIntros "H H'". Fail iDestruct "H'" as ">H".
   Abort.
 
-  (** Make sure that the splitting rule for [+] gets priority over the one for
+  (** Make sure that the splitting rule for [+] gets preferred over the one for
   [S]. See issue #470. *)
   Check "test_iIntros_lc".
   Lemma test_iIntros_lc n m : £ (S n + m) -∗ £ (S n).
