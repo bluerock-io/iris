@@ -1,19 +1,32 @@
 From iris.algebra Require Export cmra.
 From iris.prelude Require Import options.
 
-(* There are various versions of [IsOp] with different modes:
+(* The [IsOp a b1 b2] class is used in two directions: to "split" input [a] into
+outputs [b1] and [b2], and to "merge" inputs [b1] and [b2] into output [a],
+where in both cases we have [a ≡ b1 ⋅ b2].
 
-- [IsOp a b1 b2]: this one has no mode, it can be used regardless of whether
-  any of the arguments is an evar. This class has only one direct instance:
-  [IsOp (a ⋅ b) a b].
-- [IsOp' a b1 b2]: requires either [a] to start with a constructor, OR [b1] and
-  [b2] to start with a constructor. All usual instances should be of this
-  class to avoid loops.
-- [IsOp'LR a b1 b2]: requires either [a] to start with a constructor. This one
-  has just one instance: [IsOp'LR (a ⋅ b) a b] with a very low precendence.
-  This is important so that when performing, for example, an [iDestruct] on
-  [own γ (q1 + q2)] where [q1] and [q2] are fractions, we actually get
-  [own γ q1] and [own γ q2] instead of [own γ ((q1 + q2)/2)] twice.
+Since the [IsOp a b1 b2] class is used in two directions, there are some
+subtleties we need to account for:
+
+- If we want to "merge", we want the "op" instance to be used *last*. That is,
+  before using [IsOp (b1 ⋅ b2) b1 b2], we want to traverse the structure of the
+  term to merge constructors, and we want it to combine terms like [q/2] and
+  [q/2] into [q] instead of [q/2 ⋅ q/2].
+- If we want to "split", we want the "op" instance to be used *first*. That is,
+  we want to use [IsOp (b1 ⋅ b2) b1 b2] eagerly, so that for instance, a term
+  like [q1 ⋅ q2] is turned into [q1] and [q2] and not two times [(q1 ⋅ q2) / 2].
+
+To achieve this, there are various classes with different modes:
+
+- [IsOp a b1 b2]. This class has no mode, so it can be used even to
+  combine/merge evars. This class has only one direct instance
+  [IsOp (a ⋅ b) a b] with cost 100 (so it is used last), ensuring that the
+  "op" rule is used last when merging.
+- [IsOp' a b1 b2]. This class requires either [a] OR both [b1] and [b2] to be inputs.
+  All usual instances should be of this class to avoid loops.
+- [IsOp'LR a b1 b2]. This class requires [a] to be an input and has just one
+  instance [IsOp'LR (a ⋅ b) a b] with cost 0. This ensures that the "op"
+  rule is used first when splitting.
 *)
 Class IsOp {A : cmra} (a b1 b2 : A) := is_op : a ≡ b1 ⋅ b2.
 Global Arguments is_op {_} _ _ _ {_}.
