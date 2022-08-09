@@ -57,16 +57,16 @@ Lemma tac_wp_pure_credit `{!heapGS_gen hlc Σ} Δ Δ' s E j K e1 e2 ϕ Φ :
   PureExec ϕ 1 e1 e2 →
   ϕ →
   MaybeIntoLaterNEnvs 1 Δ Δ' →
-  (match envs_app false (Esnoc Enil j (£ 1)) Δ' with
-    | Some Δ'' =>
-       envs_entails Δ'' (WP fill K e2 @ s; E {{ Φ }})
-    | None => False
-    end) →
+  match envs_app false (Esnoc Enil j (£ 1)) Δ' with
+  | Some Δ'' =>
+     envs_entails Δ'' (WP fill K e2 @ s; E {{ Φ }})
+  | None => False
+  end →
   envs_entails Δ (WP (fill K e1) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_unseal=> ??? HΔ.
   pose proof @pure_exec_fill.
-  rewrite -wp_pure_step_credit; last done.
+  rewrite -lifting.wp_pure_step_later; last done.
   rewrite into_laterN_env_sound /=. apply later_mono.
   destruct (envs_app _ _ _) as [Δ''|] eqn:HΔ'; [ | contradiction ].
   rewrite envs_app_sound //; simpl.
@@ -161,7 +161,7 @@ Tactic Notation "wp_pure" open_constr(efoc) "credit:" constr(H) :=
   let Htmp := iFresh in
   let finish _ :=
     pm_reduce;
-    (iDestructHyp Htmp as H || fail 2 "wp_pure: " H " is not fresh");
+    (iDestructHyp Htmp as H || fail 2 "wp_pure:" H "is not fresh");
     wp_finish
     in
   lazymatch goal with

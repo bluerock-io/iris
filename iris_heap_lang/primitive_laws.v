@@ -170,18 +170,6 @@ Proof.
   iIntros "_". iPureIntro. rewrite /num_laters_per_step /=. lia.
 Qed.
 
-(** This just re-exports the lifting lemma when one wants to generate a single
-credit during a pure step. *)
-Lemma wp_pure_step_credit s E e1 e2 ϕ Φ :
-  PureExec ϕ 1 e1 e2 →
-  ϕ →
-  ▷ (£ 1 -∗ WP e2 @ s; E {{ Φ }}) -∗
-  WP e1 @ s; E {{ Φ }}.
-Proof.
-  iIntros (Hexec Hphi) "Hwp".
-  iApply wp_pure_step_later; done.
-Qed.
-
 (** Recursive functions: we do not use this lemmas as it is easier to use Löb
 induction directly, but this demonstrates that we can state the expected
 reasoning principle for recursive functions, without any visible ▷. *)

@@ -193,7 +193,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
 "test_wp_pure_credit_fail"
      : string
 The command has indeed failed with message:
-Tactic failure: wp_pure:  "Hcred"  is not fresh.
+Tactic failure: wp_pure: "Hcred" is not fresh.
 1 goal
   
   Σ : gFunctors
