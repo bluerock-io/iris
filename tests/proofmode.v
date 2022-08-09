@@ -325,6 +325,10 @@ Definition tc_opaque_test : PROP := tc_opaque (∀ x : nat, ⌜ x = x ⌝)%I.
 Lemma test_iIntros_tc_opaque : ⊢ tc_opaque_test.
 Proof. by iIntros (x). Qed.
 
+Definition tc_opaque_test_sep : PROP := tc_opaque (emp ∗ emp)%I.
+Lemma test_iDestruct_tc_opaque_sep : tc_opaque_test_sep -∗ tc_opaque_test_sep.
+Proof. iIntros "[H1 H2]". by iSplitL. Qed.
+
 Lemma test_iApply_evar P Q R : (∀ Q, Q -∗ P) -∗ R -∗ P.
 Proof. iIntros "H1 H2". iApply "H1". iExact "H2". Qed.
 
