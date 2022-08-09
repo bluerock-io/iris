@@ -55,6 +55,8 @@ lemma.
   `least_fixpoint_persistent_affine`, `least_fixpoint_persistent_absorbing`,
   `greatest_fixpoint_absorbing`.
 * Rename `laterN_plus` into `laterN_add`.
+* Remove `make_laterable` from atomic updates. This relies on Iris now having
+  support for later credits (see below).
 
 **Changes in `proofmode`:**
 
