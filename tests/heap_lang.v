@@ -16,7 +16,7 @@ Section tests.
     ⌜(10 = 4 + 6)%nat⌝ -∗
     WP let: "x" := ref #1 in "x" <- !"x";; !"x" {{ v, ⌜v = #1⌝ }}.
   Proof.
-    iIntros "?". wp_alloc l. repeat (wp_pure _) || wp_load || wp_store.
+    iIntros "?". wp_alloc l. repeat wp_pure || wp_load || wp_store.
     match goal with
     | |- context [ (10 = 4 + 6)%nat ] => done
     end.
@@ -44,8 +44,8 @@ Section tests.
   Lemma heap_e2_spec E : ⊢ WP heap_e2 @ E [{ v, ⌜v = #2⌝ }].
   Proof.
     iIntros "". rewrite /heap_e2.
-    wp_alloc l as "Hl". Show. wp_alloc l'.
-    wp_pures. wp_bind (!_)%E. wp_load. Show. (* No fupd was added *)
+    wp_alloc l as "Hl". Show. wp_alloc l'. do 2 wp_pure.
+    wp_bind (!_)%E. wp_load. Show. (* No fupd was added *)
     wp_store. wp_load. done.
   Qed.
 
@@ -336,6 +336,23 @@ Section tests.
     Show.
     Unset Printing All.
   Abort.
+
+  Check "test_wp_pure_credit_succeed".
+  Lemma test_wp_pure_credit_succeed P :
+    ⊢ WP #42 + #420 {{ v, ▷ P ={∅}=∗ P }}.
+  Proof.
+    wp_pure credit:"Hcred". Show.
+    iIntros "!> HP". iMod (lc_fupd_elim_later with "Hcred HP"). auto.
+  Qed.
+
+  Check "test_wp_pure_credit_fail".
+  Lemma test_wp_pure_credit_fail :
+    ⊢ True -∗ WP #42 + #420 {{ v, True }}.
+  Proof.
+    iIntros "Hcred".
+    Fail wp_pure credit:"Hcred".
+  Abort.
+
 End tests.
 
 Section mapsto_tests.

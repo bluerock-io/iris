@@ -73,9 +73,8 @@ lemma.
 
 * Make the `inG` instances for `libG` fields local, so they are only used inside
   the library that defines the `libG`.
-* Prepare for supporting later credits, by adding a resource `£ n` describing
-  ownership of `n` credits that can be eliminated at fancy updates.
-  Note that HeapLang has not yet been equipped with support for later credits.
+* Add infrastructure for supporting later credits, by adding a resource `£ n`
+  describing ownership of `n` credits that can be eliminated at fancy updates.
   + To retain backwards compatibility with the interaction laws of fancy updates
     with the plainly modality (`BiFUpdPlainly`), which are incompatible with
     later credits, the logic has a new parameter of type `has_lc`, which is
@@ -129,14 +128,18 @@ lemma.
   number of steps taken so far. This number is tied to ghost state in the state
   interpretation, which is exposed, updated, and used with new lemmas
   `wp_lb_init`, `wp_lb_update`, and `wp_step_fupdN_lb`. (by Jonas Kastberg Hinrichsen)
-* In line with the support for later credits (see `base_logic`), `heapGS_gen`
-  now takes an additional `has_lc` parameter, and `heapGS` is a short-hand for
-  `heapGS_gen HasLc`. The adequacy statements for HeapLang have been changed
-  accordingly:
+* Make pattern argument of `wp_pure` tactic optional (defaults to wildcard
+  pattern, matching all redexes).
+* In line with the support for later credits (see `base_logic`), the tactic
+  `wp_pure` now takes an optional parameter `credit:"H"` which generates a
+  hypothesis `H` for a single later credit `£ 1` that can be eliminated using
+  `lc_fupd_elim_later`.
+  The typeclass `heapGS_gen` now takes an additional `has_lc` parameter, and
+  `heapGS` is a short-hand for `heapGS_gen HasLc`. The adequacy statements for
+  HeapLang have been changed accordingly:
   + `heap_adequacy` provides `heapGS`, thus enabling the use of later credits.
     This precludes usage of the laws in `BiFUpdPlainly` in the HeapLang instance of Iris.
   + `heap_total` provides `heapGS_gen HasNoLc`.
-  Currently, the primitive laws for HeapLang do not yet provide later credits.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).

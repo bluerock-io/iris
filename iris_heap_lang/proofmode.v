@@ -53,6 +53,26 @@ Proof.
   rewrite -total_lifting.twp_pure_step //.
 Qed.
 
+Lemma tac_wp_pure_credit `{!heapGS_gen hlc Σ} Δ Δ' s E j K e1 e2 ϕ Φ :
+  PureExec ϕ 1 e1 e2 →
+  ϕ →
+  MaybeIntoLaterNEnvs 1 Δ Δ' →
+  match envs_app false (Esnoc Enil j (£ 1)) Δ' with
+  | Some Δ'' =>
+     envs_entails Δ'' (WP fill K e2 @ s; E {{ Φ }})
+  | None => False
+  end →
+  envs_entails Δ (WP (fill K e1) @ s; E {{ Φ }}).
+Proof.
+  rewrite envs_entails_unseal=> ??? HΔ.
+  pose proof @pure_exec_fill.
+  rewrite -lifting.wp_pure_step_later; last done.
+  rewrite into_laterN_env_sound /=. apply later_mono.
+  destruct (envs_app _ _ _) as [Δ''|] eqn:HΔ'; [ | contradiction ].
+  rewrite envs_app_sound //; simpl.
+  rewrite right_id. apply wand_intro_r. by rewrite wand_elim_l.
+Qed.
+
 Lemma tac_wp_value_nofupd `{!heapGS_gen hlc Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E {{ Φ }}).
 Proof. rewrite envs_entails_unseal=> ->. by apply wp_value. Qed.
@@ -133,6 +153,36 @@ Tactic Notation "wp_pure" open_constr(efoc) :=
     || fail "wp_pure: cannot find" efoc "in" e "or" efoc "is not a redex"
   | _ => fail "wp_pure: not a 'wp'"
   end.
+Tactic Notation "wp_pure" :=
+  wp_pure _.
+
+Tactic Notation "wp_pure" open_constr(efoc) "credit:" constr(H) :=
+  iStartProof;
+  let Htmp := iFresh in
+  let finish _ :=
+    pm_reduce;
+    (iDestructHyp Htmp as H || fail 2 "wp_pure:" H "is not fresh");
+    wp_finish
+    in
+  lazymatch goal with
+  | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
+    let e := eval simpl in e in
+    reshape_expr e ltac:(fun K e' =>
+      unify e' efoc;
+      eapply (tac_wp_pure_credit _ _ _ _ Htmp K e');
+      [iSolveTC                       (* PureExec *)
+      |try solve_vals_compare_safe    (* The pure condition for PureExec --
+         handles trivial goals, including [vals_compare_safe] *)
+      |iSolveTC                       (* IntoLaters *)
+      |finish ()                      (* new goal *)
+      ])
+    || fail "wp_pure: cannot find" efoc "in" e "or" efoc "is not a redex"
+  | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
+    fail "wp_pure: credit generation is not supported for a TWP"
+  | _ => fail "wp_pure: not a 'wp'"
+  end.
+Tactic Notation "wp_pure" "credit:" constr(H) :=
+  wp_pure _ credit: H.
 
 (* TODO: do this in one go, without [repeat]. *)
 Ltac wp_pures :=
