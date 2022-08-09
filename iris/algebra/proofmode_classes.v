@@ -22,10 +22,10 @@ To achieve this, there are various classes with different modes:
   combine/merge evars. This class has only one direct instance
   [IsOp (a ⋅ b) a b] with priority 100 (so it is used last), ensuring that the
   "op" rule is used last when merging.
-- [IsOp' a b1 b2]. This class requires either [a] OR [b1] and [b2] to be inputs.
+- [IsOp' a b1 b2]. This class requires either [a] OR both [b1] and [b2] to be inputs.
   All usual instances should be of this class to avoid loops.
 - [IsOp'LR a b1 b2]. This class requires [a] to be an input and has just one
-  instance [IsOp'LR (a ⋅ b) a b] with priority 0. This ensures that the "op"
+  instance [IsOp'LR (a ⋅ b) a b] with cost 0. This ensures that the "op"
   rule is used first when splitting.
 *)
 Class IsOp {A : cmra} (a b1 b2 : A) := is_op : a ≡ b1 ⋅ b2.
