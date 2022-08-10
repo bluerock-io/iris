@@ -1,5 +1,4 @@
-From stdpp Require Import nat_cancel.
-From iris.bi Require Import bi telescopes.
+From iris.bi Require Import telescopes.
 From iris.proofmode Require Import base modality_instances classes.
 From iris.proofmode Require Import ltac_tactics.
 From iris.prelude Require Import options.

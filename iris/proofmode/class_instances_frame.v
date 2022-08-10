@@ -1,6 +1,5 @@
-From stdpp Require Import nat_cancel.
-From iris.bi Require Import bi telescopes.
-From iris.proofmode Require Import classes.
+From iris.bi Require Import telescopes.
+From iris.proofmode Require Import classes classes_make.
 From iris.prelude Require Import options.
 Import bi.
 
@@ -15,12 +14,11 @@ https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/450 for some modalities,
 but that makes framing less predictable and might have some performance impact.
 Hence, we only perform such cleanup for [True] and [emp]. *)
 
-Section bi.
+Section class_instances_frame.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
-(* Frame *)
-(**
-When framing [R] against itself, we leave [True] if possible (via
+
+(** When framing [R] against itself, we leave [True] if possible (via
 [frame_here_absorbing] or [frame_affinely_here_absorbing]) since it is a weaker
 goal. Otherwise we leave [emp] via [frame_here].
 Only if all those options fail, we start decomposing [R], via instances like
@@ -57,16 +55,6 @@ Proof.
   - by rewrite right_id -affinely_affinely_if affine_affinely.
 Qed.
 
-Global Instance make_embed_pure `{BiEmbed PROP PROP'} φ :
-  KnownMakeEmbed (PROP:=PROP) ⌜φ⌝ ⌜φ⌝.
-Proof. apply embed_pure. Qed.
-Global Instance make_embed_emp `{BiEmbedEmp PROP PROP'} :
-  KnownMakeEmbed (PROP:=PROP) emp emp.
-Proof. apply embed_emp. Qed.
-Global Instance make_embed_default `{BiEmbed PROP PROP'} P :
-  MakeEmbed P ⎡P⎤ | 100.
-Proof. by rewrite /MakeEmbed. Qed.
-
 Global Instance frame_embed `{BiEmbed PROP PROP'} p P Q (Q' : PROP') R :
   Frame p R P Q → MakeEmbed Q Q' →
   Frame p ⎡R⎤ ⎡P⎤ Q' | 2. (* Same cost as default. *)
@@ -78,17 +66,6 @@ Global Instance frame_pure_embed `{BiEmbed PROP PROP'} p P Q (Q' : PROP') φ :
   Frame p ⌜φ⌝ P Q → MakeEmbed Q Q' →
   Frame p ⌜φ⌝ ⎡P⎤ Q' | 2. (* Same cost as default. *)
 Proof. rewrite /Frame /MakeEmbed -embed_pure. apply (frame_embed p P Q). Qed.
-
-Global Instance make_sep_emp_l P : KnownLMakeSep emp P P.
-Proof. apply left_id, _. Qed.
-Global Instance make_sep_emp_r P : KnownRMakeSep P emp P.
-Proof. apply right_id, _. Qed.
-Global Instance make_sep_true_l P : Absorbing P → KnownLMakeSep True P P.
-Proof. intros. apply True_sep, _. Qed.
-Global Instance make_sep_true_r P : Absorbing P → KnownRMakeSep P True P.
-Proof. intros. by rewrite /KnownRMakeSep /MakeSep sep_True. Qed.
-Global Instance make_sep_default P Q : MakeSep P Q (P ∗ Q) | 100.
-Proof. by rewrite /MakeSep. Qed.
 
 Global Instance frame_sep_persistent_l progress R P1 P2 Q1 Q2 Q' :
   Frame true R P1 Q1 → MaybeFrame true R P2 Q2 progress → MakeSep Q1 Q2 Q' →
@@ -138,17 +115,6 @@ Global Instance frame_big_sepMS_disj_union `{Countable A} p (Φ : A → PROP) R 
   Frame p R ([∗ mset] y ∈ X1 ⊎ X2, Φ y) Q | 2.
 Proof. by rewrite /Frame big_sepMS_disj_union. Qed.
 
-Global Instance make_and_true_l P : KnownLMakeAnd True P P.
-Proof. apply left_id, _. Qed.
-Global Instance make_and_true_r P : KnownRMakeAnd P True P.
-Proof. by rewrite /KnownRMakeAnd /MakeAnd right_id. Qed.
-Global Instance make_and_emp_l P : Affine P → KnownLMakeAnd emp P P.
-Proof. intros. by rewrite /KnownLMakeAnd /MakeAnd emp_and. Qed.
-Global Instance make_and_emp_r P : Affine P → KnownRMakeAnd P emp P.
-Proof. intros. by rewrite /KnownRMakeAnd /MakeAnd and_emp. Qed.
-Global Instance make_and_default P Q : MakeAnd P Q (P ∧ Q) | 100.
-Proof. by rewrite /MakeAnd. Qed.
-
 Global Instance frame_and p progress1 progress2 R P1 P2 Q1 Q2 Q' :
   MaybeFrame p R P1 Q1 progress1 →
   MaybeFrame p R P2 Q2 progress2 →
@@ -160,19 +126,8 @@ Proof.
   apply and_intro; [rewrite and_elim_l|rewrite and_elim_r]; done.
 Qed.
 
-Global Instance make_or_true_l P : KnownLMakeOr True P True.
-Proof. apply left_absorb, _. Qed.
-Global Instance make_or_true_r P : KnownRMakeOr P True True.
-Proof. by rewrite /KnownRMakeOr /MakeOr right_absorb. Qed.
-Global Instance make_or_emp_l P : Affine P → KnownLMakeOr emp P emp.
-Proof. intros. by rewrite /KnownLMakeOr /MakeOr emp_or. Qed.
-Global Instance make_or_emp_r P : Affine P → KnownRMakeOr P emp emp.
-Proof. intros. by rewrite /KnownRMakeOr /MakeOr or_emp. Qed.
-Global Instance make_or_default P Q : MakeOr P Q (P ∨ Q) | 100.
-Proof. by rewrite /MakeOr. Qed.
-
-(* We could in principle write the instance [frame_or_spatial] by a bunch of
-instances, i.e. (omitting the parameter [p = false]):
+(** We could in principle write the instance [frame_or_spatial] by a bunch of
+instances (omitting the parameter [p = false]):
 
   Frame R P1 Q1 → Frame R P2 Q2 → Frame R (P1 ∨ P2) (Q1 ∨ Q2)
   Frame R P1 True → Frame R (P1 ∨ P2) P2
@@ -184,6 +139,7 @@ appears at most once.
 
 If Coq would memorize the results of type class resolution, the solution with
 multiple instances would be preferred (and more Prolog-like). *)
+
 Global Instance frame_or_spatial progress1 progress2 R P1 P2 Q1 Q2 Q :
   MaybeFrame false R P1 Q1 progress1 → MaybeFrame false R P2 Q2 progress2 →
   TCOr (TCEq (progress1 && progress2) true) (TCOr
@@ -206,13 +162,6 @@ Proof.
   by rewrite assoc (comm _ P1) -assoc wand_elim_r.
 Qed.
 
-Global Instance make_affinely_emp : @KnownMakeAffinely PROP emp emp | 0.
-Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_emp. Qed.
-Global Instance make_affinely_True : @KnownMakeAffinely PROP True emp | 0.
-Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_True_emp. Qed.
-Global Instance make_affinely_default P : MakeAffinely P (<affine> P) | 100.
-Proof. by rewrite /MakeAffinely. Qed.
-
 Global Instance frame_affinely p R P Q Q' :
   TCOr (TCEq p true) (Affine R) →
   Frame p R P Q → MakeAffinely Q Q' →
@@ -222,22 +171,6 @@ Proof.
     by rewrite -{1}(affine_affinely (_ R)) affinely_sep_2.
 Qed.
 
-Global Instance make_intuitionistically_emp :
-  @KnownMakeIntuitionistically PROP emp emp | 0.
-Proof.
-  by rewrite /KnownMakeIntuitionistically /MakeIntuitionistically
-    intuitionistically_emp.
-Qed.
-Global Instance make_intuitionistically_True :
-  @KnownMakeIntuitionistically PROP True emp | 0.
-Proof.
-  by rewrite /KnownMakeIntuitionistically /MakeIntuitionistically
-    intuitionistically_True_emp.
-Qed.
-Global Instance make_intuitionistically_default P :
-  MakeIntuitionistically P (□ P) | 100.
-Proof. by rewrite /MakeIntuitionistically. Qed.
-
 Global Instance frame_intuitionistically R P Q Q' :
   Frame true R P Q → MakeIntuitionistically Q Q' →
   Frame true R (□ P) Q' | 2. (* Same cost as default. *)
@@ -245,16 +178,6 @@ Proof.
   rewrite /Frame /MakeIntuitionistically=> <- <- /=.
   rewrite -intuitionistically_sep_2 intuitionistically_idemp //.
 Qed.
-
-Global Instance make_absorbingly_emp : @KnownMakeAbsorbingly PROP emp True | 0.
-Proof.
-  by rewrite /KnownMakeAbsorbingly /MakeAbsorbingly
-     -absorbingly_emp_True.
-Qed.
-Global Instance make_absorbingly_True : @KnownMakeAbsorbingly PROP True True | 0.
-Proof. by rewrite /KnownMakeAbsorbingly /MakeAbsorbingly absorbingly_pure. Qed.
-Global Instance make_absorbingly_default P : MakeAbsorbingly P (<absorb> P) | 100.
-Proof. by rewrite /MakeAbsorbingly. Qed.
 
 Global Instance frame_absorbingly p R P Q Q' :
   Frame p R P Q → MakeAbsorbingly Q Q' →
@@ -321,14 +244,6 @@ Global Instance frame_eq_embed `{!BiEmbed PROP PROP', !BiInternalEq PROP,
   Frame p (a ≡ b) ⎡P⎤ Q'. (* Default cost > 1 *)
 Proof. rewrite /Frame /MakeEmbed -embed_internal_eq. apply (frame_embed p P Q). Qed.
 
-Global Instance make_laterN_true n : @KnownMakeLaterN PROP n True True | 0.
-Proof. by rewrite /KnownMakeLaterN /MakeLaterN laterN_True. Qed.
-Global Instance make_laterN_emp `{!BiAffine PROP} n :
-  @KnownMakeLaterN PROP n emp emp | 0.
-Proof. by rewrite /KnownMakeLaterN /MakeLaterN laterN_emp. Qed.
-Global Instance make_laterN_default n P : MakeLaterN n P (▷^n P) | 100.
-Proof. by rewrite /MakeLaterN. Qed.
-
 Global Instance frame_later p R R' P Q Q' :
   TCNoBackTrack (MaybeIntoLaterN true 1 R' R) →
   Frame p R P Q → MakeLaterN 1 Q Q' →
@@ -353,11 +268,6 @@ Global Instance frame_fupd `{BiFUpd PROP} p E1 E2 R P Q :
   Frame p R P Q → Frame p R (|={E1,E2}=> P) (|={E1,E2}=> Q) | 2.
 Proof. rewrite /Frame=><-. by rewrite fupd_frame_l. Qed.
 
-Global Instance make_except_0_True : @KnownMakeExcept0 PROP True True.
-Proof. by rewrite /KnownMakeExcept0 /MakeExcept0 except_0_True. Qed.
-Global Instance make_except_0_default P : MakeExcept0 P (◇ P) | 100.
-Proof. by rewrite /MakeExcept0. Qed.
-
 Global Instance frame_except_0 p R P Q Q' :
   Frame p R P Q → MakeExcept0 Q Q' →
   Frame p R (◇ P) Q' | 2. (* Same cost as default *)
@@ -365,4 +275,4 @@ Proof.
   rewrite /Frame /MakeExcept0=><- <-.
   by rewrite except_0_sep -(except_0_intro (□?p R)).
 Qed.
-End bi.
+End class_instances_frame.
