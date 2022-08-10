@@ -1,3 +1,5 @@
+(** IMPORTANT: Read the comment in [classes_make] about the "constant time"
+requirements of these instances. *)
 From iris.proofmode Require Export classes_make.
 From iris.prelude Require Import options.
 Import bi.

@@ -1,6 +1,3 @@
-From iris.bi Require Export bi.
-From iris.prelude Require Import options.
-
 (** The [MakeX] classes are "smart constructors" for the logical connectives
 and modalities that perform some trivial logical simplifications to give "clean"
 results.
@@ -15,8 +12,14 @@ appropriate assumptions w.r.t. affinity), the result [PQ] is [Q] or [P],
 respectively. In other cases, the result is [PQ] is simply [P ∗ Q].
 
 The [MakeX] classes are used in each recursive step of the framing machinery.
-Hence, they should be constant time, which is typically achieved by only looking
-at the top-level symbol of the input.
+Hence, they should be "constant time", which means that the number of steps in
+the inference search for [MakeX] should not depend on the size of the inputs.
+This implies that [MakeX] instances should not be recursive, and [MakeX]
+instances should not have premises of other classes with recursive instances. In
+particular, [MakeX] instances should not have [Affine] or [Absorbing] premises
+(because these could invoke a recursive search). Instances for [MakeX] instances
+typically look only at the top-level symbol of the input, or check if the whole
+BI is affine (via the [BiAffine] class).
 
 One could imagine a smarter way of "cleaning up", as implemented in
 https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/450 for some modalities,
@@ -28,10 +31,12 @@ For each of the [MakeX] class, there is a [KnownMakeX] variant, which only
 succeeds if the parameter(s) is not an evar. In the case the parameter(s) is an
 evar, then [MakeX] will not instantiate it arbitrarily.
 
-The reason for this is that if given an evar, these typeclasses would typically
+The reason for this is that if given an evar, these classes would typically
 try to instantiate this evar with some arbitrary logical constructs such as
 [emp] or [True]. Therefore, we use a [Hint Mode] to disable all the instances
 that would have this behavior. *)
+From iris.bi Require Export bi.
+From iris.prelude Require Import options.
 
 Class MakeEmbed {PROP PROP' : bi} `{BiEmbed PROP PROP'} (P : PROP) (Q : PROP') :=
   make_embed : ⎡P⎤ ⊣⊢ Q.
