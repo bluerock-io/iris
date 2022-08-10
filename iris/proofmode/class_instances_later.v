@@ -1,6 +1,5 @@
 From stdpp Require Import nat_cancel.
-From iris.bi Require Import bi.
-From iris.proofmode Require Import modality_instances classes.
+From iris.proofmode Require Import classes classes_make modality_instances.
 From iris.prelude Require Import options.
 Import bi.
 
@@ -283,6 +282,10 @@ Global Instance into_laterN_later only_head n n' m' P Q lQ :
   progress, but there may still be a left-over (i.e. [n']) to cancel more deeply
   into [P], as such, we continue with [MaybeIntoLaterN]. *)
   TCIf (TCEq 1 m') (IntoLaterN only_head n' P Q) (MaybeIntoLaterN only_head n' P Q) →
+  (* Similar to [iFrame], the [iNext] tactic also performs a traversal through a
+  term (a hypothesis) to find laters to strip. And like [iFrame] we don't want
+  this to be excessively smart. So we use the same typeclass as [iFrame] here.
+  *)
   MakeLaterN m' Q lQ →
   IntoLaterN only_head n (▷ P) lQ | 2.
 Proof.

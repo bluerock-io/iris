@@ -1,5 +1,4 @@
 From stdpp Require Import nat_cancel.
-From iris.bi Require Import bi.
 From iris.proofmode Require Import modality_instances classes.
 From iris.prelude Require Import options.
 Import bi.
@@ -25,7 +24,7 @@ Global Instance into_laterN_Next {A : ofe} only_head n n' (x y : A) :
   NatCancel n 1 n' 0 →
   IntoLaterN (PROP:=PROP) only_head n (Next x ≡ Next y) (x ≡ y) | 2.
 Proof.
-  rewrite /MakeLaterN /IntoLaterN /MaybeIntoLaterN /NatCancel Nat.add_0_r.
+  rewrite /IntoLaterN /MaybeIntoLaterN /NatCancel Nat.add_0_r.
   move=> <-. rewrite later_equivI. by rewrite Nat.add_comm /= -laterN_intro.
 Qed.
 

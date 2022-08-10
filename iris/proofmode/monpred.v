@@ -1,6 +1,6 @@
 From iris.bi Require Export monpred.
 From iris.bi Require Import plainly.
-From iris.proofmode Require Import proofmode modality_instances.
+From iris.proofmode Require Import proofmode classes_make modality_instances.
 From iris.prelude Require Import options.
 
 Class MakeMonPredAt {I : biIndex} {PROP : bi} (i : I)

@@ -1,5 +1,5 @@
 From iris.bi Require Export bi.
-From iris.proofmode Require Import classes class_instances.
+From iris.proofmode Require Import classes classes_make.
 From iris.prelude Require Import options.
 
 Class Fractional {PROP : bi} (Φ : Qp → PROP) :=
