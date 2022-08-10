@@ -1,15 +1,37 @@
 From iris.bi Require Export bi.
 From iris.prelude Require Import options.
 
-(* For each of the [MakeXxxx] class, there is a [KnownMakeXxxx]
-   variant, that only succeeds if the parameter(s) is not an evar. In
-   the case the parameter(s) is an evar, then [MakeXxxx] will not
-   instantiate it arbitrarily.
+(** The [MakeX] classes are "smart constructors" for the logical connectives
+and modalities that perform some trivial logical simplifications to give "clean"
+results.
 
-   The reason for this is that if given an evar, these typeclasses
-   would typically try to instantiate this evar with some arbitrary
-   logical constructs such as emp or True. Therefore, we use a Hint
-   Mode to disable all the instances that would have this behavior. *)
+For example, when framing below logical connectives/modalities, framing should
+remove connectives/modalities if the result of framing is [emp]. For example,
+when framing [P] (using [iFrame]) in goal [P ∗ Q], the result should be [Q]. The
+result should not be [emp ∗ Q], where [emp] would be the result of (recursively)
+framing [P] in [P]. Hence, in the recursive calls, the framing machinery uses
+the class [MakeSep P Q PQ]. If either [P] or [Q] is [emp] (or [True] in case of
+appropriate assumptions w.r.t. affinity), the result [PQ] is [Q] or [P],
+respectively. In other cases, the result is [PQ] is simply [P ∗ Q].
+
+The [MakeX] classes are used in each recursive step of the framing machinery.
+Hence, they should be constant time, which is typically achieved by only looking
+at the top-level symbol of the input.
+
+One could imagine a smarter way of "cleaning up", as implemented in
+https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/450 for some modalities,
+but that makes framing less predictable and might have some performance impact
+(i.e., not be constant time). Hence, we only perform such cleanup for [True]
+and [emp].
+
+For each of the [MakeX] class, there is a [KnownMakeX] variant, which only
+succeeds if the parameter(s) is not an evar. In the case the parameter(s) is an
+evar, then [MakeX] will not instantiate it arbitrarily.
+
+The reason for this is that if given an evar, these typeclasses would typically
+try to instantiate this evar with some arbitrary logical constructs such as
+[emp] or [True]. Therefore, we use a [Hint Mode] to disable all the instances
+that would have this behavior. *)
 
 Class MakeEmbed {PROP PROP' : bi} `{BiEmbed PROP PROP'} (P : PROP) (Q : PROP') :=
   make_embed : ⎡P⎤ ⊣⊢ Q.
