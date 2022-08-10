@@ -19,7 +19,8 @@ instances should not have premises of other classes with recursive instances. In
 particular, [MakeX] instances should not have [Affine] or [Absorbing] premises
 (because these could invoke a recursive search). Instances for [MakeX] instances
 typically look only at the top-level symbol of the input, or check if the whole
-BI is affine (via the [BiAffine] class).
+BI is affine (via the [BiAffine] class) -- the latter can be linear in
+the size of `PROP` itself, but is still independent of the size of the term.
 
 One could imagine a smarter way of "cleaning up", as implemented in
 https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/450 for some modalities,
