@@ -140,7 +140,7 @@ iris/proofmode/class_instances_updates.v
 iris/proofmode/class_instances_embedding.v
 iris/proofmode/class_instances_plainly.v
 iris/proofmode/class_instances_internal_eq.v
-iris/proofmode/frame_instances.v
+iris/proofmode/class_instances_frame.v
 iris/proofmode/monpred.v
 iris/proofmode/modalities.v
 iris/proofmode/modality_instances.v
