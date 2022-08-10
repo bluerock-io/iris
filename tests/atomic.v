@@ -15,15 +15,10 @@ Section general_bi_tests.
     ⊢ ∀ (TA TB : tele) (α : TA → PROP) (β Φ : TA → TB → PROP),
         atomic_update Eo Ei α β Φ.
 
-  (** iAuIntro works with non-empty laterable spacial context without any further
-  assumptions. *)
-  Lemma au_intro_1 (P : PROP) `{!Laterable P} (α : TA → PROP) (β Φ : TA → TB → PROP) :
+  (** iAuIntro works. *)
+  Lemma au_intro_1 (P : PROP) (α : TA → PROP) (β Φ : TA → TB → PROP) :
     P -∗ atomic_update Eo Ei α β Φ.
   Proof. iIntros "HP". iAuIntro. Abort.
-  (** But in an empty context, it fails, since [emp] now needs to be laterable. *)
-  Lemma au_intro_2 (α : TA → PROP) (β Φ : TA → TB → PROP) :
-    ⊢ atomic_update Eo Ei α β Φ.
-  Proof. Fail iAuIntro. Abort.
 End general_bi_tests.
 
 Section tests.
@@ -38,22 +33,6 @@ Section tests.
     iAaccIntro with "Hl"; eauto with iFrame.
   Qed.
 End tests.
-
-(* Test if we get reasonable error messages with non-laterable assertions in the context. *)
-Section error.
-  Context `{!heapGS Σ} {aheap: atomic_heap}.
-  Import atomic_heap.notation.
-
-  Check "non_laterable".
-  Lemma non_laterable (P : iProp Σ) (l : loc) :
-    P -∗ WP !#l {{ _, True }}.
-  Proof.
-    iIntros "HP". wp_apply load_spec. iAuIntro. Show.
-  Restart.
-    iIntros "HP". awp_apply load_spec. Show.
-  Abort.
-End error.
-
 
 (* Test if AWP and the AU obtained from AWP print. *)
 Check "printing".

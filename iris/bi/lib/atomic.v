@@ -1,5 +1,5 @@
 From stdpp Require Import coPset namespaces.
-From iris.bi Require Export bi updates laterable.
+From iris.bi Require Export bi updates.
 From iris.bi.lib Require Import fixpoint.
 From iris.proofmode Require Import coq_tactics proofmode reduction.
 From iris.prelude Require Import options.
@@ -63,19 +63,18 @@ Section definition.
   Qed.
 
   (** atomic_update as a fixed-point of the equation
-   AU = make_laterable $ atomic_acc α AU β Q
+   AU = atomic_acc α AU β Q
   *)
   Context Eo Ei α β Φ.
 
   Definition atomic_update_pre (Ψ : () → PROP) (_ : ()) : PROP :=
-    make_laterable $ atomic_acc Eo Ei α (Ψ ()) β Φ.
+    atomic_acc Eo Ei α (Ψ ()) β Φ.
 
   Local Instance atomic_update_pre_mono : BiMonoPred atomic_update_pre.
   Proof.
     constructor.
     - iIntros (P1 P2 ??) "#HP12". iIntros ([]) "AU".
-      iApply (make_laterable_intuitionistic_wand with "[] AU").
-      iIntros "!> AA". iApply (atomic_acc_wand with "[HP12] AA").
+      iApply (atomic_acc_wand with "[HP12] AU").
       iSplit; last by eauto. iApply "HP12".
     - intros ??. solve_proper.
   Qed.
@@ -236,19 +235,21 @@ Section lemmas.
     iIntros (Heo) "HAU".
     iApply (greatest_fixpoint_coiter _ (λ _, atomic_update_def Eo1 Ei α β Φ)); last done.
     iIntros "!> *". rewrite {1}/atomic_update_def /= greatest_fixpoint_unfold.
-    iApply make_laterable_intuitionistic_wand. iIntros "!>".
     iApply atomic_acc_mask_weaken. done.
   Qed.
 
+  Local Lemma aupd_unfold Eo Ei α β Φ :
+    atomic_update Eo Ei α β Φ ⊣⊢
+    atomic_acc Eo Ei α (atomic_update Eo Ei α β Φ) β Φ.
+  Proof.
+    rewrite atomic_update_unseal /atomic_update_def /=. apply: greatest_fixpoint_unfold.
+  Qed.
+
   (** The elimination form: an atomic accessor *)
-  Lemma aupd_aacc  Eo Ei α β Φ :
+  Lemma aupd_aacc Eo Ei α β Φ :
     atomic_update Eo Ei α β Φ -∗
     atomic_acc Eo Ei α (atomic_update Eo Ei α β Φ) β Φ.
-  Proof using Type*.
-    rewrite atomic_update_unseal {1}/atomic_update_def /=. iIntros "HUpd".
-    iPoseProof (greatest_fixpoint_unfold_1 with "HUpd") as "HUpd".
-    iDestruct (make_laterable_elim with "HUpd") as ">?". done.
-  Qed.
+  Proof using Type*. by rewrite {1}aupd_unfold. Qed.
 
   (* This lets you eliminate atomic updates with iMod. *)
   Global Instance elim_mod_aupd φ Eo Ei E α β Φ Q Q' :
@@ -266,24 +267,16 @@ Section lemmas.
     iApply "Hcont". done.
   Qed.
 
-  Global Instance aupd_laterable Eo Ei α β Φ :
-    Laterable (atomic_update Eo Ei α β Φ).
-  Proof.
-    rewrite atomic_update_unseal {1}/atomic_update_def greatest_fixpoint_unfold.
-    apply _.
-  Qed.
-
   (** The introduction lemma for atomic_update. This should usually not be used
   directly; use the [iAuIntro] tactic instead. *)
-  Lemma aupd_intro P Q α β Eo Ei Φ :
-    Absorbing P → Persistent P → Laterable Q →
+  Local Lemma aupd_intro P Q α β Eo Ei Φ :
+    Absorbing P → Persistent P →
     (P ∧ Q -∗ atomic_acc Eo Ei α Q β Φ) →
     P ∧ Q -∗ atomic_update Eo Ei α β Φ.
   Proof.
     rewrite atomic_update_unseal {1}/atomic_update_def /=.
-    iIntros (??? HAU) "[#HP HQ]".
+    iIntros (?? HAU) "[#HP HQ]".
     iApply (greatest_fixpoint_coiter _ (λ _, Q)); last done. iIntros "!>" ([]) "HQ".
-    iApply (make_laterable_intro Q with "[] HQ"). iIntros "!> HQ".
     iApply HAU. iSplit; by iFrame.
   Qed.
 
@@ -426,68 +419,24 @@ Section proof_mode.
   Context `{BiFUpd PROP} {TA TB : tele}.
   Implicit Types (α : TA → PROP) (β Φ : TA → TB → PROP) (P : PROP).
 
-  (** We'd like to use the [iModIntro] machinery to transform the context into
-  something all-laterable, but we cannot actually use [iModIntro] on
-  [make_laterable] for that since we need to first make the context laterable,
-  then apply coinduction, and then introduce the modality (the last two steps
-  happen inside [aupd_intro]). We instead we define a dummy modality [make_laterable_id] that also
-  uses [MIEnvTransform IntoLaterable] and use that to pre-process the goal. *)
-  Local Definition make_laterable_id_def (P : PROP) := P.
-  Local Definition make_laterable_id_aux : seal make_laterable_id_def.
-  Proof. by eexists. Qed.
-  Local Definition make_laterable_id := make_laterable_id_aux.(unseal).
-  Local Definition make_laterable_id_eq : make_laterable_id = make_laterable_id_def :=
-    make_laterable_id_aux.(seal_eq).
-
-  Local Lemma modality_make_laterable_id_mixin :
-    modality_mixin make_laterable_id MIEnvId (MIEnvTransform IntoLaterable).
-  Proof.
-    rewrite make_laterable_id_eq. split; simpl; eauto.
-    intros P Q ?. rewrite (into_laterable P). done.
-  Qed.
-
-  Local Definition modality_make_laterable_id :=
-    Modality _ modality_make_laterable_id_mixin.
-
-  Global Instance from_modal_make_laterable P :
-    FromModal True modality_make_laterable_id (make_laterable_id P) (make_laterable_id P) P.
-  Proof. by rewrite /FromModal. Qed.
-
-  Local Lemma make_laterable_id_elim P :
-    make_laterable_id P -∗ P.
-  Proof. rewrite make_laterable_id_eq. done. Qed.
-
   Lemma tac_aupd_intro Γp Γs n α β Eo Ei Φ P :
-    match Γs with Enil => Laterable (PROP:=PROP) emp | _ => TCTrue end →
-    TCForall Laterable (env_to_list Γs) →
     P = env_to_prop Γs →
     envs_entails (Envs Γp Γs n) (atomic_acc Eo Ei α P β Φ) →
     envs_entails (Envs Γp Γs n) (atomic_update Eo Ei α β Φ).
   Proof.
-    intros Hemp HΓs ->. rewrite envs_entails_unseal of_envs_eq /atomic_acc /=.
+    intros ->. rewrite envs_entails_unseal of_envs_eq /atomic_acc /=.
     setoid_rewrite env_to_prop_sound =>HAU.
-    rewrite assoc. apply: aupd_intro.
-    { destruct Γs as [|Γs i P]; first done.
-      inversion HΓs. simpl. apply big_sep_sepL_laterable; done. }
-    by rewrite -assoc.
+    rewrite assoc. apply: aupd_intro. by rewrite -assoc.
   Qed.
 End proof_mode.
 
 (** * Now the coq-level tactics *)
 
-(** This tactic makes the context laterable. *)
-Local Ltac iMakeLaterable :=
-  iApply make_laterable_id_elim; iModIntro.
-
 Tactic Notation "iAuIntro" :=
-  iMakeLaterable;
   match goal with
   | |- envs_entails (Envs ?Γp ?Γs _) (atomic_update _ _ _ _ ?Φ) =>
-      notypeclasses refine (tac_aupd_intro Γp Γs _ _ _ _ _ Φ _ _ _ _ _); [
-        (* The [match Γs] precondition *)
-        iSolveTC || fail "iAuIntro: spacial context empty, and emp not laterable"
-      | iSolveTC || fail "iAuIntro: context not laterable; this should not happen, please report a bug"
-      | (* P = ...: make the P pretty *) pm_reflexivity
+      notypeclasses refine (tac_aupd_intro Γp Γs _ _ _ _ _ Φ _ _ _); [
+        (* P = ...: make the P pretty *) pm_reflexivity
       | (* the new proof mode goal *) ]
   end.
 
