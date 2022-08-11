@@ -526,7 +526,7 @@ Proof.
   - intros n l. rewrite !list_lookup_validN=> Hl i. rewrite list_lookup_fmap.
     by apply (cmra_morphism_validN (fmap f : option A → option B)).
   - intros l. apply Some_proper. rewrite -!list_fmap_compose.
-    apply list_fmap_equiv_ext, cmra_morphism_core, _.
+    apply list_fmap_equiv_ext=>???. apply cmra_morphism_core, _.
   - intros l1 l2. apply list_equiv_lookup=>i.
     by rewrite list_lookup_op !list_lookup_fmap list_lookup_op cmra_morphism_op.
 Qed.
@@ -540,11 +540,11 @@ Next Obligation.
 Qed.
 Next Obligation.
   intros F A ? B ? x. rewrite /= -{2}(list_fmap_id x).
-  apply list_fmap_equiv_ext=>y. apply urFunctor_map_id.
+  apply list_fmap_equiv_ext=>???. apply urFunctor_map_id.
 Qed.
 Next Obligation.
   intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -list_fmap_compose.
-  apply list_fmap_equiv_ext=>y; apply urFunctor_map_compose.
+  apply list_fmap_equiv_ext=>???; apply urFunctor_map_compose.
 Qed.
 
 Global Instance listURF_contractive F :
