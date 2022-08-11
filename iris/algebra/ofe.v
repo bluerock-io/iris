@@ -307,6 +307,16 @@ Section limit_preserving.
     eapply Hlim1, HP1. apply dist_le with n; last lia. apply (conv_compl n).
   Qed.
 
+  (** This is strictly weaker than the [_impl] variant, but sometimes automation
+      is better at proving [Proper] for [iff] than for [impl]. *)
+  Lemma limit_preserving_iff (P1 P2 : A → Prop) :
+    Proper (dist 0 ==> iff) P1 → LimitPreserving P2 →
+    LimitPreserving (λ x, P1 x → P2 x).
+  Proof.
+    intros HP1. apply limit_preserving_impl. intros ???.
+    apply iff_impl_subrelation. eapply HP1. done.
+  Qed.
+
   Lemma limit_preserving_forall {B} (P : B → A → Prop) :
     (∀ y, LimitPreserving (P y)) →
     LimitPreserving (λ x, ∀ y, P y x).
