@@ -1,4 +1,4 @@
-(* This is just an integration file for [iris_staging.algebra.list];
+(** This is just an integration file for [iris_staging.algebra.list];
 both should be stabilized together. *)
 From iris.algebra Require Import cmra.
 From iris.unstable.algebra Require Import list monotone.

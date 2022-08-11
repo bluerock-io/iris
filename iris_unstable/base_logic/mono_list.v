@@ -1,4 +1,4 @@
-(* This file is still experimental. See its tracking issue
+(** This file is still experimental. See its tracking issue
 https://gitlab.mpi-sws.org/iris/iris/-/issues/439 for details on remaining
 issues before stabilization. *)
 (** Ghost state for a append-only list, wrapping the [mono_listR] RA. This

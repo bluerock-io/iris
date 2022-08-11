@@ -1,4 +1,4 @@
-(* This file is still experimental. See its tracking issue
+(** This file is still experimental. See its tracking issue
 https://gitlab.mpi-sws.org/iris/iris/-/issues/414 for details on remaining
 issues before stabilization. *)
 
