@@ -25,9 +25,8 @@ Proof. intros ????. by apply dist_option_Forall2, Forall2_lookup. Qed.
 Global Instance list_lookup_total_ne `{!Inhabited A} i :
   NonExpansive (lookup_total (M:=list A) i).
 Proof. intros ???. rewrite !list_lookup_total_alt. by intros ->. Qed.
-Global Instance list_alter_ne n f i :
-  Proper (dist n ==> dist n) f →
-  Proper (dist n ==> dist n) (alter (M:=list A) f i) := _.
+Global Instance list_alter_ne n :
+  Proper ((dist n ==> dist n) ==> (=) ==> dist n ==> dist n) (alter (M:=list A)) := _.
 Global Instance list_insert_ne i : NonExpansive2 (insert (M:=list A) i) := _.
 Global Instance list_inserts_ne i : NonExpansive2 (@list_inserts A i) := _.
 Global Instance list_delete_ne i : NonExpansive (delete (M:=list A) i) := _.
@@ -98,30 +97,36 @@ End ofe.
 Global Arguments listO : clear implicits.
 
 (** Non-expansiveness of higher-order list functions and big-ops *)
-Global Instance list_fmap_ne {A B : ofe} (f : A → B) n :
-  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=list) f).
-Proof. intros Hf l k ?; by eapply Forall2_fmap, Forall2_impl; eauto. Qed.
-Global Instance list_omap_ne {A B : ofe} (f : A → option B) n :
-  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (omap (M:=list) f).
+Global Instance list_fmap_ne {A B : ofe} n :
+  Proper ((dist n ==> dist n) ==> dist n ==> dist n) (fmap (M:=list) (A:=A) (B:=B)).
+Proof. intros f1 f2 Hf l1 l2 Hl; by eapply Forall2_fmap, Forall2_impl; eauto. Qed.
+Global Instance list_omap_ne {A B : ofe} n :
+  Proper ((dist n ==> dist n) ==> dist n ==> dist n) (omap (M:=list) (A:=A) (B:=B)).
 Proof.
-  intros Hf. induction 1 as [|x1 x2 l1 l2 Hx Hl]; csimpl; [constructor|].
+  intros f1 f2 Hf. induction 1 as [|x1 x2 l1 l2 Hx Hl]; csimpl; [constructor|].
   destruct (Hf _ _ Hx); [f_equiv|]; auto.
 Qed.
-Global Instance imap_ne {A B : ofe} (f : nat → A → B) n :
-  (∀ i, Proper (dist n ==> dist n) (f i)) → Proper (dist n ==> dist n) (imap f).
+Global Instance imap_ne {A B : ofe} n :
+  Proper (pointwise_relation _ ((dist n ==> dist n)) ==> dist n ==> dist n)
+         (imap (A:=A) (B:=B)).
 Proof.
-  intros Hf l1 l2 Hl. revert f Hf.
-  induction Hl; intros f Hf; simpl; [constructor|f_equiv; naive_solver].
+  intros f1 f2 Hf l1 l2 Hl. revert f1 f2 Hf.
+  induction Hl as [|x1 x2 l1 l2 ?? IH]; intros f1 f2 Hf; simpl; [constructor|].
+  f_equiv; [by apply Hf|]. apply IH. intros i y1 y2 Hy. by apply Hf.
 Qed.
 Global Instance list_bind_ne {A B : ofe} (f : A → list A) n :
-  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (mbind f).
-Proof. induction 2; simpl; [constructor|solve_proper]. Qed.
+  Proper ((dist n ==> dist n) ==> dist n ==> dist n)
+         (mbind (M:=list) (A:=A) (B:=B)).
+Proof. intros f1 f2 Hf. induction 1; csimpl; [constructor|f_equiv; auto]. Qed.
 Global Instance list_join_ne {A : ofe} : NonExpansive (mjoin (M:=list) (A:=A)).
 Proof. induction 1; simpl; [constructor|solve_proper]. Qed.
-Global Instance zip_with_ne {A B C : ofe} (f : A → B → C) n :
-  Proper (dist n ==> dist n ==> dist n) f →
-  Proper (dist n ==> dist n ==> dist n) (zip_with f).
-Proof. induction 2; destruct 1; simpl; [constructor..|f_equiv; [f_equiv|]; auto]. Qed.
+Global Instance zip_with_ne {A B C : ofe} n :
+  Proper ((dist n ==> dist n ==> dist n) ==> dist n ==> dist n ==> dist n)
+         (zip_with (A:=A) (B:=B) (C:=C)).
+Proof.
+  intros f1 f2 Hf.
+  induction 1; destruct 1; simpl; [constructor..|f_equiv; try apply Hf; auto].
+Qed.
 
 Lemma big_opL_ne_2 `{Monoid M o} {A : ofe} (f g : nat → A → M) l1 l2 n :
   l1 ≡{n}≡ l2 →
