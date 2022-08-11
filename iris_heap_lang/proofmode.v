@@ -631,10 +631,9 @@ Tactic Notation "wp_smart_apply" open_constr(lem) :=
 
 (** Tactic tailored for atomic triples: the first, simple one just runs
 [iAuIntro] on the goal, as atomic triples always have an atomic update as their
-premise.  The second one additionaly does some framing: it gets rid of [Hs] from
-the context, which is intended to be the non-laterable assertions that iAuIntro
-would choke on.  You get them all back in the continuation of the atomic
-operation. *)
+premise. The second one additionaly does some framing: it gets rid of [Hs] from
+the context, reducing clutter. You get them all back in the continuation of the
+atomic operation. *)
 Tactic Notation "awp_apply" open_constr(lem) :=
   wp_apply_core lem ltac:(fun H => iApplyHyp H) ltac:(fun cont => fail);
   last iAuIntro.
