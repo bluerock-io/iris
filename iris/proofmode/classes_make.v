@@ -39,6 +39,14 @@ that would have this behavior. *)
 From iris.bi Require Export bi.
 From iris.prelude Require Import options.
 
+(** Aliases for [Affine] and [Absorbing], but the instances are severely
+restricted. They only inspect the top-level symbol or check if the whole BI
+is affine. *)
+Class QuickAffine {PROP : bi} (P : PROP) := quick_affine : Affine P.
+Global Hint Mode QuickAffine + ! : typeclass_instances.
+Class QuickAbsorbing {PROP : bi} (P : PROP) := quick_absorbing : Absorbing P.
+Global Hint Mode QuickAbsorbing + ! : typeclass_instances.
+
 Class MakeEmbed {PROP PROP' : bi} `{BiEmbed PROP PROP'} (P : PROP) (Q : PROP') :=
   make_embed : ⎡P⎤ ⊣⊢ Q.
 Global Arguments MakeEmbed {_ _ _} _%I _%I.

@@ -51,10 +51,6 @@ Proof.
   - iSplitL "HQ"; first iAssumption. by iSplitL "H1".
 Qed.
 
-Lemma demo_3 P1 P2 P3 :
-  P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∧ ⌜x = 0⌝) ∨ P3).
-Proof. iIntros "($ & $ & $)". iNext. by iExists 0. Qed.
-
 Lemma test_pure_space_separated P1 :
   <affine> ⌜True⌝ ∗ P1 -∗ P1.
 Proof.
