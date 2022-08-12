@@ -46,6 +46,7 @@ build-coq.8.16.dev:
   <<: *template
   variables:
     OPAM_PINS: "coq version 8.16.dev"
+    DENY_WARNINGS: "1"
 
 build-coq.8.15.1:
   <<: *template
