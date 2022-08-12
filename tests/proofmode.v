@@ -581,9 +581,12 @@ Lemma test_iFrame_or_1 P1 P2 P3 :
   P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∗ <affine> ⌜x = 0⌝) ∨ P3).
 Proof.
   iIntros "($ & $ & $)".
-  Show. (* By framing [P3], the disjunction becomes [<affine> ⌜x = 0⌝ ∨ emp],
-  since [<affine> ⌜x = 0⌝] is trivially affine, the disjunction is simplified
-  to [emp] *)
+  Show. (* By framing [P3], the disjunction becomes [<affine> ⌜x = 0⌝ ∨ emp].
+  The [iFrame] tactic simplifies disjunctions if one side is trivial. In a
+  general BI, it can only turn [Q ∨ emp] into [emp]---without information
+  loss---if [Q] is affine. Here, we have [Q := <affine> ⌜x = 0⌝], which is
+  trivially affine (i.e., [QuickAffine]), and the disjunction is thus
+  simplified to [emp]. *)
   by iExists 0.
 Qed.
 Check "test_iFrame_or_2".
@@ -591,9 +594,9 @@ Lemma test_iFrame_or_2 P1 P2 P3 :
   P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∧ ⌜x = 0⌝) ∨ P3).
 Proof.
   iIntros "($ & $ & $)".
-  Show. (* By framing [P3], the disjunction becomes [emp ∧ ⌜x = 0⌝ ∨ emp],
-  since [emp ∧ ⌜x = 0⌝] is not trivially affine (i.e., by just looking at the
-  head symbol), this not simplified to [emp] *)
+  Show. (* By framing [P3], the disjunction becomes [emp ∧ ⌜x = 0⌝ ∨ emp].
+  Since [emp ∧ ⌜x = 0⌝] is not trivially affine (i.e., not [QuickAffine]) it
+  is not simplified to [emp]. *)
   iExists 0. auto.
 Qed.
 Check "test_iFrame_or_affine_1".
