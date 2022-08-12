@@ -77,23 +77,43 @@ Proof. apply or_emp. Qed.
 Global Instance make_or_default P Q : MakeOr P Q (P ∨ Q) | 100.
 Proof. by rewrite /MakeOr. Qed.
 
-(** Affinely *)
-Global Instance make_affinely_True : @KnownMakeAffinely PROP True emp | 0.
--Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_True_emp. Qed.
+(** Affinely
+
+- [make_affinely_affine] adds no modality, but only if the argument is affine.
+- [make_affinely_True] turns [True] into [emp]. For an affine BI this instance
+  overlaps with [make_affinely_affine], since [True] is affine. Since we prefer
+  to avoid [emp] in goals involving affine BIs, we give [make_affinely_affine]
+  a lower cost than [make_affinely_True].
+- [make_affinely_default] adds the modality. This is the default instance since
+  it can always be used, and thus has the highest cost. *)
+
 Global Instance make_affinely_affine P :
-  QuickAffine P → MakeAffinely P P | 99.
+  QuickAffine P → MakeAffinely P P | 0.
 Proof. apply affine_affinely. Qed.
+Global Instance make_affinely_True : @KnownMakeAffinely PROP True emp | 1.
+Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_True_emp. Qed.
 Global Instance make_affinely_default P : MakeAffinely P (<affine> P) | 100.
 Proof. by rewrite /MakeAffinely. Qed.
 
-(** Absorbingly *)
-Global Instance make_absorbingly_emp : @KnownMakeAbsorbingly PROP emp True | 0.
+(** Absorbingly
+
+- [make_absorbingly_absorbing] adds no modality, but only if the argument is
+  absorbing.
+- [make_absorbingly_emp] turns [emp] into [True]. For an affine BI this instance
+  overlaps with [make_absorbingly_absorbing], since [emp] is absorbing. For
+  consistency, we give this instance the same cost as [make_affinely_True], but
+  it does not really matter since goals in affine BIs typically do not contain
+  occurrences of [emp] to start with.
+- [make_absorbingly_default] adds the modality. This is the default instance
+  since it can always be used, and thus has the highest cost. *)
+
+Global Instance make_absorbingly_absorbing P :
+  QuickAbsorbing P → MakeAbsorbingly P P | 0.
+Proof. apply absorbing_absorbingly. Qed.
+Global Instance make_absorbingly_emp : @KnownMakeAbsorbingly PROP emp True | 1.
 Proof.
   by rewrite /KnownMakeAbsorbingly /MakeAbsorbingly -absorbingly_emp_True.
 Qed.
-Global Instance make_absorbingly_absorbing P :
-  QuickAbsorbing P → MakeAbsorbingly P P | 99.
-Proof. apply absorbing_absorbingly. Qed.
 Global Instance make_absorbingly_default P : MakeAbsorbingly P (<absorb> P) | 100.
 Proof. by rewrite /MakeAbsorbingly. Qed.
 
