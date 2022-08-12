@@ -311,7 +311,7 @@ Section limit_preserving.
 
   (** This is strictly weaker than the [_impl] variant, but sometimes automation
       is better at proving [Proper] for [iff] than for [impl]. *)
-  Lemma limit_preserving_iff (P1 P2 : A → Prop) :
+  Lemma limit_preserving_impl' (P1 P2 : A → Prop) :
     Proper (dist 0 ==> iff) P1 →
     LimitPreserving P2 →
     LimitPreserving (λ x, P1 x → P2 x).
