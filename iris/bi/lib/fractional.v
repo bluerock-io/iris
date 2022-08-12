@@ -55,7 +55,7 @@ Section fractional.
   Lemma fractional_half P P12 Φ q :
     AsFractional P Φ q → AsFractional P12 Φ (q/2) →
     P ⊣⊢ P12 ∗ P12.
-  Proof. by rewrite -{1}(Qp_div_2 q)=>-[->->][-> _]. Qed.
+  Proof. by rewrite -{1}(Qp.div_2 q)=>-[->->][-> _]. Qed.
   Lemma fractional_half_1 P P12 Φ q :
     AsFractional P Φ q → AsFractional P12 Φ (q/2) →
     P -∗ P12 ∗ P12.
@@ -117,12 +117,12 @@ Section fractional.
   Global Instance mul_fractional_l Φ Ψ p :
     (∀ q, AsFractional (Φ q) Ψ (q * p)) → Fractional Φ.
   Proof.
-    intros H q q'. rewrite ->!as_fractional, Qp_mul_add_distr_r. by apply H.
+    intros H q q'. rewrite ->!as_fractional, Qp.mul_add_distr_r. by apply H.
   Qed.
   Global Instance mul_fractional_r Φ Ψ p :
     (∀ q, AsFractional (Φ q) Ψ (p * q)) → Fractional Φ.
   Proof.
-    intros H q q'. rewrite ->!as_fractional, Qp_mul_add_distr_l. by apply H.
+    intros H q q'. rewrite ->!as_fractional, Qp.mul_add_distr_l. by apply H.
   Qed.
 
   (* REMARK: These two instances do not work in either direction of the
@@ -156,11 +156,11 @@ Section fractional.
   Global Instance from_sep_fractional_half_fwd P Q Φ q :
     AsFractional P Φ q → AsFractional Q Φ (q/2) →
     FromSep P Q Q | 10.
-  Proof. by rewrite /FromSep -{1}(Qp_div_2 q)=>-[-> ->] [-> _]. Qed.
+  Proof. by rewrite /FromSep -{1}(Qp.div_2 q)=>-[-> ->] [-> _]. Qed.
   Global Instance from_sep_fractional_half_bwd P Q Φ q :
     AsFractional P Φ (q/2) → AsFractional Q Φ q →
     FromSep Q P P.
-  Proof. rewrite /FromSep=>-[-> <-] [-> _]. by rewrite Qp_div_2. Qed.
+  Proof. rewrite /FromSep=>-[-> <-] [-> _]. by rewrite Qp.div_2. Qed.
 
   Global Instance into_sep_fractional P P1 P2 Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
@@ -207,6 +207,6 @@ Section fractional.
     - rewrite fractional /Frame /MakeSep=><-<-. by rewrite assoc.
     - rewrite fractional /Frame /MakeSep=><-<-=>_.
       by rewrite (comm _ Q (Φ q0)) !assoc (comm _ (Φ _)).
-    - move=>-[-> _]->. by rewrite bi.intuitionistically_if_elim -fractional Qp_div_2.
+    - move=>-[-> _]->. by rewrite bi.intuitionistically_if_elim -fractional Qp.div_2.
   Qed.
 End fractional.

@@ -9,7 +9,7 @@ Section nat.
   Local Instance nat_op_instance : Op nat := plus.
   Definition nat_op x y : x ⋅ y = x + y := eq_refl.
   Lemma nat_included (x y : nat) : x ≼ y ↔ x ≤ y.
-  Proof. by rewrite nat_le_sum. Qed.
+  Proof. by rewrite Nat.le_sum. Qed.
   Lemma nat_ra_mixin : RAMixin nat.
   Proof.
     apply ra_total_mixin; try by eauto.
@@ -165,7 +165,7 @@ Section positive.
   Local Instance pos_op_instance : Op positive := Pos.add.
   Definition pos_op_add x y : x ⋅ y = (x + y)%positive := eq_refl.
   Lemma pos_included (x y : positive) : x ≼ y ↔ (x < y)%positive.
-  Proof. by rewrite Plt_sum. Qed.
+  Proof. by rewrite Pos.lt_sum. Qed.
   Lemma pos_ra_mixin : RAMixin positive.
   Proof.
     split; try by eauto.

@@ -88,7 +88,7 @@ Section lemmas.
     ghost_var γ (1/2) a1 -∗
     ghost_var γ (1/2) a2 ==∗
     ghost_var γ (1/2) b ∗ ghost_var γ (1/2) b.
-  Proof. iApply ghost_var_update_2. apply Qp_half_half. Qed.
+  Proof. iApply ghost_var_update_2. apply Qp.half_half. Qed.
 
   (** Framing support *)
   Global Instance frame_ghost_var p γ a q1 q2 RES :

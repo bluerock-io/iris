@@ -62,7 +62,7 @@ Section tada.
     iIntros (Φ) "_ HΦ".
     iMod (ghost_var_alloc Free) as (γvar) "Hvar".
     replace 1%Qp with (3/4 + 1/4)%Qp; last first.
-    { rewrite Qp_three_quarter_quarter //. }
+    { rewrite Qp.three_quarter_quarter //. }
     iDestruct "Hvar" as "[Hvar1 Hvar2]".
     wp_apply (l.(newlock_spec) with "Hvar2").
     iIntros (lk γlock) "Hlock".
@@ -82,7 +82,7 @@ Section tada.
     iMod "AU" as (s) "[[Hvar2 _] [_ Hclose]]".
     iDestruct (ghost_var_agree with "Hvar1 Hvar2") as %<-.
     iMod (ghost_var_update_2 Locked with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
-    { rewrite Qp_quarter_three_quarter //. }
+    { rewrite Qp.quarter_three_quarter //. }
     iMod ("Hclose" with "[$Hvar2 $Hlocked $Hvar1]"). done.
   Qed.
 
@@ -95,7 +95,7 @@ Section tada.
     iIntros "#Hislock %Φ AU". iApply fupd_wp.
     iMod "AU" as "[[Hvar1 [Hlocked Hvar2]] [_ Hclose]]".
     iMod (ghost_var_update_2 Free with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
-    { rewrite Qp_three_quarter_quarter //. }
+    { rewrite Qp.three_quarter_quarter //. }
     iMod ("Hclose" with "[$Hvar1]"). iModIntro.
     wp_apply (l.(release_spec) with "[$Hislock $Hlocked $Hvar2]").
     auto.

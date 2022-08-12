@@ -398,7 +398,7 @@ Section fixpoint.
     { apply equiv_dist=>n. rewrite /fp2 (conv_compl n) /= /chcar.
       induction n as [|n IH]; simpl; eauto using contractive_0, contractive_S. }
     rewrite -(fixpoint_unique fp2) //.
-    apply Hlim=> n /=. by apply Nat_iter_ind.
+    apply Hlim=> n /=. by apply Nat.iter_ind.
   Qed.
 End fixpoint.
 
@@ -440,7 +440,7 @@ Section fixpointK.
   Lemma fixpointK_unfold : fixpointK k f ≡ f (fixpointK k f).
   Proof.
     symmetry. rewrite /fixpointK. apply fixpoint_unique.
-    by rewrite -Nat_iter_S_r Nat_iter_S -fixpoint_unfold.
+    by rewrite -Nat.iter_succ_r Nat.iter_succ -fixpoint_unfold.
   Qed.
 
   Lemma fixpointK_unique (x : A) : x ≡ f x → x ≡ fixpointK k f.
@@ -471,7 +471,7 @@ Section fixpointK.
     P (fixpointK k f).
   Proof.
     intros. rewrite /fixpointK. apply fixpoint_ind; eauto.
-    intros; apply Nat_iter_ind; auto.
+    intros; apply Nat.iter_ind; auto.
   Qed.
 End fixpointK.
 

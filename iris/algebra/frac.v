@@ -26,32 +26,32 @@ Section frac.
   Lemma frac_op p q : p ⋅ q = (p + q)%Qp.
   Proof. done. Qed.
   Lemma frac_included p q : p ≼ q ↔ (p < q)%Qp.
-  Proof. by rewrite Qp_lt_sum. Qed.
+  Proof. by rewrite Qp.lt_sum. Qed.
 
   Corollary frac_included_weak p q : p ≼ q → (p ≤ q)%Qp.
-  Proof. rewrite frac_included. apply Qp_lt_le_incl. Qed.
+  Proof. rewrite frac_included. apply Qp.lt_le_incl. Qed.
 
   Definition frac_ra_mixin : RAMixin frac.
   Proof.
     split; try apply _; try done.
     intros p q. rewrite !frac_valid frac_op=> ?.
-    trans (p + q)%Qp; last done. apply Qp_le_add_l.
+    trans (p + q)%Qp; last done. apply Qp.le_add_l.
   Qed.
   Canonical Structure fracR := discreteR frac frac_ra_mixin.
 
   Global Instance frac_cmra_discrete : CmraDiscrete fracR.
   Proof. apply discrete_cmra_discrete. Qed.
   Global Instance frac_full_exclusive : Exclusive 1%Qp.
-  Proof. intros p. apply Qp_not_add_le_l. Qed.
+  Proof. intros p. apply Qp.not_add_le_l. Qed.
   Global Instance frac_cancelable (q : frac) : Cancelable q.
-  Proof. intros n p1 p2 _. apply (inj (Qp_add q)). Qed.
+  Proof. intros n p1 p2 _. apply (inj (Qp.add q)). Qed.
   Global Instance frac_id_free (q : frac) : IdFree q.
-  Proof. intros p _. apply Qp_add_id_free. Qed.
+  Proof. intros p _. apply Qp.add_id_free. Qed.
 
   (* This one has a higher precendence than [is_op_op] so we get a [+] instead
      of an [⋅]. *)
   Global Instance frac_is_op q1 q2 : IsOp (q1 + q2)%Qp q1 q2 | 10.
   Proof. done. Qed.
   Global Instance is_op_frac q : IsOp' q (q/2)%Qp (q/2)%Qp.
-  Proof. by rewrite /IsOp' /IsOp frac_op Qp_div_2. Qed.
+  Proof. by rewrite /IsOp' /IsOp frac_op Qp.div_2. Qed.
 End frac.

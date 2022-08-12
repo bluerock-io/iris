@@ -67,7 +67,7 @@ Module gFunctors.
 
   Definition app (Σ1 Σ2 : gFunctors) : gFunctors :=
     GFunctors (gFunctors_len Σ1 + gFunctors_len Σ2)
-              (fin_plus_inv _ (gFunctors_lookup Σ1) (gFunctors_lookup Σ2)).
+              (fin_add_inv _ (gFunctors_lookup Σ1) (gFunctors_lookup Σ2)).
 End gFunctors.
 
 Coercion gFunctors.singleton : gFunctor >-> gFunctors.
@@ -99,8 +99,8 @@ Global Hint Mode subG ! + : typeclass_instances.
 Lemma subG_inv Σ1 Σ2 Σ : subG (gFunctors.app Σ1 Σ2) Σ → subG Σ1 Σ * subG Σ2 Σ.
 Proof.
   move=> H; split.
-  - move=> i; move: H=> /(_ (Fin.L _ i)) [j] /=. rewrite fin_plus_inv_L; eauto.
-  - move=> i; move: H=> /(_ (Fin.R _ i)) [j] /=. rewrite fin_plus_inv_R; eauto.
+  - move=> i; move: H=> /(_ (Fin.L _ i)) [j] /=. rewrite fin_add_inv_l; eauto.
+  - move=> i; move: H=> /(_ (Fin.R _ i)) [j] /=. rewrite fin_add_inv_r; eauto.
 Qed.
 
 Global Instance subG_refl Σ : subG Σ Σ.
@@ -108,12 +108,12 @@ Proof. move=> i; by exists i. Qed.
 Global Instance subG_app_l Σ Σ1 Σ2 : subG Σ Σ1 → subG Σ (gFunctors.app Σ1 Σ2).
 Proof.
   move=> H i; move: H=> /(_ i) [j ?].
-  exists (Fin.L _ j). by rewrite /= fin_plus_inv_L.
+  exists (Fin.L _ j). by rewrite /= fin_add_inv_l.
 Qed.
 Global Instance subG_app_r Σ Σ1 Σ2 : subG Σ Σ2 → subG Σ (gFunctors.app Σ1 Σ2).
 Proof.
   move=> H i; move: H=> /(_ i) [j ?].
-  exists (Fin.R _ j). by rewrite /= fin_plus_inv_R.
+  exists (Fin.R _ j). by rewrite /= fin_add_inv_r.
 Qed.
 
 

@@ -520,7 +520,7 @@ Section fupd_derived.
   Lemma step_fupdN_S_fupd n E P :
     (|={E}[∅]▷=>^(S n) P) ⊣⊢ (|={E}[∅]▷=>^(S n) |={E}=> P).
   Proof.
-    apply (anti_symm (⊢)); rewrite !Nat_iter_S_r; apply step_fupdN_mono;
+    apply (anti_symm (⊢)); rewrite !Nat.iter_succ_r; apply step_fupdN_mono;
       rewrite -step_fupd_fupd //.
   Qed.
 
@@ -618,7 +618,7 @@ Section fupd_derived.
     Proof.
       induction n as [|n IH].
       - by rewrite -fupd_intro -except_0_intro.
-      - rewrite Nat_iter_S step_fupd_fupd IH !fupd_trans step_fupd_plain.
+      - rewrite Nat.iter_succ step_fupd_fupd IH !fupd_trans step_fupd_plain.
         apply fupd_mono. destruct n as [|n]; simpl.
         * by rewrite except_0_idemp.
         * by rewrite except_0_later.

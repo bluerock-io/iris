@@ -103,7 +103,7 @@ Section dfrac.
 
   Lemma dfrac_own_included q p : DfracOwn q ≼ DfracOwn p ↔ (q < p)%Qp.
   Proof.
-    rewrite Qp_lt_sum. split.
+    rewrite Qp.lt_sum. split.
     - rewrite /included /op /dfrac_op_instance. intros [[o| |?] [= ->]]. by exists o.
     - intros [o ->]. exists (DfracOwn o). by rewrite dfrac_op_own.
   Qed.
@@ -120,18 +120,18 @@ Section dfrac.
     - intros [?| |?] [?| |?] [?| |?];
         rewrite /op /dfrac_op_instance 1?assoc_L 1?assoc_L; done.
     - intros [?| |?] [?| |?];
-        rewrite /op /dfrac_op_instance 1?(comm_L Qp_add); done.
+        rewrite /op /dfrac_op_instance 1?(comm_L Qp.add); done.
     - intros [?| |?] dq; rewrite /pcore /dfrac_pcore_instance; intros [= <-];
         rewrite /op /dfrac_op_instance; done.
     - intros [?| |?] ? [= <-]; done.
     - intros [?| |?] [?| |?] ? [[?| |?] [=]] [= <-]; eexists _; split; try done;
         apply dfrac_discarded_included.
     - intros [q| |q] [q'| |q']; rewrite /op /dfrac_op_instance /valid /dfrac_valid_instance //.
-      + intros. trans (q + q')%Qp; [|done]. apply Qp_le_add_l.
-      + apply Qp_lt_le_incl.
-      + intros. trans (q + q')%Qp; [|by apply Qp_lt_le_incl]. apply Qp_le_add_l.
-      + intros. trans (q + q')%Qp; [|done]. apply Qp_lt_add_l.
-      + intros. trans (q + q')%Qp; [|done]. apply Qp_lt_add_l.
+      + intros. trans (q + q')%Qp; [|done]. apply Qp.le_add_l.
+      + apply Qp.lt_le_incl.
+      + intros. trans (q + q')%Qp; [|by apply Qp.lt_le_incl]. apply Qp.le_add_l.
+      + intros. trans (q + q')%Qp; [|done]. apply Qp.lt_add_l.
+      + intros. trans (q + q')%Qp; [|done]. apply Qp.lt_add_l.
   Qed.
   Canonical Structure dfracR := discreteR dfrac dfrac_ra_mixin.
 
@@ -142,19 +142,19 @@ Section dfrac.
   Proof.
     intros [q| |q];
       rewrite /op /cmra_op -cmra_discrete_valid_iff /valid /cmra_valid //=.
-    - apply Qp_not_add_le_l.
-    - move=> /Qp_lt_le_incl. apply Qp_not_add_le_l.
+    - apply Qp.not_add_le_l.
+    - move=> /Qp.lt_le_incl. apply Qp.not_add_le_l.
   Qed.
 
   Global Instance dfrac_cancelable q : Cancelable (DfracOwn q).
   Proof.
     apply: discrete_cancelable.
     intros [q1| |q1][q2| |q2] _ [=]; simplify_eq/=; try done.
-    - by destruct (Qp_add_id_free q q2).
-    - by destruct (Qp_add_id_free q q1).
+    - by destruct (Qp.add_id_free q q2).
+    - by destruct (Qp.add_id_free q q1).
   Qed.
   Global Instance dfrac_own_id_free q : IdFree (DfracOwn q).
-  Proof. intros [q'| |q'] _ [=]. by apply (Qp_add_id_free q q'). Qed.
+  Proof. intros [q'| |q'] _ [=]. by apply (Qp.add_id_free q q'). Qed.
   Global Instance dfrac_discarded_core_id : CoreId DfracDiscarded.
   Proof. by constructor. Qed.
 
@@ -166,8 +166,8 @@ Section dfrac.
   Lemma dfrac_valid_own_r dq q : ✓ (dq ⋅ DfracOwn q) → (q < 1)%Qp.
   Proof.
     destruct dq as [q'| |q']; [|done|].
-    - apply Qp_lt_le_trans, Qp_lt_add_r.
-    - intro Hlt. etrans; last apply Hlt. apply Qp_lt_add_r.
+    - apply Qp.lt_le_trans, Qp.lt_add_r.
+    - intro Hlt. etrans; last apply Hlt. apply Qp.lt_add_r.
   Qed.
 
   Lemma dfrac_valid_own_l dq q : ✓ (DfracOwn q ⋅ dq) → (q < 1)%Qp.

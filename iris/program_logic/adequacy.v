@@ -74,14 +74,14 @@ Proof.
   { inversion_clear 1; iIntros "? ? ?"; iExists 0=> /=.
     rewrite Nat.add_0_r right_id_L. iFrame. by iApply fupd_mask_subseteq. }
   iIntros (Hsteps) "Hσ Hcred He". inversion_clear Hsteps as [|?? [t1' σ1']].
-  rewrite -(assoc_L (++)) Nat_iter_add -{1}plus_Sn_m plus_n_Sm.
+  rewrite -(assoc_L (++)) Nat.iter_add -{1}plus_Sn_m plus_n_Sm.
   rewrite lc_split. iDestruct "Hcred" as "[Hc1 Hc2]".
   iDestruct (wptp_step with "Hσ Hc1 He") as (nt') ">H"; first eauto; simplify_eq.
   iModIntro. iApply step_fupdN_S_fupd. iApply (step_fupdN_wand with "H").
   iIntros ">(Hσ & He)". iMod (IH with "Hσ Hc2 He") as "IH"; first done. iModIntro.
   iApply (step_fupdN_wand with "IH"). iIntros ">IH".
   iDestruct "IH" as (nt'') "[??]".
-  rewrite -Nat.add_assoc -(assoc_L app) -replicate_plus. by eauto with iFrame.
+  rewrite -Nat.add_assoc -(assoc_L app) -replicate_add. by eauto with iFrame.
 Qed.
 
 Lemma wp_not_stuck κs nt e σ ns Φ :

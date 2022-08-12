@@ -92,7 +92,7 @@ Section later_credit_theory.
   Lemma lc_weaken {n} m :
     m ≤ n → £ n -∗ £ m.
   Proof.
-    intros [k ->]%nat_le_sum. rewrite lc_split. iIntros "[$ _]".
+    intros [k ->]%Nat.le_sum. rewrite lc_split. iIntros "[$ _]".
   Qed.
 
   Global Instance lc_timeless n : Timeless (£ n).
@@ -281,8 +281,8 @@ Module le_upd.
         + iModIntro. iDestruct "Hupd" as (m Hstep) "[Hown Hupd]". iNext.
           iPoseProof (IH with "Hown Hupd") as "Hit"; first done.
           clear IH.
-          assert (m ≤ n) as [k ->]%nat_le_sum by lia.
-          rewrite Nat.add_comm Nat_iter_add.
+          assert (m ≤ n) as [k ->]%Nat.le_sum by lia.
+          rewrite Nat.add_comm Nat.iter_add.
           iApply iter_modal_intro.
           { by iIntros (Q) "$". }
           iApply (iter_modal_mono with "[] Hit").
@@ -297,7 +297,7 @@ Module le_upd.
       Nat.iter (S n) (λ Q, |==> ▷ Q) P.
     Proof.
       iIntros "Hlc Hupd". iPoseProof (le_upd_elim with "Hlc Hupd") as "Hit".
-      rewrite Nat_iter_S_r. iApply (iter_modal_mono with "[] Hit").
+      rewrite Nat.iter_succ_r. iApply (iter_modal_mono with "[] Hit").
       { clear. iIntros (P Q) "Hent HP". by iApply "Hent". }
       iIntros "Hupd". iMod "Hupd". iModIntro. iMod "Hupd".
       iNext. iDestruct "Hupd" as "[%m (_ & _ & $)]".

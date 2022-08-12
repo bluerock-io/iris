@@ -107,7 +107,7 @@ Section saved_anything.
     saved_anything_own γ (DfracOwn (1/2)) x1 -∗
     saved_anything_own γ (DfracOwn (1/2)) x2 ==∗
     saved_anything_own γ (DfracOwn (1/2)) y ∗ saved_anything_own γ (DfracOwn (1/2)) y.
-  Proof. iApply saved_anything_update_2. apply Qp_half_half. Qed.
+  Proof. iApply saved_anything_update_2. apply Qp.half_half. Qed.
 End saved_anything.
 
 (** Provide specialized versions of this for convenience. **)
