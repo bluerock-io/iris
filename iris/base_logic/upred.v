@@ -1,4 +1,3 @@
-From stdpp Require Import finite.
 From iris.algebra Require Export cmra updates.
 From iris.bi Require Import notation.
 From iris.prelude Require Import options.
