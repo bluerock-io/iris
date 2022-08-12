@@ -6,15 +6,15 @@ Import interface.bi derived_laws.bi derived_laws_later.bi.
 (* The sections add [BiAffine] and the like, which is only picked up with "Type"*. *)
 Set Default Proof Using "Type*".
 
-Class Plainly (A : Type) := plainly : A → A.
-Global Arguments plainly {A}%type_scope {_} _%I.
+Class Plainly (PROP : Type) := plainly : PROP → PROP.
+Global Arguments plainly {PROP}%type_scope {_} _%I.
 Global Hint Mode Plainly ! : typeclass_instances.
 Global Instance: Params (@plainly) 2 := {}.
 Notation "■ P" := (plainly P) : bi_scope.
 
 (* Mixins allow us to create instances easily without having to use Program *)
 Record BiPlainlyMixin (PROP : bi) `(Plainly PROP) := {
-  bi_plainly_mixin_plainly_ne : NonExpansive (plainly (A:=PROP));
+  bi_plainly_mixin_plainly_ne : NonExpansive (plainly (PROP:=PROP));
 
   bi_plainly_mixin_plainly_mono (P Q : PROP) : (P ⊢ Q) → ■ P ⊢ ■ Q;
   bi_plainly_mixin_plainly_elim_persistently (P : PROP) : ■ P ⊢ <pers> P;

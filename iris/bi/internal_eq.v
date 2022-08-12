@@ -6,7 +6,7 @@ Import interface.bi derived_laws.bi derived_laws_later.bi.
 Internal equality is not part of the [bi] canonical structure as [internal_eq]
 can only be given a definition that satisfies [NonExpansive2 internal_eq] _and_
 [▷ (x ≡ y) ⊢ Next x ≡ Next y] if the BI is step-indexed. *)
-Class InternalEq (PROP : bi) :=
+Class InternalEq (PROP : Type) :=
   internal_eq : ∀ {A : ofe}, A → A → PROP.
 Global Arguments internal_eq {_ _ _} _ _ : simpl never.
 Global Hint Mode InternalEq ! : typeclass_instances.
