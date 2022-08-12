@@ -557,6 +557,62 @@ Lemma test_iFrame_affinely_2 P Q `{!Affine P, !Affine Q} :
   P -∗ Q -∗ <affine> (P ∗ Q).
 Proof. iIntros "HP HQ". iFrame "HQ". by iModIntro. Qed.
 
+Check "test_iFrame_affinely_emp".
+Lemma test_iFrame_affinely_emp P :
+  □ P -∗ ∃ _ : nat, <affine> P. (* The ∃ makes sure [iFrame] does not solve the
+  goal and we can [Show] the result *)
+Proof.
+  iIntros "#H". iFrame "H".
+  Show. (* This should become [∃ _ : nat, emp]. *)
+  by iExists 1.
+Qed.
+Check "test_iFrame_affinely_True".
+Lemma test_iFrame_affinely_True `{!BiAffine PROP} P :
+  □ P -∗ ∃ x : nat, <affine> P.
+Proof.
+  iIntros "#H". iFrame "H".
+  Show. (* This should become [∃ _ : nat, True]. Since we are in an affine BI,
+  no unnecessary [emp]s should be created. *)
+  by iExists 1.
+Qed.
+
+Check "test_iFrame_or_1".
+Lemma test_iFrame_or_1 P1 P2 P3 :
+  P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∗ <affine> ⌜x = 0⌝) ∨ P3).
+Proof.
+  iIntros "($ & $ & $)".
+  Show. (* By framing [P3], the disjunction becomes [<affine> ⌜x = 0⌝ ∨ emp],
+  since [<affine> ⌜x = 0⌝] is trivially affine, the disjunction is simplified
+  to [emp] *)
+  by iExists 0.
+Qed.
+Check "test_iFrame_or_2".
+Lemma test_iFrame_or_2 P1 P2 P3 :
+  P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∧ ⌜x = 0⌝) ∨ P3).
+Proof.
+  iIntros "($ & $ & $)".
+  Show. (* By framing [P3], the disjunction becomes [emp ∧ ⌜x = 0⌝ ∨ emp],
+  since [emp ∧ ⌜x = 0⌝] is not trivially affine (i.e., by just looking at the
+  head symbol), this not simplified to [emp] *)
+  iExists 0. auto.
+Qed.
+Check "test_iFrame_or_affine_1".
+Lemma test_iFrame_or_affine_1 `{!BiAffine PROP} P1 P2 P3 :
+  P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∗ ⌜x = 0⌝) ∨ P3).
+Proof.
+  iIntros "($ & $ & $)".
+  Show. (* If the BI is affine, the disjunction should be turned into [True]. *)
+  by iExists 0.
+Qed.
+Check "test_iFrame_or_affine_2".
+Lemma test_iFrame_or_affine_2 `{!BiAffine PROP} P1 P2 P3 :
+  P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∧ ⌜x = 0⌝) ∨ P3).
+Proof.
+  iIntros "($ & $ & $)".
+  Show. (* If the BI is affine, the disjunction should be turned into [True]. *)
+  by iExists 0.
+Qed.
+
 Lemma test_iAssert_modality P : ◇ False -∗ ▷ P.
 Proof.
   iIntros "HF".
