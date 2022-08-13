@@ -117,6 +117,20 @@ Qed.
 Global Instance make_absorbingly_default P : MakeAbsorbingly P (<absorb> P) | 100.
 Proof. by rewrite /MakeAbsorbingly. Qed.
 
+(** Persistently *)
+Global Instance make_persistently_emp :
+  @KnownMakePersistently PROP emp True | 0.
+Proof.
+  by rewrite /KnownMakePersistently /MakePersistently
+     -persistently_True_emp persistently_pure.
+Qed.
+Global Instance make_persistently_True :
+  @KnownMakePersistently PROP True True | 0.
+Proof. by rewrite /KnownMakePersistently /MakePersistently persistently_pure. Qed.
+Global Instance make_persistently_default P :
+  MakePersistently P (<pers> P) | 100.
+Proof. by rewrite /MakePersistently. Qed.
+
 (** Intuitionistically *)
 Global Instance make_intuitionistically_emp :
   @KnownMakeIntuitionistically PROP emp emp | 0.
