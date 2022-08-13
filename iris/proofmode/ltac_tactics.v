@@ -288,7 +288,7 @@ Tactic Notation "iAssumptionCoq" :=
   let Hass := fresh in
   match goal with
   | H : ⊢ ?P |- envs_entails _ ?Q =>
-     pose proof (_ : FromAssumption true P Q) as Hass;
+     pose proof (_ : FromAssumption false P Q) as Hass;
      notypeclasses refine (tac_assumption_coq _ P _ H _ _);
        [exact Hass
        |pm_reduce; iSolveTC ||

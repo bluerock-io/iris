@@ -95,14 +95,14 @@ Qed.
 
 Lemma tac_assumption_coq Δ P Q :
   (⊢ P) →
-  FromAssumption true P Q →
+  FromAssumption false P Q →
   (if env_spatial_is_nil Δ then TCTrue
    else TCOr (Absorbing Q) (AffineEnv (env_spatial Δ))) →
   envs_entails Δ Q.
 Proof.
   rewrite /FromAssumption /bi_emp_valid /= => HP HPQ H.
   rewrite envs_entails_unseal -(left_id emp%I bi_sep (of_envs Δ)).
-  rewrite -bi.intuitionistically_emp HP HPQ.
+  rewrite HP HPQ.
   destruct (env_spatial_is_nil _) eqn:?.
   - by rewrite (env_spatial_is_nil_intuitionistically _) // sep_elim_l.
   - destruct H; by rewrite sep_elim_l.
@@ -381,7 +381,7 @@ Qed.
 
 Lemma tac_specialize_assert_pure Δ j q a R P1 P2 φ Q :
   envs_lookup j Δ = Some (q, R) →
-  IntoWand q true R P1 P2 →
+  IntoWand q false R P1 P2 →
   FromPure a P1 φ →
   φ →
   match envs_simple_replace j q (Esnoc Enil j P2) Δ with
@@ -392,10 +392,10 @@ Lemma tac_specialize_assert_pure Δ j q a R P1 P2 φ Q :
 Proof.
   destruct (envs_simple_replace _ _ _ _) as [Δ'|] eqn:?; last done.
   rewrite envs_entails_unseal=> ?????. rewrite envs_simple_replace_singleton_sound //=.
-  rewrite -intuitionistically_if_idemp (into_wand q true) /=.
+  rewrite -intuitionistically_if_idemp (into_wand q false) /=.
   rewrite -(from_pure a P1) pure_True //.
   rewrite -affinely_affinely_if affinely_True_emp.
-  by rewrite intuitionistically_emp left_id wand_elim_r.
+  by rewrite left_id wand_elim_r.
 Qed.
 
 Lemma tac_specialize_assert_intuitionistic Δ j q P1 P1' P2 R Q :

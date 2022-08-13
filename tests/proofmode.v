@@ -328,6 +328,27 @@ Proof. iIntros "[H1 H2]". by iSplitL. Qed.
 Lemma test_iApply_evar P Q R : (∀ Q, Q -∗ P) -∗ R -∗ P.
 Proof. iIntros "H1 H2". iApply "H1". iExact "H2". Qed.
 
+Lemma test_iApply_1 (P Q : PROP) :
+  (▷ P -∗ Q) -∗ P -∗ Q.
+Proof.
+  iIntros "H HP".
+  iApply ("H" with "HP").
+Qed.
+
+Lemma test_iApply_2 `{!BiAffine PROP} (P Q : PROP) :
+  (▷ P → Q) -∗ P -∗ Q.
+Proof.
+  iIntros "H HP".
+  iApply ("H" with "HP").
+Qed.
+
+Lemma test_iApply_3 `{!BiAffine PROP} (P Q : PROP) :
+  (P → Q) -∗ <pers> P -∗ Q.
+Proof.
+  iIntros "H HP".
+  iApply ("H" with "HP").
+Qed.
+
 Lemma test_iAssumption_affine P Q R `{!Affine P, !Affine R} : P -∗ Q -∗ R -∗ Q.
 Proof. iIntros "H1 H2 H3". iAssumption. Qed.
 
@@ -426,6 +447,38 @@ Proof.
   iSpecialize ("H3" with "H2") as #.
   by iFrame "#".
 Qed.
+
+Check "test_iSpecialize_impl_pure".
+Lemma test_iSpecialize_impl_pure (φ : Prop) P Q :
+  φ → □ (⌜φ⌝ → P) -∗ (⌜φ⌝ → Q) -∗ P ∗ Q.
+Proof.
+  iIntros (?) "#H1 H2".
+  (* Adds an affine modality *)
+  iSpecialize ("H1" with "[]"). { Show. done. }
+  iSpecialize ("H2" with "[]"). { Show. done. }
+Restart.
+  iIntros (?) "#H1 H2".
+  (* Solving it directly as a pure goal also works. *)
+  iSpecialize ("H1" with "[% //]").
+  iSpecialize ("H2" with "[% //]").
+  by iFrame.
+Abort.
+
+Check "test_iSpecialize_impl_pure_affine".
+Lemma test_iSpecialize_impl_pure_affine `{!BiAffine PROP} (φ : Prop) P Q :
+  φ → □ (⌜φ⌝ → P) -∗ (⌜φ⌝ → Q) -∗ P ∗ Q.
+Proof.
+  iIntros (?) "#H1 H2".
+  (* Does not add an affine modality *)
+  iSpecialize ("H1" with "[]"). { Show. done. }
+  iSpecialize ("H2" with "[]"). { Show. done. }
+Restart.
+  iIntros (?) "#H1 H2".
+  (* Solving it directly as a pure goal also works. *)
+  iSpecialize ("H1" with "[% //]").
+  iSpecialize ("H2" with "[% //]").
+  by iFrame.
+Abort.
 
 Check "test_iAssert_intuitionistic".
 Lemma test_iAssert_intuitionistic `{!BiBUpd PROP} P :
