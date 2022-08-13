@@ -503,9 +503,9 @@ No applicable tactic.
 1 goal
   
   PROP : bi
-  H : BiAffine PROP
+  BiAffine0 : BiAffine PROP
   P, Q : PROP
-  H0 : Laterable Q
+  H : Laterable Q
   ============================
   "HP" : ▷ P
   "HQ" : Q
@@ -534,6 +534,17 @@ No applicable tactic.
   "H" : ⌜φ⌝ -∗ P
   --------------------------------------∗
   ⌜φ⌝ -∗ P
+"test_iFrame_not_add_emp_for_intuitionistically"
+     : string
+1 goal
+  
+  PROP : bi
+  BiAffine0 : BiAffine PROP
+  P : PROP
+  ============================
+  "H" : P
+  --------------------------------------□
+  ∃ _ : nat, True
 "elim_mod_accessor"
      : string
 1 goal

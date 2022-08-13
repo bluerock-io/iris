@@ -138,8 +138,17 @@ Proof.
   by rewrite /KnownMakeIntuitionistically /MakeIntuitionistically
     intuitionistically_emp.
 Qed.
+(** For affine BIs, we would prefer [□ True] to become [True] rather than [emp],
+so we have this instance with lower cost than the next. *)
+Global Instance make_intuitionistically_True_affine :
+  BiAffine PROP →
+  @KnownMakeIntuitionistically PROP True True | 0.
+Proof.
+  intros. rewrite /KnownMakeIntuitionistically /MakeIntuitionistically
+    intuitionistically_True_emp True_emp //.
+Qed.
 Global Instance make_intuitionistically_True :
-  @KnownMakeIntuitionistically PROP True emp | 0.
+  @KnownMakeIntuitionistically PROP True emp | 1.
 Proof.
   by rewrite /KnownMakeIntuitionistically /MakeIntuitionistically
     intuitionistically_True_emp.

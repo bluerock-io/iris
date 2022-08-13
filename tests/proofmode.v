@@ -1261,7 +1261,7 @@ Proof.
   iIntros "[P _]". done.
 Qed.
 
-Lemma test_iModIntro_make_laterable `{BiAffine PROP} (P Q : PROP) :
+Lemma test_iModIntro_make_laterable `{!BiAffine PROP} (P Q : PROP) :
   Laterable Q →
   P -∗ Q -∗ make_laterable (▷ P ∗ Q).
 Proof.
@@ -1283,6 +1283,13 @@ Proof.
   (* If the BI is affine, no affine modality should be added *)
   iIntros (Hφ) "H". iRevert (Hφ). Show. done.
 Qed.
+
+(* Check that when framing things under the □ modality, we do not add [emp] in
+affine BIs. *)
+Check "test_iFrame_not_add_emp_for_intuitionistically".
+Lemma test_iFrame_not_add_emp_for_intuitionistically `{!BiAffine PROP} (P : PROP) :
+  □ P -∗ ∃ _ : nat, □ P.
+Proof. iIntros "#H". iFrame "H". Show. by iExists 0. Qed.
 
 End tests.
 
