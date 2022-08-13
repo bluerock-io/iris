@@ -1,5 +1,5 @@
 From iris.bi Require Import telescopes.
-From iris.proofmode Require Import base modality_instances classes.
+From iris.proofmode Require Import base modality_instances classes classes_make.
 From iris.proofmode Require Import ltac_tactics.
 From iris.prelude Require Import options.
 Import bi.
@@ -431,30 +431,49 @@ Global Instance into_wand_wand p q P Q P' :
 Proof.
   rewrite /FromAssumption /IntoWand=> HP. by rewrite HP intuitionistically_if_elim.
 Qed.
-Global Instance into_wand_impl_false_false P Q P' :
-  Absorbing P' → Absorbing (P' → Q) →
-  FromAssumption false P P' → IntoWand false false (P' → Q) P Q.
+(** Implication instances
+  For non-affine BIs, generally we assume [P → ...] is written in cases where
+  that would be equivalent to [<affine> P -∗ ...], i.e., [P] is absorbing and
+  persistent and an affinely modality is added when proving the premise. If the
+  implication itself or the premise are taken from the persistent context,
+  things become a bit easier and we can drop some of these requirements. We also
+  support arbitrary implications for affine BIs via [BiAffine]. *)
+Global Instance into_wand_impl_false_false P Q P' P'' :
+  Absorbing P →
+  (* Cheap check comes first *)
+  TCOr (BiAffine PROP) (Persistent P) →
+  MakeAffinely P P' →
+  FromAssumption false P'' P' →
+  IntoWand false false (P → Q) P'' Q.
 Proof.
-  rewrite /FromAssumption /IntoWand /= => ?? ->. apply wand_intro_r.
-  by rewrite sep_and impl_elim_l.
+  rewrite /MakeAffinely /IntoWand /FromAssumption /= => ? Hpers <- ->.
+  apply wand_intro_l. destruct Hpers.
+  - rewrite impl_wand_1 affinely_elim wand_elim_r //.
+  - rewrite persistent_impl_wand_affinely wand_elim_r //.
 Qed.
 Global Instance into_wand_impl_false_true P Q P' :
-  Absorbing P' → FromAssumption true P P' →
+  Absorbing P' →
+  FromAssumption true P P' →
   IntoWand false true (P' → Q) P Q.
 Proof.
   rewrite /IntoWand /FromAssumption /= => ? HP. apply wand_intro_l.
+  rewrite -(persistently_elim P').
+  rewrite persistent_impl_wand_affinely.
   rewrite -(intuitionistically_idemp P) HP.
-  by rewrite -persistently_and_intuitionistically_sep_l persistently_elim impl_elim_r.
+  apply wand_elim_r.
 Qed.
-Global Instance into_wand_impl_true_false P Q P' :
-  Affine P' → FromAssumption false P P' →
-  IntoWand true false (P' → Q) P Q.
+Global Instance into_wand_impl_true_false P Q P' P'' :
+  MakeAffinely P P' →
+  FromAssumption false P'' P' →
+  IntoWand true false (P → Q) P'' Q.
 Proof.
-  rewrite /FromAssumption /IntoWand /= => ? HP. apply wand_intro_r.
-  rewrite HP sep_and intuitionistically_elim impl_elim_l //.
+  rewrite /MakeAffinely /IntoWand /FromAssumption /= => <- ->.
+  apply wand_intro_r.
+  rewrite sep_and intuitionistically_elim affinely_elim impl_elim_l //.
 Qed.
 Global Instance into_wand_impl_true_true P Q P' :
-  FromAssumption true P P' → IntoWand true true (P' → Q) P Q.
+  FromAssumption true P P' →
+  IntoWand true true (P' → Q) P Q.
 Proof.
   rewrite /FromAssumption /IntoWand /= => <-. apply wand_intro_l.
   rewrite sep_and [(□ (_ → _))%I]intuitionistically_elim impl_elim_r //.

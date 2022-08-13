@@ -1437,6 +1437,13 @@ Qed.
 Lemma persistent_and_sep_assoc P `{!Persistent P, !Absorbing P} Q R :
   P ∧ (Q ∗ R) ⊣⊢ (P ∧ Q) ∗ R.
 Proof. by rewrite -(persistent_persistently P) persistently_and_sep_assoc. Qed.
+Lemma persistent_impl_wand_affinely P `{!Persistent P, !Absorbing P} Q :
+  (P → Q) ⊣⊢ (<affine> P -∗ Q).
+Proof.
+  apply (anti_symm _).
+  - apply wand_intro_l. rewrite -persistent_and_affinely_sep_l impl_elim_r //.
+  - apply impl_intro_l. rewrite persistent_and_affinely_sep_l wand_elim_r //.
+Qed.
 
 Lemma impl_wand_2 P `{!Persistent P} Q : (P -∗ Q) ⊢ P → Q.
 Proof. apply impl_intro_l. by rewrite persistent_and_sep_1 wand_elim_r. Qed.

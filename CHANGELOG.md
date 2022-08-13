@@ -72,6 +72,11 @@ lemma.
   persistence modality no longer appears at all. This is a step towards using
   the proofmode in logics without a persistence modality.
   The lemma `of_envs_alt` shows equivalence with the old version.
+* Adjust `IntoWand` instances for non-affine BIs: in many cases where
+  `iSpecialize`/`iApply` of an implication previously failed, it will now
+  instead add an `<affine>` modality to the newly generated goal. In some rare
+  cases it might stop working or add an `<affine>` modality where previously
+  none was added.
 
 **Changes in `base_logic`:**
 
