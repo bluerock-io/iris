@@ -57,6 +57,12 @@ Class atomic_heap `{!heapGS_gen hlc Σ} := AtomicHeap {
 }.
 Global Hint Mode atomic_heap + + + : typeclass_instances.
 
+Local Notation CAS e1 e2 e3 := (Snd (cmpxchg e1 e2 e3)).
+Definition faa_atomic {Σ} `{!heapGS_gen hlc Σ} `{!atomic_heap} : val :=
+  rec: "faa" "l" "n" :=
+    let: "m" := load "l" in
+      if: (CAS "l" "m" ("m" + "n")) then "m" else "faa" "l" "n".
+
 (** Notation for heap primitives, in a module so you can import it separately. *)
 (** FIXME: Refactor these notations using custom entries once Coq bug #13654
 has been fixed. *)
@@ -75,6 +81,7 @@ Module notation.
   Notation "e1 <- e2" := (store e1 e2) : expr_scope.
 
   Notation CAS e1 e2 e3 := (Snd (cmpxchg e1 e2 e3)).
+  Notation FAA e1 e2 := (faa_atomic e1 e2).
 
 End notation.
 
@@ -85,7 +92,8 @@ Section derived.
 
   Lemma cas_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<< ∀∀ v, mapsto l (DfracOwn 1) v >>> CAS #l w1 w2 @ ∅
+    ⊢ <<< ∀∀ v, mapsto l (DfracOwn 1) v >>>
+      CAS #l w1 w2 @ ∅
     <<< if decide (v = w1) then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
         RET #if decide (v = w1) then true else false >>>.
   Proof.
@@ -94,6 +102,27 @@ Section derived.
     iIntros (v) "H↦". iAaccIntro with "H↦"; first by eauto with iFrame.
     iIntros "$ !> HΦ !>". wp_pures. done.
   Qed.
+
+  Lemma faa_spec (l : loc) (i2 : Z) :
+    ⊢ <<< ∀∀ i1 : Z, mapsto l (DfracOwn 1) #i1 >>>
+      FAA #l #i2 @ ∅
+    <<< mapsto l (DfracOwn 1) #(i1 + i2), RET #i1 >>>.
+  Proof.
+    iIntros (Φ) "AU". rewrite /faa_atomic. iLöb as "IH".
+    wp_pures. awp_apply load_spec.
+    iApply (aacc_aupd_abort with "AU"); first done.
+    iIntros (i1) "H↦". iAaccIntro with "H↦"; first by eauto with iFrame.
+    iIntros "$ !> AU !>". wp_pures.
+    awp_apply cas_spec; first done.
+    iApply (aacc_aupd with "AU"); first done.
+    iIntros (m) "Hl".
+    iAaccIntro with "Hl"; first by eauto with iFrame.
+    iIntros "Hl"; destruct (decide (#m = #i1)) as [Heq|]; first injection Heq as ->.
+    - iModIntro. iRight. iFrame. iIntros "Hpost". iModIntro. by wp_pures.
+    - iModIntro. iLeft. iFrame. iIntros "AU". iModIntro. wp_pure.
+      by iApply "IH".
+  Qed.
+
 End derived.
 
 (** Proof that the primitive physical operations of heap_lang satisfy said interface. *)
