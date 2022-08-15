@@ -52,16 +52,18 @@ Class atomic_heap `{!heapGS_gen hlc Σ} := AtomicHeap {
   cmpxchg_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
     ⊢ <<< ∀∀ v, mapsto l (DfracOwn 1) v >>> cmpxchg #l w1 w2 @ ∅
-      <<< if decide (v = w1) then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
+      <<< if decide (v = w1)
+          then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
         RET (v, #if decide (v = w1) then true else false) >>>;
 }.
 Global Hint Mode atomic_heap + + + : typeclass_instances.
 
 Local Notation CAS e1 e2 e3 := (Snd (cmpxchg e1 e2 e3)).
-Definition faa_atomic {Σ} `{!heapGS_gen hlc Σ} `{!atomic_heap} : val :=
+
+Definition faa_atomic {Σ} `{!heapGS_gen hlc Σ, !atomic_heap} : val :=
   rec: "faa" "l" "n" :=
     let: "m" := load "l" in
-      if: (CAS "l" "m" ("m" + "n")) then "m" else "faa" "l" "n".
+    if: CAS "l" "m" ("m" + "n") then "m" else "faa" "l" "n".
 
 (** Notation for heap primitives, in a module so you can import it separately. *)
 (** FIXME: Refactor these notations using custom entries once Coq bug #13654
@@ -94,8 +96,9 @@ Section derived.
     val_is_unboxed w1 →
     ⊢ <<< ∀∀ v, mapsto l (DfracOwn 1) v >>>
       CAS #l w1 w2 @ ∅
-    <<< if decide (v = w1) then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
-        RET #if decide (v = w1) then true else false >>>.
+    <<< if decide (v = w1)
+        then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
+      RET #if decide (v = w1) then true else false >>>.
   Proof.
     iIntros (? Φ) "AU". awp_apply cmpxchg_spec; first done.
     iApply (aacc_aupd_commit with "AU"); first done.
@@ -117,7 +120,7 @@ Section derived.
     iApply (aacc_aupd with "AU"); first done.
     iIntros (m) "Hl".
     iAaccIntro with "Hl"; first by eauto with iFrame.
-    iIntros "Hl"; destruct (decide (#m = #i1)) as [Heq|]; first injection Heq as ->.
+    iIntros "Hl"; destruct (decide (#m = #i1)); simplify_eq.
     - iModIntro. iRight. iFrame. iIntros "Hpost". iModIntro. by wp_pures.
     - iModIntro. iLeft. iFrame. iIntros "AU". iModIntro. wp_pure.
       by iApply "IH".
