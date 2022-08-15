@@ -35,7 +35,10 @@ evar, then [MakeX] will not instantiate it arbitrarily.
 The reason for this is that if given an evar, these classes would typically
 try to instantiate this evar with some arbitrary logical constructs such as
 [emp] or [True]. Therefore, we use a [Hint Mode] to disable all the instances
-that would have this behavior. *)
+that would have this behavior.
+
+In practice this means that usually only the default instance should use [MakeX],
+and most specialized instances should use [KnownMakeX]. *)
 From iris.bi Require Export bi.
 From iris.prelude Require Import options.
 
