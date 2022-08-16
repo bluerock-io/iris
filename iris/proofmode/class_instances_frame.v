@@ -177,17 +177,6 @@ Proof.
   rewrite /Frame /MakeAbsorbingly=> <- <- /=. by rewrite absorbingly_sep_r.
 Qed.
 
-Global Instance make_persistently_emp : @KnownMakePersistently PROP emp True.
-Proof.
-  by rewrite /KnownMakePersistently /MakePersistently
-     -persistently_True_emp persistently_pure.
-Qed.
-Global Instance make_persistently_True : @KnownMakePersistently PROP True True.
-Proof. by rewrite /KnownMakePersistently /MakePersistently persistently_pure. Qed.
-Global Instance make_persistently_default P :
-  MakePersistently P (<pers> P) | 100.
-Proof. by rewrite /MakePersistently. Qed.
-
 Global Instance frame_persistently R P Q Q' :
   Frame true R P Q → MakePersistently Q Q' →
   Frame true R (<pers> P) Q' | 2. (* Same cost as default. *)
