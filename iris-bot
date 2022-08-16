@@ -32,6 +32,7 @@ PROJECTS = {
     'spygame': { 'name': 'spygame', 'branch': 'master' },
     'time-credits': { 'name': 'time-credits', 'branch': 'master' },
     'actris': { 'name': 'actris', 'branch': 'master' },
+    'simuliris': { 'name': 'simuliris', 'branch': 'master' },
     'tutorial-popl20': { 'name': 'tutorial-popl20', 'branch': 'master' },
     'tutorial-popl21': { 'name': 'tutorial-popl21', 'branch': 'master' },
 }
