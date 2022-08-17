@@ -3,7 +3,40 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
-## Iris master
+## Iris 4.0.0 (2022-08-??)
+
+The highlight of this release is the *later credits* mechanism, which
+provides a new way to eliminate later modalities.
+
+This new mechanism complements the existing techniques of taking program steps,
+exploiting timelessness, and various modality commuting rules.
+At each program step, one obtains a credit `£ 1`, which is an
+ownable Iris resource. These credits don't have to be used at the present step,
+but can be saved up, and used to eliminate laters at any point in the
+verification using the fancy update modality.
+Later credits are particularly
+useful in proofs where there is not a one-to-one correspondence between program
+steps and later eliminations, for example, logical atomicity proofs.
+As a consequence, we have been able to simplify the definition of logical atomicity
+by removing the 'laterable' mechanism.
+
+The later credit mechanism is described in detail in the
+[ICFP'22 paper](https://plv.mpi-sws.org/later-credits/)
+and there is a
+[small tutorial](https://gitlab.mpi-sws.org/iris/iris/-/blob/master/tests/later_credits_paper.v)
+in the Iris repository.
+The [examples](https://gitlab.mpi-sws.org/iris/examples/) repository contains
+some logically atomic case studies that make use of later credits:
+the counter with a backup (Section 4 of the later credits paper), as well as
+the elimination stack, conditional increment, and RDCSS.
+
+Iris 4.0 supports Coq 8.13 - 8.16.
+
+This release was managed by Ralf Jung, Robbert Krebbers, and Lennard Gäher, with
+contributions from Glen Mével, Gregory Malecha, Ike Mulder, Irene Yoon,
+Jan-Oliver Kaiser, Jonas Kastberg Hinrichsen, Lennard Gäher, Michael Sammler,
+Niklas Mück, Paolo G. Giarrusso, Ralf Jung, Robbert Krebbers, Simon Spies,
+and Tej Chajed. Thanks a lot to everyone involved!
 
 **General changes:**
 
