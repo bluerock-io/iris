@@ -21,7 +21,7 @@ mechanism.
 
 The later credit mechanism is described in detail in the
 [ICFP'22 paper](https://plv.mpi-sws.org/later-credits/) and there is a
-[small tutorial](https://gitlab.mpi-sws.org/iris/iris/-/blob/master/tests/later_credits_paper.v)
+[small tutorial](https://gitlab.mpi-sws.org/iris/iris/-/blob/iris-4.0.0/tests/later_credits_paper.v)
 in the Iris repository. The
 [examples](https://gitlab.mpi-sws.org/iris/examples/) repository contains some
 logically atomic case studies that make use of later credits: the counter with a
