@@ -5,7 +5,7 @@ If you really want to, you can also avoid having to type unicode characters by
 importing `iris.bi.ascii`.  That enables parsing-only ASCII alternatives to many
 unicode notations. (Feel free to report an issue when you notice that a notation
 is missing.)  The easiest way to learn the ASCII syntax is to
-[read this file](https://gitlab.mpi-sws.org/iris/iris/-/blob/master/theories/bi/ascii.v).
+[read this file](/iris/bi/ascii.v).
 Note however that this will make your code harder to read and work on for Iris
 developers that are used to our default unicode notation---generally, our
 recommendation is to use the unicode syntax whenever possible. In particular,
@@ -688,3 +688,14 @@ let g:unicode_map = {
   \ "_x"        :   "ₓ",
 \ }
 ```
+
+
+Alternatively, you can use snippets using [UltiSnips](https://github.com/SirVer/ultisnips).
+
+Install it with your favorite plugin manager, and register a completion key in your configuration:
+```
+let g:UltiSnipsExpandTrigger="<c-l>"
+```
+To insert a unicode character, type its trigger word, such as `\forall` or `->`, and then press `<c-l>` while still in insert mode.
+
+To register most common unicode characters, put [this file](/docs/vim_ultisnips) either at `~/.vim/UltiSnips/coq_unicode.snippets` or `~/.config/nvim/UltiSnips/coq_unicode.snippets`, depending on your preferred variant of Vim.
