@@ -698,4 +698,4 @@ let g:UltiSnipsExpandTrigger="<c-l>"
 ```
 To insert a unicode character, type its trigger word, such as `\forall` or `->`, and then press `<c-l>` while still in insert mode.
 
-To register most common unicode characters, put [this file](/docs/coq_latex.snippets) either at `~/.vim/UltiSnips/coq_latex.snippets` or `~/.config/nvim/UltiSnips/coq_latex.snippets`, depending on your preferred variant of Vim.
+To register most common unicode characters, put [this file](/docs/vim_ultisnips) either at `~/.vim/UltiSnips/coq_unicode.snippets` or `~/.config/nvim/UltiSnips/coq_unicode.snippets`, depending on your preferred variant of Vim.
