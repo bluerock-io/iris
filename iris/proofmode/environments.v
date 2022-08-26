@@ -738,6 +738,16 @@ Proof.
   - rewrite -persistent_and_sep_assoc left_id. done.
 Qed.
 
+Lemma envs_clear_intuitionistic_sound Δ :
+  of_envs Δ ⊢
+  env_and_persistently (env_intuitionistic Δ) ∗ of_envs (envs_clear_intuitionistic Δ).
+Proof.
+  rewrite !of_envs_eq /envs_clear_spatial /=. apply pure_elim_l=> Hwf.
+  rewrite persistent_and_sep_1.
+  rewrite (pure_True); first by rewrite 2!left_id.
+  destruct Hwf. constructor; simpl; auto using Enil_wf.
+Qed.
+
 Lemma env_spatial_is_nil_intuitionistically Δ :
   env_spatial_is_nil Δ = true → of_envs Δ ⊢ □ of_envs Δ.
 Proof.
