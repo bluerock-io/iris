@@ -1,5 +1,5 @@
 (** A TaDA-style logically atomic specification for a lock, derived for an
-    arbitrary implementation of the lock interfacne. The opposite direction
+    arbitrary implementation of the lock interface. The opposite direction
     could also be derived rather easily (modulo a later in the [acquire] postcondition
     or a restriction to timeless lock invariants), as shown in the TaDA paper.
 
