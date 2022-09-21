@@ -327,6 +327,8 @@ Section language.
 
 End language.
 
+Global Hint Mode PureExec + - - ! - : typeclass_instances.
+
 Global Arguments step_atomic {Λ ρ1 κ ρ2}.
 
 Notation pure_steps_tp := (Forall2 (rtc pure_step)).
