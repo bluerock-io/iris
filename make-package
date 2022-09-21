@@ -9,7 +9,7 @@ shift
 COQFILE="_CoqProject.$PROJECT"
 MAKEFILE="Makefile.package.$PROJECT"
 
-if ! egrep -q "^$PROJECT/" _CoqProject; then
+if ! grep -E -q "^$PROJECT/" _CoqProject; then
     echo "No files in $PROJECT/ found in _CoqProject; this does not seem to be a valid project name."
     exit 1
 fi
@@ -17,11 +17,11 @@ fi
 # Generate _CoqProject file and Makefile
 rm -f "$COQFILE"
 # Get the right "-Q" line.
-egrep "^-Q $PROJECT[ /]" _CoqProject >> "$COQFILE"
+grep -E "^-Q $PROJECT[ /]" _CoqProject >> "$COQFILE"
 # Get everything until the first empty line except for the "-Q" lines.
-sed -n '/./!q;p' _CoqProject | egrep -v "^-Q " >> "$COQFILE"
+sed -n '/./!q;p' _CoqProject | grep -E -v "^-Q " >> "$COQFILE"
 # Get the files.
-egrep "^$PROJECT/" _CoqProject >> "$COQFILE"
+grep -E "^$PROJECT/" _CoqProject >> "$COQFILE"
 # Now we can run coq_makefile.
 "${COQBIN}coq_makefile" -f "$COQFILE" -o "$MAKEFILE"
 
