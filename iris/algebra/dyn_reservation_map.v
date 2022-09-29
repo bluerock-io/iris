@@ -284,7 +284,7 @@ Section cmra.
        such that both that set [E1] and the remainder [E2] are infinite. *)
     edestruct (coPset_split_infinite (⊤ ∖ (Ef ∪ (gset_to_coPset $ dom mf)))) as
         (E1 & E2 & HEunion & HEdisj & HE1inf & HE2inf).
-    { rewrite -difference_difference_L.
+    { rewrite -difference_difference_l_L.
       by apply difference_infinite, gset_to_coPset_finite. }
     exists (dyn_reservation_map_token E1).
     split; first by apply HQ. clear HQ.
