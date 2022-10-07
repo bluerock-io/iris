@@ -118,8 +118,8 @@ def time(args):
     subprocess.run(["git", "fetch", "-q", "https://gitlab.mpi-sws.org/{}".format(iris_repo), iris_rev], check=True)
     test_commit = subprocess.run(["git", "rev-parse", "FETCH_HEAD"], check=True, stdout=subprocess.PIPE).stdout.decode().strip()
     # Determine the base commit in master
-    subprocess.run(["git", "fetch", "-q", "origin", "master"], check=True)
-    base_commit = subprocess.run(["git", "merge-base", test_commit, "origin/master"], check=True, stdout=subprocess.PIPE).stdout.decode().strip()
+    subprocess.run(["git", "fetch", "-q", "https://gitlab.mpi-sws.org/iris/iris.git", "master"], check=True)
+    base_commit = subprocess.run(["git", "merge-base", test_commit, "FETCH_HEAD"], check=True, stdout=subprocess.PIPE).stdout.decode().strip()
     # Trigger the builds
     print("Triggering timing builds for {} with Iris base commit {} and test commit {} using ad-hoc ID {}...".format(project_name, base_commit[:8], test_commit[:8], id))
     vars = {
