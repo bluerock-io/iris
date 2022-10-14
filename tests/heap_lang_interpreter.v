@@ -47,11 +47,11 @@ Check "fail app non-function".
 Eval vm_compute in
     exec 1000 (#2 #4).
 
-(* locations are not ordered *)
+(* locations can only be compared with other locations *)
 Check "fail loc order".
 Eval vm_compute in
     exec 1000 (let: "x" := ref #() in
-               let: "y" := ref #() in
+               let: "y" := #1 in
                "x" < "y").
 
 Check "fail compare pairs".

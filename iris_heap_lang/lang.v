@@ -560,6 +560,8 @@ Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
 Definition bin_op_eval_loc (op : bin_op) (l1 : loc) (v2 : base_lit) : option base_lit :=
   match op, v2 with
   | OffsetOp, LitInt off => Some $ LitLoc (l1 +ₗ off)
+  | LeOp, LitLoc l2 => Some $ LitBool (bool_decide (loc_car l1 ≤ loc_car l2)%Z)
+  | LtOp, LitLoc l2 => Some $ LitBool (bool_decide (loc_car l1 < loc_car l2)%Z)
   | _, _ => None
   end.
 

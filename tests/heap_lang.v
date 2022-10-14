@@ -143,6 +143,22 @@ Section tests.
     by replace (S n - 1)%Z with (n:Z) by lia.
   Qed.
 
+  Definition compare_pointers : val := λ: <>,
+    let: "x" := ref #0 in
+    let: "y" := ref #0 in
+    ("x", "y", "x" ≤ "y").
+
+  Lemma wp_compare_pointers E :
+    ⊢ WP compare_pointers #() @ E [{ v, ∃ l1 l2 : loc,
+        ⌜v = (#l1, #l2,
+              #(bool_decide (loc_car l1 ≤ loc_car l2)))%V⌝ }].
+  Proof.
+    rewrite /compare_pointers. wp_pures.
+    wp_alloc l1 as "H1".
+    wp_alloc l2 as "H2".
+    wp_pures. by eauto.
+  Qed.
+
   (* Make sure [wp_bind] works even when it changes nothing. *)
   Lemma wp_bind_nop (e : expr) :
     ⊢ WP e + #0 {{ _, True }}.
