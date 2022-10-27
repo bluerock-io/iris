@@ -26,7 +26,7 @@ Record BiEmbedMixin (PROP1 PROP2 : bi) `(Embed PROP1 PROP2) := {
   externally (i.e., as [Inj (dist n) (dist n) embed]), it is expressed using the
   internal equality of _any other_ BI [PROP']. This is more general, as we do
   not have any machinary to embed [siProp] into a BI with internal equality. *)
-  bi_embed_mixin_interal_inj `{BiInternalEq PROP'} (P Q : PROP1) :
+  bi_embed_mixin_interal_inj {PROP' : bi} `{!BiInternalEq PROP'} (P Q : PROP1) :
     ⎡P⎤ ≡ ⎡Q⎤ ⊢@{PROP'} (P ≡ Q);
   bi_embed_mixin_emp_2 : emp ⊢@{PROP2} ⎡emp⎤;
   bi_embed_mixin_impl_2 (P Q : PROP1) :
@@ -86,7 +86,7 @@ Global Hint Mode BiEmbedPlainly - ! - - - : typeclass_instances.
 Global Hint Mode BiEmbedPlainly ! - - - - : typeclass_instances.
 
 Section embed_laws.
-  Context `{BiEmbed PROP1 PROP2}.
+  Context {PROP1 PROP2 : bi} `{!BiEmbed PROP1 PROP2}.
   Local Notation embed := (embed (A:=PROP1) (B:=PROP2)).
   Local Notation "⎡ P ⎤" := (embed P) : bi_scope.
   Implicit Types P : PROP1.
@@ -117,7 +117,7 @@ Section embed_laws.
 End embed_laws.
 
 Section embed.
-  Context `{BiEmbed PROP1 PROP2}.
+  Context {PROP1 PROP2 : bi} `{!BiEmbed PROP1 PROP2}.
   Local Notation embed := (embed (A:=PROP1) (B:=PROP2)).
   Local Notation "⎡ P ⎤" := (embed P) : bi_scope.
   Implicit Types P Q R : PROP1.
@@ -324,7 +324,7 @@ Note that declaring these instances globally can make TC search ambiguous or
 diverging. These are only defined so that a user can conveniently use them to
 manually combine embeddings. *)
 Section embed_embed.
-  Context `{BiEmbed PROP1 PROP2, BiEmbed PROP2 PROP3}.
+  Context {PROP1 PROP2 PROP3 : bi} `{!BiEmbed PROP1 PROP2, !BiEmbed PROP2 PROP3}.
 
   Local Instance embed_embed : Embed PROP1 PROP3 := λ P, ⎡ ⎡ P ⎤ ⎤%I.
 

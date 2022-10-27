@@ -138,7 +138,7 @@ Class Cofe (A : ofe) := {
 Global Arguments compl : simpl never.
 Global Hint Mode Cofe ! : typeclass_instances.
 
-Lemma compl_chain_map `{Cofe A, Cofe B} (f : A → B) c `(NonExpansive f) :
+Lemma compl_chain_map `{!Cofe A, !Cofe B} (f : A → B) c `(!NonExpansive f) :
   compl (chain_map f c) ≡ f (compl c).
 Proof. apply equiv_dist=>n. by rewrite !conv_compl. Qed.
 
@@ -194,7 +194,7 @@ Section ofe.
      by intros x1 x2 Hx y1 y2 Hy n; rewrite (Hx n) (Hy n).
   Qed.
 
-  Lemma conv_compl' `{Cofe A} n (c : chain A) : compl c ≡{n}≡ c (S n).
+  Lemma conv_compl' `{!Cofe A} n (c : chain A) : compl c ≡{n}≡ c (S n).
   Proof.
     transitivity (c n); first by apply conv_compl. symmetry.
     apply chain_cauchy. lia.
@@ -209,7 +209,7 @@ Section ofe.
 End ofe.
 
 (** Contractive functions *)
-Definition dist_later `{Dist A} (n : nat) (x y : A) : Prop :=
+Definition dist_later `{!Dist A} (n : nat) (x y : A) : Prop :=
   match n with 0 => True | S n => x ≡{n}≡ y end.
 Global Arguments dist_later _ _ !_ _ _ /.
 
@@ -274,7 +274,7 @@ Class LimitPreserving `{!Cofe A} (P : A → Prop) : Prop :=
 Global Hint Mode LimitPreserving + + ! : typeclass_instances.
 
 Section limit_preserving.
-  Context `{Cofe A}.
+  Context {A : ofe} `{!Cofe A}.
   (* These are not instances as they will never fire automatically...
      but they can still be helpful in proving things to be limit preserving. *)
 
@@ -352,7 +352,7 @@ Local Definition fixpoint_unseal :
   @fixpoint = @fixpoint_def := fixpoint_aux.(seal_eq).
 
 Section fixpoint.
-  Context `{Cofe A, Inhabited A} (f : A → A) `{!Contractive f}.
+  Context `{!Cofe A, !Inhabited A} (f : A → A) `{!Contractive f}.
 
   (** This lemma does not work well with [rewrite]; we usually define a specific
   unfolding lemma for each fixpoint and then [apply fixpoint_unfold] in the
@@ -404,12 +404,12 @@ End fixpoint.
 
 
 (** Fixpoint of f when f^k is contractive. **)
-Definition fixpointK `{Cofe A, Inhabited A} k (f : A → A)
+Definition fixpointK {A : ofe} `{!Cofe A, !Inhabited A} k (f : A → A)
   `{!Contractive (Nat.iter k f)} := fixpoint (Nat.iter k f).
 
 Section fixpointK.
   Local Set Default Proof Using "Type*".
-  Context `{Cofe A, Inhabited A} (f : A → A) (k : nat).
+  Context {A : ofe} `{!Cofe A, !Inhabited A} (f : A → A) (k : nat).
   Context {f_contractive : Contractive (Nat.iter k f)} {f_ne : NonExpansive f}.
   (* Note than f_ne is crucial here:  there are functions f such that f^2 is contractive,
      but f is not non-expansive.
@@ -477,7 +477,7 @@ End fixpointK.
 
 (** Mutual fixpoints *)
 Section fixpointAB.
-  Context `{Cofe A, Cofe B, !Inhabited A, !Inhabited B}.
+  Context {A B : ofe} `{!Cofe A, !Cofe B, !Inhabited A, !Inhabited B}.
   Context (fA : A → B → A).
   Context (fB : A → B → B).
   Context {fA_contractive : ∀ n, Proper (dist_later n ==> dist n ==> dist n) fA}.
@@ -521,7 +521,7 @@ Section fixpointAB.
 End fixpointAB.
 
 Section fixpointAB_ne.
-  Context `{Cofe A, Cofe B, !Inhabited A, !Inhabited B}.
+  Context {A B : ofe} `{!Cofe A, !Cofe B, !Inhabited A, !Inhabited B}.
   Context (fA fA' : A → B → A).
   Context (fB fB' : A → B → B).
   Context `{∀ n, Proper (dist_later n ==> dist n ==> dist n) fA}.
@@ -589,13 +589,13 @@ Section ofe_mor.
   Program Definition ofe_mor_chain (c : chain ofe_morO)
     (x : A) : chain B := {| chain_car n := c n x |}.
   Next Obligation. intros c x n i ?. by apply (chain_cauchy c). Qed.
-  Program Definition ofe_mor_compl `{Cofe B} : Compl ofe_morO := λ c,
+  Program Definition ofe_mor_compl `{!Cofe B} : Compl ofe_morO := λ c,
     {| ofe_mor_car x := compl (ofe_mor_chain c x) |}.
   Next Obligation.
     intros ? c n x y Hx. by rewrite (conv_compl n (ofe_mor_chain c x))
       (conv_compl n (ofe_mor_chain c y)) /= Hx.
   Qed.
-  Global Program Instance ofe_mor_cofe `{Cofe B} : Cofe ofe_morO :=
+  Global Program Instance ofe_mor_cofe `{!Cofe B} : Cofe ofe_morO :=
     {| compl := ofe_mor_compl |}.
   Next Obligation.
     intros ? n c x; simpl.
@@ -909,7 +909,7 @@ Section sum.
     {| chain_car n := match c n return _ with inr b' => b' | _ => b end |}.
   Next Obligation. intros c b n i ?; simpl. by destruct (chain_cauchy c n i). Qed.
 
-  Definition sum_compl `{Cofe A, Cofe B} : Compl sumO := λ c,
+  Definition sum_compl `{!Cofe A, !Cofe B} : Compl sumO := λ c,
     match c 0 with
     | inl a => inl (compl (inl_chain c a))
     | inr b => inr (compl (inr_chain c b))
@@ -972,7 +972,7 @@ Qed.
 
 (** * Discrete OFEs *)
 Section discrete_ofe.
-  Context `{Equiv A} (Heq : @Equivalence A (≡)).
+  Context {A : Type} `{!Equiv A} (Heq : @Equivalence A (≡)).
 
   Local Instance discrete_dist : Dist A := λ n x y, x ≡ y.
   Definition discrete_ofe_mixin : OfeMixin A.
@@ -1051,7 +1051,7 @@ Section option.
   Program Definition option_chain (c : chain optionO) (x : A) : chain A :=
     {| chain_car n := default x (c n) |}.
   Next Obligation. intros c x n i ?; simpl. by destruct (chain_cauchy c n i). Qed.
-  Definition option_compl `{Cofe A} : Compl optionO := λ c,
+  Definition option_compl `{!Cofe A} : Compl optionO := λ c,
     match c 0 with Some x => Some (compl (option_chain c x)) | None => None end.
   Global Program Instance option_cofe `{Cofe A} : Cofe optionO :=
     { compl := option_compl }.
@@ -1432,7 +1432,7 @@ Section sigma.
   Proof. by apply (iso_ofe_mixin proj1_sig). Qed.
   Canonical Structure sigO : ofe := Ofe (sig P) sig_ofe_mixin.
 
-  Global Instance sig_cofe `{Cofe A, !LimitPreserving P} : Cofe sigO.
+  Global Instance sig_cofe `{!Cofe A, !LimitPreserving P} : Cofe sigO.
   Proof. apply (iso_cofe_subtype' P (exist P) proj1_sig)=> //. by intros []. Qed.
 
   Global Instance sig_discrete (x : sig P) :  Discrete (`x) → Discrete x.

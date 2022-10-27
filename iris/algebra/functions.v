@@ -13,7 +13,7 @@ Definition discrete_fun_singleton `{EqDecision A} {B : A → ucmra}
 Global Instance: Params (@discrete_fun_singleton) 5 := {}.
 
 Section ofe.
-  Context `{Heqdec : EqDecision A} {B : A → ofe}.
+  Context {A : Type} `{Heqdec : !EqDecision A} {B : A → ofe}.
   Implicit Types x : A.
   Implicit Types f g : discrete_fun B.
 
@@ -52,7 +52,7 @@ Section ofe.
 End ofe.
 
 Section cmra.
-  Context `{EqDecision A} {B : A → ucmra}.
+  Context {A : Type} `{Heqdec : !EqDecision A} {B : A → ucmra}.
   Implicit Types x : A.
   Implicit Types f g : discrete_fun B.
 

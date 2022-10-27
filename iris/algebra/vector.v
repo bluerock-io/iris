@@ -13,7 +13,7 @@ Section ofe.
   Proof. by apply (iso_ofe_mixin vec_to_list). Qed.
   Canonical Structure vecO m : ofe := Ofe (vec A m) (vec_ofe_mixin m).
 
-  Global Instance list_cofe `{Cofe A} m : Cofe (vecO m).
+  Global Instance list_cofe `{!Cofe A} m : Cofe (vecO m).
   Proof.
     apply: (iso_cofe_subtype (λ l : list A, length l = m)
       (λ l, eq_rect _ (vec A) (list_to_vec l) m) vec_to_list)=> //.

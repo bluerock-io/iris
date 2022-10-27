@@ -81,13 +81,13 @@ Next Obligation. intros c a n i ?; simpl. by destruct (chain_cauchy c n i). Qed.
 Program Definition csum_chain_r (c : chain csumO) (b : B) : chain B :=
   {| chain_car n := match c n return _ with Cinr b' => b' | _ => b end |}.
 Next Obligation. intros c b n i ?; simpl. by destruct (chain_cauchy c n i). Qed.
-Definition csum_compl `{Cofe A, Cofe B} : Compl csumO := λ c,
+Definition csum_compl `{!Cofe A, !Cofe B} : Compl csumO := λ c,
   match c 0 with
   | Cinl a => Cinl (compl (csum_chain_l c a))
   | Cinr b => Cinr (compl (csum_chain_r c b))
   | CsumBot => CsumBot
   end.
-Global Program Instance csum_cofe `{Cofe A, Cofe B} : Cofe csumO :=
+Global Program Instance csum_cofe `{!Cofe A, !Cofe B} : Cofe csumO :=
   {| compl := csum_compl |}.
 Next Obligation.
   intros ?? n c; rewrite /compl /csum_compl.

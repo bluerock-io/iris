@@ -1237,25 +1237,25 @@ Proof.
   iIntros "HP HQR". iDestruct "HQR" as "{HP} [HQ HR]". done.
 Qed.
 
-Lemma test_iSpecialize_bupd `{BiBUpd PROP} A (a : A) (P : A -> PROP) :
+Lemma test_iSpecialize_bupd `{!BiBUpd PROP} A (a : A) (P : A -> PROP) :
   (|==> ∀ x, P x) ⊢ |==> P a.
 Proof.
   iIntros "H". iSpecialize ("H" $! a). done.
 Qed.
 
-Lemma test_iSpecialize_fupd `{BiFUpd PROP} A (a : A) (P : A -> PROP) E1 E2 :
+Lemma test_iSpecialize_fupd `{!BiFUpd PROP} A (a : A) (P : A -> PROP) E1 E2 :
   (|={E1, E2}=> ∀ x, P x) ⊢ |={E1, E2}=> P a.
 Proof.
   iIntros "H". iSpecialize ("H" $! a). done.
 Qed.
 
-Lemma test_iDestruct_and_bupd `{BiBUpd PROP} (P Q : PROP) :
+Lemma test_iDestruct_and_bupd `{!BiBUpd PROP} (P Q : PROP) :
   (|==> P ∧ Q) ⊢ |==> P.
 Proof.
   iIntros "[P _]". done.
 Qed.
 
-Lemma test_iDestruct_and_fupd `{BiFUpd PROP} (P Q : PROP) E1 E2 :
+Lemma test_iDestruct_and_fupd `{!BiFUpd PROP} (P Q : PROP) E1 E2 :
   (|={E1, E2}=> P ∧ Q) ⊢ |={E1, E2}=> P.
 Proof.
   iIntros "[P _]". done.

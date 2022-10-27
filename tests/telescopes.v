@@ -101,7 +101,7 @@ Qed.
 End tests.
 
 Section printing_tests.
-Context `{!BiFUpd PROP}.
+Context {PROP : bi} `{!BiFUpd PROP}.
 
 (* Working with concrete telescopes: Testing the reduction into normal quantifiers. *)
 Lemma acc_elim_test_1 E1 E2 :

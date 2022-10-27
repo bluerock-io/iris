@@ -20,7 +20,7 @@ Since these big operators are like quantifiers, they have the same precedence as
 [∀] and [∃]. *)
 
 (** * Big ops over lists *)
-Fixpoint big_opL `{Monoid M o} {A} (f : nat → A → M) (xs : list A) : M :=
+Fixpoint big_opL {M : ofe} {o : M → M → M} `{!Monoid o} {A} (f : nat → A → M) (xs : list A) : M :=
   match xs with
   | [] => monoid_unit
   | x :: xs => o (f 0 x) (big_opL (λ n, f (S n)) xs)
@@ -35,7 +35,7 @@ Notation "'[^' o 'list]' x ∈ l , P" := (big_opL o (λ _ x, P) l)
   (at level 200, o at level 1, l at level 10, x at level 1, right associativity,
    format "[^ o  list]  x  ∈  l ,  P") : stdpp_scope.
 
-Local Definition big_opM_def `{Monoid M o} `{Countable K} {A} (f : K → A → M)
+Local Definition big_opM_def {M : ofe} {o : M → M → M} `{!Monoid o} `{Countable K} {A} (f : K → A → M)
   (m : gmap K A) : M := big_opL o (λ _, uncurry f) (map_to_list m).
 Local Definition big_opM_aux : seal (@big_opM_def). Proof. by eexists. Qed.
 Definition big_opM := big_opM_aux.(unseal).
@@ -50,7 +50,7 @@ Notation "'[^' o 'map]' x ∈ m , P" := (big_opM o (λ _ x, P) m)
   (at level 200, o at level 1, m at level 10, x at level 1, right associativity,
    format "[^ o  map]  x  ∈  m ,  P") : stdpp_scope.
 
-Local Definition big_opS_def `{Monoid M o} `{Countable A} (f : A → M)
+Local Definition big_opS_def {M : ofe} {o : M → M → M} `{!Monoid o} `{Countable A} (f : A → M)
   (X : gset A) : M := big_opL o (λ _, f) (elements X).
 Local Definition big_opS_aux : seal (@big_opS_def). Proof. by eexists. Qed.
 Definition big_opS := big_opS_aux.(unseal).
@@ -62,7 +62,7 @@ Notation "'[^' o 'set]' x ∈ X , P" := (big_opS o (λ x, P) X)
   (at level 200, o at level 1, X at level 10, x at level 1, right associativity,
    format "[^ o  set]  x  ∈  X ,  P") : stdpp_scope.
 
-Local Definition big_opMS_def `{Monoid M o} `{Countable A} (f : A → M)
+Local Definition big_opMS_def {M : ofe} {o : M → M → M} `{!Monoid o} `{Countable A} (f : A → M)
   (X : gmultiset A) : M := big_opL o (λ _, f) (elements X).
 Local Definition big_opMS_aux : seal (@big_opMS_def). Proof. by eexists. Qed.
 Definition big_opMS := big_opMS_aux.(unseal).
@@ -76,7 +76,7 @@ Notation "'[^' o 'mset]' x ∈ X , P" := (big_opMS o (λ x, P) X)
 
 (** * Properties about big ops *)
 Section big_op.
-Context `{Monoid M o}.
+Context {M : ofe} {o : M → M → M} `{!Monoid o}.
 Implicit Types xs : list M.
 Infix "`o`" := o (at level 50, left associativity).
 
@@ -786,7 +786,7 @@ Proof. repeat setoid_rewrite big_opMS_elements. by rewrite big_opL_opL. Qed.
 End big_op.
 
 Section homomorphisms.
-  Context `{Monoid M1 o1, Monoid M2 o2}.
+  Context {M1 M2 : ofe} {o1 : M1 → M1 → M1} {o2 : M2 → M2 → M2} `{!Monoid o1, !Monoid o2}.
   Infix "`o1`" := o1 (at level 50, left associativity).
   Infix "`o2`" := o2 (at level 50, left associativity).
   (** The ssreflect rewrite tactic only works for relations that have a

@@ -4,7 +4,7 @@ From iris.prelude Require Import options.
 Import bi.
 
 Section class_instances_plainly.
-Context `{!BiPlainly PROP}.
+Context {PROP} `{!BiPlainly PROP}.
 Implicit Types P Q R : PROP.
 
 Global Instance from_assumption_plainly_l_true P Q :
@@ -13,7 +13,7 @@ Proof.
   rewrite /KnownLFromAssumption /FromAssumption /= =><-.
   rewrite intuitionistically_plainly_elim //.
 Qed.
-Global Instance from_assumption_plainly_l_false `{BiAffine PROP} P Q :
+Global Instance from_assumption_plainly_l_false `{!BiAffine PROP} P Q :
   FromAssumption true P Q → KnownLFromAssumption false (■ P) Q.
 Proof.
   rewrite /KnownLFromAssumption /FromAssumption /= =><-.

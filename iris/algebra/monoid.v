@@ -24,9 +24,9 @@ Class Monoid {M : ofe} (o : M → M → M) := {
   monoid_comm : Comm (≡) o;
   monoid_left_id : LeftId (≡) monoid_unit o;
 }.
-Lemma monoid_proper `{Monoid M o} : Proper ((≡) ==> (≡) ==> (≡)) o.
+Lemma monoid_proper {M : ofe} {o : M → M → M} `{!Monoid o} : Proper ((≡) ==> (≡) ==> (≡)) o.
 Proof. apply ne_proper_2, monoid_ne. Qed.
-Lemma monoid_right_id `{Monoid M o} : RightId (≡) monoid_unit o.
+Lemma monoid_right_id {M : ofe} {o : M → M → M} `{!Monoid o} : RightId (≡) monoid_unit o.
 Proof. intros x. etrans; [apply monoid_comm|apply monoid_left_id]. Qed.
 
 (** The [Homomorphism] classes give rise to generic lemmas about big operators
@@ -34,7 +34,7 @@ commuting with each other. We also consider a [WeakMonoidHomomorphism] which
 does not necessarily commute with unit; an example is the [own] connective: we
 only have `True ==∗ own γ ∅`, not `True ↔ own γ ∅`. *)
 Class WeakMonoidHomomorphism {M1 M2 : ofe}
-    (o1 : M1 → M1 → M1) (o2 : M2 → M2 → M2) `{Monoid M1 o1, Monoid M2 o2}
+    (o1 : M1 → M1 → M1) (o2 : M2 → M2 → M2) `{!Monoid o1, !Monoid o2}
     (R : relation M2) (f : M1 → M2) := {
   monoid_homomorphism_rel_po : PreOrder R;
   monoid_homomorphism_rel_proper : Proper ((≡) ==> (≡) ==> iff) R;
@@ -44,7 +44,7 @@ Class WeakMonoidHomomorphism {M1 M2 : ofe}
 }.
 
 Class MonoidHomomorphism {M1 M2 : ofe}
-    (o1 : M1 → M1 → M1) (o2 : M2 → M2 → M2) `{Monoid M1 o1, Monoid M2 o2}
+    (o1 : M1 → M1 → M1) (o2 : M2 → M2 → M2) `{!Monoid o1, !Monoid o2}
     (R : relation M2) (f : M1 → M2) := {
   monoid_homomorphism_weak :> WeakMonoidHomomorphism o1 o2 R f;
   monoid_homomorphism_unit : R (f monoid_unit) monoid_unit

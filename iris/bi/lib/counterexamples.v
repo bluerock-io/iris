@@ -12,7 +12,7 @@ trivial, i.e., it gives [P -∗ P ∗ P] and [P ∧ Q -∗ P ∗ Q].
 Our proof essentially follows the structure of the proof of Theorem 3 in
 https://scholar.princeton.edu/sites/default/files/qinxiang/files/putting_order_to_the_separation_logic_jungle_revised_version.pdf *)
 Module affine_em. Section affine_em.
-  Context `{!BiAffine PROP}.
+  Context {PROP : bi} `{!BiAffine PROP}.
   Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
   Implicit Types P Q : PROP.
 
@@ -36,7 +36,7 @@ End affine_em. End affine_em.
 classical excluded-middle [P ∨ ¬P] axiom makes the later operator trivial, i.e.,
 it gives [▷ P] for any [P], or equivalently [▷ P ≡ True]. *)
 Module löb_em. Section löb_em.
-  Context `{!BiLöb PROP}.
+  Context {PROP : bi} `{!BiLöb PROP}.
   Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
   Implicit Types P : PROP.
 
@@ -51,7 +51,7 @@ End löb_em. End löb_em.
 (** This proves that we need the ▷ in a "Saved Proposition" construction with
 name-dependent allocation. *)
 Module savedprop. Section savedprop.
-  Context `{BiAffine PROP}.
+  Context {PROP : bi} `{!BiAffine PROP}.
   Implicit Types P : PROP.
 
   Context (bupd : PROP → PROP).
@@ -112,7 +112,7 @@ End savedprop. End savedprop.
 
 (** This proves that we need the ▷ when opening invariants. *)
 Module inv. Section inv.
-  Context `{BiAffine PROP}.
+  Context {PROP : bi} `{!BiAffine PROP}.
   Implicit Types P : PROP.
 
   (** Assumptions *)

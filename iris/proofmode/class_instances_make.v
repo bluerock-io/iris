@@ -31,13 +31,13 @@ Global Instance persistently_quick_absorbing P : QuickAbsorbing (<pers> P).
 Proof. rewrite /QuickAbsorbing. apply _. Qed.
 
 (** Embed *)
-Global Instance make_embed_pure `{BiEmbed PROP PROP'} φ :
+Global Instance make_embed_pure {PROP'} `{!BiEmbed PROP PROP'} φ :
   KnownMakeEmbed (PROP:=PROP) ⌜φ⌝ ⌜φ⌝.
 Proof. apply embed_pure. Qed.
-Global Instance make_embed_emp `{BiEmbedEmp PROP PROP'} :
+Global Instance make_embed_emp {PROP'} `{!BiEmbed PROP PROP'} `{!BiEmbedEmp PROP PROP'} :
   KnownMakeEmbed (PROP:=PROP) emp emp.
 Proof. apply embed_emp. Qed.
-Global Instance make_embed_default `{BiEmbed PROP PROP'} P :
+Global Instance make_embed_default {PROP'} `{!BiEmbed PROP PROP'} P :
   MakeEmbed P ⎡P⎤ | 100.
 Proof. by rewrite /MakeEmbed. Qed.
 

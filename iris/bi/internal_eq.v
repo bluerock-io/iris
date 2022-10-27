@@ -19,7 +19,7 @@ Notation "(.≡ X )" := (λ Y, Y ≡ X)%I (only parsing) : bi_scope.
 Notation "(≡@{ A } )" := (internal_eq (A:=A)) (only parsing) : bi_scope.
 
 (* Mixins allow us to create instances easily without having to use Program *)
-Record BiInternalEqMixin (PROP : bi) `(InternalEq PROP) := {
+Record BiInternalEqMixin (PROP : bi) `(!InternalEq PROP) := {
   bi_internal_eq_mixin_internal_eq_ne (A : ofe) : NonExpansive2 (@internal_eq PROP _ A);
   bi_internal_eq_mixin_internal_eq_refl {A : ofe} (P : PROP) (a : A) : P ⊢ a ≡ a;
   bi_internal_eq_mixin_internal_eq_rewrite {A : ofe} a b (Ψ : A → PROP) :
@@ -44,7 +44,7 @@ Global Hint Mode BiInternalEq ! : typeclass_instances.
 Global Arguments bi_internal_eq_internal_eq : simpl never.
 
 Section internal_eq_laws.
-  Context `{BiInternalEq PROP}.
+  Context {PROP : bi} `{!BiInternalEq PROP}.
   Implicit Types P Q : PROP.
 
   Global Instance internal_eq_ne (A : ofe) : NonExpansive2 (@internal_eq PROP _ A).
@@ -74,7 +74,7 @@ End internal_eq_laws.
 
 (* Derived laws *)
 Section internal_eq_derived.
-Context `{BiInternalEq PROP}.
+Context {PROP : bi} `{!BiInternalEq PROP}.
 Implicit Types P : PROP.
 
 (* Force implicit argument PROP *)

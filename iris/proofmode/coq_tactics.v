@@ -69,7 +69,7 @@ Global Instance affine_env_snoc Γ i P :
 Proof. by constructor. Qed.
 
 (* If the BI is affine, no need to walk on the whole environment. *)
-Global Instance affine_env_bi `(BiAffine PROP) Γ : AffineEnv Γ | 0.
+Global Instance affine_env_bi `(!BiAffine PROP) Γ : AffineEnv Γ | 0.
 Proof. induction Γ; apply _. Qed.
 
 Local Instance affine_env_spatial Δ :

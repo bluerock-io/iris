@@ -17,7 +17,7 @@ Notation "(⋅)" := op (only parsing) : stdpp_scope.
    hold:
      x ≼ y ↔ x.1 ≼ y.1 ∧ x.2 ≼ y.2
 *)
-Definition included `{Equiv A, Op A} (x y : A) := ∃ z, y ≡ x ⋅ z.
+Definition included {A} `{!Equiv A, !Op A} (x y : A) := ∃ z, y ≡ x ⋅ z.
 Infix "≼" := included (at level 70) : stdpp_scope.
 Notation "(≼)" := included (only parsing) : stdpp_scope.
 Global Hint Extern 0 (_ ≼ _) => reflexivity : core.
@@ -34,7 +34,7 @@ Global Hint Mode Valid ! : typeclass_instances.
 Global Instance: Params (@valid) 2 := {}.
 Notation "✓ x" := (valid x) (at level 20) : stdpp_scope.
 
-Definition includedN `{Dist A, Op A} (n : nat) (x y : A) := ∃ z, y ≡{n}≡ x ⋅ z.
+Definition includedN `{!Dist A, !Op A} (n : nat) (x y : A) := ∃ z, y ≡{n}≡ x ⋅ z.
 Notation "x ≼{ n } y" := (includedN n x y)
   (at level 70, n at next level, format "x  ≼{ n }  y") : stdpp_scope.
 Global Instance: Params (@includedN) 4 := {}.
@@ -42,7 +42,7 @@ Global Hint Extern 0 (_ ≼{_} _) => reflexivity : core.
 
 Section mixin.
   Local Set Primitive Projections.
-  Record CmraMixin A `{Dist A, Equiv A, PCore A, Op A, Valid A, ValidN A} := {
+  Record CmraMixin A `{!Dist A, !Equiv A, !PCore A, !Op A, !Valid A, !ValidN A} := {
     (* setoids *)
     mixin_cmra_op_ne (x : A) : NonExpansive (op x);
     mixin_cmra_pcore_ne n (x y : A) cx :
@@ -176,7 +176,7 @@ Global Hint Mode CmraTotal ! : typeclass_instances.
 (** The function [core] returns a dummy when used on CMRAs without total
 core. We only ever use this for [CmraTotal] CMRAs, but it is more convenient
 to not require that proof to be able to call this function. *)
-Definition core `{PCore A} (x : A) : A := default x (pcore x).
+Definition core {A} `{!PCore A} (x : A) : A := default x (pcore x).
 Global Instance: Params (@core) 2 := {}.
 
 (** * CMRAs with a unit element *)
@@ -184,7 +184,7 @@ Class Unit (A : Type) := ε : A.
 Global Hint Mode Unit ! : typeclass_instances.
 Global Arguments ε {_ _}.
 
-Record UcmraMixin A `{Dist A, Equiv A, PCore A, Op A, Valid A, Unit A} := {
+Record UcmraMixin A `{!Dist A, !Equiv A, !PCore A, !Op A, !Valid A, !Unit A} := {
   mixin_ucmra_unit_valid : ✓ (ε : A);
   mixin_ucmra_unit_left_id : LeftId (≡@{A}) ε (⋅);
   mixin_ucmra_pcore_unit : pcore ε ≡@{option A} Some ε
@@ -473,7 +473,7 @@ Qed.
 (** ** Total core *)
 Section total_core.
   Local Set Default Proof Using "Type*".
-  Context `{CmraTotal A}.
+  Context `{!CmraTotal A}.
 
   Lemma cmra_pcore_core x : pcore x = Some (core x).
   Proof.
@@ -562,19 +562,19 @@ Proof.
 Qed.
 
 (** ** Discrete *)
-Lemma cmra_discrete_valid_iff `{CmraDiscrete A} n x : ✓ x ↔ ✓{n} x.
+Lemma cmra_discrete_valid_iff `{!CmraDiscrete A} n x : ✓ x ↔ ✓{n} x.
 Proof.
   split; first by rewrite cmra_valid_validN.
   eauto using cmra_discrete_valid, cmra_validN_le with lia.
 Qed.
-Lemma cmra_discrete_valid_iff_0 `{CmraDiscrete A} n x : ✓{0} x ↔ ✓{n} x.
+Lemma cmra_discrete_valid_iff_0 `{!CmraDiscrete A} n x : ✓{0} x ↔ ✓{n} x.
 Proof. by rewrite -!cmra_discrete_valid_iff. Qed.
-Lemma cmra_discrete_included_iff `{OfeDiscrete A} n x y : x ≼ y ↔ x ≼{n} y.
+Lemma cmra_discrete_included_iff `{!OfeDiscrete A} n x y : x ≼ y ↔ x ≼{n} y.
 Proof.
   split; first by apply cmra_included_includedN.
   intros [z ->%(discrete_iff _ _)]; eauto using cmra_included_l.
 Qed.
-Lemma cmra_discrete_included_iff_0 `{OfeDiscrete A} n x y : x ≼{0} y ↔ x ≼{n} y.
+Lemma cmra_discrete_included_iff_0 `{!OfeDiscrete A} n x y : x ≼{0} y ↔ x ≼{n} y.
 Proof. by rewrite -!cmra_discrete_included_iff. Qed.
 
 (** Cancelable elements  *)
@@ -582,7 +582,7 @@ Global Instance cancelable_proper : Proper (equiv ==> iff) (@Cancelable A).
 Proof. unfold Cancelable. intros x x' EQ. by setoid_rewrite EQ. Qed.
 Lemma cancelable x `{!Cancelable x} y z : ✓(x ⋅ y) → x ⋅ y ≡ x ⋅ z → y ≡ z.
 Proof. rewrite !equiv_dist cmra_valid_validN. intros. by apply (cancelableN x). Qed.
-Lemma discrete_cancelable x `{CmraDiscrete A}:
+Lemma discrete_cancelable x `{!CmraDiscrete A}:
   (∀ y z, ✓(x ⋅ y) → x ⋅ y ≡ x ⋅ z → y ≡ z) → Cancelable x.
 Proof. intros ????. rewrite -!discrete_iff -cmra_discrete_valid_iff. auto. Qed.
 Global Instance cancelable_op x y :
@@ -612,7 +612,7 @@ Lemma id_free_r x `{!IdFree x} y : ✓x → x ⋅ y ≡ x → False.
 Proof. move=> /cmra_valid_validN ? /equiv_dist. eauto. Qed.
 Lemma id_free_l x `{!IdFree x} y : ✓x → y ⋅ x ≡ x → False.
 Proof. rewrite comm. eauto using id_free_r. Qed.
-Lemma discrete_id_free x `{CmraDiscrete A}:
+Lemma discrete_id_free x `{!CmraDiscrete A}:
   (∀ y, ✓ x → x ⋅ y ≡ x → False) → IdFree x.
 Proof.
   intros Hx y ??. apply (Hx y), (discrete _); eauto using cmra_discrete_valid.
@@ -690,7 +690,7 @@ Section cmra_leibniz.
 
   (** ** Total core *)
   Section total_core.
-    Context `{CmraTotal A}.
+    Context `{!CmraTotal A}.
 
     Lemma cmra_core_r_L x : x ⋅ core x = x.
     Proof. unfold_leibniz. apply cmra_core_r. Qed.
@@ -720,7 +720,7 @@ End ucmra_leibniz.
 
 (** * Constructing a CMRA with total core *)
 Section cmra_total.
-  Context A `{Dist A, Equiv A, PCore A, Op A, Valid A, ValidN A}.
+  Context A `{!Dist A, !Equiv A, !PCore A, !Op A, !Valid A, !ValidN A}.
   Context (total : ∀ x : A, is_Some (pcore x)).
   Context (op_ne : ∀ x : A, NonExpansive (op x)).
   Context (core_ne : NonExpansive (@core A _)).
@@ -1020,7 +1020,7 @@ Record RAMixin A `{Equiv A, PCore A, Op A, Valid A} := {
 
 Section discrete.
   Local Set Default Proof Using "Type*".
-  Context `{Equiv A, PCore A, Op A, Valid A} (Heq : @Equivalence A (≡)).
+  Context `{!Equiv A, !PCore A, !Op A, !Valid A} (Heq : @Equivalence A (≡)).
   Context (ra_mix : RAMixin A).
   Existing Instances discrete_dist.
 
@@ -1358,7 +1358,7 @@ Section option.
   Definition Some_valid a : ✓ Some a ↔ ✓ a := reflexivity _.
   Definition Some_validN a n : ✓{n} Some a ↔ ✓{n} a := reflexivity _.
   Definition Some_op a b : Some (a ⋅ b) = Some a ⋅ Some b := eq_refl.
-  Lemma Some_core `{CmraTotal A} a : Some (core a) = core (Some a).
+  Lemma Some_core `{!CmraTotal A} a : Some (core a) = core (Some a).
   Proof. rewrite /core /=. by destruct (cmra_total a) as [? ->]. Qed.
   Lemma Some_op_opM a ma : Some a ⋅ ma = Some (a ⋅? ma).
   Proof. by destruct ma. Qed.
@@ -1498,9 +1498,9 @@ Section option.
   Lemma Some_included_2 a b : a ≼ b → Some a ≼ Some b.
   Proof. rewrite Some_included; eauto. Qed.
 
-  Lemma Some_includedN_total `{CmraTotal A} n a b : Some a ≼{n} Some b ↔ a ≼{n} b.
+  Lemma Some_includedN_total `{!CmraTotal A} n a b : Some a ≼{n} Some b ↔ a ≼{n} b.
   Proof. rewrite Some_includedN. split; [|by eauto]. by intros [->|?]. Qed.
-  Lemma Some_included_total `{CmraTotal A} a b : Some a ≼ Some b ↔ a ≼ b.
+  Lemma Some_included_total `{!CmraTotal A} a b : Some a ≼ Some b ↔ a ≼ b.
   Proof. rewrite Some_included. split; [|by eauto]. by intros [->|?]. Qed.
 
   Lemma Some_includedN_exclusive n a `{!Exclusive a} b :
@@ -1615,7 +1615,7 @@ Proof. apply optionURF_contractive. Qed.
 
 (* Dependently-typed functions over a discrete domain *)
 Section discrete_fun_cmra.
-  Context `{B : A → ucmra}.
+  Context {A : Type} {B : A → ucmra}.
   Implicit Types f g : discrete_fun B.
 
   Local Instance discrete_fun_op_instance : Op (discrete_fun B) := λ f g x,

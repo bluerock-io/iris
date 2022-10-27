@@ -9,7 +9,7 @@ Record solution (F : oFunctor) := Solution {
 Global Existing Instance solution_cofe.
 
 Module solver. Section solver.
-Context (F : oFunctor) `{Fcontr : oFunctorContractive F}.
+Context (F : oFunctor) `{Fcontr : !oFunctorContractive F}.
 Context `{Fcofe : ∀ (T : ofe) `{!Cofe T}, Cofe (oFunctor_apply F T)}.
 Context `{Finh : Inhabited (oFunctor_apply F unitO)}.
 Notation map := (oFunctor_map F).

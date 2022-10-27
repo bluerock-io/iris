@@ -210,7 +210,7 @@ Lemma laterN_forall {A} n (Φ : A → PROP) : (▷^n ∀ a, Φ a) ⊣⊢ (∀ a,
 Proof. induction n as [|n IH]; simpl; rewrite -?later_forall ?IH; auto. Qed.
 Lemma laterN_exist_2 {A} n (Φ : A → PROP) : (∃ a, ▷^n Φ a) ⊢ ▷^n (∃ a, Φ a).
 Proof. apply exist_elim; eauto using exist_intro, laterN_mono. Qed.
-Lemma laterN_exist `{Inhabited A} n (Φ : A → PROP) :
+Lemma laterN_exist {A} `{!Inhabited A} n (Φ : A → PROP) :
   (▷^n ∃ a, Φ a) ⊣⊢ ∃ a, ▷^n Φ a.
 Proof. induction n as [|n IH]; simpl; rewrite -?later_exist ?IH; auto. Qed.
 Lemma laterN_and n P Q : ▷^n (P ∧ Q) ⊣⊢ ▷^n P ∧ ▷^n Q.
@@ -340,7 +340,7 @@ Proof.
   rewrite /Timeless /bi_except_0 pure_alt later_exist_false.
   apply or_elim, exist_elim; [auto|]=> Hφ. rewrite -(exist_intro Hφ). auto.
 Qed.
-Global Instance emp_timeless `{BiAffine PROP} : Timeless (PROP:=PROP) emp.
+Global Instance emp_timeless `{!BiAffine PROP} : Timeless (PROP:=PROP) emp.
 Proof. rewrite -True_emp. apply _. Qed.
 
 Global Instance and_timeless P Q : Timeless P → Timeless Q → Timeless (P ∧ Q).

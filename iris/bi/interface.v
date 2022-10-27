@@ -4,7 +4,7 @@ From iris.prelude Require Import options.
 Set Primitive Projections.
 
 Section bi_mixin.
-  Context {PROP : Type} `{Dist PROP, Equiv PROP}.
+  Context {PROP : Type} `{!Dist PROP, !Equiv PROP}.
   Context (bi_entails : PROP → PROP → Prop).
   Context (bi_emp : PROP).
   Context (bi_pure : Prop → PROP).
@@ -235,7 +235,7 @@ Global Arguments bi_persistently {PROP} _ : simpl never, rename.
 Global Arguments bi_later {PROP} _ : simpl never, rename.
 
 Global Hint Extern 0 (bi_entails _ _) => reflexivity : core.
-(** We set this rewrite relation's cost above the stdlib's 
+(** We set this rewrite relation's cost above the stdlib's
   ([impl], [iff], [eq], ...) and [≡] but below [⊑].
   [eq] (at 100) < [≡] (at 150) < [bi_entails _] (at 170) < [⊑] (at 200)
 *)
