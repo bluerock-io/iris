@@ -14,7 +14,7 @@ Global Instance: Params (@coreP) 1 := {}.
 Typeclasses Opaque coreP.
 
 Section core.
-  Context `{!BiPlainly PROP}.
+  Context {PROP : bi} `{!BiPlainly PROP}.
   Implicit Types P Q : PROP.
 
   Lemma coreP_intro P : P -∗ coreP P.

@@ -110,6 +110,7 @@ Definition gset_bij_auth `{Countable A, Countable B}
 Definition gset_bij_elem `{Countable A, Countable B}
   (a : A) (b : B) : gset_bij A B := ◯V {[ (a, b) ]}.
 
+
 Section gset_bij.
   Context `{Countable A, Countable B}.
   Implicit Types (a:A) (b:B).

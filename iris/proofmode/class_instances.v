@@ -112,7 +112,7 @@ Proof.
   rewrite /KnownLFromAssumption /FromAssumption /= =><-.
   rewrite intuitionistically_persistently_elim //.
 Qed.
-Global Instance from_assumption_persistently_l_false `{BiAffine PROP} P Q :
+Global Instance from_assumption_persistently_l_false `{!BiAffine PROP} P Q :
   FromAssumption true P Q → KnownLFromAssumption false (<pers> P) Q.
 Proof.
   rewrite /KnownLFromAssumption /FromAssumption /= =><-.
@@ -703,7 +703,7 @@ Proof.
   by rewrite -(affine_affinely Q) affinely_and_r affinely_and (from_affinely P').
 Qed.
 
-Global Instance into_and_sep `{BiPositive PROP} P Q : IntoAnd true (P ∗ Q) P Q.
+Global Instance into_and_sep `{!BiPositive PROP} P Q : IntoAnd true (P ∗ Q) P Q.
 Proof.
   rewrite /IntoAnd /= intuitionistically_sep
     -and_sep_intuitionistically intuitionistically_and //.
@@ -770,10 +770,10 @@ Qed.
 Global Instance into_sep_pure φ ψ : @IntoSep PROP ⌜φ ∧ ψ⌝ ⌜φ⌝ ⌜ψ⌝.
 Proof. by rewrite /IntoSep pure_and persistent_and_sep_1. Qed.
 
-Global Instance into_sep_affinely `{BiPositive PROP} P Q1 Q2 :
+Global Instance into_sep_affinely `{!BiPositive PROP} P Q1 Q2 :
   IntoSep P Q1 Q2 → IntoSep (<affine> P) (<affine> Q1) (<affine> Q2) | 0.
 Proof. rewrite /IntoSep /= => ->. by rewrite affinely_sep. Qed.
-Global Instance into_sep_intuitionistically `{BiPositive PROP} P Q1 Q2 :
+Global Instance into_sep_intuitionistically `{!BiPositive PROP} P Q1 Q2 :
   IntoSep P Q1 Q2 → IntoSep (□ P) (□ Q1) (□ Q2) | 0.
 Proof. rewrite /IntoSep /= => ->. by rewrite intuitionistically_sep. Qed.
 (* FIXME: This instance is kind of strange, it just gets rid of the bi_affinely.
@@ -783,7 +783,7 @@ Global Instance into_sep_affinely_trim P Q1 Q2 :
   IntoSep P Q1 Q2 → IntoSep (<affine> P) Q1 Q2 | 20.
 Proof. rewrite /IntoSep /= => ->. by rewrite affinely_elim. Qed.
 
-Global Instance into_sep_persistently `{BiPositive PROP} P Q1 Q2 :
+Global Instance into_sep_persistently `{!BiPositive PROP} P Q1 Q2 :
   IntoSep P Q1 Q2 →
   IntoSep (<pers> P) (<pers> Q1) (<pers> Q2).
 Proof. rewrite /IntoSep /= => ->. by rewrite persistently_sep. Qed.

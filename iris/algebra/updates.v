@@ -52,7 +52,7 @@ Lemma cmra_update_exclusive `{!Exclusive x} y:
 Proof. move=>??[z|]=>[/exclusiveN_l[]|_]. by apply cmra_valid_validN. Qed.
 
 (** Updates form a preorder. *)
-(** We set this rewrite relation's cost above the stdlib's 
+(** We set this rewrite relation's cost above the stdlib's
   ([impl], [iff], [eq], ...) and [≡] but below [⊑].
   [eq] (at 100) < [≡] (at 150) < [cmra_update] (at 170) < [⊑] (at 200) *)
 Global Instance cmra_update_rewrite_relation :
@@ -119,7 +119,7 @@ Qed.
 (** ** Frame preserving updates for total CMRAs *)
 Section total_updates.
   Local Set Default Proof Using "Type*".
-  Context `{CmraTotal A}.
+  Context `{!CmraTotal A}.
 
   Lemma cmra_total_updateP x (P : A → Prop) :
     x ~~>: P ↔ ∀ n z, ✓{n} (x ⋅ z) → ∃ y, P y ∧ ✓{n} (y ⋅ z).
@@ -132,7 +132,7 @@ Section total_updates.
   Lemma cmra_total_update x y : x ~~> y ↔ ∀ n z, ✓{n} (x ⋅ z) → ✓{n} (y ⋅ z).
   Proof. rewrite cmra_update_updateP cmra_total_updateP. naive_solver. Qed.
 
-  Context `{CmraDiscrete A}.
+  Context `{!CmraDiscrete A}.
 
   Lemma cmra_discrete_updateP (x : A) (P : A → Prop) :
     x ~~>: P ↔ ∀ z, ✓ (x ⋅ z) → ∃ y, P y ∧ ✓ (y ⋅ z).

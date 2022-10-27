@@ -661,7 +661,7 @@ Proof.
   - by rewrite !and_elim_l right_id.
   - by rewrite !and_elim_r.
 Qed.
-Lemma affinely_sep `{BiPositive PROP} P Q :
+Lemma affinely_sep `{!BiPositive PROP} P Q :
   <affine> (P ∗ Q) ⊣⊢ <affine> P ∗ <affine> Q.
 Proof.
   apply (anti_symm _), affinely_sep_2.
@@ -802,7 +802,7 @@ Proof.
 Qed.
 
 Section bi_affine.
-  Context `{BiAffine PROP}.
+  Context `{!BiAffine PROP}.
 
   Global Instance bi_affine_absorbing P : Absorbing P | 0.
   Proof. by rewrite /Absorbing /bi_absorbingly (affine True) left_id. Qed.
@@ -968,7 +968,7 @@ Proof.
 Qed.
 Lemma persistently_sep_2 P Q : <pers> P ∗ <pers> Q ⊢ <pers> (P ∗ Q).
 Proof. by rewrite -persistently_and_sep persistently_and -and_sep_persistently. Qed.
-Lemma persistently_sep `{BiPositive PROP} P Q : <pers> (P ∗ Q) ⊣⊢ <pers> P ∗ <pers> Q.
+Lemma persistently_sep `{!BiPositive PROP} P Q : <pers> (P ∗ Q) ⊣⊢ <pers> P ∗ <pers> Q.
 Proof.
   apply (anti_symm _); auto using persistently_sep_2.
   rewrite -persistently_affinely_elim affinely_sep -and_sep_persistently. apply and_intro.
@@ -1010,7 +1010,7 @@ Lemma impl_wand_persistently_2 P Q : (<pers> P -∗ Q) ⊢ (<pers> P → Q).
 Proof. apply impl_intro_l. by rewrite persistently_and_sep_l_1 wand_elim_r. Qed.
 
 Section persistently_affine_bi.
-  Context `{BiAffine PROP}.
+  Context `{!BiAffine PROP}.
 
   Lemma persistently_emp : <pers> emp ⊣⊢ emp.
   Proof. by rewrite -!True_emp persistently_pure. Qed.
@@ -1093,7 +1093,7 @@ Lemma intuitionistically_exist {A} (Φ : A → PROP) : □ (∃ x, Φ x) ⊣⊢ 
 Proof. by rewrite /bi_intuitionistically persistently_exist affinely_exist. Qed.
 Lemma intuitionistically_sep_2 P Q : □ P ∗ □ Q ⊢ □ (P ∗ Q).
 Proof. by rewrite /bi_intuitionistically affinely_sep_2 persistently_sep_2. Qed.
-Lemma intuitionistically_sep `{BiPositive PROP} P Q : □ (P ∗ Q) ⊣⊢ □ P ∗ □ Q.
+Lemma intuitionistically_sep `{!BiPositive PROP} P Q : □ (P ∗ Q) ⊣⊢ □ P ∗ □ Q.
 Proof. by rewrite /bi_intuitionistically -affinely_sep -persistently_sep. Qed.
 
 Lemma intuitionistically_idemp P : □ □ P ⊣⊢ □ P.
@@ -1173,7 +1173,7 @@ Proof.
 Qed.
 
 Section bi_affine_intuitionistically.
-  Context `{BiAffine PROP}.
+  Context `{!BiAffine PROP}.
 
   Lemma intuitionistically_into_persistently P : □ P ⊣⊢ <pers> P.
   Proof. rewrite /bi_intuitionistically affine_affinely //. Qed.
@@ -1213,7 +1213,7 @@ Lemma affinely_if_exist {A} p (Ψ : A → PROP) :
 Proof. destruct p; simpl; auto using affinely_exist. Qed.
 Lemma affinely_if_sep_2 p P Q : <affine>?p P ∗ <affine>?p Q ⊢ <affine>?p (P ∗ Q).
 Proof. destruct p; simpl; auto using affinely_sep_2. Qed.
-Lemma affinely_if_sep `{BiPositive PROP} p P Q :
+Lemma affinely_if_sep `{!BiPositive PROP} p P Q :
   <affine>?p (P ∗ Q) ⊣⊢ <affine>?p P ∗ <affine>?p Q.
 Proof. destruct p; simpl; auto using affinely_sep. Qed.
 
@@ -1305,7 +1305,7 @@ Lemma persistently_if_exist {A} p (Ψ : A → PROP) :
 Proof. destruct p; simpl; auto using persistently_exist. Qed.
 Lemma persistently_if_sep_2 p P Q : <pers>?p P ∗ <pers>?p Q ⊢ <pers>?p (P ∗ Q).
 Proof. destruct p; simpl; auto using persistently_sep_2. Qed.
-Lemma persistently_if_sep `{BiPositive PROP} p P Q :
+Lemma persistently_if_sep `{!BiPositive PROP} p P Q :
   <pers>?p (P ∗ Q) ⊣⊢ <pers>?p P ∗ <pers>?p Q.
 Proof. destruct p; simpl; auto using persistently_sep. Qed.
 
@@ -1351,7 +1351,7 @@ Lemma intuitionistically_if_exist {A} p (Ψ : A → PROP) :
 Proof. destruct p; simpl; auto using intuitionistically_exist. Qed.
 Lemma intuitionistically_if_sep_2 p P Q : □?p P ∗ □?p Q ⊢ □?p (P ∗ Q).
 Proof. destruct p; simpl; auto using intuitionistically_sep_2. Qed.
-Lemma intuitionistically_if_sep `{BiPositive PROP} p P Q :
+Lemma intuitionistically_if_sep `{!BiPositive PROP} p P Q :
   □?p (P ∗ Q) ⊣⊢ □?p P ∗ □?p Q.
 Proof. destruct p; simpl; auto using intuitionistically_sep. Qed.
 
@@ -1454,7 +1454,7 @@ Lemma intuitionistic P `{!Persistent P, !Affine P} : P ⊢ □ P.
 Proof. rewrite intuitionistic_intuitionistically. done. Qed.
 
 Section persistent_bi_absorbing.
-  Context `{BiAffine PROP}.
+  Context `{!BiAffine PROP}.
 
   Lemma intuitionistically_intro P Q `{!Persistent P} : (P ⊢ Q) → P ⊢ □ Q.
   Proof.
@@ -1614,11 +1614,11 @@ Proof.
   - apply persistently_pure.
 Qed.
 
-Global Instance bi_persistently_sep_weak_homomorphism `{BiPositive PROP} :
+Global Instance bi_persistently_sep_weak_homomorphism `{!BiPositive PROP} :
   WeakMonoidHomomorphism bi_sep bi_sep (≡) (@bi_persistently PROP).
 Proof. split; [by apply _ ..|]. apply persistently_sep. Qed.
 
-Global Instance bi_persistently_sep_homomorphism `{BiAffine PROP} :
+Global Instance bi_persistently_sep_homomorphism `{!BiAffine PROP} :
   MonoidHomomorphism bi_sep bi_sep (≡) (@bi_persistently PROP).
 Proof. split; [by apply _ ..|]. apply persistently_emp. Qed.
 
@@ -1631,20 +1631,20 @@ Global Instance bi_persistently_sep_entails_homomorphism :
 Proof. split; [by apply _ ..|]. simpl. apply persistently_emp_intro. Qed.
 
 (* Limits *)
-Lemma limit_preserving_entails {A : ofe} `{Cofe A} (Φ Ψ : A → PROP) :
+Lemma limit_preserving_entails {A : ofe} `{!Cofe A} (Φ Ψ : A → PROP) :
   NonExpansive Φ → NonExpansive Ψ → LimitPreserving (λ x, Φ x ⊢ Ψ x).
 Proof.
   intros HΦ HΨ c Hc. apply entails_eq_True, equiv_dist=>n.
   rewrite conv_compl. apply equiv_dist, entails_eq_True. done.
 Qed.
-Lemma limit_preserving_equiv {A : ofe} `{Cofe A} (Φ Ψ : A → PROP) :
+Lemma limit_preserving_equiv {A : ofe} `{!Cofe A} (Φ Ψ : A → PROP) :
   NonExpansive Φ → NonExpansive Ψ → LimitPreserving (λ x, Φ x ⊣⊢ Ψ x).
 Proof.
   intros HΦ HΨ. eapply limit_preserving_ext.
   { intros x. symmetry; apply equiv_entails. }
   apply limit_preserving_and; by apply limit_preserving_entails.
 Qed.
-Global Instance limit_preserving_Persistent {A:ofe} `{Cofe A} (Φ : A → PROP) :
+Global Instance limit_preserving_Persistent {A : ofe} `{!Cofe A} (Φ : A → PROP) :
   NonExpansive Φ → LimitPreserving (λ x, Persistent (Φ x)).
 Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
 

@@ -51,7 +51,7 @@ Global Arguments BiPersistentlyImplPlainly _ {_}.
 Global Arguments persistently_impl_plainly _ {_ _} _.
 Global Hint Mode BiPersistentlyImplPlainly ! - : typeclass_instances.
 
-Class BiPlainlyExist `{!BiPlainly PROP} :=
+Class BiPlainlyExist {PROP: bi} `{!BiPlainly PROP} :=
   plainly_exist_1 A (Ψ : A → PROP) :
     ■ (∃ a, Ψ a) ⊢ ∃ a, ■ (Ψ a).
 Global Arguments BiPlainlyExist : clear implicits.
@@ -59,7 +59,7 @@ Global Arguments BiPlainlyExist _ {_}.
 Global Arguments plainly_exist_1 _ {_ _} _.
 Global Hint Mode BiPlainlyExist ! - : typeclass_instances.
 
-Class BiPropExt `{!BiPlainly PROP, !BiInternalEq PROP} :=
+Class BiPropExt {PROP: bi} `{!BiPlainly PROP, !BiInternalEq PROP} :=
   prop_ext_2 (P Q : PROP) : ■ (P ∗-∗ Q) ⊢ P ≡ Q.
 Global Arguments BiPropExt : clear implicits.
 Global Arguments BiPropExt _ {_ _}.
@@ -67,7 +67,7 @@ Global Arguments prop_ext_2 _ {_ _ _} _.
 Global Hint Mode BiPropExt ! - - : typeclass_instances.
 
 Section plainly_laws.
-  Context `{BiPlainly PROP}.
+  Context {PROP: bi} `{!BiPlainly PROP}.
   Implicit Types P Q : PROP.
 
   Global Instance plainly_ne : NonExpansive (@plainly PROP _).
@@ -95,13 +95,13 @@ Section plainly_laws.
 End plainly_laws.
 
 (* Derived properties and connectives *)
-Class Plain `{BiPlainly PROP} (P : PROP) := plain : P ⊢ ■ P.
+Class Plain {PROP: bi} `{!BiPlainly PROP} (P : PROP) := plain : P ⊢ ■ P.
 Global Arguments Plain {_ _} _%I : simpl never.
 Global Arguments plain {_ _} _%I {_}.
 Global Hint Mode Plain + - ! : typeclass_instances.
 Global Instance: Params (@Plain) 1 := {}.
 
-Definition plainly_if `{!BiPlainly PROP} (p : bool) (P : PROP) : PROP :=
+Definition plainly_if {PROP: bi} `{!BiPlainly PROP} (p : bool) (P : PROP) : PROP :=
   (if p then ■ P else P)%I.
 Global Arguments plainly_if {_ _} !_ _%I /.
 Global Instance: Params (@plainly_if) 2 := {}.
@@ -111,7 +111,7 @@ Notation "■? p P" := (plainly_if p P) : bi_scope.
 
 (* Derived laws *)
 Section plainly_derived.
-Context `{BiPlainly PROP}.
+Context {PROP: bi} `{!BiPlainly PROP}.
 Implicit Types P : PROP.
 
 Local Hint Resolve pure_intro forall_intro : core.
@@ -245,7 +245,7 @@ Proof.
 Qed.
 Lemma plainly_sep_2 P Q : ■ P ∗ ■ Q ⊢ ■ (P ∗ Q).
 Proof. by rewrite -plainly_and_sep plainly_and -and_sep_plainly. Qed.
-Lemma plainly_sep `{BiPositive PROP} P Q : ■ (P ∗ Q) ⊣⊢ ■ P ∗ ■ Q.
+Lemma plainly_sep `{!BiPositive PROP} P Q : ■ (P ∗ Q) ⊣⊢ ■ P ∗ ■ Q.
 Proof.
   apply (anti_symm _); auto using plainly_sep_2.
   rewrite -(plainly_affinely_elim (_ ∗ _)) affinely_sep -and_sep_plainly. apply and_intro.
@@ -283,7 +283,7 @@ Lemma plainly_wand_affinely_plainly P Q :
 Proof. rewrite -!impl_wand_affinely_plainly. apply plainly_impl_plainly. Qed.
 
 Section plainly_affine_bi.
-  Context `{BiAffine PROP}.
+  Context `{!BiAffine PROP}.
 
   Lemma plainly_emp : ■ emp ⊣⊢@{PROP} emp.
   Proof. by rewrite -!True_emp plainly_pure. Qed.
@@ -385,7 +385,7 @@ Proof.
   - apply persistently_mono, wand_intro_l. by rewrite sep_and impl_elim_r.
 Qed.
 
-Global Instance limit_preserving_Plain {A:ofe} `{Cofe A} (Φ : A → PROP) :
+Global Instance limit_preserving_Plain {A : ofe} `{!Cofe A} (Φ : A → PROP) :
   NonExpansive Φ → LimitPreserving (λ x, Plain (Φ x)).
 Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
 
@@ -400,7 +400,7 @@ Global Instance plainly_sep_entails_homomorphism `{!BiAffine PROP} :
   MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@plainly PROP _).
 Proof. split; try apply _. simpl. rewrite plainly_emp. done. Qed.
 
-Global Instance plainly_sep_homomorphism `{BiAffine PROP} :
+Global Instance plainly_sep_homomorphism `{!BiAffine PROP} :
   MonoidHomomorphism bi_sep bi_sep (≡) (@plainly PROP _).
 Proof. split; try apply _. apply plainly_emp. Qed.
 Global Instance plainly_and_homomorphism :
@@ -425,19 +425,19 @@ Lemma big_sepL2_plainly `{!BiAffine PROP} {A B} (Φ : nat → A → B → PROP) 
   ⊣⊢ [∗ list] k↦y1;y2 ∈ l1;l2, ■ (Φ k y1 y2).
 Proof. by rewrite !big_sepL2_alt plainly_and plainly_pure big_sepL_plainly. Qed.
 
-Lemma big_sepM_plainly `{BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) m :
+Lemma big_sepM_plainly `{!BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) m :
   ■ ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ [∗ map] k↦x ∈ m, ■ (Φ k x).
 Proof. apply (big_opM_commute _). Qed.
 
-Lemma big_sepM2_plainly `{BiAffine PROP, Countable K} {A B} (Φ : K → A → B → PROP) m1 m2 :
+Lemma big_sepM2_plainly `{!BiAffine PROP, Countable K} {A B} (Φ : K → A → B → PROP) m1 m2 :
   ■ ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2) ⊣⊢ [∗ map] k↦x1;x2 ∈ m1;m2, ■ (Φ k x1 x2).
 Proof. by rewrite !big_sepM2_alt plainly_and plainly_pure big_sepM_plainly. Qed.
 
-Lemma big_sepS_plainly `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
+Lemma big_sepS_plainly `{!BiAffine PROP, Countable A} (Φ : A → PROP) X :
   ■ ([∗ set] y ∈ X, Φ y) ⊣⊢ [∗ set] y ∈ X, ■ (Φ y).
 Proof. apply (big_opS_commute _). Qed.
 
-Lemma big_sepMS_plainly `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
+Lemma big_sepMS_plainly `{!BiAffine PROP, Countable A} (Φ : A → PROP) X :
   ■ ([∗ mset] y ∈ X, Φ y) ⊣⊢ [∗ mset] y ∈ X, ■ (Φ y).
 Proof. apply (big_opMS_commute _). Qed.
 
@@ -520,39 +520,39 @@ Global Instance big_sepL2_plain `{!BiAffine PROP} {A B} (Φ : nat → A → B �
   Plain ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
 Proof. rewrite big_sepL2_alt. apply _. Qed.
 
-Global Instance big_sepM_empty_plain `{BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) :
+Global Instance big_sepM_empty_plain `{!BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) :
   Plain ([∗ map] k↦x ∈ ∅, Φ k x).
 Proof. rewrite big_opM_empty. apply _. Qed.
-Global Instance big_sepM_plain `{BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) m :
+Global Instance big_sepM_plain `{!BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) m :
   (∀ k x, Plain (Φ k x)) → Plain ([∗ map] k↦x ∈ m, Φ k x).
 Proof.
   induction m using map_ind;
     [rewrite big_opM_empty|rewrite big_opM_insert //]; apply _.
 Qed.
 
-Global Instance big_sepM2_empty_plain `{BiAffine PROP, Countable K}
+Global Instance big_sepM2_empty_plain `{!BiAffine PROP, Countable K}
     {A B} (Φ : K → A → B → PROP) :
   Plain ([∗ map] k↦x1;x2 ∈ ∅;∅, Φ k x1 x2).
 Proof. rewrite big_sepM2_empty. apply _. Qed.
-Global Instance big_sepM2_plain `{BiAffine PROP, Countable K}
+Global Instance big_sepM2_plain `{!BiAffine PROP, Countable K}
     {A B} (Φ : K → A → B → PROP) m1 m2 :
   (∀ k x1 x2, Plain (Φ k x1 x2)) →
   Plain ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
 Proof. intros. rewrite big_sepM2_alt. apply _. Qed.
 
-Global Instance big_sepS_empty_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) :
+Global Instance big_sepS_empty_plain `{!BiAffine PROP, Countable A} (Φ : A → PROP) :
   Plain ([∗ set] x ∈ ∅, Φ x).
 Proof. rewrite big_opS_empty. apply _. Qed.
-Global Instance big_sepS_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
+Global Instance big_sepS_plain `{!BiAffine PROP, Countable A} (Φ : A → PROP) X :
   (∀ x, Plain (Φ x)) → Plain ([∗ set] x ∈ X, Φ x).
 Proof.
   induction X using set_ind_L;
     [rewrite big_opS_empty|rewrite big_opS_insert //]; apply _.
 Qed.
-Global Instance big_sepMS_empty_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) :
+Global Instance big_sepMS_empty_plain `{!BiAffine PROP, Countable A} (Φ : A → PROP) :
   Plain ([∗ mset] x ∈ ∅, Φ x).
 Proof. rewrite big_opMS_empty. apply _. Qed.
-Global Instance big_sepMS_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
+Global Instance big_sepMS_plain `{!BiAffine PROP, Countable A} (Φ : A → PROP) X :
   (∀ x, Plain (Φ x)) → Plain ([∗ mset] x ∈ X, Φ x).
 Proof.
   induction X using gmultiset_ind;

@@ -40,7 +40,7 @@ Proof. rewrite /IntoInternalEq=> ->. by rewrite intuitionistically_elim. Qed.
 Global Instance into_internal_eq_absorbingly {A : ofe} (x y : A) P :
   IntoInternalEq P x y → IntoInternalEq (<absorb> P) x y.
 Proof. rewrite /IntoInternalEq=> ->. by rewrite absorbingly_internal_eq. Qed.
-Global Instance into_internal_eq_plainly `{BiPlainly PROP} {A : ofe} (x y : A) P :
+Global Instance into_internal_eq_plainly `{!BiPlainly PROP} {A : ofe} (x y : A) P :
   IntoInternalEq P x y → IntoInternalEq (■ P) x y.
 Proof. rewrite /IntoInternalEq=> ->. by rewrite plainly_elim. Qed.
 Global Instance into_internal_eq_persistently {A : ofe} (x y : A) P :

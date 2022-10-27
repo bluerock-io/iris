@@ -128,7 +128,7 @@ Proof.
   induction 1; destruct 1; simpl; [constructor..|f_equiv; try apply Hf; auto].
 Qed.
 
-Lemma big_opL_ne_2 `{Monoid M o} {A : ofe} (f g : nat → A → M) l1 l2 n :
+Lemma big_opL_ne_2 {M : ofe} {o : M → M → M} `{!Monoid o} {A : ofe} (f g : nat → A → M) l1 l2 n :
   l1 ≡{n}≡ l2 →
   (∀ k y1 y2,
     l1 !! k = Some y1 → l2 !! k = Some y2 → y1 ≡{n}≡ y2 → f k y1 ≡{n}≡ g k y2) →

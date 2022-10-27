@@ -132,7 +132,7 @@ Class BiFUpdPlainly (PROP : bi) `{!BiFUpd PROP, !BiPlainly PROP} := {
 Global Hint Mode BiBUpdFUpd ! - - : typeclass_instances.
 
 Section bupd_laws.
-  Context `{BiBUpd PROP}.
+  Context {PROP : bi} `{!BiBUpd PROP}.
   Implicit Types P : PROP.
 
   Global Instance bupd_ne : NonExpansive (@bupd PROP _).
@@ -148,7 +148,7 @@ Section bupd_laws.
 End bupd_laws.
 
 Section fupd_laws.
-  Context `{BiFUpd PROP}.
+  Context {PROP : bi} `{!BiFUpd PROP}.
   Implicit Types P : PROP.
 
   Global Instance fupd_ne E1 E2 : NonExpansive (@fupd PROP _ E1 E2).
@@ -173,7 +173,7 @@ Section fupd_laws.
 End fupd_laws.
 
 Section bupd_derived.
-  Context `{BiBUpd PROP}.
+  Context {PROP : bi} `{!BiBUpd PROP}.
   Implicit Types P Q R : PROP.
 
   (* FIXME: Removing the `PROP:=` diverges. *)
@@ -262,7 +262,7 @@ Section bupd_derived.
 End bupd_derived.
 
 Section fupd_derived.
-  Context `{BiFUpd PROP}.
+  Context {PROP : bi} `{!BiFUpd PROP}.
   Implicit Types P Q R : PROP.
 
   Global Instance fupd_proper E1 E2 :

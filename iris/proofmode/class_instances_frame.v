@@ -46,14 +46,14 @@ Proof.
   - by rewrite right_id -affinely_affinely_if affine_affinely.
 Qed.
 
-Global Instance frame_embed `{BiEmbed PROP PROP'} p P Q (Q' : PROP') R :
+Global Instance frame_embed `{!BiEmbed PROP PROP'} p P Q (Q' : PROP') R :
   Frame p R P Q → MakeEmbed Q Q' →
   Frame p ⎡R⎤ ⎡P⎤ Q' | 2. (* Same cost as default. *)
 Proof.
   rewrite /Frame /MakeEmbed => <- <-.
   rewrite embed_sep embed_intuitionistically_if_2 => //.
 Qed.
-Global Instance frame_pure_embed `{BiEmbed PROP PROP'} p P Q (Q' : PROP') φ :
+Global Instance frame_pure_embed `{!BiEmbed PROP PROP'} p P Q (Q' : PROP') φ :
   Frame p ⌜φ⌝ P Q → MakeEmbed Q Q' →
   Frame p ⌜φ⌝ ⎡P⎤ Q' | 2. (* Same cost as default. *)
 Proof. rewrite /Frame /MakeEmbed -embed_pure. apply (frame_embed p P Q). Qed.
@@ -241,10 +241,10 @@ Proof.
   by rewrite laterN_intuitionistically_if_2 laterN_sep.
 Qed.
 
-Global Instance frame_bupd `{BiBUpd PROP} p R P Q :
+Global Instance frame_bupd `{!BiBUpd PROP} p R P Q :
   Frame p R P Q → Frame p R (|==> P) (|==> Q) | 2.
 Proof. rewrite /Frame=><-. by rewrite bupd_frame_l. Qed.
-Global Instance frame_fupd `{BiFUpd PROP} p E1 E2 R P Q :
+Global Instance frame_fupd `{!BiFUpd PROP} p E1 E2 R P Q :
   Frame p R P Q → Frame p R (|={E1,E2}=> P) (|={E1,E2}=> Q) | 2.
 Proof. rewrite /Frame=><-. by rewrite fupd_frame_l. Qed.
 

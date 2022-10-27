@@ -9,7 +9,7 @@ Local Tactic Notation "iSplitWith" constr(H) :=
   iApply (bi.and_parallel with H); iSplit; iIntros H.
 
 Section definition.
-  Context `{BiFUpd PROP} {TA TB : tele}.
+  Context {PROP : bi} `{!BiFUpd PROP} {TA TB : tele}.
   Implicit Types
     (Eo Ei : coPset) (* outer/inner masks *)
     (α : TA → PROP) (* atomic pre-condition *)

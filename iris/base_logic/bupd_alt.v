@@ -7,7 +7,7 @@ Set Default Proof Using "Type*".
 
 (** This file contains an alternative version of basic updates, that is
 expression in terms of just the plain modality [■]. *)
-Definition bupd_alt `{BiPlainly PROP} (P : PROP) : PROP :=
+Definition bupd_alt {PROP : bi} `{!BiPlainly PROP} (P : PROP) : PROP :=
   ∀ R, (P -∗ ■ R) -∗ ■ R.
 
 (** This definition is stated for any BI with a plain modality. The above
@@ -28,7 +28,7 @@ The first two points are shown for any BI with a plain modality. *)
 Local Coercion uPred_holds : uPred >-> Funclass.
 
 Section bupd_alt.
-  Context `{BiPlainly PROP}.
+  Context {PROP : bi} `{!BiPlainly PROP}.
   Implicit Types P Q R : PROP.
   Notation bupd_alt := (@bupd_alt PROP _).
 
@@ -57,7 +57,7 @@ Section bupd_alt.
 
   (** Any modality conforming with [BiBUpdPlainly] entails the alternative
   definition *)
-  Lemma bupd_bupd_alt `{!BiBUpd PROP, BiBUpdPlainly PROP} P : (|==> P) ⊢ bupd_alt P.
+  Lemma bupd_bupd_alt `{!BiBUpd PROP, !BiBUpdPlainly PROP} P : (|==> P) ⊢ bupd_alt P.
   Proof. iIntros "HP" (R) "H". by iMod ("H" with "HP") as "?". Qed.
 
   (** We get the usual rule for frame preserving updates if we have an [own]
