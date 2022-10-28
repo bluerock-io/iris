@@ -81,7 +81,7 @@ avoided.
 ## Type class resolution control
 
 When you are writing a module that exports some Iris term for others to use
-(e.g., `join_handle` in the [spawn module](../theories/heap_lang/lib/spawn.v)), be
+(e.g., `join_handle` in the [spawn module](../iris_heap_lang/lib/spawn.v)), be
 sure to mark these terms as opaque for type class search at the *end* of your
 module (and outside any section):
 ```coq
