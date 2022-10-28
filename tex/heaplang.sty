@@ -29,16 +29,16 @@
 \def\Let#1=#2in{\langkw{let} \spac #1 \mathrel{=} #2 \spac \langkw{in} \spac}
 \def\If#1then{\langkw{if} \spac #1 \spac \langkw{then} \spac}
 \def\Else{\spac\langkw{else} \spac}
-\def\Ref(#1){\langkw{ref}(#1)}
-\def\Rec#1(#2)={\langkw{rec}\spac{#1}({#2}) \mathrel{=} }
-\def\RecE#1(#2)={\langkw{rec}_\exprForm\spac{#1}({#2}) \mathrel{=} }
-\def\RecV#1(#2)={\langkw{rec}_\valForm\spac{#1}({#2}) \mathrel{=} }
+\def\Ref{\operatorname{\langkw{ref}}}
+\def\Rec#1#2={\langkw{rec}\spac\operatorname{#1}#2 \mathrel{=} }
+\def\RecE#1#2={\langkw{rec}_\exprForm\spac\operatorname{#1}#2 \mathrel{=} }
+\def\RecV#1#2={\langkw{rec}_\valForm\spac\operatorname{#1}#2 \mathrel{=} }
 \def\Skip{\langkw{skip}}
-\def\Assert{\langkw{assert}}
-\def\Inl{\langkw{inl}}
-\def\Inr{\langkw{inr}}
-\def\Fst{\langkw{fst}}
-\def\Snd{\langkw{snd}}
+\def\Assert{\operatorname{\langkw{assert}}}
+\def\Inl{\operatorname{\langkw{inl}}}
+\def\Inr{\operatorname{\langkw{inr}}}
+\def\Fst{\operatorname{\langkw{fst}}}
+\def\Snd{\operatorname{\langkw{snd}}}
 \def\True{\langkw{true}}
 \def\False{\langkw{false}}
 \def\NewProph{\langkw{newproph}}
@@ -58,12 +58,12 @@
 \def\MatchS#1with#2=>#3end{
   \langkw{match}\spac#1\spac\langkw{with}\spac#2\Ra#3\spac\langkw{end}}
 
-\newcommand\Alloc{\langkw{Alloc}}
-\newcommand\Free{\langkw{Free}}
-\newcommand\CAS{\langkw{CAS}}
-\newcommand\CmpXchg{\langkw{CmpXchg}}
-\newcommand\Xchg{\langkw{Xchg}}
-\newcommand\FAA{\langkw{FAA}}
+\newcommand\Alloc{\operatorname{\langkw{Alloc}}}
+\newcommand\Free{\operatorname{\langkw{Free}}}
+\newcommand\CAS{\operatorname{\langkw{CAS}}}
+\newcommand\CmpXchg{\operatorname{\langkw{CmpXchg}}}
+\newcommand\Xchg{\operatorname{\langkw{Xchg}}}
+\newcommand\FAA{\operatorname{\langkw{FAA}}}
 \newcommand\deref{\mathop{!}}
 \let\gets\leftarrow
 
