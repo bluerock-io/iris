@@ -19,8 +19,8 @@ The grammar of HeapLang, and in particular its set \Expr{} of \emph{expressions}
   \prophid \mid {}& (z \in \integer, \loc \in \Loc, \prophid \in \ProphId) \\&
   \RecV\lvarF(\lvar)= \expr \mid
   (\val,\valB)_\valForm \mid
-  \Inl(\val)_\valForm \mid
-  \Inr(\val)_\valForm  \\
+  \InlV(\val) \mid
+  \InrV(\val)  \\
 \expr \in \Expr \bnfdef{}&
   \val \mid
   \lvar \mid
@@ -35,8 +35,8 @@ The grammar of HeapLang, and in particular its set \Expr{} of \emph{expressions}
   \Fst(\expr) \mid
   \Snd(\expr) \mid
   {}\\ &
-  \Inl(\expr)_\exprForm \mid
-  \Inr(\expr)_\exprForm \mid
+  \InlE(\expr) \mid
+  \InrE(\expr) \mid
   \Match \expr with \Inl => \expr_1 | \Inr => \expr_2 end \mid
   {}\\ &
   \Alloc(\expr_1,\expr_2) \mid
@@ -154,10 +154,10 @@ The intention of this is to forbid directly comparing large values such as pairs
   (\RecV\lvarF(\lvar)= \expr, \state, \nil) \\
 ((\val_1, \val_2)_\exprForm, \state) \hstep[\nil]{}&
   ((\val_1, \val_2)_\valForm, \state, \nil) \\
-(\Inl(\val)_\exprForm, \state) \hstep[\nil]{}&
-  (\Inl(\val)_\valForm, \state, \nil) \\
-(\Inr(\val)_\exprForm, \state) \hstep[\nil]{}&
-  (\Inr(\val)_\valForm, \state, \nil) \\
+(\InlE(\val), \state) \hstep[\nil]{}&
+  (\InlV(\val), \state, \nil) \\
+(\InrE(\val), \state) \hstep[\nil]{}&
+  (\InrV(\val), \state, \nil) \\
 &\alignheader\textbf{Pure reductions} \\
 ((\RecV\lvarF(\lvar)= \expr)(\val), \state) \hstep[\nil]{}&
   (\subst {\subst \expr \lvarF {(\Rec\lvarF(\lvar)= \expr)}} \lvar \val, \state, \nil) \\
@@ -183,9 +183,9 @@ The intention of this is to forbid directly comparing large values such as pairs
   (\val_1, \state, \nil) \\
 (\Snd((\val_1, \val_2)_\valForm), \state) \hstep[\nil]{}&
   (\val_2, \state, \nil) \\
-(\Match \Inl(\val)_\valForm with \Inl => \expr_1 | \Inr => \expr_2 end, \state) \hstep[\nil]{}&
+(\Match \InlV(\val) with \Inl => \expr_1 | \Inr => \expr_2 end, \state) \hstep[\nil]{}&
   (\expr_1(\val), \state, \nil) \\
-(\Match \Inr(\val)_\valForm with \Inl => \expr_1 | \Inr => \expr_2 end, \state) \hstep[\nil]{}&
+(\Match \InrV(\val) with \Inl => \expr_1 | \Inr => \expr_2 end, \state) \hstep[\nil]{}&
   (\expr_2(\val), \state, \nil)
 \end{align*}
 \caption{HeapLang pure and boxed reduction rules. \\ \small
