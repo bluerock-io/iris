@@ -497,11 +497,13 @@ Proof.
           -impl_wand_intuitionistically -pure_impl_forall
           bi.persistently_elim //.
 Qed.
-Global Instance into_wand_forall_prop_false p (φ : Prop) P :
-  Absorbing P → IntoWand p false (∀ _ : φ, P) ⌜ φ ⌝ P.
+Global Instance into_wand_forall_prop_false p (φ : Prop) Pφ P :
+  MakeAffinely ⌜ φ ⌝ Pφ →
+  IntoWand p false (∀ _ : φ, P) Pφ P.
 Proof.
-  intros ?.
-  rewrite /IntoWand (intuitionistically_if_elim p) /= pure_wand_forall //.
+  rewrite /MakeAffinely /IntoWand=> <-.
+  rewrite (intuitionistically_if_elim p) /=.
+  by rewrite -pure_impl_forall -persistent_impl_wand_affinely.
 Qed.
 
 Global Instance into_wand_forall {A} p q (Φ : A → PROP) P Q x :

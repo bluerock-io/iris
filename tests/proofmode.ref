@@ -187,6 +187,50 @@ Tactic failure: iSpecialize: Q not persistent.
   "H1" : P
   --------------------------------------□
   ⌜φ⌝
+"test_iSpecialize_impl_pure"
+     : string
+1 goal
+  
+  PROP : bi
+  φ : Prop
+  P, Q : PROP
+  H : φ
+  ============================
+  --------------------------------------∗
+  <affine> ⌜φ⌝
+1 goal
+  
+  PROP : bi
+  φ : Prop
+  P, Q : PROP
+  H : φ
+  ============================
+  "H1" : P
+  --------------------------------------□
+  <affine> ⌜φ⌝
+"test_iSpecialize_impl_pure_affine"
+     : string
+1 goal
+  
+  PROP : bi
+  BiAffine0 : BiAffine PROP
+  φ : Prop
+  P, Q : PROP
+  H : φ
+  ============================
+  --------------------------------------∗
+  ⌜φ⌝
+1 goal
+  
+  PROP : bi
+  BiAffine0 : BiAffine PROP
+  φ : Prop
+  P, Q : PROP
+  H : φ
+  ============================
+  "H1" : P
+  --------------------------------------□
+  ⌜φ⌝
 "test_iAssert_intuitionistic"
      : string
 The command has indeed failed with message:
