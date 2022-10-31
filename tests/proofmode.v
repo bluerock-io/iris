@@ -480,6 +480,38 @@ Restart.
   by iFrame.
 Abort.
 
+Check "test_iSpecialize_impl_pure".
+Lemma test_iSpecialize_forall_pure (φ : Prop) P Q :
+  φ → □ (∀ _ : φ, P) -∗ (∀ _ : φ, Q) -∗ P ∗ Q.
+Proof.
+  iIntros (?) "#H1 H2".
+  (* Adds an affine modality *)
+  iSpecialize ("H1" with "[]"). { Show. done. }
+  iSpecialize ("H2" with "[]"). { Show. done. }
+Restart.
+  iIntros (?) "#H1 H2".
+  (* Solving it directly as a pure goal also works. *)
+  iSpecialize ("H1" with "[% //]").
+  iSpecialize ("H2" with "[% //]").
+  by iFrame.
+Abort.
+
+Check "test_iSpecialize_impl_pure_affine".
+Lemma test_iSpecialize_forall_pure_affine `{!BiAffine PROP} (φ : Prop) P Q :
+  φ → □ (∀ _ : φ, P) -∗ (∀ _ : φ, Q) -∗ P ∗ Q.
+Proof.
+  iIntros (?) "#H1 H2".
+  (* Does not add an affine modality *)
+  iSpecialize ("H1" with "[]"). { Show. done. }
+  iSpecialize ("H2" with "[]"). { Show. done. }
+Restart.
+  iIntros (?) "#H1 H2".
+  (* Solving it directly as a pure goal also works. *)
+  iSpecialize ("H1" with "[% //]").
+  iSpecialize ("H2" with "[% //]").
+  by iFrame.
+Abort.
+
 Check "test_iAssert_intuitionistic".
 Lemma test_iAssert_intuitionistic `{!BiBUpd PROP} P :
   □ P -∗ □ |==> P.
