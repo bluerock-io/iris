@@ -3,6 +3,13 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
+## Iris master
+
+**Changes in `bi`:**
+
+* Add a construction `bi_tc` to create transitive closures of
+  PROP-level binary relations.
+
 ## Iris 4.0.0 (2022-08-18)
 
 The highlight of Iris 4.0 is the *later credits* mechanism, which provides a new

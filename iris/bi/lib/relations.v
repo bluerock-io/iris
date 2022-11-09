@@ -1,5 +1,5 @@
-(** This file provides a construction to lift a PROP-level binary relation to
-its reflexive transitive closure. *)
+(** This file provides constructions to lift
+a PROP-level binary relation to various closures. *)
 From iris.bi.lib Require Export fixpoint.
 From iris.proofmode Require Import proofmode.
 From iris.prelude Require Import options.
@@ -7,12 +7,36 @@ From iris.prelude Require Import options.
 (* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
 Set Default Proof Using "Type*".
 
-Definition bi_rtc_pre {PROP : bi} `{!BiInternalEq PROP}
-    {A : ofe} (R : A → A → PROP)
-    (x2 : A) (rec : A → PROP) (x1 : A) : PROP :=
-  <affine> (x1 ≡ x2) ∨ ∃ x', R x1 x' ∗ rec x'.
+(** * Definitions *)
+Section definitions.
+  Context {PROP : bi} `{!BiInternalEq PROP}.
+  Context {A : ofe}.
 
-Global Instance bi_rtc_pre_mono {PROP : bi} `{!BiInternalEq PROP}
+  Local Definition bi_rtc_pre (R : A → A → PROP)
+      (x2 : A) (rec : A → PROP) (x1 : A) : PROP :=
+    <affine> (x1 ≡ x2) ∨ ∃ x', R x1 x' ∗ rec x'.
+
+  (** The reflexive transitive closure. *)
+  Definition bi_rtc (R : A → A → PROP) (x1 x2 : A) : PROP :=
+    bi_least_fixpoint (bi_rtc_pre R x2) x1.
+
+  Global Instance: Params (@bi_rtc) 4 := {}.
+  Typeclasses Opaque bi_rtc.
+
+  Local Definition bi_tc_pre (R : A → A → PROP)
+      (x2 : A) (rec : A → PROP) (x1 : A) : PROP :=
+    R x1 x2 ∨ ∃ x', R x1 x' ∗ rec x'.
+
+  (** The transitive closure. *)
+  Definition bi_tc (R : A → A → PROP) (x1 x2 : A) : PROP :=
+    bi_least_fixpoint (bi_tc_pre R x2) x1.
+
+  Global Instance: Params (@bi_tc) 4 := {}.
+  Typeclasses Opaque bi_tc.
+
+End definitions.
+
+Local Instance bi_rtc_pre_mono {PROP : bi} `{!BiInternalEq PROP}
     {A : ofe} (R : A → A → PROP) `{!NonExpansive2 R} (x : A) :
   BiMonoPred (bi_rtc_pre R x).
 Proof.
@@ -23,13 +47,6 @@ Proof.
   iDestruct "Hrec" as (x') "[HP Hrec]".
   iDestruct ("H" with "Hrec") as "Hrec". eauto with iFrame.
 Qed.
-
-Definition bi_rtc {PROP : bi} `{!BiInternalEq PROP}
-    {A : ofe} (R : A → A → PROP) (x1 x2 : A) : PROP :=
-  bi_least_fixpoint (bi_rtc_pre R x2) x1.
-
-Global Instance: Params (@bi_rtc) 3 := {}.
-Typeclasses Opaque bi_rtc.
 
 Global Instance bi_rtc_ne {PROP : bi} `{!BiInternalEq PROP} {A : ofe} (R : A → A → PROP) :
   NonExpansive2 (bi_rtc R).
@@ -42,12 +59,39 @@ Global Instance bi_rtc_proper {PROP : bi} `{!BiInternalEq PROP} {A : ofe} (R : A
   : Proper ((≡) ==> (≡) ==> (⊣⊢)) (bi_rtc R).
 Proof. apply ne_proper_2. apply _. Qed.
 
-Section bi_rtc.
+Local Instance bi_tc_pre_mono `{!BiInternalEq PROP}
+    {A : ofe} (R : A → A → PROP) `{NonExpansive2 R} (x : A) :
+  BiMonoPred (bi_tc_pre R x).
+Proof.
+  constructor; [|solve_proper].
+  iIntros (rec1 rec2 ??) "#H". iIntros (x1) "Hrec".
+  iDestruct "Hrec" as "[Hrec | Hrec]".
+  { by iLeft. }
+  iDestruct "Hrec" as (x') "[HR Hrec]".
+  iRight. iExists x'. iFrame "HR". by iApply "H".
+Qed.
+
+Global Instance bi_tc_ne `{!BiInternalEq PROP} {A : ofe}
+    (R : A → A → PROP) `{NonExpansive2 R} :
+  NonExpansive2 (bi_tc R).
+Proof.
+  intros n x1 x2 Hx y1 y2 Hy. rewrite /bi_tc Hx. f_equiv=> rec z.
+  solve_proper.
+Qed.
+
+Global Instance bi_tc_proper `{!BiInternalEq PROP} {A : ofe}
+    (R : A → A → PROP) `{NonExpansive2 R}
+  : Proper ((≡) ==> (≡) ==> (⊣⊢)) (bi_tc R).
+Proof. apply ne_proper_2. apply _. Qed.
+
+(** * General theorems *)
+Section general.
   Context {PROP : bi} `{!BiInternalEq PROP}.
   Context {A : ofe}.
   Context (R : A → A → PROP) `{!NonExpansive2 R}.
 
-  Lemma bi_rtc_unfold (x1 x2 : A) :
+  (** ** Results about the reflexive-transitive closure [bi_rtc] *)
+  Local Lemma bi_rtc_unfold (x1 x2 : A) :
     bi_rtc R x1 x2 ≡ bi_rtc_pre R x2 (λ x1, bi_rtc R x1 x2) x1.
   Proof. by rewrite /bi_rtc; rewrite -least_fixpoint_unfold. Qed.
 
@@ -94,4 +138,159 @@ Section bi_rtc.
     by iApply "IH".
   Qed.
 
-End bi_rtc.
+  Lemma bi_rtc_r x y z : bi_rtc R x y -∗ R y z -∗ bi_rtc R x z.
+  Proof.
+    iIntros "H H'".
+    iApply (bi_rtc_trans with "H").
+    by iApply bi_rtc_once.
+  Qed.
+
+  Lemma bi_rtc_inv x z :
+    bi_rtc R x z -∗ <affine> (x ≡ z) ∨ ∃ y, R x y ∗ bi_rtc R y z.
+  Proof. rewrite bi_rtc_unfold. iIntros "[H | H]"; eauto. Qed.
+
+  Global Instance bi_rtc_affine :
+    (∀ x y, Affine (R x y)) →
+    ∀ x y, Affine (bi_rtc R x y).
+  Proof. intros. apply least_fixpoint_affine; apply _. Qed.
+
+  (* FIXME: It would be nicer to use the least_fixpoint_persistent lemmas,
+            but they seem to weak. *)
+  Global Instance bi_rtc_persistent :
+    (∀ x y, Persistent (R x y)) →
+    ∀ x y, Persistent (bi_rtc R x y).
+  Proof.
+    intros ? x y. rewrite /Persistent.
+    iRevert (x). iApply bi_rtc_ind_l; first solve_proper.
+    iIntros "!>" (x) "[#Heq | (%x' & #Hxx' & #Hx'y)]".
+    { iRewrite "Heq". iApply bi_rtc_refl. }
+    iApply (bi_rtc_l with "Hxx' Hx'y").
+  Qed.
+
+  (** ** Results about the transitive closure [bi_tc] *)
+  Local Lemma bi_tc_unfold (x1 x2 : A) :
+    bi_tc R x1 x2 ≡ bi_tc_pre R x2 (λ x1, bi_tc R x1 x2) x1.
+  Proof. by rewrite /bi_tc; rewrite -least_fixpoint_unfold. Qed.
+
+  Lemma bi_tc_strong_ind_l x2 Φ :
+    NonExpansive Φ →
+    □ (∀ x1, (R x1 x2 ∨ (∃ x', R x1 x' ∗ (Φ x' ∧ bi_tc R x' x2))) -∗ Φ x1) -∗
+    ∀ x1, bi_tc R x1 x2 -∗ Φ x1.
+  Proof.
+    iIntros (?) "#IH". rewrite /bi_tc.
+    iApply (least_fixpoint_ind (bi_tc_pre R x2) with "IH").
+  Qed.
+
+  Lemma bi_tc_ind_l x2 Φ :
+    NonExpansive Φ →
+    □ (∀ x1, (R x1 x2 ∨ (∃ x', R x1 x' ∗ Φ x')) -∗ Φ x1) -∗
+    ∀ x1, bi_tc R x1 x2 -∗ Φ x1.
+  Proof.
+    iIntros (?) "#IH". rewrite /bi_tc.
+    iApply (least_fixpoint_iter (bi_tc_pre R x2) with "IH").
+  Qed.
+
+  Lemma bi_tc_l x1 x2 x3 : R x1 x2 -∗ bi_tc R x2 x3 -∗ bi_tc R x1 x3.
+  Proof.
+    iIntros "H1 H2".
+    iEval (rewrite bi_tc_unfold /bi_tc_pre).
+    iRight. iExists x2. iFrame.
+  Qed.
+
+  Lemma bi_tc_once x1 x2 : R x1 x2 -∗ bi_tc R x1 x2.
+  Proof.
+    iIntros "H".
+    iEval (rewrite bi_tc_unfold /bi_tc_pre).
+    by iLeft.
+  Qed.
+
+  Lemma bi_tc_trans x1 x2 x3 : bi_tc R x1 x2 -∗ bi_tc R x2 x3 -∗ bi_tc R x1 x3.
+  Proof.
+    iRevert (x1).
+    iApply bi_tc_ind_l.
+    { solve_proper. }
+    iIntros "!>" (x1) "H H2".
+    iDestruct "H" as "[H | H]".
+    { iApply (bi_tc_l with "H H2"). }
+    iDestruct "H" as (x') "[H IH]".
+    iApply (bi_tc_l with "H").
+    by iApply "IH".
+  Qed.
+
+  Lemma bi_tc_r x y z : bi_tc R x y -∗ R y z -∗ bi_tc R x z.
+  Proof.
+    iIntros "H H'".
+    iApply (bi_tc_trans with "H").
+    by iApply bi_tc_once.
+  Qed.
+
+  Lemma bi_tc_rtc_l x y z : bi_rtc R x y -∗ bi_tc R y z -∗ bi_tc R x z.
+  Proof.
+    iRevert (x).
+    iApply bi_rtc_ind_l. { solve_proper. }
+    iIntros "!>" (x) "[Heq | H] Hyz".
+    { by iRewrite "Heq". }
+    iDestruct "H" as (x') "[H IH]".
+    iApply (bi_tc_l with "H").
+    by iApply "IH".
+  Qed.
+
+  Lemma bi_tc_rtc_r x y z : bi_tc R x y -∗ bi_rtc R y z -∗ bi_tc R x z.
+  Proof.
+    iIntros "Hxy Hyz".
+    iRevert (x) "Hxy". iRevert (y) "Hyz".
+    iApply bi_rtc_ind_l. { solve_proper. }
+    iIntros "!>" (y) "[Heq | H] %x Hxy".
+    { by iRewrite -"Heq". }
+    iDestruct "H" as (y') "[H IH]".
+    iApply "IH". iApply (bi_tc_r with "Hxy H").
+  Qed.
+
+  Lemma bi_tc_rtc x y : bi_tc R x y -∗ bi_rtc R x y.
+  Proof.
+    iRevert (x). iApply bi_tc_ind_l. { solve_proper. }
+    iIntros "!>" (x) "[Hxy | H]".
+    { by iApply bi_rtc_once. }
+    iDestruct "H" as (x') "[H H']".
+    iApply (bi_rtc_l with "H H'").
+  Qed.
+
+  Global Instance bi_tc_affine :
+    (∀ x y, Affine (R x y)) →
+    ∀ x y, Affine (bi_tc R x y).
+  Proof. intros. apply least_fixpoint_affine; apply _. Qed.
+
+  Global Instance bi_tc_absorbing :
+    (∀ x y, Absorbing (R x y)) →
+    ∀ x y, Absorbing (bi_tc R x y).
+  Proof. intros. apply least_fixpoint_absorbing; apply _. Qed.
+
+  (* FIXME: It would be nicer to use the least_fixpoint_persistent lemmas,
+            but they seem to weak. *)
+  Global Instance bi_tc_persistent :
+    (∀ x y, Persistent (R x y)) →
+    ∀ x y, Persistent (bi_tc R x y).
+  Proof.
+    intros ? x y. rewrite /Persistent.
+    iRevert (x). iApply bi_tc_ind_l; first solve_proper.
+    iIntros "!# %x [#H|(%x'&#?&#?)] !>"; first by iApply bi_tc_once.
+    by iApply bi_tc_l.
+  Qed.
+
+  (** ** Equivalences between closure operators *)
+  Lemma bi_rtc_tc x y : bi_rtc R x y ⊣⊢ <affine> (x ≡ y) ∨ bi_tc R x y.
+  Proof.
+    iSplit.
+    - iRevert (x). iApply bi_rtc_ind_l. { solve_proper. }
+      iIntros "!>" (x) "[Heq | H]".
+      { by iLeft. }
+      iRight.
+      iDestruct "H" as (x') "[H [Heq | IH]]".
+      { iRewrite -"Heq". by iApply bi_tc_once. }
+      iApply (bi_tc_l with "H IH").
+    - iIntros "[Heq | Hxy]".
+      { iRewrite "Heq". iApply bi_rtc_refl. }
+      by iApply bi_tc_rtc.
+  Qed.
+
+End general.
