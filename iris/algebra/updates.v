@@ -107,6 +107,9 @@ Proof. intros n mz. rewrite comm cmra_op_opM_assoc. apply cmra_validN_op_r. Qed.
 Lemma cmra_update_op_r x y : x ⋅ y ~~> y.
 Proof. rewrite comm. apply cmra_update_op_l. Qed.
 
+Lemma cmra_update_included x y : x ≼ y → y ~~> x.
+Proof. intros [z ->]. apply cmra_update_op_l. Qed.
+
 Lemma cmra_update_valid0 x y : (✓{0} x → x ~~> y) → x ~~> y.
 Proof.
   intros H n mz Hmz. apply H, Hmz.
