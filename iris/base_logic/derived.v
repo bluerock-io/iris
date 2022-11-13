@@ -91,11 +91,12 @@ Proof.
   apply: plain.
 Qed.
 
+Lemma laterN_soundness P n : (⊢ ▷^n P) → ⊢ P.
+Proof. induction n; eauto using later_soundness. Qed.
+
 Corollary soundness φ n : (⊢@{uPredI M} ▷^n ⌜ φ ⌝) → φ.
 Proof.
-  induction n as [|n IH]=> /=.
-  - apply pure_soundness.
-  - intros H. by apply IH, later_soundness.
+  intros H. eapply pure_soundness, laterN_soundness. done.
 Qed.
 
 Corollary consistency_modal n : ¬ ⊢@{uPredI M} ▷^n False.

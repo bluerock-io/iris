@@ -104,10 +104,38 @@ Proof.
     by iFrame.
 Qed.
 
+(** Later credits: the laws are only available when we opt into later credit support.*)
+
+(** [lc_fupd_elim_later] allows to eliminate a later from a hypothesis at an update.
+  This is typically used as [iMod (lc_fupd_elim_later with "Hcredit HP") as "HP".],
+  where ["Hcredit"] is a credit available in the context and ["HP"] is the
+  assumption from which a later should be stripped. *)
+Lemma lc_fupd_elim_later `{!invGS_gen HasLc Σ} E P :
+   £ 1 -∗ (▷ P) -∗ |={E}=> P.
+Proof.
+  iIntros "Hf Hupd".
+  rewrite uPred_fupd_unseal /uPred_fupd_def.
+  iIntros "[$ $]". iApply (le_upd_later with "Hf").
+  iNext. by iModIntro.
+Qed.
+
+(** If the goal is a fancy update, this lemma can be used to make a later appear
+  in front of it in exchange for a later credit.
+  This is typically used as [iApply (lc_fupd_add_later with "Hcredit")],
+  where ["Hcredit"] is a credit available in the context. *)
+Lemma lc_fupd_add_later `{!invGS_gen HasLc Σ} E1 E2 P :
+  £ 1 -∗ (▷ |={E1, E2}=> P) -∗ |={E1, E2}=> P.
+Proof.
+  iIntros "Hf Hupd". iApply (fupd_trans E1 E1).
+  iApply (lc_fupd_elim_later with "Hf Hupd").
+Qed.
+
+(** * [fupd] soundness lemmas *)
+
 (** Note: the [_no_lc] soundness lemmas also allow generating later credits, but
   these cannot be used for anything. They are merely provided to enable making
   the adequacy proof generic in whether later credits are used. *)
-Lemma fupd_plain_soundness_no_lc `{!invGpreS Σ} E1 E2 (P: iProp Σ) `{!Plain P} m :
+Lemma fupd_plain_soundness_no_lc `{!invGpreS Σ} E1 E2 (P : iProp Σ) `{!Plain P} m :
   (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ⊢ |={E1,E2}=> P) → ⊢ P.
 Proof.
   iIntros (Hfupd). apply later_soundness. iMod wsat_alloc as (Hw) "[Hw HE]".
@@ -119,6 +147,38 @@ Proof.
   rewrite uPred_fupd_unseal /uPred_fupd_def.
   iMod ("H" with "[$]") as "[Hw [HE >H']]"; iFrame.
 Qed.
+
+Lemma fupd_plain_soundness_lc `{!invGpreS Σ} n E1 E2 (P : iProp Σ) `{!Plain P} :
+  (∀ `{Hinv: !invGS_gen HasLc Σ}, £ n ⊢@{iPropI Σ} |={E1,E2}=> P) → ⊢ P.
+Proof.
+  iIntros (Hfupd). eapply (lc_plain_soundness (S n)); first done.
+  intros Hc. rewrite lc_succ.
+  iIntros "[Hone Hn]". rewrite -le_upd_trans. iApply bupd_le_upd.
+  iMod wsat_alloc as (Hw) "[Hw HE]".
+  set (Hi := InvG HasLc _ Hw Hc).
+  iAssert (|={⊤,E2}=> P)%I with "[Hn]" as "H".
+  { iMod (fupd_mask_subseteq E1) as "_"; first done. by iApply (Hfupd Hi). }
+  rewrite uPred_fupd_unseal /uPred_fupd_def.
+  iModIntro. iMod ("H" with "[$Hw $HE]") as "H".
+  iPoseProof (except_0_into_later with "H") as "H".
+  iApply (le_upd_later with "Hone"). iNext.
+  iDestruct "H" as "(_ & _ & $)".
+Qed.
+
+(** Generic soundness lemma for the fancy update, parameterized by [use_credits]
+  on whether to use credits or not. *)
+Lemma fupd_plain_soundness_gen `{!invGpreS Σ} (P : iProp Σ) `{!Plain P}
+  (hlc : has_lc) n E1 E2 :
+  (∀ `{Hinv : invGS_gen hlc Σ},
+    £ n ={E1,E2}=∗ P) →
+  ⊢ P.
+Proof.
+  destruct hlc.
+  - apply fupd_plain_soundness_lc. done.
+  - apply fupd_plain_soundness_no_lc. done.
+Qed.
+
+(** [step_fupdN] soundness lemmas *)
 
 Lemma step_fupdN_soundness_no_lc `{!invGpreS Σ} φ n m :
   (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ⊢@{iPropI Σ} |={⊤,∅}=> |={∅}▷=>^n ⌜ φ ⌝) →
@@ -146,54 +206,12 @@ Proof.
   simpl. iMod "H". iIntros "!>!>!>". iMod "H". by iApply "IH".
 Qed.
 
-(** Later credits: the laws are only available when we opt into later credit support.*)
-
-(** [lc_fupd_elim_later] allows to eliminate a later from a hypothesis at an update.
-  This is typically used as [iMod (lc_fupd_elim_later with "Hcredit HP") as "HP".],
-  where ["Hcredit"] is a credit available in the context and ["HP"] is the
-  assumption from which a later should be stripped. *)
-Lemma lc_fupd_elim_later `{!invGS_gen HasLc Σ} E P :
-   £ 1 -∗ (▷ P) -∗ |={E}=> P.
-Proof.
-  iIntros "Hf Hupd".
-  rewrite uPred_fupd_unseal /uPred_fupd_def.
-  iIntros "[$ $]". iApply (le_upd_later with "Hf").
-  iNext. by iModIntro.
-Qed.
-
-(** If the goal is a fancy update, this lemma can be used to make a later appear
-  in front of it in exchange for a later credit.
-  This is typically used as [iApply (lc_fupd_add_later with "Hcredit")],
-  where ["Hcredit"] is a credit available in the context. *)
-Lemma lc_fupd_add_later `{!invGS_gen HasLc Σ} E1 E2 P :
-  £ 1 -∗ (▷ |={E1, E2}=> P) -∗ |={E1, E2}=> P.
-Proof.
-  iIntros "Hf Hupd". iApply (fupd_trans E1 E1).
-  iApply (lc_fupd_elim_later with "Hf Hupd").
-Qed.
-
-Lemma fupd_soundness_lc `{!invGpreS Σ} n E1 E2 φ :
-  (∀ `{Hinv: !invGS_gen HasLc Σ}, £ n ⊢@{iPropI Σ} |={E1,E2}=> ⌜φ⌝) → φ.
-Proof.
-  iIntros (Hfupd). eapply (lc_soundness (S n)). intros Hc.
-  rewrite lc_succ.
-  iIntros "[Hone Hn]". rewrite -le_upd_trans. iApply bupd_le_upd.
-  iMod wsat_alloc as (Hw) "[Hw HE]".
-  set (Hi := InvG HasLc _ Hw Hc).
-  iAssert (|={⊤,E2}=> ⌜φ⌝)%I with "[Hn]" as "H".
-  { iMod (fupd_mask_subseteq E1) as "_"; first done. by iApply (Hfupd Hi). }
-  rewrite uPred_fupd_unseal /uPred_fupd_def.
-  iModIntro. iMod ("H" with "[$Hw $HE]") as "H".
-  iPoseProof (except_0_into_later with "H") as "H".
-  iApply (le_upd_later with "Hone"). iNext.
-  iDestruct "H" as "(_ & _ & $)".
-Qed.
-
 Lemma step_fupdN_soundness_lc `{!invGpreS Σ} φ n m :
   (∀ `{Hinv: !invGS_gen HasLc Σ}, £ m ⊢@{iPropI Σ} |={⊤,∅}=> |={∅}▷=>^n ⌜ φ ⌝) →
   φ.
 Proof.
-  intros Hiter. eapply (fupd_soundness_lc (m + n)); [apply _..|].
+  intros Hiter.
+  eapply pure_soundness, (fupd_plain_soundness_lc (m + n)); [apply _..|].
   iIntros (Hinv) "Hlc". rewrite lc_split.
   iDestruct "Hlc" as "[Hm Hn]". iMod (Hiter with "Hm") as "Hupd".
   clear Hiter.
@@ -208,7 +226,8 @@ Lemma step_fupdN_soundness_lc' `{!invGpreS Σ} φ n m :
   (∀ `{Hinv: !invGS_gen hlc Σ}, £ m ⊢@{iPropI Σ} |={⊤}[∅]▷=>^n ⌜ φ ⌝) →
   φ.
 Proof.
-  intros Hiter. eapply (fupd_soundness_lc (m + n) ⊤ ⊤); [apply _..|].
+  intros Hiter.
+  eapply pure_soundness, (fupd_plain_soundness_lc (m + n) ⊤ ⊤); [apply _..|].
   iIntros (Hinv) "Hlc". rewrite lc_split.
   iDestruct "Hlc" as "[Hm Hn]". iPoseProof (Hiter with "Hm") as "Hupd".
   clear Hiter.
