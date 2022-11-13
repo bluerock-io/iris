@@ -85,26 +85,40 @@ Global Instance uPred_ownM_sep_homomorphism :
 Proof. split; [split|]; try apply _; [apply ownM_op | apply ownM_unit']. Qed.
 
 (** Soundness statement: facts derived in the logic / under modalities also hold
-outside the logic / without the modalities.
-(The other modalities, □ and ■, can simply be stripped so they are obvious.) *)
+outside the logic / without the modalities. *)
 Lemma bupd_soundness P `{!Plain P} : (⊢ |==> P) → ⊢ P.
 Proof. rewrite bupd_plain. done. Qed.
 
 Lemma laterN_soundness P n : (⊢ ▷^n P) → ⊢ P.
 Proof. induction n; eauto using later_soundness. Qed.
 
-Lemma modal_soundness P `{!Plain P} n :
-  (⊢ Nat.iter n (bupd ∘ bi_later) P) → ⊢ P.
-Proof.
-  intros H. apply (laterN_soundness _ n).
-  move: H. apply bi_emp_valid_mono.
-  induction n as [|n IH]; first done; simpl in *.
-  rewrite IH. apply bupd_plain. apply _.
-Qed.
-
 Corollary soundness φ n : (⊢@{uPredI M} ▷^n ⌜ φ ⌝) → φ.
 Proof.
   intros H. eapply pure_soundness, laterN_soundness. done.
+Qed.
+
+(** In fact we can do this for an arbitrary nesting of modalities. *)
+Inductive modality := MBUpd | MLater | MPersistently | MPlainly.
+Definition denote_modality (m : modality) : uPred M → uPred M :=
+  match m with
+  | MBUpd => bupd
+  | MLater => bi_later
+  | MPersistently => bi_persistently
+  | MPlainly => plainly
+  end.
+Definition denote_modalities (ms : list modality) : uPred M → uPred M :=
+  λ P, foldr denote_modality P ms.
+Lemma modal_soundness P `{!Plain P} (ms : list modality) :
+  (⊢ denote_modalities ms P) → ⊢ P.
+Proof.
+  intros H. apply (laterN_soundness _ (length ms)).
+  move: H. apply bi_emp_valid_mono.
+  induction ms as [|m ms IH]; first done; simpl in *.
+  destruct m; simpl; rewrite IH.
+  - rewrite -later_intro. apply bupd_plain. apply _.
+  - done.
+  - rewrite -later_intro persistently_elim. done.
+  - rewrite -later_intro plainly_elim. done.
 Qed.
 
 (** Consistency: one cannot deive [False] in the logic, not even under
@@ -112,11 +126,11 @@ modalities. *)
 Corollary consistency : ¬ ⊢@{uPredI M} False.
 Proof. intros H. by eapply pure_soundness. Qed.
 
-Corollary consistency_modal n :
-  ¬ ⊢@{uPredI M} Nat.iter n (bupd ∘ bi_later) False.
+Corollary consistency_modal ms :
+  ¬ ⊢@{uPredI M} denote_modalities ms False.
 Proof.
-  intros H. eapply pure_soundness, modal_soundness, H.
-  apply _.
+  intros H.
+  eapply pure_soundness, modal_soundness, H; first apply _.
 Qed.
 
 End derived.
