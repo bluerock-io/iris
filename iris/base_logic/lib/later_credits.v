@@ -357,11 +357,11 @@ Module le_upd.
     iModIntro. iExists C. iFrame.
   Qed.
 
-  Lemma lc_plain_soundness `{!lcGpreS Σ} m (P : iProp Σ) `{!Plain P} :
+  Lemma lc_soundness `{!lcGpreS Σ} m (P : iProp Σ) `{!Plain P} :
     (∀ {Hc: lcGS Σ}, £ m -∗ |==£> P) → ⊢ P.
   Proof.
     intros H. apply (laterN_soundness _ (S m)).
-    eapply bupd_plain_soundness; first apply _.
+    eapply bupd_soundness; first apply _.
     iStartProof.
     iMod (lc_alloc m) as (C) "[H● H◯]".
     iPoseProof (H C) as "Hc". iSpecialize ("Hc" with "H◯").

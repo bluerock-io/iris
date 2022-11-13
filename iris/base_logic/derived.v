@@ -87,13 +87,13 @@ Proof. split; [split|]; try apply _; [apply ownM_op | apply ownM_unit']. Qed.
 (** Soundness statement: facts derived in the logic / under modalities also hold
 outside the logic / without the modalities.
 (The other modalities, □ and ■, can simply be stripped so they are obvious.) *)
-Lemma bupd_plain_soundness P `{!Plain P} : (⊢ |==> P) → ⊢ P.
+Lemma bupd_soundness P `{!Plain P} : (⊢ |==> P) → ⊢ P.
 Proof. rewrite bupd_plain. done. Qed.
 
 Lemma laterN_soundness P n : (⊢ ▷^n P) → ⊢ P.
 Proof. induction n; eauto using later_soundness. Qed.
 
-Lemma modal_plain_soundness P `{!Plain P} n :
+Lemma modal_soundness P `{!Plain P} n :
   (⊢ Nat.iter n (bupd ∘ bi_later) P) → ⊢ P.
 Proof.
   intros H. apply (laterN_soundness _ n).
@@ -115,7 +115,7 @@ Proof. intros H. by eapply pure_soundness. Qed.
 Corollary consistency_modal n :
   ¬ ⊢@{uPredI M} Nat.iter n (bupd ∘ bi_later) False.
 Proof.
-  intros H. eapply pure_soundness, modal_plain_soundness, H.
+  intros H. eapply pure_soundness, modal_soundness, H.
   apply _.
 Qed.
 

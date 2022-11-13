@@ -156,7 +156,7 @@ Local Lemma wp_progress_gen (hlc : has_lc) Σ Λ `{!invGpreS Σ} es σ1 n κs t2
 Proof.
   iIntros (Hwp ??).
   eapply pure_soundness.
-  eapply (step_fupdN_plain_soundness_gen _ hlc (steps_sum num_laters_per_step 0 n)
+  eapply (step_fupdN_soundness_gen _ hlc (steps_sum num_laters_per_step 0 n)
     (steps_sum num_laters_per_step 0 n)).
   iIntros (Hinv) "Hcred".
   iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp)".
@@ -214,7 +214,7 @@ Lemma wp_strong_adequacy_gen (hlc : has_lc) Σ Λ `{!invGpreS Σ} s es σ1 n κs
 Proof.
   iIntros (Hwp ?).
   eapply pure_soundness.
-  eapply (step_fupdN_plain_soundness_gen _ hlc (steps_sum num_laters_per_step 0 n)
+  eapply (step_fupdN_soundness_gen _ hlc (steps_sum num_laters_per_step 0 n)
     (steps_sum num_laters_per_step 0 n)).
   iIntros (Hinv) "Hcred".
   iMod Hwp as (stateI Φ fork_post state_interp_mono) "(Hσ & Hwp & Hφ)".
