@@ -84,26 +84,41 @@ Global Instance uPred_ownM_sep_homomorphism :
   MonoidHomomorphism op uPred_sep (≡) (@uPred_ownM M).
 Proof. split; [split|]; try apply _; [apply ownM_op | apply ownM_unit']. Qed.
 
-(** Consistency/soundness statement *)
+(** Soundness statement: facts derived in the logic / under modalities also hold
+outside the logic / without the modalities.
+(The other modalities, □ and ■, can simply be stripped so they are obvious.) *)
 Lemma bupd_plain_soundness P `{!Plain P} : (⊢ |==> P) → ⊢ P.
-Proof.
-  eapply bi_emp_valid_mono. etrans; last exact: bupd_plainly. apply bupd_mono'.
-  apply: plain.
-Qed.
+Proof. rewrite bupd_plain. done. Qed.
 
 Lemma laterN_soundness P n : (⊢ ▷^n P) → ⊢ P.
 Proof. induction n; eauto using later_soundness. Qed.
+
+Lemma modal_plain_soundness P `{!Plain P} n :
+  (⊢ Nat.iter n (bupd ∘ bi_later) P) → ⊢ P.
+Proof.
+  intros H. apply (laterN_soundness _ n).
+  move: H. apply bi_emp_valid_mono.
+  induction n as [|n IH]; first done; simpl in *.
+  rewrite IH. apply bupd_plain. apply _.
+Qed.
 
 Corollary soundness φ n : (⊢@{uPredI M} ▷^n ⌜ φ ⌝) → φ.
 Proof.
   intros H. eapply pure_soundness, laterN_soundness. done.
 Qed.
 
-Corollary consistency_modal n : ¬ ⊢@{uPredI M} ▷^n False.
-Proof. exact (soundness False n). Qed.
-
+(** Consistency: one cannot deive [False] in the logic, not even under
+modalities. *)
 Corollary consistency : ¬ ⊢@{uPredI M} False.
-Proof. exact (consistency_modal 0). Qed.
+Proof. intros H. by eapply pure_soundness. Qed.
+
+Corollary consistency_modal n :
+  ¬ ⊢@{uPredI M} Nat.iter n (bupd ∘ bi_later) False.
+Proof.
+  intros H. eapply pure_soundness, modal_plain_soundness, H.
+  apply _.
+Qed.
+
 End derived.
 
 End uPred.
