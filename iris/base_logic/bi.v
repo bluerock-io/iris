@@ -194,8 +194,8 @@ Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P%I Q%I).
 Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
 
 Global Instance ownM_ne : NonExpansive (@uPred_ownM M) := uPred_primitive.ownM_ne.
-Global Instance cmra_valid_ne {A : cmra} : NonExpansive (@uPred_cmra_valid M A)
-  := uPred_primitive.cmra_valid_ne.
+Global Instance cmra_valid_ne {A : cmra} : NonExpansive (@uPred_cmra_valid M A) :=
+  uPred_primitive.cmra_valid_ne.
 
 (** Re-exporting primitive lemmas that are not in any interface *)
 Lemma ownM_op (a1 a2 : M) :
