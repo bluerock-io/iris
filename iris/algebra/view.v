@@ -210,15 +210,15 @@ Section cmra.
       | None => ∃ a, rel n a (view_frag_proj x)
       end := eq_refl _.
   Local Definition view_pcore_eq :
-      pcore = λ x, Some (View (core (view_auth_proj x)) (core (view_frag_proj x)))
-    := eq_refl _.
+      pcore = λ x, Some (View (core (view_auth_proj x)) (core (view_frag_proj x))) :=
+    eq_refl _.
   Local Definition view_core_eq :
-      core = λ x, View (core (view_auth_proj x)) (core (view_frag_proj x))
-    := eq_refl _.
+      core = λ x, View (core (view_auth_proj x)) (core (view_frag_proj x)) :=
+    eq_refl _.
   Local Definition view_op_eq :
       op = λ x y, View (view_auth_proj x ⋅ view_auth_proj y)
-                       (view_frag_proj x ⋅ view_frag_proj y)
-    := eq_refl _.
+                       (view_frag_proj x ⋅ view_frag_proj y) :=
+    eq_refl _.
 
   Lemma view_cmra_mixin : CmraMixin (view rel).
   Proof.
