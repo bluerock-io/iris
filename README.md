@@ -137,6 +137,9 @@ modules in separate folders.
   infrastructure. These modules are not installed by `make install`, and should
   not be imported.
 
+Note that the unstable and deprecated packages are not released, so they only
+exist in the development version of Iris.
+
 ## Case Studies
 
 The following is a (probably incomplete) list of case studies that use Iris, and
