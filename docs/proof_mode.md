@@ -162,11 +162,11 @@ Elimination of logical connectives
     spatial context matching pattern `pat`.
 
   In case all branches of `ipat` start with a `#` (which causes the hypothesis
-  to be moved to the intuitionistic context) or with an `%` (which causes the
-  hypothesis to be moved to the pure Coq context), then one can use all
-  hypotheses for proving the premises of `pm_trm`, as well as for proving the
-  resulting goal. Note that in this case the hypotheses still need to be
-  subdivided among the spatial premises.
+  to be moved to the intuitionistic context), with an `%` (which causes the
+  hypothesis to be moved to the pure Coq context), or with an `->`/`<-` (which
+  performs a rewrite), then one can use all hypotheses for proving the premises
+  of `pm_trm`, as well as for proving the resulting goal. Note that in this case
+  the hypotheses still need to be subdivided among the spatial premises.
 
 Separation logic-specific tactics
 ---------------------------------

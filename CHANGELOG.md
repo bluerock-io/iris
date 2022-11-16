@@ -10,6 +10,12 @@ lemma.
 * Add a construction `bi_tc` to create transitive closures of
   PROP-level binary relations.
 
+**Changes in `proofmode`:**
+
+* The proof mode introduction patterns "<-" and "->" are considered
+  intuitionistic. This means that tactics such as `iDestruct ... as "->"` will
+  not dispose of hypotheses to perform the rewrite.
+
 ## Iris 4.0.0 (2022-08-18)
 
 The highlight of Iris 4.0 is the *later credits* mechanism, which provides a new
