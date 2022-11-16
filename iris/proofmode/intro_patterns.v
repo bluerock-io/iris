@@ -168,6 +168,7 @@ End intro_pat.
 Fixpoint intro_pat_intuitionistic (p : intro_pat) :=
   match p with
   | IPure _ => true
+  | IRewrite _ => true
   | IIntuitionistic _ => true
   | IList pps => forallb (forallb intro_pat_intuitionistic) pps
   | ISimpl => true

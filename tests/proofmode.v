@@ -870,6 +870,15 @@ Lemma test_iIntros_rewrite P (x1 x2 x3 x4 : nat) :
   x1 = x2 → (⌜ x2 = x3 ⌝ ∗ ⌜ x3 ≡ x4 ⌝ ∗ P) -∗ ⌜ x1 = x4 ⌝ ∗ P.
 Proof. iIntros (?) "(-> & -> & $)"; auto. Qed.
 
+Lemma test_iDestruct_rewrite_not_consume P (x1 x2 : nat) :
+  (P -∗ ⌜ x1 = x2 ⌝) →
+  P -∗ ⌜ x1 = x2 ⌝ ∗ P.
+Proof.
+  iIntros (lemma) "HP". iDestruct (lemma with "HP") as "->".
+  auto. (* Make sure that "HP" has not been consumed; [auto] would fail
+  otherwise. *)
+Qed.
+
 Lemma test_iNext_affine `{!BiInternalEq PROP} P Q :
   <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
 Proof. iIntros "#HPQ HQ !>". iNext. by iRewrite "HPQ" in "HQ". Qed.
