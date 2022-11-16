@@ -60,7 +60,7 @@ Section coPset.
   Qed.
 End coPset.
 
-(* The disjoiny union CMRA *)
+(* The disjoint union CMRA *)
 Inductive coPset_disj :=
   | CoPset : coPset → coPset_disj
   | CoPsetBot : coPset_disj.
