@@ -42,16 +42,10 @@ variables:
 
 ## Build jobs
 
-build-coq.8.16.dev:
+build-coq.8.16.0:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.16.dev"
-    DENY_WARNINGS: "1"
-
-build-coq.8.15.1:
-  <<: *template
-  variables:
-    OPAM_PINS: "coq version 8.15.1"
+    OPAM_PINS: "coq version 8.16.0"
     DENY_WARNINGS: "1"
     MANGLE_NAMES: "1"
     OPAM_PKG: "1"
@@ -61,12 +55,24 @@ build-coq.8.15.1:
   - fp-timing
   interruptible: false
 
+build-coq.8.16.0-mr:
+  <<: *template
+  <<: *only_mr
+  variables:
+    OPAM_PINS: "coq version 8.16.0"
+    DENY_WARNINGS: "1"
+    MANGLE_NAMES: "1"
+
+build-coq.8.15.2:
+  <<: *template
+  variables:
+    OPAM_PINS: "coq version 8.15.2"
+    DENY_WARNINGS: "1"
+
 build-coq.8.14.1:
   <<: *template
-  <<: *branches_and_mr
   variables:
     OPAM_PINS: "coq version 8.14.1"
-    MANGLE_NAMES: "1"
     DENY_WARNINGS: "1"
     OCAML: "ocaml-base-compiler.4.07.1"
 
