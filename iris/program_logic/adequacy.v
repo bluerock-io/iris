@@ -231,6 +231,8 @@ Proof.
   iDestruct (big_sepL2_length with "Hes'") as %Hlen3.
   rewrite -plus_n_O.
   iApply ("Hφ" with "[//] [%] [ ] Hσ Hes'");
+    (* FIXME: Different implicit types for [length] are inferred, so [lia] and
+    [congruence] do not work due to https://github.com/coq/coq/issues/16634 *)
     [by rewrite Hlen1 Hlen3| |]; last first.
   { by rewrite big_sepL2_replicate_r // big_sepL_omap. }
   (* we run the adequacy proof again to get this assumption *)
