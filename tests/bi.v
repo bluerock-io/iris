@@ -24,6 +24,12 @@ Definition big_sepM_pattern_value_tt
     {PROP : bi} (m : gmap nat ()) : PROP :=
   [∗ map] '() ∈ m, True.
 
+Inductive foo := Foo (n : nat).
+
+Definition big_sepM_pattern_value_custom
+    {PROP : bi} (m : gmap nat foo) : PROP :=
+  [∗ map] '(Foo x) ∈ m, ⌜ 10 = x ⌝.
+
 Definition big_sepM_pattern_key
     {PROP : bi} (m : gmap (nat * nat) nat) : PROP :=
   [∗ map] '(k,_) ↦ _ ∈ m, ⌜ 10 = k ⌝.
