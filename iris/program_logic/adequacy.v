@@ -230,7 +230,8 @@ Proof.
   rewrite replicate_length in Hlen2; subst.
   iDestruct (big_sepL2_length with "Hes'") as %Hlen3.
   rewrite -plus_n_O.
-  iApply ("Hφ" with "[//] [%] [ ] Hσ Hes'"); [congruence| |]; last first.
+  iApply ("Hφ" with "[//] [%] [ ] Hσ Hes'");
+    [by rewrite Hlen1 Hlen3| |]; last first.
   { by rewrite big_sepL2_replicate_r // big_sepL_omap. }
   (* we run the adequacy proof again to get this assumption *)
   iPureIntro. intros e2 -> Hel.
