@@ -9,6 +9,8 @@ lemma.
 
 * Add a construction `bi_tc` to create transitive closures of
   PROP-level binary relations.
+* Use `binder` in notations for big ops. This means one can write things such
+  as `[∗ map] '(k,_) ↦ '(_,y) ∈ m, ⌜ k = y ⌝`.
 
 **Changes in `proofmode`:**
 
