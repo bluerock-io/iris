@@ -133,7 +133,7 @@ Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ n :
        stateI σ n [] 0 ∗ WP e @ s; ⊤ [{ Φ }]) →
   sn erased_step ([e], σ). (* i.e. ([e], σ) is strongly normalizing *)
 Proof.
-  intros Hwp. apply (soundness (M:=iResUR Σ) _  1); simpl.
+  intros Hwp. eapply pure_soundness. apply (laterN_soundness _  1); simpl.
   apply (fupd_soundness_no_lc ⊤ ⊤ _ 0)=> Hinv. iIntros "_".
   iMod (Hwp) as (stateI num_laters_per_step fork_post stateI_mono) "[Hσ H]".
   set (iG := IrisG Hinv stateI fork_post num_laters_per_step stateI_mono).
