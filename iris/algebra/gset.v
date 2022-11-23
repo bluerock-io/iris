@@ -83,6 +83,9 @@ Section gset_disj.
   Local Arguments cmra_op _ !_ !_ /.
   Local Arguments ucmra_op _ !_ !_ /.
 
+  Global Instance GSet_inj : Inj (=@{gset K}) (=) GSet.
+  Proof. intros ???. naive_solver. Qed.
+
   Canonical Structure gset_disjO := leibnizO (gset_disj K).
 
   Local Instance gset_disj_valid_instance : Valid (gset_disj K) := λ X,
