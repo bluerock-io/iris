@@ -16,6 +16,22 @@ lemma.
   intuitionistic. This means that tactics such as `iDestruct ... as "->"` will
   not dispose of hypotheses to perform the rewrite.
 
+**LaTeX changes:**
+
+- Rename `\Alloc` to `\AllocN` and `\Ref` to `\Alloc` for better consistency
+  with the Coq names and to avoid clash with hyperref package.
+
+The following sed script helps adjust LaTeX documents to these changes:
+Note that the script is not idempotent, do not run it twice.
+```
+sed -i -E -f- *.tex <<EOF
+# Alloc & Ref
+s/\\Alloc\b/\\AllocN/g
+s/\\Ref\b/\\Alloc/g
+EOF
+```
+
+
 ## Iris 4.0.0 (2022-08-18)
 
 The highlight of Iris 4.0 is the *later credits* mechanism, which provides a new

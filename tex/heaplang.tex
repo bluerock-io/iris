@@ -39,7 +39,7 @@ The grammar of HeapLang, and in particular its set \Expr{} of \emph{expressions}
   \InrE(\expr) \mid
   \Match \expr with \Inl => \expr_1 | \Inr => \expr_2 end \mid
   {}\\ &
-  \Alloc(\expr_1,\expr_2) \mid
+  \AllocN(\expr_1,\expr_2) \mid
   \Free(\expr) \mid
   \deref \expr \mid
   \expr_1 \gets \expr_2 \mid
@@ -66,7 +66,7 @@ We will leave away the disambiguating subscript when it is clear from the contex
 All of this lets us define $\ofval$ as simply applying the value injection (the very first syntactic form of $\Expr$), which makes a lot of things in Coq much simpler.
 $\toval$ is defined recursively in the obvious way.
 
-\langkw{Alloc} takes as first argument the number of heap cells to allocate (must be strictly positive), and as second argument the default value to use for these heap cells.
+\langkw{AllocN} takes as first argument the number of heap cells to allocate (must be strictly positive), and as second argument the default value to use for these heap cells.
 This lets one allocate arrays.
 $\Ptradd$ implements pointer arithmetic (the left operand must be a pointer, the right operand an integer), which is used to access array elements.
 
@@ -103,8 +103,8 @@ The HeapLang operational semantics is defined via the use of \emph{evaluation co
   \Inr(\lctx) \mid
   \Match \lctx with \Inl => \expr_1 | \Inr => \expr_2 end \mid
   {}\\ &
-  \Alloc(\expr, \lctx) \mid
-  \Alloc(\lctx, \val) \mid
+  \AllocN(\expr, \lctx) \mid
+  \AllocN(\lctx, \val) \mid
   \Free(\lctx) \mid
   \deref \lctx \mid
   \expr \gets \lctx \mid
@@ -198,7 +198,7 @@ The $\HLOp$ subscript indicates that this is the HeapLang operator, not the math
 \newcommand\alignheader{\kern-30ex}
 \begin{align*}
 &\alignheader\textbf{Heap reductions} \\
-(\Alloc(z, \val), \state) \hstep[\nil]{}&
+(\AllocN(z, \val), \state) \hstep[\nil]{}&
   (\loc, \mapinsert {[\loc,\loc+z)} \val {\state:\stateHeap}, \nil)
   &&\text{if $z>0$ and \(\All i<z. \state.\stateHeap(\loc+i) = \bot\)} \\
 (\Free(\loc), \state) \hstep[\nil]{}&
@@ -231,7 +231,7 @@ The $\HLOp$ subscript indicates that this is the HeapLang operator, not the math
 \end{mathpar}
 \caption{HeapLang impure reduction rules. \\ \small
 Here, $\state:\stateHeap$ denotes $\sigma$ with the $\stateHeap$ field updated as indicated.
-$[\loc,\loc+z)$ in the $\Alloc$ rule indicates that we update all locations in this (left-closed, right-open) interval.}
+$[\loc,\loc+z)$ in the $\AllocN$ rule indicates that we update all locations in this (left-closed, right-open) interval.}
 \label{fig:heaplang-reduction-impure}
 \end{figure}
 
@@ -282,7 +282,7 @@ We recover many of the common language operations as syntactic sugar.
   \expr_1 \mathop{||} \expr_2 \eqdef{}& \If \expr_1 then \True \Else \expr_2 \\
   \Match \expr with \Inl(\lvar) => \expr_1 | \Inr(\lvarB) => \expr_2 end \eqdef {}&
     \Match \expr with \Inl => \Lam\lvar. \expr_1 | \Inr => \Lam\lvarB. \expr_2 end \\
-  \Ref(\expr) \eqdef{}& \Alloc(1,\expr) \\
+  \Alloc(\expr) \eqdef{}& \AllocN(1,\expr) \\
   \CAS(\expr_1, \expr_2, \expr_3) \eqdef{}& \Snd(\CmpXchg(\expr_1, \expr_2, \expr_3)) \\
   \Resolve \expr_1 to \expr_2 \eqdef{}& \ResolveWith \Skip at \expr_1 to \expr_2
 \end{align*}

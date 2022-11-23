@@ -58,7 +58,7 @@ Here we put a bunch of uses of the macros in \texttt{iris.sty} that we can visua
 \newcommand\OScheck{\textlang{check}}
 
     \begin{proofoutline*}
-       \CODE{\Let \lvar = \Ref(\Inl(0)) in } \\
+       \CODE{\Let \lvar = \Alloc(\Inl(0)) in } \\
        \RES{\lvar \mapsto \Inl(0) * \ownGhost\gname{\ospending(1)}}[\top] \quad\COMMENT{(\textsc{hoare-alloc}, \textsc{ghost-alloc})} \\
        \RES{\lvar \mapsto \Inl(0) * \ownGhost\gname{\ospending(1/2)} * \ownGhost\gname{\ospending(1/2)}}[\top] \quad\COMMENT{(\textsc{ghost-op})} \\
        \RES{\knowInv\namesp{I} * \ownGhost\gname{\ospending(1/2)}}[\top] \quad\COMMENT{(\textsc{inv-alloc1})} \\
