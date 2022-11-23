@@ -1708,6 +1708,11 @@ Proof.
   intros HΦ HΨ c Hc. apply entails_eq_True, equiv_dist=>n.
   rewrite conv_compl. apply equiv_dist, entails_eq_True. done.
 Qed.
+Lemma limit_preserving_emp_valid {A : ofe} `{!Cofe A} (Φ : A → PROP) :
+  NonExpansive Φ → LimitPreserving (λ x, ⊢ Φ x).
+Proof.
+  intros. apply limit_preserving_entails; first solve_proper. done.
+Qed.
 Lemma limit_preserving_equiv {A : ofe} `{!Cofe A} (Φ Ψ : A → PROP) :
   NonExpansive Φ → NonExpansive Ψ → LimitPreserving (λ x, Φ x ⊣⊢ Ψ x).
 Proof.
