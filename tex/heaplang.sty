@@ -26,7 +26,6 @@
 \def\Let#1=#2in{\langkw{let} \spac #1 \mathrel{=} #2 \spac \langkw{in} \spac}
 \def\If#1then{\langkw{if} \spac #1 \spac \langkw{then} \spac}
 \def\Else{\spac\langkw{else} \spac}
-\def\Ref{\operatorname{\langkw{ref}}}
 \def\Rec#1#2={\langkw{rec}\spac\operatorname{#1}#2 \mathrel{=} }
 \def\Skip{\langkw{skip}}
 \def\Assert{\operatorname{\langkw{assert}}}
@@ -53,12 +52,14 @@
 \def\MatchS#1with#2=>#3end{
   \langkw{match}\spac#1\spac\langkw{with}\spac#2\Ra#3\spac\langkw{end}}
 
-\newcommand\Alloc{\operatorname{\langkw{Alloc}}}
+\newcommand\AllocN{\operatorname{\langkw{AllocN}}}
+\newcommand\Alloc{\operatorname{\langkw{ref}}} % syntax rendering consistent with Coq
 \newcommand\Free{\operatorname{\langkw{Free}}}
 \newcommand\CAS{\operatorname{\langkw{CAS}}}
 \newcommand\CmpXchg{\operatorname{\langkw{CmpXchg}}}
 \newcommand\Xchg{\operatorname{\langkw{Xchg}}}
 \newcommand\FAA{\operatorname{\langkw{FAA}}}
+
 \newcommand\deref{\mathop{!}}
 \let\gets\leftarrow
 
