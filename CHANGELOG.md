@@ -17,11 +17,22 @@ lemma.
 * The proof mode introduction patterns "<-" and "->" are considered
   intuitionistic. This means that tactics such as `iDestruct ... as "->"` will
   not dispose of hypotheses to perform the rewrite.
+* Remove tactic `iSolveTC` in favor of `tc_solve` in std++.
 
 **LaTeX changes:**
 
 - Rename `\Alloc` to `\AllocN` and `\Ref` to `\Alloc` for better consistency
   with the Coq names and to avoid clash with hyperref package.
+
+The following `sed` script helps adjust your code to the renaming (on macOS,
+replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
+Note that the script is not idempotent, do not run it twice.
+```
+sed -i -E -f- $(find theories -name "*.v") <<EOF
+# iSolveTC
+s/iSolveTC\b/tc_solve/g
+EOF
+```
 
 The following sed script helps adjust LaTeX documents to these changes:
 Note that the script is not idempotent, do not run it twice.
