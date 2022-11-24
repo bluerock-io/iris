@@ -1,7 +1,6 @@
 From iris.algebra Require Import frac agree csum.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export weakestpre.
-From iris.deprecated.program_logic Require Import hoare.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import assert proofmode notation adequacy.
 From iris.heap_lang.lib Require Import par.
@@ -59,31 +58,33 @@ Proof.
   by apply cmra_update_exclusive with (y:=Shot n).
 Qed.
 
-Lemma wp_one_shot (Φ : val → iProp Σ) :
-  (∀ (f1 f2 : val) (T : iProp Σ), T ∗
-    □ (∀ n : Z, T -∗ WP f1 #n {{ w, True }}) ∗
-    □ WP f2 #() {{ g, □ WP (of_val g) #() {{ _, True }} }} -∗ Φ (f1,f2)%V)
-      (* FIXME: Once we depend on Coq 8.13, make WP notation use [v closed binder]
-         so that we can add a type annotation at the [g] binder here. *)
-  ⊢ WP one_shot_example #() {{ Φ }}.
+Lemma one_shot :
+  {{{ True }}}
+    one_shot_example #()
+  {{{ (f1 f2 : val) (T : iProp Σ), RET (f1,f2);
+    T ∗
+    (∀ n : Z, {{{ T }}} f1 #n {{{ RET #(); True }}}) ∗
+    {{{ True }}} f2 #() {{{ (g : val), RET g; {{{ True }}} g #() {{{ RET #(); True }}} }}}
+  }}}.
 Proof.
-  iIntros "Hf /=". pose proof (nroot .@ "N") as N.
+  iIntros "%Φ _ HΦ /=". pose proof (nroot .@ "N") as N.
   wp_lam. wp_alloc l as "Hl".
   iMod (own_alloc (Pending 1%Qp)) as (γ) "Hγ"; first done.
   iDestruct (pending_split with "Hγ") as "[Hγ1 Hγ2]".
   iMod (inv_alloc N _ (one_shot_inv γ l) with "[Hl Hγ2]") as "#HN".
   { iNext. iLeft. by iFrame. }
-  wp_pures. iModIntro. iApply ("Hf" $! _ _ (own γ (Pending (1/2)%Qp))).
+  wp_pures. iModIntro. iApply ("HΦ" $! _ _ (own γ (Pending (1/2)%Qp))).
   iSplitL; first done. iSplit.
-  - iIntros (n) "!> Hγ1". wp_pures.
+  - clear Φ. iIntros "%n !> %Φ Hγ1 HΦ". wp_pures.
     iApply wp_assert. wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as ">[[Hl Hγ2]|H]"; last iDestruct "H" as (m) "[Hl Hγ']".
     + iDestruct (pending_split with "[$Hγ1 $Hγ2]") as "Hγ".
       iMod (pending_shoot _ n with "Hγ") as "Hγ".
-      wp_cmpxchg_suc. iModIntro. iSplitL; last (wp_pures; by eauto).
-      iNext; iRight; iExists n; by iFrame.
+      wp_cmpxchg_suc. iModIntro. iSplitR "HΦ".
+      * iNext; iRight; iExists n; by iFrame.
+      * wp_pures. iSplitR; first done. by iApply "HΦ".
     + by iDestruct (own_valid_2 with "Hγ1 Hγ'") as %?.
-  - iIntros "!> /=". wp_lam. wp_bind (! _)%E.
+  - clear Φ. iIntros "!> %Φ _ HΦ /=". wp_lam. wp_bind (! _)%E.
     iInv N as ">Hγ".
     iAssert (∃ v, l ↦ v ∗ (⌜v = NONEV⌝ ∗ own γ (Pending (1/2)%Qp) ∨
        ∃ n : Z, ⌜v = SOMEV #n⌝ ∗ own γ (Shot n)))%I with "[Hγ]" as "Hv".
@@ -101,32 +102,23 @@ Proof.
         * iRight; iExists m; by iSplitL "Hl".
         * eauto. }
     iSplitL "Hinv"; first by eauto.
-    iModIntro. wp_pures. iIntros "!> !>". wp_lam. wp_bind (! _)%E.
+    iModIntro. wp_pures. iApply "HΦ".
+    clear Φ. iIntros "!> %Φ !> _ HΦ". wp_lam. wp_bind (! _)%E.
     iInv N as "Hinv".
     iDestruct "Hv" as "[%|Hv]"; last iDestruct "Hv" as (m) "[% Hγ']"; subst.
     + iDestruct "Hinv" as "[[Hl >Hγ]|H]"; last iDestruct "H" as (m') "[Hl Hγ]";
       wp_load; iModIntro; (iSplitL "Hl Hγ"; first by eauto with iFrame);
-      wp_pures; done.
+      wp_pures; by iApply "HΦ".
     + iDestruct "Hinv" as "[[Hl >Hγ]|H]"; last iDestruct "H" as (m') "[Hl Hγ]".
       { by iDestruct (own_valid_2 with "Hγ Hγ'") as %?. }
       wp_load. Show.
       iDestruct (own_valid_2 with "Hγ Hγ'") as %?%to_agree_op_inv_L; subst.
       iModIntro. iSplitL "Hl Hγ"; first by eauto with iFrame.
-      wp_pures. iApply wp_assert. wp_op. by case_bool_decide.
+      wp_pures. iApply wp_assert. wp_op.
+      iSplitR; first by case_bool_decide.
+      by iApply "HΦ".
 Qed.
 
-Lemma ht_one_shot (Φ : val → iProp Σ) :
-  ⊢ {{ True }} one_shot_example #()
-    {{ ff, ∃ T, T ∗
-      (∀ n : Z, {{ T }} Fst ff #n {{ _, True }}) ∗
-      {{ True }} Snd ff #() {{ g, {{ True }} g #() {{ _, True }} }}
-    }}.
-Proof.
-  iIntros "!> _". iApply wp_one_shot. iIntros (f1 f2 T) "(HT & #Hf1 & #Hf2)".
-  iExists T. iFrame "HT". iSplit.
-  - iIntros (n) "!> HT". wp_smart_apply "Hf1". done.
-  - iIntros "!> _". wp_smart_apply (wp_wand with "Hf2"). by iIntros (v) "#? !> _".
-Qed.
 End proof.
 
 (* Have a client with a closed proof. *)
@@ -139,11 +131,12 @@ Section client.
 
   Lemma client_safe : ⊢ WP client {{ _, True }}.
   Proof using Type*.
-    rewrite /client. wp_apply wp_one_shot. iIntros (f1 f2 T) "(HT & #Hf1 & #Hf2)".
-    wp_let. wp_smart_apply (wp_par with "[HT]").
-    - wp_smart_apply "Hf1". done.
-    - wp_proj. wp_bind (f2 _)%E. iApply wp_wand; first by iExact "Hf2".
-      iIntros (check) "Hcheck". wp_pures. iApply "Hcheck".
+    rewrite /client. wp_apply one_shot; first done.
+    iIntros (f1 f2 T) "(HT & #Hf1 & #Hf2)".
+    wp_let. wp_smart_apply (wp_par (λ _, True)%I (λ _, True)%I with "[HT]").
+    - wp_smart_apply ("Hf1" with "HT"). by eauto.
+    - wp_proj. wp_bind (f2 _)%E. wp_apply "Hf2"; first done.
+      iIntros (check) "Hcheck". wp_pures. iApply "Hcheck"; by auto.
     - auto.
   Qed.
 End client.

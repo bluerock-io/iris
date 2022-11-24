@@ -3,10 +3,10 @@
   Σ : gFunctors
   heapGS0 : heapGS Σ
   one_shotG0 : one_shotG Σ
-  Φ : val → iProp Σ
   N : namespace
   l : loc
   γ : gname
+  Φ : val → iPropI Σ
   ============================
   "HN" : inv N (one_shot_inv γ l)
   --------------------------------------□
@@ -21,15 +21,16 @@
   Σ : gFunctors
   heapGS0 : heapGS Σ
   one_shotG0 : one_shotG Σ
-  Φ : val → iProp Σ
   N : namespace
   l : loc
   γ : gname
+  Φ : val → iPropI Σ
   m, m' : Z
   ============================
   "HN" : inv N (one_shot_inv γ l)
   "Hγ'" : own γ (Shot m)
   --------------------------------------□
+  "HΦ" : True -∗ Φ #()
   "Hl" : l ↦ InjRV #m'
   "Hγ" : own γ (Shot m')
   --------------------------------------∗
@@ -39,4 +40,4 @@
          InjL <> => #()
        | InjR <> => assert: InjRV #m = "y'"
        end
-    {{ _, True }}
+    {{ v, Φ v }}
