@@ -5,6 +5,10 @@ lemma.
 
 ## Iris master
 
+**Changes in `algebra`:**
+
+* Add (basic) support for `gset` and `gset_disj` cameras to `set_solver`.
+
 **Changes in `bi`:**
 
 * Add a construction `bi_tc` to create transitive closures of
