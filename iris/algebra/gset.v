@@ -64,6 +64,11 @@ Section gset.
     - unfold_leibniz. rewrite big_opS_insert // IH //.
   Qed.
 
+  (** Add support [X ≼ Y] to [set_solver]. (We get support for [⋅] for free
+  because it is definitionally equal to [∪]). *)
+  Global Instance set_unfold_gset_included X Y Q :
+    SetUnfold (X ⊆ Y) Q → SetUnfold (X ≼ Y) Q.
+  Proof. intros [?]; constructor. by rewrite gset_included. Qed.
 End gset.
 
 Global Arguments gsetO _ {_ _}.
@@ -232,6 +237,20 @@ Section gset_disj.
     intros. rewrite -{2}(right_id_L _ union Z).
     apply gset_disj_alloc_local_update; set_solver.
   Qed.
+
+  (** Add some basic support for [GSet X = GSet Y], [GSet X ≼ GSet Y], and
+  [✓ (GSet X ⋅ GSet Y)] to [set_solver]. There are probably more cases we could
+  cover (e.g., involving [GSetBot], or nesting of [⋅]), but it is not clear
+  these are useful in practice, nor how to handle them effectively. *)
+  Global Instance set_unfold_gset_eq (X Y : gset K) Q :
+    SetUnfold (X = Y) Q → SetUnfold (GSet X = GSet Y) Q.
+  Proof. intros [?]; constructor. by rewrite (inj_iff _). Qed.
+  Global Instance set_unfold_gset_disj_included (X Y : gset K) Q :
+    SetUnfold (X ⊆ Y) Q → SetUnfold (GSet X ≼ GSet Y) Q.
+  Proof. intros [?]; constructor. by rewrite gset_disj_included. Qed.
+  Global Instance set_unfold_gset_disj_valid_op (X Y : gset K) Q :
+    SetUnfold (X ## Y) Q → SetUnfold (✓ (GSet X ⋅ GSet Y)) Q.
+  Proof. intros [?]; constructor. by rewrite gset_disj_valid_op. Qed.
 End gset_disj.
 
 Global Arguments gset_disjO _ {_ _}.
