@@ -64,6 +64,11 @@ Section gset.
     - unfold_leibniz. rewrite big_opS_insert // IH //.
   Qed.
 
+  (** Add support [X ≼ Y] to [set_solver]. (We get support for [⋅] for free
+  because it is definitionally equal to [∪]). *)
+  Global Instance set_unfold_gset_included X Y Q :
+    SetUnfold (X ⊆ Y) Q → SetUnfold (X ≼ Y) Q.
+  Proof. intros [?]; constructor. by rewrite gset_included. Qed.
 End gset.
 
 Global Arguments gsetO _ {_ _}.
