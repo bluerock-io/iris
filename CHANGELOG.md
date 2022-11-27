@@ -134,6 +134,8 @@ and Tej Chajed. Thanks a lot to everyone involved!
 * Rename `laterN_plus` into `laterN_add`.
 * Remove `make_laterable` from atomic updates. This relies on Iris now having
   support for later credits (see below).
+* Add `Fractional` and `AsFractional` instances for `embed` such that the
+  embedding of something fractional is also fractional. (by Simon Friis Vindum).
 
 **Changes in `proofmode`:**
 

@@ -1,5 +1,6 @@
+From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import tactics monpred.
-From iris.base_logic.lib Require Import invariants.
+From iris.base_logic.lib Require Import invariants ghost_var.
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
@@ -183,6 +184,7 @@ Section tests_iprop.
   Context {I : biIndex} `{!invGS_gen hlc Σ}.
 
   Local Notation monPred := (monPred I (iPropI Σ)).
+  Local Notation monPredI := (monPredI I (iPropI Σ)).
   Implicit Types P Q R : monPred.
   Implicit Types 𝓟 𝓠 𝓡 : iProp Σ.
 
@@ -210,4 +212,9 @@ Section tests_iprop.
     iPoseProof (own_update with "Hγ") as "H"; first done.
     by iMod "H".
   Qed.
+
+  Lemma test_embed_fractional `{!ghost_varG Σ A} γ q (a : A) :
+    ⎡ghost_var γ q a⎤ ⊢@{monPredI} ⎡ghost_var γ (q/2) a⎤ ∗ ⎡ghost_var γ (q/2) a⎤.
+  Proof. iIntros "[$ $]". Qed.
+
 End tests_iprop.

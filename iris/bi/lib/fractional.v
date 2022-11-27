@@ -87,6 +87,14 @@ Section fractional.
     rewrite !assoc. f_equiv. by rewrite comm.
   Qed.
 
+  Global Instance fractional_embed `{!BiEmbed PROP PROP'} Φ :
+    Fractional Φ → Fractional (λ q, ⎡ Φ q ⎤ : PROP')%I.
+  Proof. intros ???. by rewrite fractional embed_sep. Qed.
+
+  Global Instance as_fractional_embed `{!BiEmbed PROP PROP'} P Φ q :
+    AsFractional P Φ q → AsFractional (⎡ P ⎤) (λ q, ⎡ Φ q ⎤)%I q.
+  Proof. split; [by rewrite ->!as_fractional | apply _]. Qed.
+
   Global Instance fractional_big_sepL {A} (l : list A) Ψ :
     (∀ k x, Fractional (Ψ k x)) →
     Fractional (PROP:=PROP) (λ q, [∗ list] k↦x ∈ l, Ψ k x q)%I.
