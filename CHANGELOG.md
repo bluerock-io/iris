@@ -47,13 +47,26 @@ Coq 8.13 is no longer supported.
 * Add compatibility lemmas for `big_sepL <-> big_sepL2`, `big_sepM <-> big_sepM2`
   with list/maps of pairs; and `big_sepM <-> big_sepL` via `list_to_map` and
   `map_to_list`. (by Dorian Lesbre).
-- Make `persistently_True` a bi-entailment; this changes the default `rewrite`
+* Make `persistently_True` a bi-entailment; this changes the default `rewrite`
   direction.
-- Make `BiLaterContractive` a class instead of a notation.
-- Make projections of `Bupd`/`Fupd`/`InternalEq`/`Plainly` operational type
+* Make `BiLaterContractive` a class instead of a notation.
+* Make projections of `Bupd`/`Fupd`/`InternalEq`/`Plainly` operational type
   classes `Typeclasses Opaque`.
-- Make BI relations (`bi_rtc`, `bi_tc`, `bi_nsteps`) typeclasses opaque (they
+* Make BI relations (`bi_rtc`, `bi_tc`, `bi_nsteps`) typeclasses opaque (they
   were accidentally transparent).
+* Make the `P -∗ Q` notation in stdpp_scope (i.e., outside of bi_scope) a
+  shorthand for `⊢ P -∗ Q` rather than `P ⊢ Q`. This means that any BI notation
+  used in stdpp_scope will be sugar for adding a leading `⊢` (`bi_emp_valid`).
+  It also means that `apply` becomes sensitive to the difference between `P ⊢ Q`
+  and `P -∗ Q`, and `rewrite` will only work with lemmas that are explicitly
+  written using `⊢`.
+  When a proof breaks, there are generally 3 options:
+  - Try to find the `-∗` that should be turned into a `⊢` so that things work
+    like before.
+  - Adjust the proof to use proof mode tactics rather than Coq tactics (in
+    particular, replace `apply` by `iApply`).
+  - Add some `apply bi.entails_wand`/`apply bi.wand_entails` to 'convert'
+    between the old and new way of interpreting `P -∗ Q`.
 
 **Changes in `proofmode`:**
 

@@ -136,7 +136,7 @@ Qed.
   these cannot be used for anything. They are merely provided to enable making
   the adequacy proof generic in whether later credits are used. *)
 Lemma fupd_soundness_no_lc `{!invGpreS Σ} E1 E2 (P : iProp Σ) `{!Plain P} m :
-  (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ⊢ |={E1,E2}=> P) → ⊢ P.
+  (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ={E1,E2}=∗ P) → ⊢ P.
 Proof.
   iIntros (Hfupd). apply later_soundness. iMod wsat_alloc as (Hw) "[Hw HE]".
   (* We don't actually want any credits, but we need the [lcGS]. *)
@@ -149,7 +149,7 @@ Proof.
 Qed.
 
 Lemma fupd_soundness_lc `{!invGpreS Σ} n E1 E2 (P : iProp Σ) `{!Plain P} :
-  (∀ `{Hinv: !invGS_gen HasLc Σ}, £ n ⊢@{iPropI Σ} |={E1,E2}=> P) → ⊢ P.
+  (∀ `{Hinv: !invGS_gen HasLc Σ}, £ n ={E1,E2}=∗ P) → ⊢ P.
 Proof.
   iIntros (Hfupd). eapply (lc_soundness (S n)); first done.
   intros Hc. rewrite lc_succ.
@@ -181,7 +181,7 @@ Qed.
 (** [step_fupdN] soundness lemmas *)
 
 Lemma step_fupdN_soundness_no_lc `{!invGpreS Σ} (P : iProp Σ) `{!Plain P} n m :
-  (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ⊢@{iPropI Σ} |={⊤,∅}=> |={∅}▷=>^n P) →
+  (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ={⊤,∅}=∗ |={∅}▷=>^n P) →
   ⊢ P.
 Proof.
   intros Hiter.
@@ -195,7 +195,7 @@ Proof.
 Qed.
 
 Lemma step_fupdN_soundness_no_lc' `{!invGpreS Σ} (P : iProp Σ) `{!Plain P} n m :
-  (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ⊢@{iPropI Σ} |={⊤}[∅]▷=>^n P) →
+  (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ={⊤}[∅]▷=∗^n P) →
   ⊢ P.
 Proof.
   iIntros (Hiter). eapply (step_fupdN_soundness_no_lc _ n m)=>Hinv.
@@ -207,7 +207,7 @@ Proof.
 Qed.
 
 Lemma step_fupdN_soundness_lc `{!invGpreS Σ} (P : iProp Σ) `{!Plain P} n m :
-  (∀ `{Hinv: !invGS_gen HasLc Σ}, £ m ⊢@{iPropI Σ} |={⊤,∅}=> |={∅}▷=>^n P) →
+  (∀ `{Hinv: !invGS_gen HasLc Σ}, £ m ={⊤,∅}=∗ |={∅}▷=>^n P) →
   ⊢ P.
 Proof.
   intros Hiter.
@@ -223,7 +223,7 @@ Proof.
 Qed.
 
 Lemma step_fupdN_soundness_lc' `{!invGpreS Σ} (P : iProp Σ) `{!Plain P} n m :
-  (∀ `{Hinv: !invGS_gen hlc Σ}, £ m ⊢@{iPropI Σ} |={⊤}[∅]▷=>^n P) →
+  (∀ `{Hinv: !invGS_gen hlc Σ}, £ m ={⊤}[∅]▷=∗^n P) →
   ⊢ P.
 Proof.
   intros Hiter.

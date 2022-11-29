@@ -210,6 +210,20 @@ theories/base_logic/lib is for constructions in the base logic (using own)
 * Parameter order is usually from more higher-order to less higher-order (types, functions, plain values), and otherwise follows the order in which variables appear in the lemma statement.
 * In new lemmas, arguments should be marked as implicit when they can be inferred by unification in all intended usage scenarios. (If an argument can *sometimes* be inferred, we do not have a clear guideline yet -- consider on a case-by-case basis, for now.)
 
+## Lemma statements
+
+### Iris lemmas: `-∗` vs `⊢`
+
+* For low-level lemmas, in particular if there is a high likelyhood someone would want to rewrite with it / use them in non-proofmode goals (e.g. modality intro rules), use `⊢`
+  * `P ⊢ |==£> P`
+  * `(|==£> |==£> P) ⊢ |==£> P`
+  * `▷ own γ a ⊢ ◇ ∃ b, own γ b ∧ ▷ (a ≡ b)`
+  * `(P -∗ Q) i ⊢ (P i -∗ Q i)`
+* If a lemma is a Coq implication of Iris entailments (where the entailments are visible, not hidden behind e.g. `Persistent`), then use `⊢`
+  * `(P1 ⊢ P2) → recv l P1 ⊢ recv l P2`
+* Else use -∗
+  * `a1 ⋅ a2 ~~> a' → own γ a1 -∗ own γ a2 ==∗ own γ a'` (curried and hence not rewrite-friendly)
+
 ## Metavariables
 **TODO:** move these to the right place
 
