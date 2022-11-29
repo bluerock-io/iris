@@ -114,7 +114,7 @@ Corollary modal_soundness P `{!Plain P} (ms : list modality) :
 Proof.
   intros H. apply (laterN_soundness _ (length ms)).
   move: H. apply bi_emp_valid_mono.
-  induction ms as [|m ms IH]; first done; simpl in *.
+  induction ms as [|m ms IH]; first done; simpl.
   destruct m; simpl; rewrite IH.
   - rewrite -later_intro. apply bupd_plain. apply _.
   - done.
