@@ -40,7 +40,7 @@ Notation "'£'  n" := (lc n) (at level 1).
   Users should not directly interface with this. *)
 Local Definition lc_supply_def `{!lcGS Σ} (n : nat) : iProp Σ := own lcGS_name (● n).
 Local Definition lc_supply_aux : seal (@lc_supply_def). Proof. by eexists. Qed.
-Definition lc_supply := lc_supply_aux.(unseal).
+Local Definition lc_supply := lc_supply_aux.(unseal).
 Local Definition lc_supply_unseal :
   @lc_supply = @lc_supply_def := lc_supply_aux.(seal_eq).
 Global Arguments lc_supply {Σ _} n.
