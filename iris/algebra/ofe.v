@@ -1016,10 +1016,14 @@ When building abstractions (point 2, above), make sure that [leibnizO] does not
 leak into the API boundary. Otherwise client code can end up with overlapping
 instances, and thus experience odd unification failures. *)
 
+(** The combinator [discreteO A] lifts an existing [Equiv A] instance into a
+discrete OFE. *)
 Notation discreteO A := (Ofe A (discrete_ofe_mixin _)).
-(** Force the [Equivalence] proof to be [eq_equivalence] so that it does not
-find another one, like [ofe_equivalence], in the case of aliases. See also
-https://gitlab.mpi-sws.org/iris/iris/issues/299 *)
+
+(** The combinator [leibnizO A] lifts Leibniz equality [=] into a discrete OFE.
+The implementation forces the [Equivalence] proof to be [eq_equivalence] so that
+Coq does not accidentally use another one, like [ofe_equivalence], in the case of
+aliases. See also https://gitlab.mpi-sws.org/iris/iris/issues/299 *)
 Notation leibnizO A := (Ofe A (@discrete_ofe_mixin _ equivL eq_equivalence)).
 
 (** In order to define a discrete CMRA with carrier [A] (in the file [cmra.v])
