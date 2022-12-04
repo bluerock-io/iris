@@ -994,6 +994,23 @@ Section discrete_ofe.
   Qed.
 End discrete_ofe.
 
+(** The combinators [discreteO] and [leibnizO] should be used with care. There
+are two ways in which they can be used:
+
+1. To define an OFE on a ground type, such as [nat], [expr], etc.
+2. As part of abstractions that are parametrized with a [Type], but where an
+   [ofe] is needed to use (camera) combinators. See [ghost_var] as an example.
+
+You should *never* use [leibnizO] on compound types such as [list nat]. That
+creates overlapping canonical instances for the head symbol (e.g., [listO] and
+[leibnizO (list nat)]) and confuses unification. Instead, you should declare a
+canonical instance for the ground type, and use the OFE on the compound type
+(e.g., [listO natO]).
+
+When building abstractions (point 2, above), make sure that [leibnizO] does not
+leak into the API boundary. Otherwise client code can end up with overlapping
+instances, and thus experience odd unification failures. *)
+
 Notation discreteO A := (Ofe A (discrete_ofe_mixin _)).
 (** Force the [Equivalence] proof to be [eq_equivalence] so that it does not
 find another one, like [ofe_equivalence], in the case of aliases. See also
