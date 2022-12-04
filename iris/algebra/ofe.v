@@ -997,7 +997,10 @@ End discrete_ofe.
 (** The combinators [discreteO] and [leibnizO] should be used with care. There
 are two ways in which they can be used:
 
-1. To define an OFE on a ground type, such as [nat], [expr], etc.
+1. To define an OFE on a ground type, such as [nat], [expr], etc. The OFE
+   instance should be defined as [Canonical Structure tyO := leibnizO ty] or
+   [Canonical Structure tyO := discreteO ty], so not using [Definition]. See
+   [natO] below for an example.
 2. As part of abstractions that are parametrized with a [Type], but where an
    [ofe] is needed to use (camera) combinators. See [ghost_var] as an example.
 
