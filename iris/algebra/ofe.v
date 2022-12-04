@@ -1004,11 +1004,13 @@ are two ways in which they can be used:
 2. As part of abstractions that are parametrized with a [Type], but where an
    [ofe] is needed to use (camera) combinators. See [ghost_var] as an example.
 
-You should *never* use [leibnizO] on compound types such as [list nat]. That
-creates overlapping canonical instances for the head symbol (e.g., [listO] and
-[leibnizO (list nat)]) and confuses unification. Instead, you should declare a
-canonical instance for the ground type, and use the OFE on the compound type
-(e.g., [listO natO]).
+You should *never* use [leibnizO] or [discreteO] on compound types such as
+[list nat]. That creates overlapping canonical instances for the head symbol
+(e.g., [listO] and [leibnizO (list nat)]) and confuses unification. Instead, you
+should declare a canonical instance for the ground type, and use the OFE on the
+compound type (e.g., [listO natO]). You can define instances for boxed types.
+For example, given [Record ty := Ty { ty_car : list ... }], you can define
+[Canonical Structure tyO := leibnizO ty].
 
 When building abstractions (point 2, above), make sure that [leibnizO] does not
 leak into the API boundary. Otherwise client code can end up with overlapping
