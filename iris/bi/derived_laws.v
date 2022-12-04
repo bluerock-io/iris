@@ -1061,6 +1061,8 @@ Global Instance intuitionistically_flip_mono' :
   Proper (flip (⊢) ==> flip (⊢)) (@bi_intuitionistically PROP).
 Proof. solve_proper. Qed.
 
+Lemma intuitionistically_def P : (□ P)%I = (<affine> <pers> P)%I.
+Proof. done. Qed.
 Lemma intuitionistically_elim P : □ P ⊢ P.
 Proof. apply persistently_and_emp_elim. Qed.
 Lemma intuitionistically_elim_emp P : □ P ⊢ emp.
