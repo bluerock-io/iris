@@ -190,7 +190,7 @@ Qed.
 
 Lemma subst_map_empty e : subst_map ∅ e = e.
 Proof.
-  assert (∀ x, binder_delete x (∅:gmap _ val) = ∅) as Hdel.
+  assert (∀ x, binder_delete x (∅:gmap string val) = ∅) as Hdel.
   { intros [|x]; by rewrite /= ?delete_empty. }
   induction e; simplify_map_eq; rewrite ?Hdel; auto with f_equal.
 Qed.
