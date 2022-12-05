@@ -1,4 +1,4 @@
-# IRIS COQ DEVELOPMENT [[coqdoc]](https://plv.mpi-sws.org/coqdoc/iris/)
+# Iris Coq Development [[coqdoc]](https://plv.mpi-sws.org/coqdoc/iris/)
 
 This is the Coq development of the [Iris Project](http://iris-project.org),
 which includes [MoSeL](http://iris-project.org/mosel/), a general proof mode
