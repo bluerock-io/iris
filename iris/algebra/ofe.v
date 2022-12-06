@@ -1003,18 +1003,19 @@ are two ways in which they can be used:
    [natO] below for an example.
 2. As part of abstractions that are parametrized with a [Type], but where an
    [ofe] is needed to use (camera) combinators. See [ghost_var] as an example.
+   In this case, the public API of the abstraction should exclusively use
+   [Type], i.e., the use of [leibnizO] or [discreteO] should not leak. Otherwise
+   client code can end up with overlapping instances, and thus experience odd
+   unification failures.
 
 You should *never* use [leibnizO] or [discreteO] on compound types such as
 [list nat]. That creates overlapping canonical instances for the head symbol
 (e.g., [listO] and [leibnizO (list nat)]) and confuses unification. Instead, you
-should declare a canonical instance for the ground type, and use the OFE on the
-compound type (e.g., [listO natO]). You can define instances for boxed types.
-For example, given [Record ty := Ty { ty_car : list ... }], you can define
-[Canonical Structure tyO := leibnizO ty].
-
-When building abstractions (point 2, above), make sure that [leibnizO] does not
-leak into the API boundary. Otherwise client code can end up with overlapping
-instances, and thus experience odd unification failures. *)
+have two options:
+- declare/use a canonical instance for the ground type, e.g., [listO natO].
+- declare a newtype, e.g., [Record ty := Ty { ty_car : list nat }], and then
+  declare a canonical instance for that type, e.g.,
+  [Canonical Structure tyO := leibnizO ty]. *)
 
 (** The combinator [discreteO A] lifts an existing [Equiv A] instance into a
 discrete OFE. *)
