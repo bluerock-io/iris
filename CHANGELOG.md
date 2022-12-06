@@ -8,6 +8,8 @@ lemma.
 **Changes in `algebra`:**
 
 * Add (basic) support for `gset` and `gset_disj` cameras to `set_solver`.
+* Rename `sig_{equiv,dist}_alt` into `sig_{equiv,dist}_def` and state these
+  lemmas using `=` instead of `<->`.
 
 **Changes in `bi`:**
 
@@ -35,6 +37,9 @@ Note that the script is not idempotent, do not run it twice.
 sed -i -E -f- $(find theories -name "*.v") <<EOF
 # iSolveTC
 s/iSolveTC\b/tc_solve/g
+# _alt -> _def
+s/\bsig_equiv_alt\b/sig_equiv_def/g
+s/\bsig_dist_alt\b/sig_dist_def/g
 EOF
 ```
 

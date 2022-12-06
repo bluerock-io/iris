@@ -1419,8 +1419,8 @@ Section sigma.
   Local Instance sig_equiv : Equiv (sig P) := λ x1 x2, `x1 ≡ `x2.
   Local Instance sig_dist : Dist (sig P) := λ n x1 x2, `x1 ≡{n}≡ `x2.
 
-  Definition sig_equiv_alt x y : x ≡ y ↔ `x ≡ `y := reflexivity _.
-  Definition sig_dist_alt n x y : x ≡{n}≡ y ↔ `x ≡{n}≡ `y := reflexivity _.
+  Definition sig_equiv_def x y : (x ≡ y) = (`x ≡ `y) := reflexivity _.
+  Definition sig_dist_def n x y : (x ≡{n}≡ y) = (`x ≡{n}≡ `y) := reflexivity _.
 
   Lemma exist_ne n a1 a2 (H1 : P a1) (H2 : P a2) :
     a1 ≡{n}≡ a2 → a1 ↾ H1 ≡{n}≡ a2 ↾ H2.
@@ -1436,7 +1436,7 @@ Section sigma.
   Proof. apply (iso_cofe_subtype' P (exist P) proj1_sig)=> //. by intros []. Qed.
 
   Global Instance sig_discrete (x : sig P) :  Discrete (`x) → Discrete x.
-  Proof. intros ? y. rewrite sig_dist_alt sig_equiv_alt. apply (discrete _). Qed.
+  Proof. intros ? y. rewrite sig_dist_def sig_equiv_def. apply (discrete _). Qed.
   Global Instance sig_ofe_discrete : OfeDiscrete A → OfeDiscrete sigO.
   Proof. intros ??. apply _. Qed.
 End sigma.
