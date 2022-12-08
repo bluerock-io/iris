@@ -994,10 +994,40 @@ Section discrete_ofe.
   Qed.
 End discrete_ofe.
 
+(** The combinators [discreteO] and [leibnizO] should be used with care. There
+are two ways in which they can be used:
+
+1. To define an OFE on a ground type, such as [nat], [expr], etc. The OFE
+   instance should be defined as [Canonical Structure tyO := leibnizO ty] or
+   [Canonical Structure tyO := discreteO ty], so not using [Definition]. See
+   [natO] below for an example. Make sure to avoid overlapping instances, so
+   always check if no instance has already been defined. For most of the types
+   from Coq, std++, and Iris, instances are present in Iris. The convention is
+   to use the name [tyO] for the OFE instance of a type [ty].
+2. As part of abstractions that are parametrized with a [Type], but where an
+   [ofe] is needed to use (camera) combinators. See [ghost_var] as an example.
+   In this case, the public API of the abstraction should exclusively use
+   [Type], i.e., the use of [leibnizO] or [discreteO] should not leak. Otherwise
+   client code can end up with overlapping instances, and thus experience odd
+   unification failures.
+
+You should *never* use [leibnizO] or [discreteO] on compound types such as
+[list nat]. That creates overlapping canonical instances for the head symbol
+(e.g., [listO] and [leibnizO (list nat)]) and confuses unification. Instead, you
+have two options:
+- declare/use a canonical instance for the ground type, e.g., [listO natO].
+- declare a newtype, e.g., [Record ty := Ty { ty_car : list nat }], and then
+  declare a canonical instance for that type, e.g.,
+  [Canonical Structure tyO := leibnizO ty]. *)
+
+(** The combinator [discreteO A] lifts an existing [Equiv A] instance into a
+discrete OFE. *)
 Notation discreteO A := (Ofe A (discrete_ofe_mixin _)).
-(** Force the [Equivalence] proof to be [eq_equivalence] so that it does not
-find another one, like [ofe_equivalence], in the case of aliases. See also
-https://gitlab.mpi-sws.org/iris/iris/issues/299 *)
+
+(** The combinator [leibnizO A] lifts Leibniz equality [=] into a discrete OFE.
+The implementation forces the [Equivalence] proof to be [eq_equivalence] so that
+Coq does not accidentally use another one, like [ofe_equivalence], in the case of
+aliases. See also https://gitlab.mpi-sws.org/iris/iris/issues/299 *)
 Notation leibnizO A := (Ofe A (@discrete_ofe_mixin _ equivL eq_equivalence)).
 
 (** In order to define a discrete CMRA with carrier [A] (in the file [cmra.v])
