@@ -2808,6 +2808,9 @@ End gset.
 Lemma big_sepM_dom `{Countable K} {A} (Φ : K → PROP) (m : gmap K A) :
   ([∗ map] k↦_ ∈ m, Φ k) ⊣⊢ ([∗ set] k ∈ dom m, Φ k).
 Proof. apply big_opM_dom. Qed.
+Lemma big_sepM_gset_to_gmap `{Countable K} {A} (Φ : K → A → PROP) (X : gset K) c :
+  ([∗ map] k↦a ∈ gset_to_gmap c X, Φ k a) ⊣⊢ ([∗ set] k ∈ X, Φ k c).
+Proof. apply big_opM_gset_to_gmap. Qed.
 
 (** ** Big ops over finite multisets *)
 Section gmultiset.
