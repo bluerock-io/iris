@@ -83,6 +83,12 @@ Coq 8.13 is no longer supported.
   postcondition into the context via `as (x1 ... xn) "ipat1 ... ipatn"`.
 * Add comparison `≤` and `<` for locations. (by Arthur Azevedo de Amorim).
 
+**Changes in `base_logic`:**
+
+* Add `mono_Z` library for monotone non-negative integers.
+  (This has exactly the same lemmas as `mono_nat`. It is useful in cases
+  where one wants to avoid `nat` entirely and use `Z` throughout.)
+
 **LaTeX changes:**
 
 - Rename `\Alloc` to `\AllocN` and `\Ref` to `\Alloc` for better consistency
