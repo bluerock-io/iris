@@ -191,3 +191,45 @@ Section positive.
   Global Instance pos_is_op (x y : positive) : IsOp (x + y)%positive x y.
   Proof. done. Qed.
 End positive.
+
+(** ** Integers (positive and negative) with [Z.add] as the operation. *)
+Section Z.
+  Local Open Scope Z_scope.
+  Local Instance Z_valid_instance : Valid Z := λ x, True.
+  Local Instance Z_validN_instance : ValidN Z := λ n x, True.
+  Local Instance Z_pcore_instance : PCore Z := λ x, Some 0.
+  Local Instance Z_op_instance : Op Z := Z.add.
+  Definition Z_op x y : x ⋅ y = x + y := eq_refl.
+  Lemma Z_ra_mixin : RAMixin Z.
+  Proof.
+    apply ra_total_mixin; try by eauto.
+    - solve_proper.
+    - intros x y z. apply Z.add_assoc.
+    - intros x y. apply Z.add_comm.
+    - by exists 0.
+  Qed.
+  Canonical Structure ZR : cmra := discreteR Z Z_ra_mixin.
+
+  Global Instance Z_cmra_discrete : CmraDiscrete ZR.
+  Proof. apply discrete_cmra_discrete. Qed.
+
+  Local Instance Z_unit_instance : Unit Z := 0.
+  Lemma Z_ucmra_mixin : UcmraMixin Z.
+  Proof. split; apply _ || done. Qed.
+  Canonical Structure ZUR : ucmra := Ucmra Z Z_ucmra_mixin.
+
+  Global Instance Z_cancelable (x : Z) : Cancelable x.
+  Proof. by intros ???? ?%Z.add_cancel_l. Qed.
+
+  Lemma Z_local_update (x y x' y' : Z) :
+    x + y' = x' + y → (x,y) ~l~> (x',y').
+  Proof.
+    intros. rewrite local_update_unital_discrete=> z _.
+    compute -[Z.sub Z.add]; lia.
+  Qed.
+
+  (* This one has a higher precendence than [is_op_op] so we get a [+] instead
+     of an [⋅]. *)
+  Global Instance Z_is_op (n1 n2 : Z) : IsOp (n1 + n2) n1 n2.
+  Proof. done. Qed.
+End Z.
