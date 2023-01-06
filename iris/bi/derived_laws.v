@@ -801,6 +801,69 @@ Section bi_affine.
   Proof. apply wand_intro_l. by rewrite sep_and impl_elim_r. Qed.
 End bi_affine.
 
+(* The class of "separable" assertions is occasionally useful, but does not
+warrant having their own typeclass (since adding a new class to the hierarchy in
+Coq unfortunately means a lot of extra work for everyone who declares
+"Persistent" instances).
+
+Being separable implies being duplicable, but it is strictly
+stronger than that: [P := ∃ q, l ↦{q} v] is duplicable but not
+"separable". Counterexample: [P ∧ l ↦ v] does not entail [P ∗ l ↦ v].
+
+Therefore, the hierarchy is:
+Persistent → Separable → Duplicable
+
+The particularly interesting separable assertions are those that are also absorbing:
+they satisfy many of the properties of [<pers> P].
+*)
+Definition separable (P : PROP) := ∀ Q, P ∧ Q ⊢ <affine> P ∗ Q.
+
+Lemma separable_and_affinely_sep_l `(HP : separable P) Q :
+  Absorbing P →
+  P ∧ Q ⊣⊢ <affine> P ∗ Q.
+Proof.
+  intros Pabs. apply (anti_symm (⊢)); first apply HP. apply and_intro.
+  - rewrite -{2}[P]sep_True. apply sep_mono. 2:apply True_intro. apply affinely_elim.
+  - rewrite affinely_elim_emp left_id. done.
+Qed.
+Lemma separable_and_affinely_sep_r `(HP : separable P) Q :
+  Absorbing P →
+  Q ∧ P ⊣⊢ Q ∗ <affine> P.
+Proof. intros. rewrite comm (separable_and_affinely_sep_l HP) comm //. Qed.
+
+Lemma separable_and_sep_assoc `(HP : separable P) Q R :
+  Absorbing P →
+  P ∧ (Q ∗ R) ⊣⊢ (P ∧ Q) ∗ R.
+Proof.
+  intros. rewrite (separable_and_affinely_sep_l HP) assoc. f_equiv.
+  rewrite (separable_and_affinely_sep_l HP). done.
+Qed.
+
+Lemma separable_sep_absorbingly_and_l `(HP : separable P) Q :
+  Absorbing P →
+  P ∗ Q ⊣⊢ P ∧ <absorb> Q.
+Proof. intros. rewrite /bi_absorbingly (separable_and_sep_assoc HP) right_id //. Qed.
+Lemma separable_sep_absorbingly_and_r `(HP : separable P) Q :
+  Absorbing P →
+  Q ∗ P ⊣⊢ <absorb> Q ∧ P.
+Proof. intros. rewrite comm (separable_sep_absorbingly_and_l HP) comm //. Qed.
+
+Lemma separable_absorbingly_affinely `(HP : separable P) :
+  Absorbing P →
+  <absorb> <affine> P ⊣⊢ P.
+Proof.
+  intros. rewrite /bi_absorbingly /bi_affinely.
+  rewrite [(_ ∧ _)%I]comm [(_ ∗ _)%I]comm -(separable_and_sep_assoc HP) left_id right_id //.
+Qed.
+Lemma separable_impl_wand_affinely `(HP : separable P) Q :
+  Absorbing P →
+  (P → Q) ⊣⊢ (<affine> P -∗ Q).
+Proof.
+  intros. apply (anti_symm _).
+  - apply wand_intro_l. rewrite -(separable_and_affinely_sep_l HP) impl_elim_r //.
+  - apply impl_intro_l. rewrite (separable_and_affinely_sep_l HP) wand_elim_r //.
+Qed.
+
 (* Pure stuff *)
 Lemma pure_elim φ Q R : (Q ⊢ ⌜φ⌝) → (φ → Q ⊢ R) → Q ⊢ R.
 Proof.
@@ -900,6 +963,12 @@ Proof.
   rewrite -decide_bi_True. destruct (decide _); [done|]. by rewrite True_emp.
 Qed.
 
+Lemma pure_separable {φ} : separable ⌜φ⌝.
+Proof.
+  intros Q. apply pure_elim_l=>H.
+  rewrite pure_True // affinely_True_emp left_id. done.
+Qed.
+
 (* Properties of the persistence modality *)
 Local Hint Resolve persistently_mono : core.
 Global Instance persistently_mono' : Proper ((⊢) ==> (⊢)) (@bi_persistently PROP).
@@ -970,17 +1039,14 @@ Proof.
   apply persistently_and_sep_elim.
 Qed.
 
-Lemma persistently_and_sep_assoc P Q R : <pers> P ∧ (Q ∗ R) ⊣⊢ (<pers> P ∧ Q) ∗ R.
+Lemma persistently_separable {P} : separable (<pers> P).
 Proof.
-  apply (anti_symm (⊢)).
-  - rewrite {1}persistently_idemp_2 persistently_and_sep_elim_emp assoc.
-    apply sep_mono_l, and_intro.
-    + by rewrite and_elim_r sep_elim_l.
-    + by rewrite and_elim_l left_id.
-  - apply and_intro.
-    + by rewrite and_elim_l sep_elim_l.
-    + by rewrite and_elim_r.
+  intros Q. rewrite {1}persistently_idemp_2.
+  rewrite persistently_and_sep_elim_emp. done.
 Qed.
+
+Lemma persistently_and_sep_assoc P Q R : <pers> P ∧ (Q ∗ R) ⊣⊢ (<pers> P ∧ Q) ∗ R.
+Proof. apply: (separable_and_sep_assoc persistently_separable). Qed.
 Lemma persistently_and_emp_elim P : emp ∧ <pers> P ⊢ P.
 Proof. by rewrite comm persistently_and_sep_elim_emp right_id and_elim_r. Qed.
 Lemma persistently_into_absorbingly P : <pers> P ⊢ <absorb> P.
@@ -1555,19 +1621,6 @@ Lemma persistent_and_affinely_sep_r_1 P Q `{!Persistent Q} :
   P ∧ Q ⊢ P ∗ <affine> Q.
 Proof. by rewrite !(comm _ P) persistent_and_affinely_sep_l_1. Qed.
 
-Lemma persistent_and_affinely_sep_l P Q `{!Persistent P, !Absorbing P} :
-  P ∧ Q ⊣⊢ <affine> P ∗ Q.
-Proof.
-  rewrite -(persistent_persistently P).
-  by rewrite persistently_and_intuitionistically_sep_l.
-Qed.
-Lemma persistent_and_affinely_sep_r P Q `{!Persistent Q, !Absorbing Q} :
-  P ∧ Q ⊣⊢ P ∗ <affine> Q.
-Proof.
-  rewrite -(persistent_persistently Q).
-  by rewrite persistently_and_intuitionistically_sep_r.
-Qed.
-
 Lemma persistent_and_sep_1 P Q `{HPQ : !TCOr (Persistent P) (Persistent Q)} :
   P ∧ Q ⊢ P ∗ Q.
 Proof.
@@ -1609,26 +1662,28 @@ Proof.
   rewrite {1}(persistent P) -absorbingly_intuitionistically_into_persistently.
   by rewrite intuitionistically_affinely.
 Qed.
-Lemma persistent_absorbingly_affinely P `{!Persistent P, !Absorbing P} :
-  <absorb> <affine> P ⊣⊢ P.
-Proof.
-  rewrite -(persistent_persistently P).
-  by rewrite absorbingly_intuitionistically_into_persistently.
-Qed.
-
-Lemma persistent_and_sep_assoc P `{!Persistent P, !Absorbing P} Q R :
-  P ∧ (Q ∗ R) ⊣⊢ (P ∧ Q) ∗ R.
-Proof. by rewrite -(persistent_persistently P) persistently_and_sep_assoc. Qed.
-Lemma persistent_impl_wand_affinely P `{!Persistent P, !Absorbing P} Q :
-  (P → Q) ⊣⊢ (<affine> P -∗ Q).
-Proof.
-  apply (anti_symm _).
-  - apply wand_intro_l. rewrite -persistent_and_affinely_sep_l impl_elim_r //.
-  - apply impl_intro_l. rewrite persistent_and_affinely_sep_l wand_elim_r //.
-Qed.
 
 Lemma impl_wand_2 P `{!Persistent P} Q : (P -∗ Q) ⊢ P → Q.
 Proof. apply impl_intro_l. by rewrite persistent_and_sep_1 wand_elim_r. Qed.
+
+Lemma persistent_separable `{!Persistent P} : separable P.
+Proof. intros Q. apply persistent_and_affinely_sep_l_1. done. Qed.
+
+Lemma persistent_and_affinely_sep_l P Q `{!Persistent P, !Absorbing P} :
+  P ∧ Q ⊣⊢ <affine> P ∗ Q.
+Proof. apply (separable_and_affinely_sep_l persistent_separable). done. Qed.
+Lemma persistent_and_affinely_sep_r P Q `{!Persistent Q, !Absorbing Q} :
+  P ∧ Q ⊣⊢ P ∗ <affine> Q.
+Proof. apply (separable_and_affinely_sep_r persistent_separable). done. Qed.
+Lemma persistent_and_sep_assoc P `{!Persistent P, !Absorbing P} Q R :
+  P ∧ (Q ∗ R) ⊣⊢ (P ∧ Q) ∗ R.
+Proof. apply (separable_and_sep_assoc persistent_separable). done. Qed.
+Lemma persistent_absorbingly_affinely P `{!Persistent P, !Absorbing P} :
+  <absorb> <affine> P ⊣⊢ P.
+Proof. apply (separable_absorbingly_affinely persistent_separable). done. Qed.
+Lemma persistent_impl_wand_affinely P `{!Persistent P, !Absorbing P} Q :
+  (P → Q) ⊣⊢ (<affine> P -∗ Q).
+Proof. apply (separable_impl_wand_affinely persistent_separable). done. Qed.
 
 (** We don't have a [Intuitionistic] typeclass, but if we did, this
 would be its only field. *)
