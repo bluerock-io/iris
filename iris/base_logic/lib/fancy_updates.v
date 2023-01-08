@@ -60,7 +60,7 @@ Proof.
   - rewrite uPred_fupd_unseal. solve_proper.
   - intros E1 E2 (E1''&->&?)%subseteq_disjoint_union_L.
     rewrite uPred_fupd_unseal /uPred_fupd_def ownE_op //.
-    by iIntros "($ & $ & HE) !> !> [$ $] !> !>" .
+    by iIntros "($ & $ & HE) !> !> [$ $] !> !>".
   - rewrite uPred_fupd_unseal.
     iIntros (E1 E2 P) ">H [Hw HE]". iApply "H"; by iFrame.
   - rewrite uPred_fupd_unseal.
@@ -142,7 +142,7 @@ Proof.
   (* We don't actually want any credits, but we need the [lcGS]. *)
   iMod (later_credits.le_upd.lc_alloc m) as (Hc) "[_ Hc]".
   set (Hi := InvG HasNoLc _ Hw Hc).
-  iAssert (|={⊤,E2}=> P)%I with "[Hc]" as "H" .
+  iAssert (|={⊤,E2}=> P)%I with "[Hc]" as "H".
   { iMod (fupd_mask_subseteq E1) as "_"; first done. iApply Hfupd; last done. }
   rewrite uPred_fupd_unseal /uPred_fupd_def.
   iMod ("H" with "[$]") as "[Hw [HE >H']]"; iFrame.
