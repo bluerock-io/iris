@@ -406,3 +406,27 @@ Section general.
       by iApply "IH".
   Qed.
 End general.
+
+Section timeless.
+  Context {PROP : bi} `{!BiInternalEq PROP} `{!BiAffine PROP}.
+  Context `{!OfeDiscrete A}.
+  Context (R : A → A → PROP) `{!NonExpansive2 R}.
+
+  Global Instance bi_nsteps_timeless n :
+    (∀ x y, Timeless (R x y)) →
+    ∀ x y, Timeless (bi_nsteps R n x y).
+  Proof.
+    intros ? x y. revert x.
+    induction n; apply _.
+  Qed.
+
+  Global Instance bi_rtc_timeless :
+    (∀ x y, Timeless (R x y)) →
+    ∀ x y, Timeless (bi_rtc R x y).
+  Proof. intros ? x y. rewrite bi_rtc_nsteps. apply _. Qed.
+
+  Global Instance bi_tc_timeless :
+    (∀ x y, Timeless (R x y)) →
+    ∀ x y, Timeless (bi_tc R x y).
+  Proof. intros ? x y. rewrite bi_tc_nsteps. apply _. Qed.
+End timeless.
