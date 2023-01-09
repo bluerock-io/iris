@@ -5,6 +5,8 @@ lemma.
 
 ## Iris master
 
+Coq 8.13 is no longer supported.
+
 **Changes in `algebra`:**
 
 * Add (basic) support for `gset` and `gset_disj` cameras to `set_solver`.
