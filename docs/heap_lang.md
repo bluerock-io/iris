@@ -104,14 +104,16 @@ Further tactics:
   particular when accessing invariants, which is only possible when the `WP` in
   the goal is for a single, atomic operation -- `wp_bind` can be used to bring
   the goal into the right shape.
-- `wp_apply pm_trm`: Apply a lemma whose conclusion is a `WP`, automatically
-  applying `wp_bind` as needed.  See the [ProofMode docs](./proof_mode.md) for an
-  explanation of `pm_trm`.
-- `wp_smart_apply pm_trm`: like `wp_apply`, but also performs pure reduction
-  steps to reveal a redex that matches `pm_trm`. Precisely, if applying the
-  lemma fails, `wp_smart_apply` will perform a step of pure reduction (via
-  `wp_pure`), and repeat. (This means that `wp_smart_apply` is not the same
-  as `wp_pures; wp_apply`.)
+- `wp_apply pm_trm as (x1 ... xn) "ipat1 ... ipatn"`:
+  Apply a lemma whose conclusion is a `WP`, automatically applying `wp_bind` as
+  needed. The `as` clause is optional and can be used to introduce the
+  postcondition; this works particularly well for Texan triples. See the
+  [ProofMode docs](./proof_mode.md) for an explanation of `pm_trm` and `ipat`.
+- `wp_smart_apply pm_trm as (x1 ... xn) "ipat1 ... ipatn"`:
+  like `wp_apply`, but also performs pure reduction steps to reveal a redex that
+  matches `pm_trm`. To be precise, if applying the lemma fails, `wp_smart_apply`
+  will perform a step of pure reduction (via `wp_pure`), and repeat. (This means
+  that `wp_smart_apply` is not the same as `wp_pures; wp_apply`.)
 
 There is no tactic for `Fork`, just do `wp_apply wp_fork`.
 

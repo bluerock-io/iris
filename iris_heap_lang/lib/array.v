@@ -83,8 +83,7 @@ Section proof.
     iDestruct (array_cons with "Hdst") as "[Hv1 Hdst]".
     iDestruct (array_cons with "Hsrc") as "[Hv2 Hsrc]".
     wp_load; wp_store.
-    wp_smart_apply ("IH" with "[%] [%] Hdst Hsrc"); [ lia .. | ].
-    iIntros "[Hvdst Hvsrc]".
+    wp_smart_apply ("IH" with "[%] [%] Hdst Hsrc") as "[Hvdst Hvsrc]"; [ lia .. | ].
     iApply "HΦ"; by iFrame.
   Qed.
   Lemma wp_array_copy_to stk E (dst src : loc) vdst vsrc dq (n : Z) :
@@ -107,11 +106,10 @@ Section proof.
     iIntros (Hvl Hn Φ) "Hvl HΦ".
     wp_lam.
     wp_alloc dst as "Hdst"; first by auto.
-    wp_smart_apply (twp_array_copy_to with "[$Hdst $Hvl]").
+    wp_smart_apply (twp_array_copy_to with "[$Hdst $Hvl]") as "[Hdst Hl]".
     - rewrite replicate_length Z2Nat.id; lia.
     - auto.
-    - iIntros "[Hdst Hl]".
-      wp_pures.
+    - wp_pures.
       iApply "HΦ"; by iFrame.
   Qed.
   Lemma wp_array_clone stk E l dq vl n :
@@ -147,7 +145,7 @@ Section proof.
       rewrite bool_decide_eq_false_2; last naive_solver lia.
       iDestruct (array_cons with "Hl") as "[Hl HSl]".
       iDestruct "Hf" as "[Hf HSf]".
-      wp_smart_apply (wp_wand with "Hf"); iIntros (v) "Hv". wp_store. wp_pures.
+      wp_smart_apply (wp_wand with "Hf") as (v) "Hv". wp_store. wp_pures.
       rewrite Z.add_1_r -Nat2Z.inj_succ.
       iApply ("IH" with "[%] [HSl] HSf"); first lia.
       { by rewrite Loc.add_assoc Z.add_1_r -Nat2Z.inj_succ. }
@@ -174,7 +172,7 @@ Section proof.
       rewrite bool_decide_eq_false_2; last naive_solver lia.
       iDestruct (array_cons with "Hl") as "[Hl HSl]".
       iDestruct "Hf" as "[Hf HSf]".
-      wp_smart_apply (twp_wand with "Hf"); iIntros (v) "Hv". wp_store. wp_pures.
+      wp_smart_apply (twp_wand with "Hf") as (v) "Hv". wp_store. wp_pures.
       rewrite Z.add_1_r -Nat2Z.inj_succ.
       iApply ("IH" with "[%] [HSl] HSf"); first lia.
       { by rewrite Loc.add_assoc Z.add_1_r -Nat2Z.inj_succ. }
@@ -195,10 +193,10 @@ Section proof.
       }}}.
     Proof.
       iIntros (Hn Φ) "Hf HΦ". wp_lam. wp_alloc l as "Hl"; first done.
-      wp_smart_apply (wp_array_init_loop _ _ _ 0 n (Z.to_nat n) with "[Hl $Hf] [HΦ]").
+      wp_smart_apply (wp_array_init_loop _ _ _ 0 n (Z.to_nat n) with "[Hl $Hf] [HΦ]") as "!> %vs".
       { by rewrite /= Z2Nat.id; last lia. }
       { by rewrite Loc.add_0. }
-      iIntros "!>" (vs). iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
+      iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
       iApply ("HΦ" $! _ vs). iModIntro. iSplit.
       { iPureIntro. by rewrite Hlen Z2Nat.id; last lia. }
       rewrite Loc.add_0. iFrame.
@@ -214,10 +212,10 @@ Section proof.
       }]].
     Proof.
       iIntros (Hn Φ) "Hf HΦ". wp_lam. wp_alloc l as "Hl"; first done.
-      wp_smart_apply (twp_array_init_loop _ _ _ 0 n (Z.to_nat n) with "[Hl $Hf] [HΦ]").
+      wp_smart_apply (twp_array_init_loop _ _ _ 0 n (Z.to_nat n) with "[Hl $Hf] [HΦ]") as "%vs".
       { by rewrite /= Z2Nat.id; last lia. }
       { by rewrite Loc.add_0. }
-      iIntros (vs). iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
+      iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
       iApply ("HΦ" $! _ vs). iModIntro. iSplit.
       { iPureIntro. by rewrite Hlen Z2Nat.id; last lia. }
       rewrite Loc.add_0. iFrame.

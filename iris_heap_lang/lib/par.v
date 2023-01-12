@@ -27,10 +27,10 @@ Lemma par_spec (Ψ1 Ψ2 : val → iProp Σ) (f1 f2 : val) (Φ : val → iProp Σ
   WP par f1 f2 {{ Φ }}.
 Proof.
   iIntros "Hf1 Hf2 HΦ". wp_lam. wp_let.
-  wp_apply (spawn_spec parN with "Hf1").
-  iIntros (l) "Hl". wp_let. wp_bind (f2 _).
-  wp_apply (wp_wand with "Hf2"); iIntros (v) "H2". wp_let.
-  wp_apply (join_spec with "[$Hl]"). iIntros (w) "H1".
+  wp_apply (spawn_spec parN with "Hf1") as (l) "Hl".
+  wp_let. wp_bind (f2 _).
+  wp_apply (wp_wand with "Hf2") as (v) "H2". wp_let.
+  wp_apply (join_spec with "[$Hl]") as (w) "H1".
   iSpecialize ("HΦ" with "[$H1 $H2]"). by wp_pures.
 Qed.
 
