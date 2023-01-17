@@ -17,6 +17,8 @@ lemma.
   PROP-level binary relations.
 * Use `binder` in notations for big ops. This means one can write things such
   as `[∗ map] '(k,_) ↦ '(_,y) ∈ m, ⌜ k = y ⌝`.
+* Add a construction `bi_nsteps` to create `n`-step reductions of
+  PROP-level binary relations.
 
 **Changes in `proofmode`:**
 
