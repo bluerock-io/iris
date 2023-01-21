@@ -99,10 +99,10 @@ Section ectx_language.
   Lemma fill_val K e : is_Some (to_val (fill K e)) → is_Some (to_val e).
   Proof. apply ectx_language_mixin. Qed.
   Lemma step_by_val K' K_redex e1' e1_redex σ1 κ e2 σ2 efs :
-      fill K' e1' = fill K_redex e1_redex →
-      to_val e1' = None →
-      head_step e1_redex σ1 κ e2 σ2 efs →
-      ∃ K'', K_redex = comp_ectx K' K''.
+    fill K' e1' = fill K_redex e1_redex →
+    to_val e1' = None →
+    head_step e1_redex σ1 κ e2 σ2 efs →
+    ∃ K'', K_redex = comp_ectx K' K''.
   Proof. apply ectx_language_mixin. Qed.
   Lemma head_ctx_step_val K e σ1 κ e2 σ2 efs :
     head_step (fill K e) σ1 κ e2 σ2 efs → is_Some (to_val e) ∨ K = empty_ectx.
