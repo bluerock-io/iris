@@ -17,7 +17,7 @@ Implicit Types Φs : list (val Λ → iProp Σ).
 
 Notation wptp s t Φs := ([∗ list] e;Φ ∈ t;Φs, WP e @ s; ⊤ {{ Φ }})%I.
 
-Lemma wp_step s e1 σ1 ns κ κs e2 σ2 efs nt Φ :
+Local Lemma wp_step s e1 σ1 ns κ κs e2 σ2 efs nt Φ :
   prim_step e1 σ1 κ e2 σ2 efs →
   state_interp σ1 ns (κ ++ κs) nt -∗
   £ (S (num_laters_per_step ns)) -∗
@@ -84,7 +84,7 @@ Proof.
   rewrite -Nat.add_assoc -(assoc_L app) -replicate_add. by eauto with iFrame.
 Qed.
 
-Lemma wp_not_stuck κs nt e σ ns Φ :
+Local Lemma wp_not_stuck κs nt e σ ns Φ :
   state_interp σ ns κs nt -∗ WP e {{ Φ }} ={⊤, ∅}=∗ ⌜not_stuck e σ⌝.
 Proof.
   rewrite wp_unfold /wp_pre /not_stuck. iIntros "Hσ H".
