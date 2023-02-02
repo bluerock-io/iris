@@ -1,7 +1,11 @@
 From iris.algebra Require Export ofe.
 From iris.bi Require Export notation.
 From iris.prelude Require Import options.
-Set Primitive Projections.
+
+(* We enable primitive projections in this file to improve the performance of the Iris proofmode:
+    primitive projections for the bi-records makes the proofmode faster.
+*)
+Local Set Primitive Projections.
 
 Section bi_mixin.
   Context {PROP : Type} `{!Dist PROP, !Equiv PROP}.

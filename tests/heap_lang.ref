@@ -174,7 +174,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   ============================
   @bi_emp_valid (uPredI (iResUR Σ))
     (@fupd (bi_car (uPredI (iResUR Σ)))
-       (@bi_fupd_fupd (uPredI (iResUR Σ))
+       (@bi_fupd_fupd _
           (@uPred_bi_fupd HasLc Σ
              (@iris_invGS HasLc heap_lang Σ (@heapGS_irisGS HasLc Σ heapGS0))))
        (@top coPset coPset_top) (@top coPset coPset_top)
