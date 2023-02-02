@@ -3,6 +3,11 @@ From iris.bi Require Import interface derived_laws_later big_op plainly.
 From iris.prelude Require Import options.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
 
+(* We enable primitive projections in this file to improve the performance of the Iris proofmode:
+    primitive projections for the bi-records makes the proofmode faster.
+*)
+Local Set Primitive Projections.
+
 (* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
 Set Default Proof Using "Type*".
 

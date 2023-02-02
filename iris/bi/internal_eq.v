@@ -2,6 +2,11 @@ From iris.bi Require Import derived_laws_later big_op.
 From iris.prelude Require Import options.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
 
+(* We enable primitive projections in this file to improve the performance of the Iris proofmode:
+    primitive projections for the bi-records makes the proofmode faster.
+*)
+Local Set Primitive Projections.
+
 (** This file defines a type class for BIs with a notion of internal equality.
 Internal equality is not part of the [bi] canonical structure as [internal_eq]
 can only be given a definition that satisfies [NonExpansive2 internal_eq] _and_
