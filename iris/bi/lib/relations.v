@@ -41,7 +41,7 @@ Section definitions.
     | S n' => ∃ x', R x1 x' ∗ bi_nsteps R n' x' x2
     end.
 
-  Global Instance: Params (@bi_nsteps) 4 := {}.
+  Global Instance: Params (@bi_nsteps) 5 := {}.
   Typeclasses Opaque bi_nsteps.
 End definitions.
 
@@ -96,14 +96,7 @@ Proof. apply ne_proper_2. apply _. Qed.
 Global Instance bi_nsteps_ne {PROP : bi} `{!BiInternalEq PROP}
     {A : ofe} (R : A → A → PROP) `{NonExpansive2 R} (n : nat) :
   NonExpansive2 (bi_nsteps R n).
-Proof.
-  intros m x1 x2 Hx y1 y2 Hy.
-  revert x1 x2 Hx.
-  induction n as [|n IH]; intros x1 x2 Hx.
-  - rewrite /bi_nsteps Hx Hy. f_equiv.
-  - simpl. f_equiv=> x'. rewrite Hx. f_equiv.
-    by apply IH.
-Qed.
+Proof. induction n; solve_proper. Qed.
 
 Global Instance bi_nsteps_proper {PROP : bi} `{!BiInternalEq PROP}
     {A : ofe} (R : A → A → PROP) `{NonExpansive2 R} (n : nat)
@@ -316,7 +309,7 @@ Section general.
   Lemma bi_nsteps_trans n m x y z :
     bi_nsteps R n x y -∗ bi_nsteps R m y z -∗ bi_nsteps R (n + m) x z.
   Proof.
-    iInduction n as [|] "IH" forall (x); simpl.
+    iInduction n as [|n] "IH" forall (x); simpl.
     - iIntros "Heq". iRewrite "Heq". auto.
     - iDestruct 1 as (x') "[Hxx' Hx'y]". iIntros "Hyz".
       iExists x'. iFrame "Hxx'". iApply ("IH" with "Hx'y Hyz").
@@ -333,7 +326,7 @@ Section general.
   Lemma bi_nsteps_add_inv n m x z :
     bi_nsteps R (n + m) x z -∗ ∃ y, bi_nsteps R n x y ∗ bi_nsteps R m y z.
   Proof.
-    iInduction n as [|] "IH" forall (x).
+    iInduction n as [|n] "IH" forall (x).
     - iIntros "Hxz". iExists x. auto.
     - iDestruct 1 as (y) "[Hxy Hyz]".
       iDestruct ("IH" with "Hyz") as (y') "[Hyy' Hy'z]".
@@ -344,8 +337,7 @@ Section general.
   Lemma bi_nsteps_inv_r n x z :
     bi_nsteps R (S n) x z -∗ ∃ y, bi_nsteps R n x y ∗ R y z.
   Proof.
-    rewrite <- PeanoNat.Nat.add_1_r.
-    rewrite bi_nsteps_add_inv. simpl.
+    rewrite -Nat.add_1_r bi_nsteps_add_inv /=.
     iDestruct 1 as (y) "[Hxy (%x' & Hxx' & Heq)]".
     iExists y. iRewrite -"Heq". iFrame.
   Qed.
@@ -400,25 +392,21 @@ Section general.
     - iDestruct 1 as (n) "Hxy".
       iInduction n as [|n] "IH" forall (y).
       { simpl. iRewrite "Hxy". iApply bi_rtc_refl. }
-      rewrite bi_nsteps_inv_r.
-      iDestruct "Hxy" as (x') "[Hxx' Hx'y]".
+      iDestruct (bi_nsteps_inv_r with "Hxy") as (x') "[Hxx' Hx'y]".
       iApply (bi_rtc_r with "[Hxx'] Hx'y").
       by iApply "IH".
   Qed.
 End general.
 
 Section timeless.
-  Context {PROP : bi} `{!BiInternalEq PROP} `{!BiAffine PROP}.
+  Context {PROP : bi} `{!BiInternalEq PROP, !BiAffine PROP}.
   Context `{!OfeDiscrete A}.
   Context (R : A → A → PROP) `{!NonExpansive2 R}.
 
   Global Instance bi_nsteps_timeless n :
     (∀ x y, Timeless (R x y)) →
     ∀ x y, Timeless (bi_nsteps R n x y).
-  Proof.
-    intros ? x y. revert x.
-    induction n; apply _.
-  Qed.
+  Proof. induction n; apply _. Qed.
 
   Global Instance bi_rtc_timeless :
     (∀ x y, Timeless (R x y)) →
