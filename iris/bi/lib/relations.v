@@ -34,6 +34,15 @@ Section definitions.
   Global Instance: Params (@bi_tc) 4 := {}.
   Typeclasses Opaque bi_tc.
 
+  (** Reductions of exactly [n] steps. *)
+  Fixpoint bi_nsteps (R : A → A → PROP) (n : nat) (x1 x2 : A) : PROP :=
+    match n with
+    | 0    => <affine> (x1 ≡ x2)
+    | S n' => ∃ x', R x1 x' ∗ bi_nsteps R n' x' x2
+    end.
+
+  Global Instance: Params (@bi_nsteps) 5 := {}.
+  Typeclasses Opaque bi_nsteps.
 End definitions.
 
 Local Instance bi_rtc_pre_mono {PROP : bi} `{!BiInternalEq PROP}
@@ -82,6 +91,16 @@ Qed.
 Global Instance bi_tc_proper `{!BiInternalEq PROP} {A : ofe}
     (R : A → A → PROP) `{NonExpansive2 R}
   : Proper ((≡) ==> (≡) ==> (⊣⊢)) (bi_tc R).
+Proof. apply ne_proper_2. apply _. Qed.
+
+Global Instance bi_nsteps_ne {PROP : bi} `{!BiInternalEq PROP}
+    {A : ofe} (R : A → A → PROP) `{NonExpansive2 R} (n : nat) :
+  NonExpansive2 (bi_nsteps R n).
+Proof. induction n; solve_proper. Qed.
+
+Global Instance bi_nsteps_proper {PROP : bi} `{!BiInternalEq PROP}
+    {A : ofe} (R : A → A → PROP) `{NonExpansive2 R} (n : nat)
+  : Proper ((≡) ==> (≡) ==> (⊣⊢)) (bi_nsteps R n).
 Proof. apply ne_proper_2. apply _. Qed.
 
 (** * General theorems *)
@@ -277,6 +296,52 @@ Section general.
     by iApply bi_tc_l.
   Qed.
 
+  (** ** Results about [bi_nsteps] *)
+  Lemma bi_nsteps_O x : ⊢ bi_nsteps R 0 x x.
+  Proof. auto. Qed.
+  Lemma bi_nsteps_once x y : R x y -∗ bi_nsteps R 1 x y.
+  Proof. simpl. eauto. Qed.
+  Lemma bi_nsteps_once_inv x y : bi_nsteps R 1 x y -∗ R x y.
+  Proof. iDestruct 1 as (x') "[Hxx' Heq]". by iRewrite -"Heq". Qed.
+  Lemma bi_nsteps_l n x y z : R x y -∗ bi_nsteps R n y z -∗ bi_nsteps R (S n) x z.
+  Proof. iIntros "? ?". iExists y. iFrame. Qed.
+
+  Lemma bi_nsteps_trans n m x y z :
+    bi_nsteps R n x y -∗ bi_nsteps R m y z -∗ bi_nsteps R (n + m) x z.
+  Proof.
+    iInduction n as [|n] "IH" forall (x); simpl.
+    - iIntros "Heq". iRewrite "Heq". auto.
+    - iDestruct 1 as (x') "[Hxx' Hx'y]". iIntros "Hyz".
+      iExists x'. iFrame "Hxx'". iApply ("IH" with "Hx'y Hyz").
+  Qed.
+
+  Lemma bi_nsteps_r n x y z :
+    bi_nsteps R n x y -∗ R y z -∗ bi_nsteps R (S n) x z.
+  Proof.
+    iIntros "Hxy Hyx". rewrite -Nat.add_1_r.
+    iApply (bi_nsteps_trans with "Hxy").
+    by iApply bi_nsteps_once.
+  Qed.
+
+  Lemma bi_nsteps_add_inv n m x z :
+    bi_nsteps R (n + m) x z -∗ ∃ y, bi_nsteps R n x y ∗ bi_nsteps R m y z.
+  Proof.
+    iInduction n as [|n] "IH" forall (x).
+    - iIntros "Hxz". iExists x. auto.
+    - iDestruct 1 as (y) "[Hxy Hyz]".
+      iDestruct ("IH" with "Hyz") as (y') "[Hyy' Hy'z]".
+      iExists y'. iFrame "Hy'z".
+      iApply (bi_nsteps_l with "Hxy Hyy'").
+  Qed.
+
+  Lemma bi_nsteps_inv_r n x z :
+    bi_nsteps R (S n) x z -∗ ∃ y, bi_nsteps R n x y ∗ R y z.
+  Proof.
+    rewrite -Nat.add_1_r bi_nsteps_add_inv /=.
+    iDestruct 1 as (y) "[Hxy (%x' & Hxx' & Heq)]".
+    iExists y. iRewrite -"Heq". iFrame.
+  Qed.
+
   (** ** Equivalences between closure operators *)
   Lemma bi_rtc_tc x y : bi_rtc R x y ⊣⊢ <affine> (x ≡ y) ∨ bi_tc R x y.
   Proof.
@@ -293,4 +358,63 @@ Section general.
       by iApply bi_tc_rtc.
   Qed.
 
+  Lemma bi_tc_nsteps x y :
+    bi_tc R x y ⊣⊢ ∃ n, <affine> ⌜0 < n⌝ ∗ bi_nsteps R n x y.
+  Proof.
+    iSplit.
+    - iRevert (x). iApply bi_tc_ind_l. { solve_proper. }
+      iIntros "!>" (x) "[Hxy | H]".
+      { iExists 1. iSplitR; first auto with lia.
+        iApply (bi_nsteps_l with "Hxy"). iApply bi_nsteps_O. }
+      iDestruct "H" as (x') "[Hxx' IH]".
+      iDestruct "IH" as (n ?) "Hx'y".
+      iExists (S n). iSplitR; first auto with lia.
+      iApply (bi_nsteps_l with "Hxx' Hx'y").
+    - iDestruct 1 as (n ?) "Hxy".
+      iInduction n as [|n] "IH" forall (y). { lia. }
+      rewrite bi_nsteps_inv_r.
+      iDestruct "Hxy" as (x') "[Hxx' Hx'y]".
+      destruct n.
+      { simpl. iRewrite "Hxx'". by iApply bi_tc_once. }
+      iApply (bi_tc_r with "[Hxx'] Hx'y").
+      iApply ("IH" with "[%] Hxx'"). lia.
+  Qed.
+
+  Lemma bi_rtc_nsteps x y : bi_rtc R x y ⊣⊢ ∃ n, bi_nsteps R n x y.
+  Proof.
+    iSplit.
+    - iRevert (x). iApply bi_rtc_ind_l. { solve_proper. }
+      iIntros "!>" (x) "[Heq | H]".
+      { iExists 0. iRewrite "Heq". iApply bi_nsteps_O. }
+      iDestruct "H" as (x') "[Hxx' IH]".
+      iDestruct "IH" as (n) "Hx'y".
+      iExists (S n). iApply (bi_nsteps_l with "Hxx' Hx'y").
+    - iDestruct 1 as (n) "Hxy".
+      iInduction n as [|n] "IH" forall (y).
+      { simpl. iRewrite "Hxy". iApply bi_rtc_refl. }
+      iDestruct (bi_nsteps_inv_r with "Hxy") as (x') "[Hxx' Hx'y]".
+      iApply (bi_rtc_r with "[Hxx'] Hx'y").
+      by iApply "IH".
+  Qed.
 End general.
+
+Section timeless.
+  Context {PROP : bi} `{!BiInternalEq PROP, !BiAffine PROP}.
+  Context `{!OfeDiscrete A}.
+  Context (R : A → A → PROP) `{!NonExpansive2 R}.
+
+  Global Instance bi_nsteps_timeless n :
+    (∀ x y, Timeless (R x y)) →
+    ∀ x y, Timeless (bi_nsteps R n x y).
+  Proof. induction n; apply _. Qed.
+
+  Global Instance bi_rtc_timeless :
+    (∀ x y, Timeless (R x y)) →
+    ∀ x y, Timeless (bi_rtc R x y).
+  Proof. intros ? x y. rewrite bi_rtc_nsteps. apply _. Qed.
+
+  Global Instance bi_tc_timeless :
+    (∀ x y, Timeless (R x y)) →
+    ∀ x y, Timeless (bi_tc R x y).
+  Proof. intros ? x y. rewrite bi_tc_nsteps. apply _. Qed.
+End timeless.

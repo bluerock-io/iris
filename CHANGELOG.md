@@ -19,6 +19,8 @@ Coq 8.13 is no longer supported.
   PROP-level binary relations.
 * Use `binder` in notations for big ops. This means one can write things such
   as `[∗ map] '(k,_) ↦ '(_,y) ∈ m, ⌜ k = y ⌝`.
+* Add a construction `bi_nsteps` to create an `n`-step closure of a
+  PROP-level binary relation.
 
 **Changes in `proofmode`:**
 
