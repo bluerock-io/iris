@@ -70,12 +70,8 @@ Typeclasses Opaque auth_auth auth_frag.
 Global Instance: Params (@auth_auth) 2 := {}.
 Global Instance: Params (@auth_frag) 1 := {}.
 
-(** FIXME: Refactor these notations using custom entries once Coq bug #13654
-has been fixed. *)
-Notation "●{ dq } a" := (auth_auth dq a) (at level 20, format "●{ dq }  a").
-Notation "●{# q } a" := (auth_auth (DfracOwn q) a) (at level 20, format "●{# q }  a").
-Notation "●□ a" := (auth_auth (DfracDiscarded) a) (at level 20).
-Notation "● a" := (auth_auth (DfracOwn 1) a) (at level 20).
+Notation "● dq a" := (auth_auth dq a)
+  (at level 20, dq custom dfrac at level 1, format "● dq  a").
 Notation "◯ a" := (auth_frag a) (at level 20).
 
 (** * Laws of the authoritative camera *)

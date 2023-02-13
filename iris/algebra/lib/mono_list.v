@@ -16,14 +16,8 @@ Global Instance: Params (@mono_list_auth) 2 := {}.
 Global Instance: Params (@mono_list_lb) 1 := {}.
 Typeclasses Opaque mono_list_auth mono_list_lb.
 
-(** FIXME: Refactor these notations using custom entries once Coq bug #13654
-has been fixed. *)
-Notation "●ML{ dq } l" :=
-  (mono_list_auth dq l) (at level 20, format "●ML{ dq }  l").
-Notation "●ML{# q } l" :=
-  (mono_list_auth (DfracOwn q) l) (at level 20, format "●ML{# q }  l").
-Notation "●ML□ l" := (mono_list_auth DfracDiscarded l) (at level 20).
-Notation "●ML l" := (mono_list_auth (DfracOwn 1) l) (at level 20).
+Notation "●ML dq l" := (mono_list_auth dq l)
+  (at level 20, dq custom dfrac at level 1, format "●ML dq  l").
 Notation "◯ML l" := (mono_list_lb l) (at level 20).
 
 Section mono_list_props.
