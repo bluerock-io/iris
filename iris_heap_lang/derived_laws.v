@@ -17,16 +17,8 @@ with lists of values. *)
 Definition array `{!heapGS_gen hlc Σ} (l : loc) (dq : dfrac) (vs : list val) : iProp Σ :=
   [∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦{dq} v.
 
-(** FIXME: Refactor these notations using custom entries once Coq bug #13654
-has been fixed. *)
-Notation "l ↦∗{ dq } vs" := (array l dq vs)
-  (at level 20, format "l  ↦∗{ dq }  vs") : bi_scope.
-Notation "l ↦∗□ vs" := (array l DfracDiscarded vs)
-  (at level 20, format "l  ↦∗□  vs") : bi_scope.
-Notation "l ↦∗{# q } vs" := (array l (DfracOwn q) vs)
-  (at level 20, format "l  ↦∗{# q }  vs") : bi_scope.
-Notation "l ↦∗ vs" := (array l (DfracOwn 1) vs)
-  (at level 20, format "l  ↦∗  vs") : bi_scope.
+Notation "l ↦∗ dq vs" := (array l dq vs)
+  (at level 20, dq custom dfrac  at level 1, format "l  ↦∗ dq  vs") : bi_scope.
 
 (** We have [FromSep] and [IntoSep] instances to split the fraction (via the
 [AsFractional] instance below), but not for splitting the list, as that would

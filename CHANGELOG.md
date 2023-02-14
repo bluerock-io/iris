@@ -12,6 +12,8 @@ Coq 8.13 is no longer supported.
 * Add (basic) support for `gset` and `gset_disj` cameras to `set_solver`.
 * Rename `sig_{equiv,dist}_alt` into `sig_{equiv,dist}_def` and state these
   lemmas using `=` instead of `<->`.
+* Add custom entry `dfrac` that can be used for `{dq}` / `□` / `{# q}`
+  annotation of connectives with a discardable fraction.
 
 **Changes in `bi`:**
 

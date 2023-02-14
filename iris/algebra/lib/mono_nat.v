@@ -17,14 +17,8 @@ Definition mono_nat_auth (dq : dfrac) (n : nat) : mono_nat :=
   ●{dq} MaxNat n ⋅ ◯ MaxNat n.
 Definition mono_nat_lb (n : nat) : mono_nat := ◯ MaxNat n.
 
-(** FIXME: Refactor these notations using custom entries once Coq bug #13654
-has been fixed. *)
-Notation "●MN{ dq } a" :=
-  (mono_nat_auth dq a) (at level 20, format "●MN{ dq }  a").
-Notation "●MN{# q } a" :=
-  (mono_nat_auth (DfracOwn q) a) (at level 20, format "●MN{# q }  a").
-Notation "●MN□ a" := (mono_nat_auth DfracDiscarded a) (at level 20, format "●MN□  a").
-Notation "●MN a" := (mono_nat_auth (DfracOwn 1) a) (at level 20).
+Notation "●MN dq a" := (mono_nat_auth dq a)
+  (at level 20, dq custom dfrac at level 1, format "●MN dq  a").
 Notation "◯MN a" := (mono_nat_lb a) (at level 20).
 
 Section mono_nat.

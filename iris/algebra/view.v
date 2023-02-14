@@ -92,12 +92,8 @@ Typeclasses Opaque view_auth view_frag.
 Global Instance: Params (@view_auth) 3 := {}.
 Global Instance: Params (@view_frag) 3 := {}.
 
-(** FIXME: Refactor these notations using custom entries once Coq bug #13654
-has been fixed. *)
-Notation "●V{ dq } a" := (view_auth dq a) (at level 20, format "●V{ dq }  a").
-Notation "●V{# q } a" := (view_auth (DfracOwn q) a) (at level 20, format "●V{# q }  a").
-Notation "●V□ a" := (view_auth DfracDiscarded a) (at level 20, format "●V□  a").
-Notation "●V a" := (view_auth (DfracOwn 1) a) (at level 20).
+Notation "●V dq a" := (view_auth dq a)
+  (at level 20, dq custom dfrac at level 1, format "●V dq  a").
 Notation "◯V a" := (view_frag a) (at level 20).
 
 (** * The OFE structure *)
