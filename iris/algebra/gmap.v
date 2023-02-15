@@ -314,11 +314,15 @@ Global Instance singleton_is_op i a a1 a2 :
   IsOp a a1 a2 → IsOp' ({[ i := a ]} : gmap K A) {[ i := a1 ]} {[ i := a2 ]}.
 Proof. rewrite /IsOp' /IsOp=> ->. by rewrite -singleton_op. Qed.
 
-Global Instance gmap_core_id m : (∀ x : A, CoreId x) → CoreId m.
+Lemma gmap_core_id m : (∀ i x, m !! i = Some x → CoreId x) → CoreId m.
 Proof.
-  intros; apply core_id_total=> i.
-  rewrite lookup_core. apply (core_id_core _).
+  intros Hcore; apply core_id_total=> i.
+  rewrite lookup_core. destruct (m !! i) as [x|] eqn:Hix; rewrite Hix; [|done].
+  by eapply Hcore.
 Qed.
+Global Instance gmap_core_id' m : (∀ x : A, CoreId x) → CoreId m.
+Proof. auto using gmap_core_id. Qed.
+
 Global Instance gmap_singleton_core_id i (x : A) :
   CoreId x → CoreId {[ i := x ]}.
 Proof. intros. by apply core_id_total, singleton_core'. Qed.
