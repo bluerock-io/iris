@@ -611,6 +611,12 @@ Proof.
   { by rewrite big_opM_unseal big_opS_unseal dom_empty_L. }
   by rewrite dom_insert_L big_opM_insert // IH big_opS_insert ?not_elem_of_dom.
 Qed.
+Lemma big_opM_gset_to_gmap `{Countable K} {A} (f : K → A → M) (X : gset K) c :
+  ([^o map] k↦a ∈ gset_to_gmap c X, f k a) ≡ ([^o set] k ∈ X, f k c).
+Proof.
+  rewrite -{2}(dom_gset_to_gmap X c) -big_opM_dom.
+  apply big_opM_proper. by intros k ? [_ ->]%lookup_gset_to_gmap_Some.
+Qed.
 
 (** ** Big ops over finite msets *)
 Section gmultiset.
