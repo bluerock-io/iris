@@ -18,12 +18,10 @@ Coq 8.13 is no longer supported.
 
 **Changes in `bi`:**
 
-* Add a construction `bi_tc` to create transitive closures of
-  PROP-level binary relations.
 * Use `binder` in notations for big ops. This means one can write things such
   as `[∗ map] '(k,_) ↦ '(_,y) ∈ m, ⌜ k = y ⌝`.
-* Add a construction `bi_nsteps` to create an `n`-step closure of a
-  PROP-level binary relation.
+* Add constructions `bi_tc`/`bi_nsteps` to create the transitive/`n`-step
+  closure of a PROP-level binary relation. (by  Simcha van Collem).
 
 **Changes in `proofmode`:**
 
