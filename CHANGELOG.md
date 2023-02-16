@@ -14,6 +14,7 @@ Coq 8.13 is no longer supported.
   lemmas using `=` instead of `<->`.
 * Add custom entry `dfrac` that can be used for `{dq}` / `□` / `{# q}`
   annotation of connectives with a discardable fraction.
+* Add an RA on the `Z` type of integers, using addition for `⋅`.
 
 **Changes in `bi`:**
 
