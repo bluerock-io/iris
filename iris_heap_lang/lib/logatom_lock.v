@@ -74,7 +74,7 @@ Section tada.
     tada_is_lock γ lk -∗
     <<< ∀∀ s, tada_lock_state γ s >>>
       l.(acquire) lk @ ∅
-    <<< tada_lock_state γ Locked, RET #() >>>.
+    <<< ⌜ s = Free ⌝ ∗ tada_lock_state γ Locked, RET #() >>>.
   Proof.
     iIntros "#Hislock %Φ AU". iApply wp_fupd.
     wp_apply (l.(acquire_spec) with "Hislock").
@@ -83,7 +83,7 @@ Section tada.
     iDestruct (ghost_var_agree with "Hvar1 Hvar2") as %<-.
     iMod (ghost_var_update_2 Locked with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
     { rewrite Qp.quarter_three_quarter //. }
-    iMod ("Hclose" with "[$Hvar2 $Hlocked $Hvar1]"). done.
+    iMod ("Hclose" with "[$Hvar2 $Hlocked $Hvar1]"); done.
   Qed.
 
   Lemma release_tada_spec γ lk :
