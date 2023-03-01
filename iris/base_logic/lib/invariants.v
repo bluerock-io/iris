@@ -169,8 +169,8 @@ Section inv.
             (↑N ⊆ E) True (fupd E (E ∖ ↑N)) (fupd (E ∖ ↑N) E)
             (λ _ : (), (▷ P)%I) (λ _ : (), (▷ P)%I) (λ _ : (), None).
   Proof.
-    rewrite inv_unseal /IntoAcc /accessor bi.exist_unit.
-    iIntros (?) "#Hinv _". iApply "Hinv"; done.
+    rewrite /IntoAcc /accessor bi.exist_unit.
+    iIntros (?) "#Hinv _". by iApply inv_acc.
   Qed.
 
   (** ** Derived properties *)
