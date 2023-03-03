@@ -56,6 +56,11 @@ Section iris_tests.
   Context `{!invGS_gen hlc Σ, !cinvG Σ, !na_invG Σ}.
   Implicit Types P Q R : iProp Σ.
 
+  Lemma test_except_0_inv N P : ▷ False -∗ inv N P.
+  Proof.
+    iIntros "H". by iMod "H". (* works because invariants are [IsExcept0] *)
+  Qed.
+
   Lemma test_masks  N E P Q R :
     ↑N ⊆ E →
     (True -∗ P -∗ inv N Q -∗ True -∗ R) -∗ P -∗ ▷ Q ={E}=∗ R.

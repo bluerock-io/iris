@@ -30,6 +30,11 @@ Coq 8.13 is no longer supported.
   not dispose of hypotheses to perform the rewrite.
 * Remove tactic `iSolveTC` in favor of `tc_solve` in std++.
 
+**Changes in `base_logic`:**
+
+* Add `IsExcept0` instance for invariants, allowing you to remove laters of
+  timeless hypotheses when proving an invariant (without an update).
+
 **LaTeX changes:**
 
 - Rename `\Alloc` to `\AllocN` and `\Ref` to `\Alloc` for better consistency
