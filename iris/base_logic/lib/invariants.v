@@ -161,7 +161,16 @@ Section inv.
     iIntros "!> [HP HQ]". by iApply "HcloseQ".
   Qed.
 
+  Lemma except_0_inv N P : ◇ inv N P ⊢ inv N P.
+  Proof.
+    rewrite inv_unseal /inv_def. iIntros "#H !>" (E ?).
+    iMod "H". by iApply "H".
+  Qed.
+
   (** ** Proof mode integration *)
+  Global Instance is_except_0_inv N P : IsExcept0 (inv N P).
+  Proof. apply except_0_inv. Qed.
+
   Global Instance into_inv_inv N P : IntoInv (inv N P) N := {}.
 
   Global Instance into_acc_inv N P E:
