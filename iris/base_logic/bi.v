@@ -184,72 +184,72 @@ Proof. exact: bupd_plainly. Qed.
 Module uPred.
 
 Section restate.
-Context {M : ucmra}.
-Implicit Types φ : Prop.
-Implicit Types P Q : uPred M.
-Implicit Types A : Type.
+  Context {M : ucmra}.
+  Implicit Types φ : Prop.
+  Implicit Types P Q : uPred M.
+  Implicit Types A : Type.
 
-(* Force implicit argument M *)
-Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P%I Q%I).
-Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
+  (* Force implicit argument M *)
+  Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P%I Q%I).
+  Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
 
-Global Instance ownM_ne : NonExpansive (@uPred_ownM M) := uPred_primitive.ownM_ne.
-Global Instance cmra_valid_ne {A : cmra} : NonExpansive (@uPred_cmra_valid M A) :=
-  uPred_primitive.cmra_valid_ne.
+  Global Instance ownM_ne : NonExpansive (@uPred_ownM M) := uPred_primitive.ownM_ne.
+  Global Instance cmra_valid_ne {A : cmra} : NonExpansive (@uPred_cmra_valid M A) :=
+    uPred_primitive.cmra_valid_ne.
 
-(** Re-exporting primitive lemmas that are not in any interface *)
-Lemma ownM_op (a1 a2 : M) :
-  uPred_ownM (a1 ⋅ a2) ⊣⊢ uPred_ownM a1 ∗ uPred_ownM a2.
-Proof. exact: uPred_primitive.ownM_op. Qed.
-Lemma persistently_ownM_core (a : M) : uPred_ownM a ⊢ <pers> uPred_ownM (core a).
-Proof. exact: uPred_primitive.persistently_ownM_core. Qed.
-Lemma ownM_unit P : P ⊢ (uPred_ownM ε).
-Proof. exact: uPred_primitive.ownM_unit. Qed.
-Lemma later_ownM a : ▷ uPred_ownM a ⊢ ∃ b, uPred_ownM b ∧ ▷ (a ≡ b).
-Proof. exact: uPred_primitive.later_ownM. Qed.
-Lemma bupd_ownM_updateP x (Φ : M → Prop) :
-  x ~~>: Φ → uPred_ownM x ⊢ |==> ∃ y, ⌜Φ y⌝ ∧ uPred_ownM y.
-Proof. exact: uPred_primitive.bupd_ownM_updateP. Qed.
+  (** Re-exporting primitive lemmas that are not in any interface *)
+  Lemma ownM_op (a1 a2 : M) :
+    uPred_ownM (a1 ⋅ a2) ⊣⊢ uPred_ownM a1 ∗ uPred_ownM a2.
+  Proof. exact: uPred_primitive.ownM_op. Qed.
+  Lemma persistently_ownM_core (a : M) : uPred_ownM a ⊢ <pers> uPred_ownM (core a).
+  Proof. exact: uPred_primitive.persistently_ownM_core. Qed.
+  Lemma ownM_unit P : P ⊢ (uPred_ownM ε).
+  Proof. exact: uPred_primitive.ownM_unit. Qed.
+  Lemma later_ownM a : ▷ uPred_ownM a ⊢ ∃ b, uPred_ownM b ∧ ▷ (a ≡ b).
+  Proof. exact: uPred_primitive.later_ownM. Qed.
+  Lemma bupd_ownM_updateP x (Φ : M → Prop) :
+    x ~~>: Φ → uPred_ownM x ⊢ |==> ∃ y, ⌜Φ y⌝ ∧ uPred_ownM y.
+  Proof. exact: uPred_primitive.bupd_ownM_updateP. Qed.
 
-(** This is really just a special case of an entailment
-between two [siProp], but we do not have the infrastructure
-to express the more general case. This temporary proof rule will
-be replaced by the proper one eventually. *)
-Lemma internal_eq_entails {A B : ofe} (a1 a2 : A) (b1 b2 : B) :
-  (∀ n, a1 ≡{n}≡ a2 → b1 ≡{n}≡ b2) → a1 ≡ a2 ⊢ b1 ≡ b2.
-Proof. exact: uPred_primitive.internal_eq_entails. Qed.
+  (** This is really just a special case of an entailment
+  between two [siProp], but we do not have the infrastructure
+  to express the more general case. This temporary proof rule will
+  be replaced by the proper one eventually. *)
+  Lemma internal_eq_entails {A B : ofe} (a1 a2 : A) (b1 b2 : B) :
+    (∀ n, a1 ≡{n}≡ a2 → b1 ≡{n}≡ b2) → a1 ≡ a2 ⊢ b1 ≡ b2.
+  Proof. exact: uPred_primitive.internal_eq_entails. Qed.
 
-Lemma ownM_valid (a : M) : uPred_ownM a ⊢ ✓ a.
-Proof. exact: uPred_primitive.ownM_valid. Qed.
-Lemma cmra_valid_intro {A : cmra} P (a : A) : ✓ a → P ⊢ (✓ a).
-Proof. exact: uPred_primitive.cmra_valid_intro. Qed.
-Lemma cmra_valid_elim {A : cmra} (a : A) : ¬ ✓{0} a → ✓ a ⊢ False.
-Proof. exact: uPred_primitive.cmra_valid_elim. Qed.
-Lemma plainly_cmra_valid_1 {A : cmra} (a : A) : ✓ a ⊢ ■ ✓ a.
-Proof. exact: uPred_primitive.plainly_cmra_valid_1. Qed.
-Lemma cmra_valid_weaken {A : cmra} (a b : A) : ✓ (a ⋅ b) ⊢ ✓ a.
-Proof. exact: uPred_primitive.cmra_valid_weaken. Qed.
-Lemma discrete_valid {A : cmra} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
-Proof. exact: uPred_primitive.discrete_valid. Qed.
+  Lemma ownM_valid (a : M) : uPred_ownM a ⊢ ✓ a.
+  Proof. exact: uPred_primitive.ownM_valid. Qed.
+  Lemma cmra_valid_intro {A : cmra} P (a : A) : ✓ a → P ⊢ (✓ a).
+  Proof. exact: uPred_primitive.cmra_valid_intro. Qed.
+  Lemma cmra_valid_elim {A : cmra} (a : A) : ¬ ✓{0} a → ✓ a ⊢ False.
+  Proof. exact: uPred_primitive.cmra_valid_elim. Qed.
+  Lemma plainly_cmra_valid_1 {A : cmra} (a : A) : ✓ a ⊢ ■ ✓ a.
+  Proof. exact: uPred_primitive.plainly_cmra_valid_1. Qed.
+  Lemma cmra_valid_weaken {A : cmra} (a b : A) : ✓ (a ⋅ b) ⊢ ✓ a.
+  Proof. exact: uPred_primitive.cmra_valid_weaken. Qed.
+  Lemma discrete_valid {A : cmra} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
+  Proof. exact: uPred_primitive.discrete_valid. Qed.
 
-(** This is really just a special case of an entailment
-between two [siProp], but we do not have the infrastructure
-to express the more general case. This temporary proof rule will
-be replaced by the proper one eventually. *)
-Lemma valid_entails {A B : cmra} (a : A) (b : B) :
-  (∀ n, ✓{n} a → ✓{n} b) → ✓ a ⊢ ✓ b.
-Proof. exact: uPred_primitive.valid_entails. Qed.
+  (** This is really just a special case of an entailment
+  between two [siProp], but we do not have the infrastructure
+  to express the more general case. This temporary proof rule will
+  be replaced by the proper one eventually. *)
+  Lemma valid_entails {A B : cmra} (a : A) (b : B) :
+    (∀ n, ✓{n} a → ✓{n} b) → ✓ a ⊢ ✓ b.
+  Proof. exact: uPred_primitive.valid_entails. Qed.
 
-(** Consistency/soundness statement *)
-Lemma pure_soundness φ : (⊢@{uPredI M} ⌜ φ ⌝) → φ.
-Proof. apply pure_soundness. Qed.
+  (** Consistency/soundness statement *)
+  Lemma pure_soundness φ : (⊢@{uPredI M} ⌜ φ ⌝) → φ.
+  Proof. apply pure_soundness. Qed.
 
-Lemma internal_eq_soundness {A : ofe} (x y : A) : (⊢@{uPredI M} x ≡ y) → x ≡ y.
-Proof. apply internal_eq_soundness. Qed.
+  Lemma internal_eq_soundness {A : ofe} (x y : A) : (⊢@{uPredI M} x ≡ y) → x ≡ y.
+  Proof. apply internal_eq_soundness. Qed.
 
-Lemma later_soundness P : (⊢ ▷ P) → ⊢ P.
-Proof. apply later_soundness. Qed.
-(** See [derived.v] for a similar soundness result for basic updates. *)
+  Lemma later_soundness P : (⊢ ▷ P) → ⊢ P.
+  Proof. apply later_soundness. Qed.
+  (** See [derived.v] for a similar soundness result for basic updates. *)
 End restate.
 
 

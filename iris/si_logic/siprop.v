@@ -130,188 +130,188 @@ Local Definition siProp_unseal :=
 Ltac unseal := rewrite !siProp_unseal /=.
 
 Section primitive.
-Local Arguments siProp_holds !_ _ /.
+  Local Arguments siProp_holds !_ _ /.
 
-(** The notations below are implicitly local due to the section, so we do not
-mind the overlap with the general BI notations. *)
-Notation "P ⊢ Q" := (siProp_entails P Q).
-Notation "'True'" := (siProp_pure True) : bi_scope.
-Notation "'False'" := (siProp_pure False) : bi_scope.
-Notation "'⌜' φ '⌝'" := (siProp_pure φ%type%stdpp) : bi_scope.
-Infix "∧" := siProp_and : bi_scope.
-Infix "∨" := siProp_or : bi_scope.
-Infix "→" := siProp_impl : bi_scope.
-Notation "∀ x .. y , P" :=
-  (siProp_forall (λ x, .. (siProp_forall (λ y, P%I)) ..)) : bi_scope.
-Notation "∃ x .. y , P" :=
-  (siProp_exist (λ x, .. (siProp_exist (λ y, P%I)) ..)) : bi_scope.
-Notation "x ≡ y" := (siProp_internal_eq x y) : bi_scope.
-Notation "▷ P" := (siProp_later P) : bi_scope.
+  (** The notations below are implicitly local due to the section, so we do not
+  mind the overlap with the general BI notations. *)
+  Notation "P ⊢ Q" := (siProp_entails P Q).
+  Notation "'True'" := (siProp_pure True) : bi_scope.
+  Notation "'False'" := (siProp_pure False) : bi_scope.
+  Notation "'⌜' φ '⌝'" := (siProp_pure φ%type%stdpp) : bi_scope.
+  Infix "∧" := siProp_and : bi_scope.
+  Infix "∨" := siProp_or : bi_scope.
+  Infix "→" := siProp_impl : bi_scope.
+  Notation "∀ x .. y , P" :=
+    (siProp_forall (λ x, .. (siProp_forall (λ y, P%I)) ..)) : bi_scope.
+  Notation "∃ x .. y , P" :=
+    (siProp_exist (λ x, .. (siProp_exist (λ y, P%I)) ..)) : bi_scope.
+  Notation "x ≡ y" := (siProp_internal_eq x y) : bi_scope.
+  Notation "▷ P" := (siProp_later P) : bi_scope.
 
-(** Below there follow the primitive laws for [siProp]. There are no derived laws
-in this file. *)
+  (** Below there follow the primitive laws for [siProp]. There are no derived laws
+  in this file. *)
 
-(** Entailment *)
-Lemma entails_po : PreOrder siProp_entails.
-Proof.
-  split.
-  - intros P; by split=> i.
-  - intros P Q Q' HP HQ; split=> i ?; by apply HQ, HP.
-Qed.
-Lemma entails_anti_symm : AntiSymm (≡) siProp_entails.
-Proof. intros P Q HPQ HQP; split=> n; by split; [apply HPQ|apply HQP]. Qed.
-Lemma equiv_entails P Q : (P ≡ Q) ↔ (P ⊢ Q) ∧ (Q ⊢ P).
-Proof.
-  split.
-  - intros HPQ; split; split=> i; apply HPQ.
-  - intros [??]. by apply entails_anti_symm.
-Qed.
+  (** Entailment *)
+  Lemma entails_po : PreOrder siProp_entails.
+  Proof.
+    split.
+    - intros P; by split=> i.
+    - intros P Q Q' HP HQ; split=> i ?; by apply HQ, HP.
+  Qed.
+  Lemma entails_anti_symm : AntiSymm (≡) siProp_entails.
+  Proof. intros P Q HPQ HQP; split=> n; by split; [apply HPQ|apply HQP]. Qed.
+  Lemma equiv_entails P Q : (P ≡ Q) ↔ (P ⊢ Q) ∧ (Q ⊢ P).
+  Proof.
+    split.
+    - intros HPQ; split; split=> i; apply HPQ.
+    - intros [??]. by apply entails_anti_symm.
+  Qed.
 
-(** Non-expansiveness and setoid morphisms *)
-Lemma pure_ne n : Proper (iff ==> dist n) siProp_pure.
-Proof. intros φ1 φ2 Hφ. by unseal. Qed.
-Lemma and_ne : NonExpansive2 siProp_and.
-Proof.
-  intros n P P' HP Q Q' HQ; unseal; split=> n' ?.
-  split; (intros [??]; split; [by apply HP|by apply HQ]).
-Qed.
-Lemma or_ne : NonExpansive2 siProp_or.
-Proof.
-  intros n P P' HP Q Q' HQ; split=> n' ?.
-  unseal; split; (intros [?|?]; [left; by apply HP|right; by apply HQ]).
-Qed.
-Lemma impl_ne : NonExpansive2 siProp_impl.
-Proof.
-  intros n P P' HP Q Q' HQ; split=> n' ?.
-  unseal; split; intros HPQ n'' ??; apply HQ, HPQ, HP; auto with lia.
-Qed.
-Lemma forall_ne A n :
-  Proper (pointwise_relation _ (dist n) ==> dist n) (@siProp_forall A).
-Proof.
-   by intros Ψ1 Ψ2 HΨ; unseal; split=> n' x; split; intros HP a; apply HΨ.
-Qed.
-Lemma exist_ne A n :
-  Proper (pointwise_relation _ (dist n) ==> dist n) (@siProp_exist A).
-Proof.
-  intros Ψ1 Ψ2 HΨ.
-  unseal; split=> n' ?; split; intros [a ?]; exists a; by apply HΨ.
-Qed.
-Lemma later_contractive : Contractive siProp_later.
-Proof.
-  unseal; intros [|n] P Q HPQ; split=> -[|n'] ? //=; try lia.
-  apply HPQ; lia.
-Qed.
-Lemma internal_eq_ne (A : ofe) : NonExpansive2 (@siProp_internal_eq A).
-Proof.
-  intros n x x' Hx y y' Hy; split=> n' z; unseal; split; intros; simpl in *.
-  - by rewrite -(dist_le _ _ _ _ Hx) -?(dist_le _ _ _ _ Hy); auto.
-  - by rewrite (dist_le _ _ _ _ Hx) ?(dist_le _ _ _ _ Hy); auto.
-Qed.
+  (** Non-expansiveness and setoid morphisms *)
+  Lemma pure_ne n : Proper (iff ==> dist n) siProp_pure.
+  Proof. intros φ1 φ2 Hφ. by unseal. Qed.
+  Lemma and_ne : NonExpansive2 siProp_and.
+  Proof.
+    intros n P P' HP Q Q' HQ; unseal; split=> n' ?.
+    split; (intros [??]; split; [by apply HP|by apply HQ]).
+  Qed.
+  Lemma or_ne : NonExpansive2 siProp_or.
+  Proof.
+    intros n P P' HP Q Q' HQ; split=> n' ?.
+    unseal; split; (intros [?|?]; [left; by apply HP|right; by apply HQ]).
+  Qed.
+  Lemma impl_ne : NonExpansive2 siProp_impl.
+  Proof.
+    intros n P P' HP Q Q' HQ; split=> n' ?.
+    unseal; split; intros HPQ n'' ??; apply HQ, HPQ, HP; auto with lia.
+  Qed.
+  Lemma forall_ne A n :
+    Proper (pointwise_relation _ (dist n) ==> dist n) (@siProp_forall A).
+  Proof.
+     by intros Ψ1 Ψ2 HΨ; unseal; split=> n' x; split; intros HP a; apply HΨ.
+  Qed.
+  Lemma exist_ne A n :
+    Proper (pointwise_relation _ (dist n) ==> dist n) (@siProp_exist A).
+  Proof.
+    intros Ψ1 Ψ2 HΨ.
+    unseal; split=> n' ?; split; intros [a ?]; exists a; by apply HΨ.
+  Qed.
+  Lemma later_contractive : Contractive siProp_later.
+  Proof.
+    unseal; intros [|n] P Q HPQ; split=> -[|n'] ? //=; try lia.
+    apply HPQ; lia.
+  Qed.
+  Lemma internal_eq_ne (A : ofe) : NonExpansive2 (@siProp_internal_eq A).
+  Proof.
+    intros n x x' Hx y y' Hy; split=> n' z; unseal; split; intros; simpl in *.
+    - by rewrite -(dist_le _ _ _ _ Hx) -?(dist_le _ _ _ _ Hy); auto.
+    - by rewrite (dist_le _ _ _ _ Hx) ?(dist_le _ _ _ _ Hy); auto.
+  Qed.
 
-(** Introduction and elimination rules *)
-Lemma pure_intro (φ : Prop) P : φ → P ⊢ ⌜ φ ⌝.
-Proof. intros ?. unseal; by split. Qed.
-Lemma pure_elim' (φ : Prop) P : (φ → True ⊢ P) → ⌜ φ ⌝ ⊢ P.
-Proof. unseal=> HP; split=> n ?. by apply HP. Qed.
-Lemma pure_forall_2 {A} (φ : A → Prop) : (∀ a, ⌜ φ a ⌝) ⊢ ⌜ ∀ a, φ a ⌝.
-Proof. by unseal. Qed.
+  (** Introduction and elimination rules *)
+  Lemma pure_intro (φ : Prop) P : φ → P ⊢ ⌜ φ ⌝.
+  Proof. intros ?. unseal; by split. Qed.
+  Lemma pure_elim' (φ : Prop) P : (φ → True ⊢ P) → ⌜ φ ⌝ ⊢ P.
+  Proof. unseal=> HP; split=> n ?. by apply HP. Qed.
+  Lemma pure_forall_2 {A} (φ : A → Prop) : (∀ a, ⌜ φ a ⌝) ⊢ ⌜ ∀ a, φ a ⌝.
+  Proof. by unseal. Qed.
 
-Lemma and_elim_l P Q : P ∧ Q ⊢ P.
-Proof. unseal; by split=> n [??]. Qed.
-Lemma and_elim_r P Q : P ∧ Q ⊢ Q.
-Proof. unseal; by split=> n [??]. Qed.
-Lemma and_intro P Q R : (P ⊢ Q) → (P ⊢ R) → P ⊢ Q ∧ R.
-Proof.
-  intros HQ HR; unseal; split=> n ?.
-  split.
-  - by apply HQ.
-  - by apply HR.
-Qed.
+  Lemma and_elim_l P Q : P ∧ Q ⊢ P.
+  Proof. unseal; by split=> n [??]. Qed.
+  Lemma and_elim_r P Q : P ∧ Q ⊢ Q.
+  Proof. unseal; by split=> n [??]. Qed.
+  Lemma and_intro P Q R : (P ⊢ Q) → (P ⊢ R) → P ⊢ Q ∧ R.
+  Proof.
+    intros HQ HR; unseal; split=> n ?.
+    split.
+    - by apply HQ.
+    - by apply HR.
+  Qed.
 
-Lemma or_intro_l P Q : P ⊢ P ∨ Q.
-Proof. unseal; split=> n ?; left; auto. Qed.
-Lemma or_intro_r P Q : Q ⊢ P ∨ Q.
-Proof. unseal; split=> n ?; right; auto. Qed.
-Lemma or_elim P Q R : (P ⊢ R) → (Q ⊢ R) → P ∨ Q ⊢ R.
-Proof.
-  intros HP HQ. unseal; split=> n [?|?].
-  - by apply HP.
-  - by apply HQ.
-Qed.
+  Lemma or_intro_l P Q : P ⊢ P ∨ Q.
+  Proof. unseal; split=> n ?; left; auto. Qed.
+  Lemma or_intro_r P Q : Q ⊢ P ∨ Q.
+  Proof. unseal; split=> n ?; right; auto. Qed.
+  Lemma or_elim P Q R : (P ⊢ R) → (Q ⊢ R) → P ∨ Q ⊢ R.
+  Proof.
+    intros HP HQ. unseal; split=> n [?|?].
+    - by apply HP.
+    - by apply HQ.
+  Qed.
 
-Lemma impl_intro_r P Q R : (P ∧ Q ⊢ R) → P ⊢ Q → R.
-Proof.
-  unseal=> HQ; split=> n ? n' ??.
-  apply HQ; naive_solver eauto using siProp_closed.
-Qed.
-Lemma impl_elim_l' P Q R : (P ⊢ Q → R) → P ∧ Q ⊢ R.
-Proof. unseal=> HP; split=> n [??]. apply HP with n; auto. Qed.
+  Lemma impl_intro_r P Q R : (P ∧ Q ⊢ R) → P ⊢ Q → R.
+  Proof.
+    unseal=> HQ; split=> n ? n' ??.
+    apply HQ; naive_solver eauto using siProp_closed.
+  Qed.
+  Lemma impl_elim_l' P Q R : (P ⊢ Q → R) → P ∧ Q ⊢ R.
+  Proof. unseal=> HP; split=> n [??]. apply HP with n; auto. Qed.
 
-Lemma forall_intro {A} P (Ψ : A → siProp) : (∀ a, P ⊢ Ψ a) → P ⊢ ∀ a, Ψ a.
-Proof. unseal; intros HPΨ; split=> n ? a; by apply HPΨ. Qed.
-Lemma forall_elim {A} {Ψ : A → siProp} a : (∀ a, Ψ a) ⊢ Ψ a.
-Proof. unseal; split=> n HP; apply HP. Qed.
+  Lemma forall_intro {A} P (Ψ : A → siProp) : (∀ a, P ⊢ Ψ a) → P ⊢ ∀ a, Ψ a.
+  Proof. unseal; intros HPΨ; split=> n ? a; by apply HPΨ. Qed.
+  Lemma forall_elim {A} {Ψ : A → siProp} a : (∀ a, Ψ a) ⊢ Ψ a.
+  Proof. unseal; split=> n HP; apply HP. Qed.
 
-Lemma exist_intro {A} {Ψ : A → siProp} a : Ψ a ⊢ ∃ a, Ψ a.
-Proof. unseal; split=> n ?; by exists a. Qed.
-Lemma exist_elim {A} (Φ : A → siProp) Q : (∀ a, Φ a ⊢ Q) → (∃ a, Φ a) ⊢ Q.
-Proof. unseal; intros HΨ; split=> n [a ?]; by apply HΨ with a. Qed.
+  Lemma exist_intro {A} {Ψ : A → siProp} a : Ψ a ⊢ ∃ a, Ψ a.
+  Proof. unseal; split=> n ?; by exists a. Qed.
+  Lemma exist_elim {A} (Φ : A → siProp) Q : (∀ a, Φ a ⊢ Q) → (∃ a, Φ a) ⊢ Q.
+  Proof. unseal; intros HΨ; split=> n [a ?]; by apply HΨ with a. Qed.
 
-(** Equality *)
-Lemma internal_eq_refl {A : ofe} P (a : A) : P ⊢ (a ≡ a).
-Proof. unseal; by split=> n ? /=. Qed.
-Lemma internal_eq_rewrite {A : ofe} a b (Ψ : A → siProp) :
-  NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
-Proof.
-  intros Hnonexp. unseal; split=> n Hab n' ? HΨ. eapply Hnonexp with n a; auto.
-Qed.
+  (** Equality *)
+  Lemma internal_eq_refl {A : ofe} P (a : A) : P ⊢ (a ≡ a).
+  Proof. unseal; by split=> n ? /=. Qed.
+  Lemma internal_eq_rewrite {A : ofe} a b (Ψ : A → siProp) :
+    NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
+  Proof.
+    intros Hnonexp. unseal; split=> n Hab n' ? HΨ. eapply Hnonexp with n a; auto.
+  Qed.
 
-Lemma fun_ext {A} {B : A → ofe} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g.
-Proof. by unseal. Qed.
-Lemma sig_eq {A : ofe} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y.
-Proof. by unseal. Qed.
-Lemma discrete_eq_1 {A : ofe} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
-Proof. unseal=> ?. split=> n. by apply (discrete_iff n). Qed.
+  Lemma fun_ext {A} {B : A → ofe} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g.
+  Proof. by unseal. Qed.
+  Lemma sig_eq {A : ofe} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y.
+  Proof. by unseal. Qed.
+  Lemma discrete_eq_1 {A : ofe} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
+  Proof. unseal=> ?. split=> n. by apply (discrete_iff n). Qed.
 
-Lemma prop_ext_2 P Q : ((P → Q) ∧ (Q → P)) ⊢ P ≡ Q.
-Proof.
-  unseal; split=> n /= HPQ. split=> n' ?.
-  move: HPQ=> [] /(_ n') ? /(_ n'). naive_solver.
-Qed.
+  Lemma prop_ext_2 P Q : ((P → Q) ∧ (Q → P)) ⊢ P ≡ Q.
+  Proof.
+    unseal; split=> n /= HPQ. split=> n' ?.
+    move: HPQ=> [] /(_ n') ? /(_ n'). naive_solver.
+  Qed.
 
-(** Later *)
-Lemma later_eq_1 {A : ofe} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
-Proof. by unseal. Qed.
-Lemma later_eq_2 {A : ofe} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y.
-Proof. by unseal. Qed.
+  (** Later *)
+  Lemma later_eq_1 {A : ofe} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
+  Proof. by unseal. Qed.
+  Lemma later_eq_2 {A : ofe} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y.
+  Proof. by unseal. Qed.
 
-Lemma later_mono P Q : (P ⊢ Q) → ▷ P ⊢ ▷ Q.
-Proof. unseal=> HP; split=>-[|n]; [done|apply HP; eauto using cmra_validN_S]. Qed.
-Lemma later_intro P : P ⊢ ▷ P.
-Proof. unseal; split=> -[|n] /= HP; eauto using siProp_closed. Qed.
+  Lemma later_mono P Q : (P ⊢ Q) → ▷ P ⊢ ▷ Q.
+  Proof. unseal=> HP; split=>-[|n]; [done|apply HP; eauto using cmra_validN_S]. Qed.
+  Lemma later_intro P : P ⊢ ▷ P.
+  Proof. unseal; split=> -[|n] /= HP; eauto using siProp_closed. Qed.
 
-Lemma later_forall_2 {A} (Φ : A → siProp) : (∀ a, ▷ Φ a) ⊢ ▷ ∀ a, Φ a.
-Proof. unseal; by split=> -[|n]. Qed.
-Lemma later_exist_false {A} (Φ : A → siProp) :
-  (▷ ∃ a, Φ a) ⊢ ▷ False ∨ (∃ a, ▷ Φ a).
-Proof. unseal; split=> -[|[|n]] /=; eauto. Qed.
-Lemma later_false_em P : ▷ P ⊢ ▷ False ∨ (▷ False → P).
-Proof.
-  unseal; split=> -[|n] /= HP; [by left|right].
-  intros [|n'] ?; eauto using siProp_closed with lia.
-Qed.
+  Lemma later_forall_2 {A} (Φ : A → siProp) : (∀ a, ▷ Φ a) ⊢ ▷ ∀ a, Φ a.
+  Proof. unseal; by split=> -[|n]. Qed.
+  Lemma later_exist_false {A} (Φ : A → siProp) :
+    (▷ ∃ a, Φ a) ⊢ ▷ False ∨ (∃ a, ▷ Φ a).
+  Proof. unseal; split=> -[|[|n]] /=; eauto. Qed.
+  Lemma later_false_em P : ▷ P ⊢ ▷ False ∨ (▷ False → P).
+  Proof.
+    unseal; split=> -[|n] /= HP; [by left|right].
+    intros [|n'] ?; eauto using siProp_closed with lia.
+  Qed.
 
-(** Consistency/soundness statement *)
-Lemma pure_soundness φ : (True ⊢ ⌜ φ ⌝) → φ.
-Proof. unseal=> -[H]. by apply (H 0). Qed.
+  (** Consistency/soundness statement *)
+  Lemma pure_soundness φ : (True ⊢ ⌜ φ ⌝) → φ.
+  Proof. unseal=> -[H]. by apply (H 0). Qed.
 
-Lemma internal_eq_soundness {A : ofe} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
-Proof. unseal=> -[H]. apply equiv_dist=> n. by apply (H n). Qed.
+  Lemma internal_eq_soundness {A : ofe} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
+  Proof. unseal=> -[H]. apply equiv_dist=> n. by apply (H n). Qed.
 
-Lemma later_soundness P : (True ⊢ ▷ P) → (True ⊢ P).
-Proof.
-  unseal=> -[HP]; split=> n _. apply siProp_closed with n; last done.
-  by apply (HP (S n)).
-Qed.
+  Lemma later_soundness P : (True ⊢ ▷ P) → (True ⊢ P).
+  Proof.
+    unseal=> -[HP]; split=> n _. apply siProp_closed with n; last done.
+    by apply (HP (S n)).
+  Qed.
 End primitive.
 End siProp_primitive.
