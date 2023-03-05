@@ -177,13 +177,13 @@ Proof. done. Qed.
 
 Module siProp.
 Section restate.
-Lemma pure_soundness φ : (⊢@{siPropI} ⌜ φ ⌝) → φ.
-Proof. apply pure_soundness. Qed.
+  Lemma pure_soundness φ : (⊢@{siPropI} ⌜ φ ⌝) → φ.
+  Proof. apply pure_soundness. Qed.
 
-Lemma internal_eq_soundness {A : ofe} (x y : A) : (⊢@{siPropI} x ≡ y) → x ≡ y.
-Proof. apply internal_eq_soundness. Qed.
+  Lemma internal_eq_soundness {A : ofe} (x y : A) : (⊢@{siPropI} x ≡ y) → x ≡ y.
+  Proof. apply internal_eq_soundness. Qed.
 
-Lemma later_soundness (P : siProp) : (⊢ ▷ P) → ⊢ P.
-Proof. apply later_soundness. Qed.
+  Lemma later_soundness (P : siProp) : (⊢ ▷ P) → ⊢ P.
+  Proof. apply later_soundness. Qed.
 End restate.
 End siProp.
