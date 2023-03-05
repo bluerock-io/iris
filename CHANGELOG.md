@@ -37,6 +37,12 @@ Coq 8.13 is no longer supported.
   as `[∗ map] '(k,_) ↦ '(_,y) ∈ m, ⌜ k = y ⌝`.
 * Add constructions `bi_tc`/`bi_nsteps` to create the transitive/`n`-step
   closure of a PROP-level binary relation. (by  Simcha van Collem).
+* Make the `unseal` tactic of `monPred` more consistent with `uPred`:
+  + Rename `MonPred.unseal` → `monPred.unseal`
+  + No longer unfold derived BI connectives `<affine>`, `<absorb>` and `◇`.
+  * Make `monPred.unseal` tactic more robust by using types to unfold the right
+    BI projections.
+* Add `unseal` tactic for `siProp`.
 
 **Changes in `proofmode`:**
 
@@ -62,6 +68,8 @@ Coq 8.13 is no longer supported.
 
 * Add `IsExcept0` instance for invariants, allowing you to remove laters of
   timeless hypotheses when proving an invariant (without an update).
+* Make `uPred.unseal` tactic more robust by using types to unfold the right
+  BI projections.
 
 **Changes in `heap_lang`:**
 
@@ -85,6 +93,8 @@ s/\bsig_dist_alt\b/sig_dist_def/g
 # Loc
 s/\bloc_add(_assoc|_0|_inj|)\b/Loc.add\1/g
 s/\bfresh_locs(_fresh|)\b/Loc.fresh\1/g
+# unseal
+s/\bMonPred\.unseal\b/monPred\.unseal/g
 EOF
 ```
 
