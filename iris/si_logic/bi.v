@@ -186,8 +186,8 @@ Section restate.
   Lemma later_soundness (P : siProp) : (⊢ ▷ P) → ⊢ P.
   Proof. apply later_soundness. Qed.
 
-  (** All of these sealing lemmas are partially applied so that they also rewrite
-  under binders. *)
+  (** We restate the unsealing lemmas so that they also unfold the BI layer. The
+  sealing lemmas are partially applied so that they also work under binders. *)
   Local Lemma siProp_emp_unseal : bi_emp = @siprop.siProp_pure_def True.
   Proof. by rewrite -siprop.siProp_pure_unseal. Qed.
   Local Lemma siProp_pure_unseal : bi_pure = @siprop.siProp_pure_def.
@@ -223,5 +223,6 @@ Section restate.
     siProp_plainly_unseal, siProp_persistently_unseal, siProp_later_unseal).
 End restate.
 
+(** The final unseal tactic that also unfolds the BI layer. *)
 Ltac unseal := rewrite !siProp_unseal /=.
 End siProp.

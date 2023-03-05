@@ -250,8 +250,8 @@ Section restate.
   Lemma later_soundness P : (⊢ ▷ P) → ⊢ P.
   Proof. apply later_soundness. Qed.
 
-  (** All of these sealing lemmas are partially applied so that they also rewrite
-  under binders. *)
+  (** We restate the unsealing lemmas for the BI layer. The sealing lemmas
+  are partially applied so that they also rewrite under binders. *)
   Local Lemma uPred_emp_unseal : bi_emp = @upred.uPred_pure_def M True.
   Proof. by rewrite -upred.uPred_pure_unseal. Qed.
   Local Lemma uPred_pure_unseal : bi_pure = @upred.uPred_pure_def M.
@@ -291,8 +291,7 @@ Section restate.
     upred.uPred_ownM_unseal, upred.uPred_cmra_valid_unseal, @uPred_bupd_unseal).
 End restate.
 
-(** New unseal tactic that also unfolds the BI layer.
-  This is used by [base_logic.algebra] and [base_logic.bupd_alt]. *)
-
+(** The final unseal tactic that also unfolds the BI layer. This is used by
+[base_logic.algebra] and [base_logic.bupd_alt]. *)
 Ltac unseal := rewrite !uPred_unseal /=.
 End uPred.

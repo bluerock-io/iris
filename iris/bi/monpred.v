@@ -294,7 +294,8 @@ Section monPred_defs.
 End monPred_defs.
 
 (** This is not the final collection of unsealing lemmas, below we redefine
-[monPred_unseal] to use the projections of the BI canonical structures. *)
+[monPred_unseal] to also unfold the BI layer (i.e., the projections of the BI
+structures/classes). *)
 Local Definition monPred_unseal :=
   (@monPred_embed_unseal, @monPred_emp_unseal, @monPred_pure_unseal,
    @monPred_objectively_unseal, @monPred_subjectively_unseal,
@@ -388,7 +389,8 @@ Section instances.
     {| bi_ofe_mixin := monPred_ofe_mixin; bi_bi_mixin := monPred_bi_mixin;
        bi_bi_later_mixin := monPred_bi_later_mixin |}.
 
-  (** Restate the unseal lemmas, but now with the projections of [bi]. *)
+  (** We restate the unsealing lemmas so that they also unfold the BI layer. The
+  sealing lemmas are partially applied so that they also work under binders. *)
   Local Lemma monPred_emp_unseal :
     bi_emp = @monPred_defs.monPred_emp_def I PROP.
   Proof. by rewrite -monPred_defs.monPred_emp_unseal. Qed.
@@ -423,9 +425,10 @@ Section instances.
     bi_later = @monPred_defs.monPred_later_def I PROP.
   Proof. by rewrite -monPred_defs.monPred_later_unseal. Qed.
 
-  (** This definition only includes the unseal lemmas for the bi connectives.
+  (** This definition only includes the unseal lemmas for the [bi] connectives.
   After we have defined the right class instances, we define [monPred_unseal],
-  which also includes embed/internal_eq/bupd/fupd/plainly. *)
+  which also includes [embed], [internal_eq], [bupd], [fupd], [plainly],
+  [monPred_objectively], [monPred_subjectively] and [monPred_in]. *)
   Local Definition monPred_unseal_bi :=
     (monPred_emp_unseal, monPred_pure_unseal, monPred_and_unseal,
     monPred_or_unseal, monPred_impl_unseal, monPred_forall_unseal,
@@ -540,7 +543,7 @@ Section instances.
   Proof. by rewrite -monPred_defs.monPred_plainly_unseal. Qed.
 
   (** And finally the proper [unseal] tactic (which we also redefine outside
-  of the section). *)
+  of the section since Ltac definitions do not outlive a section). *)
   Local Definition monPred_unseal :=
     (monPred_unseal_bi, @monPred_embed_unseal, @monPred_internal_eq_unseal,
     @monPred_bupd_unseal, @monPred_fupd_unseal, @monPred_plainly_unseal,
