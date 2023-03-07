@@ -395,10 +395,10 @@ Proof. intros Hyv [z ?]; ofe_subst y; eauto using cmra_validN_op_l. Qed.
 Lemma cmra_validN_included n x y : ✓{n} y → x ≼ y → ✓{n} x.
 Proof. intros Hyv [z ?]; setoid_subst; eauto using cmra_validN_op_l. Qed.
 
-Lemma cmra_includedN_S n x y : x ≼{S n} y → x ≼{n} y.
-Proof. by intros [z Hz]; exists z; apply dist_S. Qed.
 Lemma cmra_includedN_le n n' x y : x ≼{n} y → n' ≤ n → x ≼{n'} y.
-Proof. induction 2; auto using cmra_includedN_S. Qed.
+Proof. by intros [z Hz] ?; exists z; eapply dist_le. Qed.
+Lemma cmra_includedN_S n x y : x ≼{S n} y → x ≼{n} y.
+Proof. intros ?. eapply cmra_includedN_le; [done|lia]. Qed.
 
 Lemma cmra_includedN_l n x y : x ≼{n} x ⋅ y.
 Proof. by exists y. Qed.

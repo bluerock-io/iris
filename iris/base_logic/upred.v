@@ -138,7 +138,7 @@ Section cofe.
       + by intros P Q HPQ; split=> x i ??; symmetry; apply HPQ.
       + intros P Q Q' HP HQ; split=> i x ??.
         by trans (Q i x);[apply HP|apply HQ].
-    - intros n P Q HPQ; split=> i x ??; apply HPQ; auto.
+    - intros n m P Q HPQ Hlt. split=> i x ??; apply HPQ; eauto with lia.
   Qed.
   Canonical Structure uPredO : ofe := Ofe (uPred M) uPred_ofe_mixin.
 
@@ -242,7 +242,9 @@ Global Instance uPredOF_contractive F :
   urFunctorContractive F → oFunctorContractive (uPredOF F).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n P Q HPQ.
-  apply uPredO_map_ne, urFunctor_map_contractive. destruct n; split; by apply HPQ.
+  apply uPredO_map_ne, urFunctor_map_contractive.
+  destruct HPQ as [HPQ]. constructor. intros ??.
+  split; by eapply HPQ.
 Qed.
 
 (** logical entailement *)
@@ -551,7 +553,7 @@ Section primitive.
   Lemma later_contractive : Contractive (@uPred_later M).
   Proof.
     unseal; intros [|n] P Q HPQ; split=> -[|n'] x ?? //=; try lia.
-    apply HPQ; eauto using cmra_validN_S.
+    eapply HPQ; eauto using cmra_validN_S.
   Qed.
 
   Lemma plainly_ne : NonExpansive (@uPred_plainly M).
@@ -787,9 +789,16 @@ Section primitive.
   Proof. by unseal. Qed.
 
   Lemma later_eq_1 {A : ofe} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
-  Proof. by unseal. Qed.
+  Proof.
+    unseal. split. intros [|n]; simpl; [done|].
+    intros ?? Heq; apply Heq; auto.
+  Qed.
   Lemma later_eq_2 {A : ofe} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y.
-  Proof. by unseal. Qed.
+  Proof.
+    unseal. split. intros n ? ? Hn; split; intros m Hlt; simpl in *.
+    destruct n as [|n]; first lia.
+    eauto using dist_le with si_solver.
+  Qed.
 
   Lemma discrete_eq_1 {A : ofe} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
   Proof.

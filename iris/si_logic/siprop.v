@@ -33,7 +33,7 @@ Section cofe.
       + by intros P Q HPQ; split=> i ?; symmetry; apply HPQ.
       + intros P Q Q' HP HQ; split=> i ?.
         by trans (Q i);[apply HP|apply HQ].
-    - intros n P Q HPQ; split=> i ?; apply HPQ; auto.
+    - intros n m P Q HPQ Hlt. split=> i ?; apply HPQ; lia.
   Qed.
   Canonical Structure siPropO : ofe := Ofe siProp siProp_ofe_mixin.
 
@@ -199,7 +199,7 @@ Section primitive.
   Lemma later_contractive : Contractive siProp_later.
   Proof.
     unseal; intros [|n] P Q HPQ; split=> -[|n'] ? //=; try lia.
-    apply HPQ; lia.
+    eapply HPQ; eauto with si_solver.
   Qed.
   Lemma internal_eq_ne (A : ofe) : NonExpansive2 (@siProp_internal_eq A).
   Proof.
@@ -281,9 +281,15 @@ Section primitive.
 
   (** Later *)
   Lemma later_eq_1 {A : ofe} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
-  Proof. by unseal. Qed.
+  Proof.
+    unseal. split. intros [|n]; simpl; [done|].
+    intros Heq; apply Heq; auto.
+  Qed.
   Lemma later_eq_2 {A : ofe} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y.
-  Proof. by unseal. Qed.
+  Proof.
+    unseal. split. intros n Hn; split; intros m Hlt; simpl in *.
+    destruct n as [|n]; eauto using dist_le with si_solver.
+  Qed.
 
   Lemma later_mono P Q : (P ⊢ Q) → ▷ P ⊢ ▷ Q.
   Proof. unseal=> HP; split=>-[|n]; [done|apply HP; eauto using cmra_validN_S]. Qed.

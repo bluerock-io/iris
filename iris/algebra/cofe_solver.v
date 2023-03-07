@@ -61,7 +61,7 @@ Proof.
     + by intros X n.
     + by intros X Y ? n.
     + by intros X Y Z ?? n; trans (Y n).
-  - intros k X Y HXY n; apply dist_S.
+  - intros k j X Y HXY Hlt n. apply (dist_le k); [|lia].
     by rewrite -(g_tower X) (HXY (S n)) g_tower.
 Qed.
 Definition T : ofe := Ofe tower tower_ofe_mixin.
