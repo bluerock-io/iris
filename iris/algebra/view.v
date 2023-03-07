@@ -232,7 +232,7 @@ Section cmra.
       intros [[[dq aa]|] b]; rewrite /= ?cmra_valid_validN; naive_solver.
     - rewrite view_validN_eq=> n [[[dq ag]|] b] /=.
       + intros [? (a&?&?)]; split; [done|].
-        exists a; split; [by eauto using dist_S|].
+        exists a; split; [by eauto using dist_le|].
         apply view_rel_mono with (S n) a b; auto with lia.
       + intros [a ?]. exists a. apply view_rel_mono with (S n) a b; auto with lia.
     - rewrite view_validN_eq=> n [[[q1 ag1]|] b1] [[[q2 ag2]|] b2] /=.

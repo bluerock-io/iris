@@ -72,7 +72,7 @@ Proof.
         destruct (H2 b) as (c&?&?); eauto. by exists c; split; last etrans.
       * intros a ?. destruct (H2' a) as (b&?&?); auto.
         destruct (H1' b) as (c&?&?); eauto. by exists c; split; last etrans.
-  - intros n x y [??]; split; naive_solver eauto using dist_S.
+  - intros n m x y [??] ?; split; naive_solver eauto using dist_le with si_solver.
 Qed.
 Canonical Structure agreeO := Ofe (agree A) agree_ofe_mixin.
 
@@ -139,7 +139,7 @@ Qed.
 Definition agree_cmra_mixin : CmraMixin (agree A).
 Proof.
   apply cmra_total_mixin; try apply _ || by eauto.
-  - intros n x; rewrite !agree_validN_def; eauto using dist_S.
+  - intros n x; rewrite !agree_validN_def; eauto using dist_le.
   - intros x. apply agree_idemp.
   - intros n x y; rewrite !agree_validN_def /=.
     setoid_rewrite elem_of_app; naive_solver.

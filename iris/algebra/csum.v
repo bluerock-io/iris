@@ -71,7 +71,7 @@ Proof.
     + by intros [|a|]; constructor.
     + by destruct 1; constructor.
     + destruct 1; inversion_clear 1; constructor; etrans; eauto.
-  - by inversion_clear 1; constructor; apply dist_S.
+  - by inversion_clear 1; constructor; eauto using dist_le with si_solver.
 Qed.
 Canonical Structure csumO : ofe := Ofe (csum A B) csum_ofe_mixin.
 

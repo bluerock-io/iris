@@ -11,6 +11,22 @@ Set Primitive Projections.
     cases, we do not even need non-expansiveness.
 *)
 
+
+(** The tactic [si_solver] solves goals that are solely concerned with
+    step-indices and their relations (i.e., [0], [S n], [n < m], and [n ≤ m]).
+    Currently, this tactic is just an alias for [lia]. However, in the future,
+    Iris will generalize over the type of step-indices, and this tactic will
+    be able to solve step-indexing goals also in this generalized setting.
+
+    The tactic can be used as part of [eauto] by using the hint database
+    [si_solver].
+*)
+
+Ltac si_solver := lia.
+
+Create HintDb si_solver.
+Global Hint Extern 1 => si_solver : si_solver.
+
 (** Unbundled version *)
 Class Dist A := dist : nat → relation A.
 Global Hint Mode Dist ! : typeclass_instances.
@@ -49,7 +65,7 @@ Tactic Notation "ofe_subst" :=
 Record OfeMixin A `{Equiv A, Dist A} := {
   mixin_equiv_dist (x y : A) : x ≡ y ↔ ∀ n, x ≡{n}≡ y;
   mixin_dist_equivalence n : Equivalence (@dist A _ n);
-  mixin_dist_S n (x y : A) : x ≡{S n}≡ y → x ≡{n}≡ y
+  mixin_dist_lt n m (x y : A) : x ≡{n}≡ y → m < n → x ≡{m}≡ y;
 }.
 
 (** Bundled version *)
@@ -102,8 +118,8 @@ Section ofe_mixin.
   Proof. apply (mixin_equiv_dist _ (ofe_mixin A)). Qed.
   Global Instance dist_equivalence n : Equivalence (@dist A _ n).
   Proof. apply (mixin_dist_equivalence _ (ofe_mixin A)). Qed.
-  Lemma dist_S n x y : x ≡{S n}≡ y → x ≡{n}≡ y.
-  Proof. apply (mixin_dist_S _ (ofe_mixin A)). Qed.
+  Lemma dist_lt n m x y : x ≡{n}≡ y → m < n → x ≡{m}≡ y.
+  Proof. apply (mixin_dist_lt _ (ofe_mixin A)). Qed.
 End ofe_mixin.
 
 Global Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption : core.
@@ -177,9 +193,11 @@ Section ofe.
   Proof. intros x y Hxy. rewrite /Discrete. by setoid_rewrite Hxy. Qed.
 
   Lemma dist_le n n' x y : x ≡{n}≡ y → n' ≤ n → x ≡{n'}≡ y.
-  Proof. induction 2; eauto using dist_S. Qed.
+  Proof. intros ? [Hm | ->]%Nat.lt_eq_cases; [by eapply dist_lt | auto]. Qed.
   Lemma dist_le' n n' x y : n' ≤ n → x ≡{n}≡ y → x ≡{n'}≡ y.
-  Proof. intros; eauto using dist_le. Qed.
+  Proof. eauto using dist_le. Qed.
+  Lemma dist_S n x y : x ≡{S n}≡ y → x ≡{n}≡ y.
+  Proof. eauto using dist_le. Qed.
   (** [ne_proper] and [ne_proper_2] are not instances to improve efficiency of
   type class search during setoid rewriting.
   Local Instances of [NonExpansive{,2}] are hence accompanied by instances of
@@ -209,18 +227,39 @@ Section ofe.
 End ofe.
 
 (** Contractive functions *)
-Definition dist_later `{!Dist A} (n : nat) (x y : A) : Prop :=
-  match n with 0 => True | S n => x ≡{n}≡ y end.
-Global Arguments dist_later _ _ !_ _ _ /.
+(** Defined as a record to avoid eager unfolding. *)
+Record dist_later `{!Dist A} n (x y : A) : Prop :=
+  { dist_later_lt : ∀ m, m < n → x ≡{m}≡ y }.
 
-Global Instance dist_later_equivalence (A : ofe) n : Equivalence (@dist_later A _ n).
-Proof. destruct n as [|n]; [by split|]. apply dist_equivalence. Qed.
+Section dist_later.
+  Context {A : ofe}.
+  Implicit Types x y : A.
 
-Lemma dist_dist_later {A : ofe} n (x y : A) : dist n x y → dist_later n x y.
-Proof. intros Heq. destruct n; first done. exact: dist_S. Qed.
+  Global Instance dist_later_equivalence n : Equivalence (@dist_later A _ n).
+  Proof.
+    split.
+    - intros ?; by split.
+    - intros ?? [Hlater]; split; intros ??; by rewrite Hlater.
+    - intros ??? [Hlater1] [Hlater2]; split; intros ??; by rewrite Hlater1 ?Hlater2.
+  Qed.
 
-Lemma dist_later_dist {A : ofe} n (x y : A) : dist_later (S n) x y → dist n x y.
-Proof. done. Qed.
+  Lemma dist_dist_later n x y : dist n x y → dist_later n x y.
+  Proof. intros. split; eauto using dist_le. Qed.
+
+  Lemma dist_later_dist_lt n m x y : m < n → dist_later n x y → dist m x y.
+  Proof. intros ? []; eauto. Qed.
+
+  Lemma dist_later_0 x y : dist_later 0 x y.
+  Proof. split; intros ? []%Nat.nlt_0_r. Qed.
+
+  Lemma dist_later_S n x y: x ≡{n}≡ y ↔ dist_later (S n) x y.
+  Proof.
+    split.
+    - intros Hn; split; intros m Hm. eapply dist_le; first done. lia.
+    - intros Hdist. apply Hdist. lia.
+  Qed.
+End dist_later.
+
 
 (* We don't actually need this lemma (as our tactics deal with this through
    other means), but technically speaking, this is the reason why
@@ -228,7 +267,28 @@ Proof. done. Qed.
    preserves contractivity. *)
 Lemma ne_dist_later {A B : ofe} (f : A → B) :
   NonExpansive f → ∀ n, Proper (dist_later n ==> dist_later n) f.
-Proof. intros Hf [|n]; last exact: Hf. hnf. by intros. Qed.
+Proof. intros Hf ??? Hlater; split; intros ??; by eapply Hf, Hlater. Qed.
+
+(** We define [dist_later_fin], an equivalent (see dist_later_fin_iff) version of
+   [dist_later] that uses a [match] on the step-index instead of the
+   quantification over smaller step-indicies. The definition of [dist_later_fin]
+   matches how [dist_later] used to be defined (i.e., with a [match] on the
+   step-index), so [dist_later_fin] simplifies adapting existing Iris
+   developments that used to rely on the reduction behavior of [dist_later].
+
+   The "fin" indicates that when, in the future, the step-index is abstracted away,
+   this equivalence will only hold for finite step-indices (as in, ordinals without
+   "limit" steps such as natural numbers).
+*)
+Definition dist_later_fin {A : ofe} (n : nat) (x y : A) :=
+  match n with 0 => True | S n => x ≡{n}≡ y end.
+
+Lemma dist_later_fin_iff {A : ofe} (n : nat) (x y : A):
+  dist_later n x y ↔ dist_later_fin n x y.
+Proof.
+  destruct n; unfold dist_later_fin; first by split; eauto using dist_later_0.
+  by rewrite dist_later_S.
+Qed.
 
 Notation Contractive f := (∀ n, Proper (dist_later n ==> dist n) f).
 
@@ -241,29 +301,117 @@ Section contractive.
   Implicit Types x y : A.
 
   Lemma contractive_0 x y : f x ≡{0}≡ f y.
-  Proof. by apply (_ : Contractive f). Qed.
-  Lemma contractive_S n x y : x ≡{n}≡ y → f x ≡{S n}≡ f y.
+  Proof. by apply (_ : Contractive f), dist_later_0. Qed.
+  Lemma contractive_dist_later_dist n x y : dist_later n x y → f x ≡{n}≡ f y.
   Proof. intros. by apply (_ : Contractive f). Qed.
+  Lemma contractive_S n x y : x ≡{n}≡ y → f x ≡{S n}≡ f y.
+  Proof. intros. by apply contractive_dist_later_dist, dist_later_S. Qed.
 
   Global Instance contractive_ne : NonExpansive f | 100.
-  Proof. by intros n x y ?; apply dist_S, contractive_S. Qed.
+  Proof. intros n x y ?. eapply contractive_dist_later_dist. by apply dist_dist_later. Qed.
   Global Instance contractive_proper : Proper ((≡) ==> (≡)) f | 100.
   Proof. apply (ne_proper _). Qed.
 End contractive.
 
-Ltac f_contractive :=
+Lemma dist_pointwise_lt {A} {B: ofe} n m (f g: A → B):
+  m < n →
+  pointwise_relation A (dist_later n) f g →
+  pointwise_relation A (dist m) f g.
+Proof. intros Hlt Hp a. by apply Hp. Qed.
+
+(** The tactic [f_contractive] can be used to prove contractiveness or
+    non-expansiveness of a function [f]. Inside of the proof of
+    contractiveness/non-expansiveness, if the current goal is
+      [g x1 ... xn ≡{i}≡ g y1 ... yn]
+    for a contractive function [g] (that is used inside of the body of [f]),
+    then the tactic will try to find a suitable [Contractive] instance for [g]
+    and apply it. Currently, the tactic only supports one (i.e., [n = 1]) and
+    two (i.e., [n = 2]) arguments. As a result of applying the [Contractive]
+    instance for [g], one of the goals will be [dist_later i xi yi] and the tactic
+    will try to simplify or solve the goal. By simplify we mean that it will
+    turn hypotheses [dist_later] into [dist].
+
+    For backwards compatibility, we also define the tactic [f_contractive_fin] that
+    works with an earlier definition of [dist_later] now called [dist_later_fin]. The
+    new version of [f_contractive] is future proof with respect to generalizing the
+    type of step-indices, while the old tactic relies crucially on the step-indices
+    being [nat] and the reduction behavior of [dist_later]. The tactic [f_contractive_fin]
+    simplifies backwards compatibility of existing Iris developments (e.g., RustBelt),
+    that define custom notions of [dist] and [dist_later] but should be avoided if possible.
+
+    The tactics [f_contractive_prepare], [f_contractive_core], and
+    [f_contractive_core_fin] below are internal tactics used to define
+    [f_contractive] and [f_contractive_fin].
+*)
+
+(** [f_contractive_prepare] looks at which function is being applied on both
+    sides of a [dist], looks up the [Contractive] instance (or the equivalent for
+    two arguments) and applies it.
+
+    After applying [f_contractive_prepare], one of the remaining goals is
+    [dist_later n x y] for some [n], [x] and [y]. At this point, one of two
+    tactics can be applied: [f_contractive_core] or [f_contractive_core_fin]. The
+    tactic [f_contractive_core] works with the normal definition of [dist_later]
+    and is future compatible with generalizing the step-index beyond natural
+    numbers. The tactic [f_contractive_core_fin] is a special case which only
+    works for natural numbers as step-indicies. It changes [dist_later] to
+    [dist_later_fin], which only makes sense on natural numbers. We keep
+    [f_contractive_core_fin] around for backwards compatibility.
+*)
+Ltac f_contractive_prepare :=
   match goal with
   | |- ?f _ ≡{_}≡ ?f _ => simple apply (_ : Proper (dist_later _ ==> dist _) f)
   | |- ?f _ _ ≡{_}≡ ?f _ _ => simple apply (_ : Proper (dist_later _ ==> _ ==> dist _) f)
   | |- ?f _ _ ≡{_}≡ ?f _ _ => simple apply (_ : Proper (_ ==> dist_later _ ==> dist _) f)
-  end;
+  end.
+
+(** For the goal [dist_later n x y], the tactic [f_contractive_core] introduces a
+    smaller step-index [m < n] and tries to lower assumptions in the context to
+    [m] where possible.
+*)
+Ltac f_contractive_core idxName ltName :=
+  try match goal with
+  | |- dist_later ?n ?x ?y =>
+      constructor; intros idxName ltName;
+      repeat match goal with
+      | H: dist_later n _ _ |- _ => destruct H as [H]; specialize (H idxName ltName) as H
+      | H: pointwise_relation _ (dist_later n) _ _ |- _ =>
+         apply (dist_pointwise_lt _ idxName _ _ ltName) in H
+      end
+  end.
+
+(** For the goal [dist_later n x y], the tactic [f_contractive_core_fin] changes
+    the goal to [dist_later_fin] and takes care of the case where [n=0], such
+    that we are only left with the case where [n = S n'] for some [n']. Changing
+    [dist_later] to [dist_later_fin] enables reduction and thus works better with
+    custom versions of [dist] as used e.g. by LambdaRust. *)
+Ltac f_contractive_core_fin :=
   try match goal with
   | |- @dist_later ?A _ ?n ?x ?y =>
-         destruct n as [|n]; [exact I|change (@dist A _ n x y)]
-  end;
-  (* Only try reflexivity if the terms are syntactically equal. This avoids
-     very expensive failing unification. *)
-  try match goal with  |- _ ?x ?x => simple apply reflexivity end.
+      apply dist_later_fin_iff;
+      destruct n as [|n]; [exact I|change (@dist A _ n x y)]
+  end.
+
+
+(** We combine [f_contractive_prepare] and [f_contractive_core] into the
+    [f_contractive] tactic.
+
+    For all the goals not solved by [f_contractive_core] (i.e., the ones that are
+    not [dist_later n x y]), we try reflexivity. Since reflexivity can be very
+    expensive when unification fails, we use [fast_reflexivity].
+*)
+
+Tactic Notation "f_contractive" "as" ident(idxName) ident(ltName) :=
+  f_contractive_prepare; f_contractive_core idxName ltName; try fast_reflexivity.
+
+Tactic Notation "f_contractive" :=
+  let m := fresh "m" in
+  let Hlt := fresh "Hlt" in
+  f_contractive as m Hlt.
+
+Tactic Notation "f_contractive_fin" :=
+  f_contractive_prepare; f_contractive_core_fin; try fast_reflexivity.
+
 
 Ltac solve_contractive :=
   solve_proper_core ltac:(fun _ => first [f_contractive | f_equiv]).
@@ -368,7 +516,7 @@ Section fixpoint.
   Proof.
     rewrite !equiv_dist=> Hx n. induction n as [|n IH]; simpl in *.
     - rewrite Hx fixpoint_unfold; eauto using contractive_0.
-    - rewrite Hx fixpoint_unfold. apply (contractive_S _), IH.
+    - rewrite Hx fixpoint_unfold. eauto using contractive_S.
   Qed.
 
   Lemma fixpoint_ne (g : A → A) `{!Contractive g} n :
@@ -377,7 +525,7 @@ Section fixpoint.
     intros Hfg. rewrite fixpoint_unseal /fixpoint_def
       (conv_compl n (fixpoint_chain f)) (conv_compl n (fixpoint_chain g)) /=.
     induction n as [|n IH]; simpl in *; [by rewrite !Hfg|].
-    rewrite Hfg; apply contractive_S, IH; auto using dist_S.
+    rewrite Hfg; apply contractive_S, IH; eauto using dist_le with si_solver.
   Qed.
   Lemma fixpoint_proper (g : A → A) `{!Contractive g} :
     (∀ x, f x ≡ g x) → fixpoint f ≡ fixpoint g.
@@ -392,7 +540,7 @@ Section fixpoint.
     intros ? [x Hx] Hincr Hlim. set (chcar i := Nat.iter (S i) f x).
     assert (Hcauch : ∀ n i : nat, n ≤ i → chcar i ≡{n}≡ chcar n).
     { intros n. rewrite /chcar. induction n as [|n IH]=> -[|i] //=;
-        eauto using contractive_0, contractive_S with lia. }
+        eauto using contractive_0, contractive_S with si_solver. }
     set (fp2 := compl {| chain_cauchy := Hcauch |}).
     assert (f fp2 ≡ fp2).
     { apply equiv_dist=>n. rewrite /fp2 (conv_compl n) /= /chcar.
@@ -504,11 +652,13 @@ Section fixpointAB.
 
   Local Instance: Proper ((≡) ==> (≡) ==> (≡)) fA.
   Proof using fA_contractive.
-    apply ne_proper_2=> n x x' ? y y' ?. f_contractive; auto using dist_S.
+    apply ne_proper_2=> n x x' ? y y' ?. f_contractive;
+      eauto using dist_le with si_solver.
   Qed.
   Local Instance: Proper ((≡) ==> (≡) ==> (≡)) fB.
   Proof using fB_contractive.
-    apply ne_proper_2=> n x x' ? y y' ?. f_contractive; auto using dist_S.
+    apply ne_proper_2=> n x x' ? y y' ?. f_contractive;
+      eauto using dist_le with si_solver.
   Qed.
 
   Lemma fixpoint_A_unique p q : fA p q ≡ p → fB p q ≡ q → p ≡ fixpoint_A.
@@ -541,7 +691,7 @@ Section fixpointAB_ne.
     fixpoint_B fA fB ≡{n}≡ fixpoint_B fA' fB'.
   Proof.
     intros HfA HfB. apply fixpoint_ne=> z. rewrite HfB. f_contractive.
-    apply fixpoint_A_ne; auto using dist_S.
+    apply fixpoint_A_ne; eauto using dist_le with si_solver.
   Qed.
 
   Lemma fixpoint_A_proper :
@@ -582,7 +732,7 @@ Section ofe_mor.
       + by intros f x.
       + by intros f g ? x.
       + by intros f g h ?? x; trans (g x).
-    - by intros n f g ? x; apply dist_S.
+    - intros n m f g ? x ?; eauto using dist_le with si_solver.
   Qed.
   Canonical Structure ofe_morO := Ofe (ofe_mor A B) ofe_mor_ofe_mixin.
 
@@ -690,7 +840,8 @@ Section product.
     - intros x y; unfold dist, prod_dist, equiv, prod_equiv, prod_relation.
       rewrite !equiv_dist; naive_solver.
     - apply _.
-    - by intros n [x1 y1] [x2 y2] [??]; split; apply dist_S.
+    - by intros n m [x1 y1] [x2 y2] [??] ?; split;
+        eauto using dist_le with si_solver.
   Qed.
   Canonical Structure prodO : ofe := Ofe (A * B) prod_ofe_mixin.
 
@@ -878,7 +1029,9 @@ Global Instance ofe_morOF_contractive F1 F2 :
   oFunctorContractive (ofe_morOF F1 F2).
 Proof.
   intros ?? A1 ? A2 ? B1 ? B2 ? n [f g] [f' g'] Hfg; simpl in *.
-  apply ofe_morO_map_ne; apply oFunctor_map_contractive; destruct n, Hfg; by split.
+  apply ofe_morO_map_ne; apply oFunctor_map_contractive;
+    split; intros m Hlt; split; simpl.
+  all: destruct Hfg as [Hfg]; destruct (Hfg m); auto.
 Qed.
 
 (** * Sum type *)
@@ -898,7 +1051,7 @@ Section sum.
       + destruct Hx=> n; constructor; by apply equiv_dist.
       + destruct (Hx 0); constructor; apply equiv_dist=> n; by apply (inj _).
     - apply _.
-    - destruct 1; constructor; by apply dist_S.
+    - destruct 1; constructor; eapply dist_lt; eauto.
   Qed.
   Canonical Structure sumO : ofe := Ofe (A + B) sum_ofe_mixin.
 
@@ -918,7 +1071,7 @@ Section sum.
     { compl := sum_compl }.
   Next Obligation.
     intros ?? n c; rewrite /compl /sum_compl.
-    feed inversion (chain_cauchy c 0 n); first by auto with lia; constructor.
+    feed inversion (chain_cauchy c 0 n); first by si_solver.
     - rewrite (conv_compl n (inl_chain c _)) /=. destruct (c n); naive_solver.
     - rewrite (conv_compl n (inr_chain c _)) /=. destruct (c n); naive_solver.
   Qed.
@@ -1074,7 +1227,7 @@ Section option.
       intros Hxy; destruct (Hxy 0); constructor; apply equiv_dist.
       by intros n; feed inversion (Hxy n).
     - apply _.
-    - destruct 1; constructor; by apply dist_S.
+    - destruct 1; constructor; eauto using dist_le with si_solver.
   Qed.
   Canonical Structure optionO := Ofe (option A) option_ofe_mixin.
 
@@ -1192,14 +1345,13 @@ Section later.
   Proof.
     split.
     - intros x y; unfold equiv, later_equiv; rewrite !equiv_dist.
-      split.
-      + intros Hxy [|n]; [done|apply Hxy].
-      + intros Hxy n; apply (Hxy (S n)).
+      split; intros Hxy n; [done|].
+      eapply (Hxy (S n)). lia.
     - split; rewrite /dist /later_dist.
       + by intros [x].
       + by intros [x] [y].
       + by intros [x] [y] [z] ??; trans y.
-    - intros [|n] [x] [y] ?; [done|]; rewrite /dist /later_dist; by apply dist_S.
+    - intros n m [x] [y] Hdist ?; split; intros p Hp. eapply Hdist; by trans m.
   Qed.
   Canonical Structure laterO : ofe := Ofe (later A) later_ofe_mixin.
 
@@ -1209,12 +1361,13 @@ Section later.
   Global Program Instance later_cofe `{Cofe A} : Cofe laterO :=
     { compl c := Next (compl (later_chain c)) }.
   Next Obligation.
-    intros ? [|n] c; [done|by apply (conv_compl n (later_chain c))].
+    intros ? n c. apply dist_later_fin_iff.
+    destruct n as [|n]; [done|by apply (conv_compl n (later_chain c))].
   Qed.
 
   Global Instance Next_contractive : Contractive (@Next A).
-  Proof. by intros [|n] x y. Qed.
-  Global Instance Next_inj n : Inj (dist n) (dist (S n)) (@Next A).
+  Proof. by intros n x y. Qed.
+  Global Instance Next_inj n : Inj (dist_later n) (dist n) (@Next A).
   Proof. by intros x y. Qed.
 
   Lemma Next_uninj x : ∃ a, x ≡ Next a.
@@ -1239,9 +1392,18 @@ Global Arguments laterO : clear implicits.
 Definition later_map {A B} (f : A → B) (x : later A) : later B :=
   Next (f (later_car x)).
 Global Instance later_map_ne {A B : ofe} (f : A → B) n :
-  Proper (dist (pred n) ==> dist (pred n)) f →
+  Proper (dist_later n ==> dist_later n) f →
   Proper (dist n ==> dist n) (later_map f) | 0.
-Proof. destruct n as [|n]; intros Hf [x] [y] ?; do 2 red; simpl; auto. Qed.
+Proof.
+  intros P [x] [y] Hdist; rewrite /later_map //=.
+  split; intros m Hm; apply P, Hm. apply Hdist.
+Qed.
+Global Instance later_map_ne' {A B : ofe} (f : A → B) `{NonExpansive f} :
+  NonExpansive (later_map f).
+Proof.
+  intros ? [x] [y] Hdist. unfold later_map; simpl.
+  split; intros ??; simpl. f_equiv. by eapply Hdist.
+Qed.
 Global Instance later_map_proper {A B : ofe} (f : A → B) :
   Proper ((≡) ==> (≡)) f →
   Proper ((≡) ==> (≡)) (later_map f).
@@ -1257,7 +1419,7 @@ Proof. destruct x; intros Hf; apply Hf. Qed.
 Definition laterO_map {A B} (f : A -n> B) : laterO A -n> laterO B :=
   OfeMor (later_map f).
 Global Instance laterO_map_contractive (A B : ofe) : Contractive (@laterO_map A B).
-Proof. intros [|n] f g Hf n'; [done|]; apply Hf; lia. Qed.
+Proof. intros n f g Hlater [x]; split; intros ??; simpl. by apply Hlater. Qed.
 
 Program Definition laterOF (F : oFunctor) : oFunctor := {|
   oFunctor_car A _ B _ := laterO (oFunctor_car F A B);
@@ -1280,7 +1442,7 @@ Notation "▶ F"  := (laterOF F%OF) (at level 20, right associativity) : oFuncto
 Global Instance laterOF_contractive F : oFunctorContractive (laterOF F).
 Proof.
   intros A1 ? A2 ? B1 ? B2 ? n fg fg' Hfg. apply laterO_map_contractive.
-  destruct n as [|n]; simpl in *; first done. apply oFunctor_map_ne, Hfg.
+  split; intros ???; simpl. by eapply oFunctor_map_ne, Hfg.
 Qed.
 
 (** * Dependently-typed functions over a discrete domain *)
@@ -1314,7 +1476,7 @@ Section discrete_fun.
       + by intros f x.
       + by intros f g ? x.
       + by intros f g h ?? x; trans (g x).
-    - by intros n f g ? x; apply dist_S.
+    - by intros n m f g ? ? x; eauto using dist_le with si_solver.
   Qed.
   Canonical Structure discrete_funO := Ofe (discrete_fun B) discrete_fun_ofe_mixin.
 
@@ -1407,7 +1569,7 @@ Proof.
     + intros y. by apply g_dist.
     + intros y1 y2. by rewrite !g_dist.
     + intros y1 y2 y3. rewrite !g_dist. intros ??; etrans; eauto.
-  - intros n y1 y2. rewrite !g_dist. apply dist_S.
+  - intros n m y1 y2. rewrite !g_dist. eauto using dist_le with si_solver.
 Qed.
 
 Section iso_cofe_subtype.
@@ -1525,8 +1687,8 @@ Section sigT.
         destruct 1 as [-> Heq1].
         destruct 1 as [-> Heq2]. exists eq_refl => /=. by trans y.
     - setoid_rewrite sigT_dist_eq.
-      move => [xa x] [ya y] /=. destruct 1 as [-> Heq].
-      exists eq_refl. exact: dist_S.
+      move => m [xa x] [ya y] /=. destruct 1 as [-> Heq].
+      exists eq_refl. by eapply dist_dist_later.
   Qed.
 
   Canonical Structure sigTO : ofe := Ofe (sigT P) sigT_ofe_mixin.

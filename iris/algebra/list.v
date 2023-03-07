@@ -54,7 +54,7 @@ Proof.
   - intros l k. rewrite equiv_Forall2 -Forall2_forall.
     split; induction 1; constructor; intros; try apply equiv_dist; auto.
   - apply _.
-  - rewrite /dist /list_dist. eauto using Forall2_impl, dist_S.
+  - rewrite /dist /list_dist. eauto using Forall2_impl, dist_le with si_solver.
 Qed.
 Canonical Structure listO := Ofe (list A) list_ofe_mixin.
 

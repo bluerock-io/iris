@@ -21,7 +21,7 @@ Proof.
     + by intros m k.
     + by intros m1 m2 ? k.
     + by intros m1 m2 m3 ?? k; trans (m2 !! k).
-  - by intros n m1 m2 ? k; apply dist_S.
+  - intros n m m1 m2 ? ? k. eauto using dist_le with si_solver.
 Qed.
 Canonical Structure gmapO : ofe := Ofe (gmap K A) gmap_ofe_mixin.
 

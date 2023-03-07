@@ -15,6 +15,19 @@ Coq 8.13 is no longer supported.
 * Add custom entry `dfrac` that can be used for `{dq}` / `□` / `{# q}`
   annotation of connectives with a discardable fraction.
 * Add an RA on the `Z` type of integers, using addition for `⋅`.
+* Prepare Iris to generalize the type of step-indices. This is a large series of
+  changes; more changes will follow later. More documentation will follow as
+  part of
+  [this merge request](https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/888).
+  - Change the definition of `dist_later` to an equivalent definition that is
+    future-proof with respect to general step-indices.
+  - Change the definition of the properties of an `ofe` to be slightly more
+    general and future proof (i.e., change `dist_S` into `dist_lt`).
+  - Adapt `f_contractive` to work with the new definition of `dist_later`.
+    For backwards compatibility for existing developments, the tactic
+    `f_contractive_fin` is provided. It uses the old definition of `dist_later`,
+    now called `dist_later_fin`.
+  (by Michael Sammler, Lennard Gäher, and Simon Spies).
 
 **Changes in `bi`:**
 
