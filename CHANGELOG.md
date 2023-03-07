@@ -27,6 +27,8 @@ Coq 8.13 is no longer supported.
     For backwards compatibility for existing developments, the tactic
     `f_contractive_fin` is provided. It uses the old definition of `dist_later`,
     now called `dist_later_fin`.
+  - If you need to deal with a `dist_later`/`dist_later_fin` in a manual proof,
+    use the tactic `dist_later_intro`/`dist_later_fin_intro` to introduce it.
   (by Michael Sammler, Lennard Gäher, and Simon Spies).
 
 **Changes in `bi`:**

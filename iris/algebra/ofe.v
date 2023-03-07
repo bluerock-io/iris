@@ -320,43 +320,39 @@ Lemma dist_pointwise_lt {A} {B: ofe} n m (f g: A → B):
 Proof. intros Hlt Hp a. by apply Hp. Qed.
 
 (** The tactic [f_contractive] can be used to prove contractiveness or
-    non-expansiveness of a function [f]. Inside of the proof of
-    contractiveness/non-expansiveness, if the current goal is
-      [g x1 ... xn ≡{i}≡ g y1 ... yn]
-    for a contractive function [g] (that is used inside of the body of [f]),
-    then the tactic will try to find a suitable [Contractive] instance for [g]
-    and apply it. Currently, the tactic only supports one (i.e., [n = 1]) and
-    two (i.e., [n = 2]) arguments. As a result of applying the [Contractive]
-    instance for [g], one of the goals will be [dist_later i xi yi] and the tactic
-    will try to simplify or solve the goal. By simplify we mean that it will
-    turn hypotheses [dist_later] into [dist].
+non-expansiveness of a function [f]. Inside of the proof of
+contractiveness/non-expansiveness, if the current goal is
+  [g x1 ... xn ≡{i}≡ g y1 ... yn]
+for a contractive function [g] (that is used inside of the body of [f]),
+then the tactic will try to find a suitable [Contractive] instance for [g]
+and apply it. Currently, the tactic only supports one (i.e., [n = 1]) and
+two (i.e., [n = 2]) arguments. As a result of applying the [Contractive]
+instance for [g], one of the goals will be [dist_later i xi yi] and the tactic
+will try to simplify or solve the goal. By simplify we mean that it will
+turn hypotheses [dist_later] into [dist].
 
-    For backwards compatibility, we also define the tactic [f_contractive_fin] that
-    works with an earlier definition of [dist_later] now called [dist_later_fin]. The
-    new version of [f_contractive] is future proof with respect to generalizing the
-    type of step-indices, while the old tactic relies crucially on the step-indices
-    being [nat] and the reduction behavior of [dist_later]. The tactic [f_contractive_fin]
-    simplifies backwards compatibility of existing Iris developments (e.g., RustBelt),
-    that define custom notions of [dist] and [dist_later] but should be avoided if possible.
+For backwards compatibility, we also define the tactic [f_contractive_fin] that
+works with an earlier definition of [dist_later] now called [dist_later_fin]. The
+new version of [f_contractive] is future proof with respect to generalizing the
+type of step-indices, while the old tactic relies crucially on the step-indices
+being [nat] and the reduction behavior of [dist_later]. The tactic [f_contractive_fin]
+simplifies backwards compatibility of existing Iris developments (e.g., RustBelt),
+that define custom notions of [dist] and [dist_later] but should be avoided if
+possible.
 
-    The tactics [f_contractive_prepare], [f_contractive_core], and
-    [f_contractive_core_fin] below are internal tactics used to define
-    [f_contractive] and [f_contractive_fin].
-*)
+The tactics [f_contractive] and [f_contractive_fin] are implemented using
 
-(** [f_contractive_prepare] looks at which function is being applied on both
-    sides of a [dist], looks up the [Contractive] instance (or the equivalent for
-    two arguments) and applies it.
-
-    After applying [f_contractive_prepare], one of the remaining goals is
-    [dist_later n x y] for some [n], [x] and [y]. At this point, one of two
-    tactics can be applied: [f_contractive_core] or [f_contractive_core_fin]. The
-    tactic [f_contractive_core] works with the normal definition of [dist_later]
-    and is future compatible with generalizing the step-index beyond natural
-    numbers. The tactic [f_contractive_core_fin] is a special case which only
-    works for natural numbers as step-indicies. It changes [dist_later] to
-    [dist_later_fin], which only makes sense on natural numbers. We keep
-    [f_contractive_core_fin] around for backwards compatibility.
+1. [f_contractive_prepare] which looks up a [Contractive] looks at which
+   function is being applied on both sides of a [dist], looks up the
+   [Contractive] instance (or the equivalent for two arguments) and applies it.
+2. [dist_later_intro] and [dist_later_fin_intro] which introduces the resulting
+   goals with [dist_later n x y]/[dist_later_fin n x y]. The tactic
+   [dist_later_intro] works with the normal definition of [dist_later] and is
+   future compatible with generalizing the step-index beyond natural numbers.
+   The tactic [dist_later_fin_intro] is a special case which only works for
+   natural numbers as step-indicies. It changes [dist_later] to [dist_later_fin],
+   which only makes sense on natural numbers. We keep [dist_later_fin_intro]
+   around for backwards compatibility.
 *)
 Ltac f_contractive_prepare :=
   match goal with
@@ -365,12 +361,12 @@ Ltac f_contractive_prepare :=
   | |- ?f _ _ ≡{_}≡ ?f _ _ => simple apply (_ : Proper (_ ==> dist_later _ ==> dist _) f)
   end.
 
-(** For the goal [dist_later n x y], the tactic [f_contractive_core] introduces a
-    smaller step-index [m < n] and tries to lower assumptions in the context to
-    [m] where possible.
-*)
-Ltac f_contractive_core idxName ltName :=
-  try match goal with
+(** For the goal [dist_later n x y], the tactic [dist_later_intro as m Hm]
+introduces a smaller step-index [Hm : m < n] and tries to lower assumptions in
+the context to [m] where possible. The arguments [m] and [Hm] can be omitted,
+in which case a fresh identifier is used. *)
+Tactic Notation "dist_later_intro" "as" ident(idxName) ident(ltName) :=
+  match goal with
   | |- dist_later ?n ?x ?y =>
       constructor; intros idxName ltName;
       repeat match goal with
@@ -379,30 +375,34 @@ Ltac f_contractive_core idxName ltName :=
          apply (dist_pointwise_lt _ idxName _ _ ltName) in H
       end
   end.
+Tactic Notation "dist_later_intro" :=
+  let m := fresh "m" in
+  let Hlt := fresh "Hlt" in
+  dist_later_intro as m Hlt.
 
-(** For the goal [dist_later n x y], the tactic [f_contractive_core_fin] changes
-    the goal to [dist_later_fin] and takes care of the case where [n=0], such
-    that we are only left with the case where [n = S n'] for some [n']. Changing
-    [dist_later] to [dist_later_fin] enables reduction and thus works better with
-    custom versions of [dist] as used e.g. by LambdaRust. *)
-Ltac f_contractive_core_fin :=
-  try match goal with
+(** For the goal [dist_later n x y], the tactic [dist_later_fin_intro] changes
+the goal to [dist_later_fin] and takes care of the case where [n=0], such
+that we are only left with the case where [n = S n'] for some [n']. Changing
+[dist_later] to [dist_later_fin] enables reduction and thus works better with
+custom versions of [dist] as used e.g. by LambdaRust. *)
+Ltac dist_later_fin_intro :=
+  match goal with
   | |- @dist_later ?A _ ?n ?x ?y =>
       apply dist_later_fin_iff;
       destruct n as [|n]; [exact I|change (@dist A _ n x y)]
   end.
 
+(** We combine [f_contractive_prepare] and [dist_later_intro] into the
+[f_contractive] tactic.
 
-(** We combine [f_contractive_prepare] and [f_contractive_core] into the
-    [f_contractive] tactic.
-
-    For all the goals not solved by [f_contractive_core] (i.e., the ones that are
-    not [dist_later n x y]), we try reflexivity. Since reflexivity can be very
-    expensive when unification fails, we use [fast_reflexivity].
-*)
+For all the goals not solved by [dist_later_intro] (i.e., the ones that are
+not [dist_later n x y]), we try reflexivity. Since reflexivity can be very
+expensive when unification fails, we use [fast_reflexivity]. *)
 
 Tactic Notation "f_contractive" "as" ident(idxName) ident(ltName) :=
-  f_contractive_prepare; f_contractive_core idxName ltName; try fast_reflexivity.
+  f_contractive_prepare;
+  try dist_later_intro as idxName ltName;
+  try fast_reflexivity.
 
 Tactic Notation "f_contractive" :=
   let m := fresh "m" in
@@ -410,8 +410,9 @@ Tactic Notation "f_contractive" :=
   f_contractive as m Hlt.
 
 Tactic Notation "f_contractive_fin" :=
-  f_contractive_prepare; f_contractive_core_fin; try fast_reflexivity.
-
+  f_contractive_prepare;
+  try dist_later_fin_intro;
+  try fast_reflexivity.
 
 Ltac solve_contractive :=
   solve_proper_core ltac:(fun _ => first [f_contractive | f_equiv]).
