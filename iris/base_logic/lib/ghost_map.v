@@ -87,7 +87,7 @@ Section lemmas.
     k ↪[γ]{dq1} v1 -∗ k ↪[γ]{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    iDestruct (own_valid_2 with "H1 H2") as %?%gmap_view_frag_op_valid_L.
+    iCombine "H1 H2" gives %?%gmap_view_frag_op_valid_L.
     done.
   Qed.
   Lemma ghost_map_elem_agree k γ dq1 dq2 v1 v2 :
@@ -98,6 +98,14 @@ Section lemmas.
     done.
   Qed.
 
+  Global Instance ghost_map_elem_combine_gives γ k v1 dq1 v2 dq2 : 
+    CombineSepGives (k ↪[γ]{dq1} v1) (k ↪[γ]{dq2} v2) ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
+  Proof.
+    rewrite /CombineSepGives. iIntros "[H1 H2]".
+    iDestruct (ghost_map_elem_valid_2 with "H1 H2") as %[H1 H2].
+    eauto.
+  Qed.
+
   Lemma ghost_map_elem_combine k γ dq1 dq2 v1 v2 :
     k ↪[γ]{dq1} v1 -∗ k ↪[γ]{dq2} v2 -∗ k ↪[γ]{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
   Proof.
@@ -105,11 +113,20 @@ Section lemmas.
     unseal. iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
   Qed.
 
+  Global Instance ghost_map_elem_combine_as k γ dq1 dq2 v1 v2 :
+    CombineSepAs (k ↪[γ]{dq1} v1) (k ↪[γ]{dq2} v2) (k ↪[γ]{dq1 ⋅ dq2} v1) | 60. 
+    (* higher cost than the Fractional instance [combine_sep_fractional_bwd],
+       which kicks in for #qs *)
+  Proof.
+    rewrite /CombineSepAs. iIntros "[H1 H2]".
+    iDestruct (ghost_map_elem_combine with "H1 H2") as "[$ _]".
+  Qed.
+
   Lemma ghost_map_elem_frac_ne γ k1 k2 dq1 dq2 v1 v2 :
     ¬ ✓ (dq1 ⋅ dq2) → k1 ↪[γ]{dq1} v1 -∗ k2 ↪[γ]{dq2} v2 -∗ ⌜k1 ≠ k2⌝.
   Proof.
     iIntros (?) "H1 H2"; iIntros (->).
-    by iDestruct (ghost_map_elem_valid_2 with "H1 H2") as %[??].
+    by iCombine "H1 H2" gives %[??].
   Qed.
   Lemma ghost_map_elem_ne γ k1 k2 dq2 v1 v2 :
     k1 ↪[γ] v1 -∗ k2 ↪[γ]{dq2} v2 -∗ ⌜k1 ≠ k2⌝.
@@ -173,7 +190,7 @@ Section lemmas.
     ghost_map_auth γ q1 m1 -∗ ghost_map_auth γ q2 m2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ m1 = m2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    iDestruct (own_valid_2 with "H1 H2") as %[??]%gmap_view_auth_dfrac_op_valid_L.
+    iCombine "H1 H2" gives %[??]%gmap_view_auth_dfrac_op_valid_L.
     done.
   Qed.
   Lemma ghost_map_auth_agree γ q1 q2 m1 m2 :
@@ -189,8 +206,21 @@ Section lemmas.
     ghost_map_auth γ q m -∗ k ↪[γ]{dq} v -∗ ⌜m !! k = Some v⌝.
   Proof.
     unseal. iIntros "Hauth Hel".
-    iDestruct (own_valid_2 with "Hauth Hel") as %[?[??]]%gmap_view_both_dfrac_valid_L.
+    iCombine "Hauth Hel" gives %[?[??]]%gmap_view_both_dfrac_valid_L.
     eauto.
+  Qed.
+
+  Global Instance ghost_map_lookup_combine_gives_1 {γ q m k dq v} :
+    CombineSepGives (ghost_map_auth γ q m) (k ↪[γ]{dq} v) ⌜m !! k = Some v⌝.
+  Proof.
+    rewrite /CombineSepGives. iIntros "[H1 H2]".
+    iDestruct (ghost_map_lookup with "H1 H2") as %->. eauto.
+  Qed.
+
+  Global Instance ghost_map_lookup_combine_gives_2 {γ q m k dq v} :
+    CombineSepGives (k ↪[γ]{dq} v) (ghost_map_auth γ q m) ⌜m !! k = Some v⌝.
+  Proof.
+    rewrite /CombineSepGives comm. apply ghost_map_lookup_combine_gives_1.
   Qed.
 
   Lemma ghost_map_insert {γ m} k v :

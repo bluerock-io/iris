@@ -206,17 +206,23 @@ Lemma mapsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝.
 Proof. apply mapsto_valid. Qed.
 Lemma mapsto_valid_2 l dq1 dq2 v1 v2 :
   l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
-Proof.
-  iIntros "H1 H2". iDestruct (mapsto_valid_2 with "H1 H2") as %[? [= ?]]. done.
-Qed.
+Proof. iIntros "H1 H2". iCombine "H1 H2" gives %[? [=?]]. done. Qed.
 Lemma mapsto_agree l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜v1 = v2⌝.
-Proof. iIntros "H1 H2". iDestruct (mapsto_agree with "H1 H2") as %[= ?]. done. Qed.
+Proof. iIntros "H1 H2". iCombine "H1 H2" gives %[_ [=?]]. done. Qed.
+
+Global Instance mapsto_combine_sep_gives l dq1 dq2 v1 v2 : 
+  CombineSepGives (l ↦{dq1} v1) (l ↦{dq2} v2) ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝ | 20. 
+  (* We provide an instance with lower cost than the gen_heap instance
+     to avoid having to deal with Some v1 = Some v2 *)
+Proof.
+  rewrite /CombineSepGives. iIntros "[H1 H2]".
+  iCombine "H1 H2" gives %[? [=->]]. eauto.
+Qed.
 
 Lemma mapsto_combine l dq1 dq2 v1 v2 :
   l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ l ↦{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
 Proof.
-  iIntros "Hl1 Hl2". iDestruct (mapsto_combine with "Hl1 Hl2") as "[$ Heq]".
-  by iDestruct "Heq" as %[= ->].
+  iIntros "Hl1 Hl2". by iCombine "Hl1 Hl2" as "$" gives %[_ ->].
 Qed.
 
 Lemma mapsto_frac_ne l1 l2 dq1 dq2 v1 v2 :

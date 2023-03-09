@@ -122,7 +122,7 @@ Section proph_map.
   Proof.
     iIntros "[HR Hp]". iDestruct "HR" as (R) "[HP H●]". iDestruct "HP" as %[Hres Hdom].
     rewrite /proph_map_interp proph_unseal /proph_def.
-    iDestruct (ghost_map_lookup with "H● Hp") as %HR.
+    iCombine "H● Hp" gives %HR.
     assert (vs = v :: proph_list_resolves pvs p) as ->.
     { rewrite (Hres p vs HR). simpl. by rewrite decide_True. }
     iMod (ghost_map_update (proph_list_resolves pvs p) with "H● Hp") as "[H● H◯]".

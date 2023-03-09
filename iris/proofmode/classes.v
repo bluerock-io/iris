@@ -173,8 +173,7 @@ Global Hint Mode FromImpl + ! - - : typeclass_instances.
 Class FromSep {PROP : bi} (P Q1 Q2 : PROP) := from_sep : Q1 ∗ Q2 ⊢ P.
 Global Arguments FromSep {_} _%I _%I _%I : simpl never.
 Global Arguments from_sep {_} _%I _%I _%I {_}.
-Global Hint Mode FromSep + ! - - : typeclass_instances.
-Global Hint Mode FromSep + - ! ! : typeclass_instances. (* For iCombine *)
+Global Hint Mode FromSep + ! - - : typeclass_instances. (* For iSplit{L,R} *)
 
 Class FromAnd {PROP : bi} (P Q1 Q2 : PROP) := from_and : Q1 ∧ Q2 ⊢ P.
 Global Arguments FromAnd {_} _%I _%I _%I : simpl never.
@@ -246,6 +245,71 @@ Class IsExcept0 {PROP : bi} (Q : PROP) := is_except_0 : ◇ Q ⊢ Q.
 Global Arguments IsExcept0 {_} _%I : simpl never.
 Global Arguments is_except_0 {_} _%I {_}.
 Global Hint Mode IsExcept0 + ! : typeclass_instances.
+
+(** [CombineSepAs], [MaybeCombineSepAs] and [CombineSepGives] are all used for
+  the [iCombine] tactic.
+
+These three classes take two hypotheses [P] and [Q] as input, and return a
+(possibly simplified) new hypothesis [R]. [CombineSepAs P Q R] means that [R]
+may be obtained by deleting both [P] and [Q], and that [R] is not a trivial
+combination. [MaybeCombineSepAs P Q R progress] is like [CombineSepAs], but
+[R] can be the trivial combination [P ∗ Q], and the [progress] parameter 
+indicates whether this trivial combination is used. [CombineSepGives P Q R] 
+means that [□ R] may be obtained 'for free' from [P] and [Q]. The result [R] of 
+[CombineSepAs] and [MaybeCombineSepAs] will not contain the observations 
+from [CombineSepGives].
+
+We deliberately use separate typeclasses [CombineSepAs] and [CombineSepGives].
+This allows one to (1) combine hypotheses and get additional persistent
+information, (2) only combine the hypotheses, without the additional persistent
+information, (3) only get the additional persistent information, while keeping
+the original hypotheses. A possible alternative would have been something like
+[CombineSepAsGives P1 P2 P R := combine_as_gives : P1 ∗ P2 ⊢ P ∗ □ R],
+but this was deemed to be harder to use. Specifically, this would force you to
+always specify both [P] and [R], even though one might only have a good
+candidate for [P], but not [R], or the other way around.
+
+Note that [FromSep] and [CombineSepAs] have nearly the same definition. However,
+they have different Hint Modes and are used for different tactics. [FromSep] is
+used to compute the two new goals obtained after applying `iSplitL`/`iSplitR`,
+taking the current goal as input. [CombineSepAs] is used to combine two
+hypotheses into one. *)
+Class CombineSepAs {PROP : bi} (P Q R : PROP) := combine_sep_as : P ∗ Q ⊢ R.
+Global Arguments CombineSepAs {_} _%I _%I _%I : simpl never.
+Global Arguments combine_sep_as {_} _%I _%I _%I {_}.
+Global Hint Mode CombineSepAs + ! ! - : typeclass_instances.
+
+(** The [progress] parameter is of the following [progress_indicator] type: *)
+Inductive progress_indicator := MadeProgress | NoProgress.
+(** This aims to make [MaybeCombineSepAs] instances easier to read than if we
+had used Booleans. [NoProgress] indicates that the default instance
+[maybe_combine_sep_as_default] below has been used, while [MadeProgress]
+indicates that a [CombineSepAs] instance was used. *)
+Class MaybeCombineSepAs {PROP : bi}
+    (P Q R : PROP) (progress : progress_indicator) :=
+  maybe_combine_sep_as : P ∗ Q ⊢ R.
+Global Arguments MaybeCombineSepAs {_} _%I _%I _%I _ : simpl never.
+Global Arguments maybe_combine_sep_as {_} _%I _%I _%I _ {_}.
+Global Hint Mode MaybeCombineSepAs + ! ! - - : typeclass_instances.
+
+Global Instance maybe_combine_sep_as_combine_sep_as {PROP : bi} (R P Q : PROP) :
+  CombineSepAs P Q R → MaybeCombineSepAs P Q R MadeProgress | 20.
+Proof. done. Qed.
+
+Global Instance maybe_combine_sep_as_default {PROP : bi} (P Q : PROP) :
+  MaybeCombineSepAs P Q (P ∗ Q) NoProgress | 100.
+Proof. intros. by rewrite /MaybeCombineSepAs. Qed.
+
+(** We do not have this Maybe construction for [CombineSepGives], nor do we
+provide the trivial [CombineSepGives P Q True]. This is by design: when the user
+writes down a 'gives' clause in the [iCombine] tactic, they intend to receive
+non-trivial information. If such information cannot be found, we want to
+produce an error, instead of the trivial hypothesis [True]. *)
+Class CombineSepGives {PROP : bi} (P Q R : PROP) :=
+  combine_sep_gives : P ∗ Q ⊢ <pers> R.
+Global Arguments CombineSepGives {_} _%I _%I _%I : simpl never.
+Global Arguments combine_sep_gives {_} _%I _%I _%I {_}.
+Global Hint Mode CombineSepGives + ! ! - : typeclass_instances.
 
 (** The [ElimModal φ p p' P P' Q Q'] class is used by the [iMod] tactic.
 

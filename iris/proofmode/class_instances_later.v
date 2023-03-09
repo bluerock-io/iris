@@ -76,6 +76,36 @@ Global Instance from_sep_except_0 P Q1 Q2 :
   FromSep P Q1 Q2 → FromSep (◇ P) (◇ Q1) (◇ Q2).
 Proof. rewrite /FromSep=><-. by rewrite except_0_sep. Qed.
 
+(** MaybeCombineSepAs *)
+Global Instance maybe_combine_sep_as_later Q1 Q2 P progress :
+  MaybeCombineSepAs Q1 Q2 P progress →
+  MaybeCombineSepAs (▷ Q1) (▷ Q2) (▷ P) progress.
+Proof. by rewrite /MaybeCombineSepAs -later_sep => <-. Qed.
+Global Instance maybe_combine_sep_as_laterN n Q1 Q2 P progress :
+  MaybeCombineSepAs Q1 Q2 P progress →
+  MaybeCombineSepAs (▷^n Q1) (▷^n Q2) (▷^n P) progress.
+Proof. by rewrite /MaybeCombineSepAs -laterN_sep => <-. Qed.
+Global Instance maybe_combine_sep_as_except_0 Q1 Q2 P progress :
+  MaybeCombineSepAs Q1 Q2 P progress →
+  MaybeCombineSepAs (◇ Q1) (◇ Q2) (◇ P) progress.
+Proof. by rewrite /MaybeCombineSepAs -except_0_sep => <-. Qed.
+
+(** MaybeCombineSepGives *)
+Global Instance maybe_combine_sep_gives_later Q1 Q2 P :
+  CombineSepGives Q1 Q2 P →
+  CombineSepGives (▷ Q1) (▷ Q2) (▷ P).
+Proof. by rewrite /CombineSepGives -later_sep -later_persistently => ->. Qed.
+Global Instance maybe_combine_sep_gives_laterN n Q1 Q2 P :
+  CombineSepGives Q1 Q2 P →
+  CombineSepGives (▷^n Q1) (▷^n Q2) (▷^n P).
+Proof. by rewrite /CombineSepGives -laterN_sep -laterN_persistently => ->. Qed.
+Global Instance maybe_combine_sep_gives_except_0 Q1 Q2 P :
+  CombineSepGives Q1 Q2 P →
+  CombineSepGives (◇ Q1) (◇ Q2) (◇ P).
+Proof.
+  by rewrite /CombineSepGives -except_0_sep -except_0_persistently => ->.
+Qed.
+
 (** IntoAnd *)
 Global Instance into_and_later p P Q1 Q2 :
   IntoAnd p P Q1 Q2 → IntoAnd p (▷ P) (▷ Q1) (▷ Q2).

@@ -79,8 +79,8 @@ Proof.
   iMod (Hwp (OwnPGS _ _ _ _ γσ) with "[Hσf]") as "[$ H]";
     first by rewrite /ownP; iFrame.
   iIntros "!> Hσ". iExists ∅. iMod "H" as (σ2') "[Hσf %]". rewrite /ownP.
-  iDestruct (own_valid_2 with "Hσ Hσf")
-    as %[Hp%Excl_included _]%auth_both_valid_discrete; simplify_eq; auto.
+  iCombine "Hσ Hσf"
+    gives %[Hp%Excl_included _]%auth_both_valid_discrete; simplify_eq; auto.
 Qed.
 
 
@@ -96,8 +96,8 @@ Section lifting.
     state_interp σ1 ns κs nt -∗ ownP σ2 -∗ ⌜σ1 = σ2⌝.
   Proof.
     iIntros "Hσ● Hσ◯". rewrite /ownP.
-    by iDestruct (own_valid_2 with "Hσ● Hσ◯")
-      as %[->%Excl_included _]%auth_both_valid_discrete.
+    by iCombine "Hσ● Hσ◯"
+      gives %[->%Excl_included _]%auth_both_valid_discrete.
   Qed.
   Lemma ownP_state_twice σ1 σ2 : ownP σ1 ∗ ownP σ2 ⊢ False.
   Proof.

@@ -103,7 +103,7 @@ Section proofs.
     - iMod ("Hclose" with "[Htoki]") as "_"; first auto.
       iIntros "!> [HP $]".
       iInv N as "[[_ >Hdis2]|>Hitok]".
-      + iDestruct (own_valid_2 with "Hdis Hdis2") as %[_ Hval%gset_disj_valid_op].
+      + iCombine "Hdis Hdis2" gives %[_ Hval%gset_disj_valid_op].
         set_solver.
       + iSplitR "Hitok"; last by iFrame. eauto with iFrame.
     - iDestruct (na_own_disjoint with "Htoki Htoki2") as %?. set_solver.

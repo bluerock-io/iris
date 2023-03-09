@@ -24,6 +24,20 @@ Section class_instances.
     IsOp a b1 b2 →
     FromSep (uPred_ownM a) (uPred_ownM b1) (uPred_ownM b2).
   Proof. intros. by rewrite /FromSep -ownM_op -is_op. Qed.
+  (* TODO: Improve this instance with generic own simplification machinery
+  once https://gitlab.mpi-sws.org/iris/iris/-/issues/460 is fixed *)
+  Global Instance combine_sep_as_ownM (a b1 b2 : M) :
+    IsOp a b1 b2 →
+    CombineSepAs (uPred_ownM b1) (uPred_ownM b2) (uPred_ownM a).
+  Proof. intros. by rewrite /CombineSepAs -ownM_op -is_op. Qed.
+  (* TODO: Improve this instance with generic own validity simplification
+  machinery once https://gitlab.mpi-sws.org/iris/iris/-/issues/460 is fixed *)
+  Global Instance combine_sep_gives_ownM (b1 b2 : M) :
+    CombineSepGives (uPred_ownM b1) (uPred_ownM b2) (✓ (b1 ⋅ b2)).
+  Proof.
+    intros. rewrite /CombineSepGives -ownM_op ownM_valid.
+    by apply: bi.persistently_intro.
+  Qed.
   Global Instance from_sep_ownM_core_id (a b1 b2 : M) :
     IsOp a b1 b2 → TCOr (CoreId b1) (CoreId b2) →
     FromAnd (uPred_ownM a) (uPred_ownM b1) (uPred_ownM b2).

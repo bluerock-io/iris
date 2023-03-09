@@ -88,7 +88,7 @@ Section mono_list_own.
     ⌜(q1 + q2 ≤ 1)%Qp ∧ l1 = l2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    by iDestruct (own_valid_2 with "H1 H2") as %?%mono_list_auth_dfrac_op_valid_L.
+    by iCombine "H1 H2" gives %?%mono_list_auth_dfrac_op_valid_L.
   Qed.
   Lemma mono_list_auth_own_exclusive γ l1 l2 :
     mono_list_auth_own γ 1 l1 -∗ mono_list_auth_own γ 1 l2 -∗ False.
@@ -103,7 +103,7 @@ Section mono_list_own.
     ⌜ (q ≤ 1)%Qp ∧ l2 `prefix_of` l1 ⌝.
   Proof.
     unseal. iIntros "Hauth Hlb".
-    by iDestruct (own_valid_2 with "Hauth Hlb") as %?%mono_list_both_dfrac_valid_L.
+    by iCombine "Hauth Hlb" gives %?%mono_list_both_dfrac_valid_L.
   Qed.
 
   Lemma mono_list_lb_valid γ l1 l2 :
@@ -112,7 +112,7 @@ Section mono_list_own.
     ⌜ l1 `prefix_of` l2 ∨ l2 `prefix_of` l1 ⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    by iDestruct (own_valid_2 with "H1 H2") as %?%mono_list_lb_op_valid_L.
+    by iCombine "H1 H2" gives %?%mono_list_lb_op_valid_L.
   Qed.
 
   Lemma mono_list_idx_agree γ i a1 a2 :

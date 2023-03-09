@@ -72,7 +72,7 @@ Proof.
   - iDestruct "Hinv" as (v' ->) "[HΨ|Hγ']".
     + iModIntro. iSplitL "Hl Hγ"; [iNext; iExists _; iFrame; eauto|].
       wp_pures. by iApply "HΦ".
-    + iDestruct (own_valid_2 with "Hγ Hγ'") as %[].
+    + iCombine "Hγ Hγ'" gives %[].
 Qed.
 End proof.
 

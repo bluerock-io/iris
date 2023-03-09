@@ -97,7 +97,7 @@ Proof.
   (** and use timelessness to strip the later over ["Hv'"].
      But we cannot do the same for ["Hinv'"], the knowledge about the nested invariant, because
      it is not timeless. And we also cannot take any program step to strip the later here! *)
-  iPoseProof (ghost_var_agree with "Hv Hv'") as "#<-".
+  iCombine "Hv Hv'" gives %[_ <-].
   (** Instead, we use the later credit to strip the later in front of the invariant.
     Here we make use of [lc_fupd_add_later], which adds a later to the goal using one credit,
     if the current goal is a fancy update. *)

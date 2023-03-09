@@ -75,12 +75,31 @@ Section saved_anything.
     saved_anything_own γ dq1 x -∗ saved_anything_own γ dq2 y -∗ ⌜✓ (dq1 ⋅ dq2)⌝ ∗ x ≡ y.
   Proof.
     iIntros "Hx Hy". rewrite /saved_anything_own.
-    iDestruct (own_valid_2 with "Hx Hy") as "Hv".
+    iCombine "Hx Hy" gives "Hv".
     rewrite dfrac_agree_validI_2. iDestruct "Hv" as "[$ $]".
   Qed.
   Lemma saved_anything_agree γ dq1 dq2 x y :
     saved_anything_own γ dq1 x -∗ saved_anything_own γ dq2 y -∗ x ≡ y.
   Proof. iIntros "Hx Hy". iPoseProof (saved_anything_valid_2 with "Hx Hy") as "[_ $]". Qed.
+
+  Global Instance saved_anything_combine_gives γ dq1 dq2 x y :
+    CombineSepGives (saved_anything_own γ dq1 x) (saved_anything_own γ dq2 y)
+      (⌜✓ (dq1 ⋅ dq2)⌝ ∗ x ≡ y).
+  Proof.
+    rewrite /CombineSepGives. iIntros "[Hx Hy]".
+    iPoseProof (saved_anything_valid_2 with "Hx Hy") as "[% #$]". eauto.
+  Qed.
+
+  Global Instance saved_anything_combine_as γ dq1 dq2 x y :
+    CombineSepAs (saved_anything_own γ dq1 x) (saved_anything_own γ dq2 y)
+      (saved_anything_own γ (dq1 ⋅ dq2) x).
+  (* higher cost than the Fractional instance, which kicks in for #qs *)
+  Proof.
+    rewrite /CombineSepAs. iIntros "[Hx Hy]".
+    iCombine "Hx Hy" gives "[_ #H]".
+    iRewrite -"H" in "Hy". rewrite /saved_anything_own.
+    iCombine "Hx Hy" as "Hxy". by rewrite -dfrac_agree_op.
+  Qed.
 
   (** Make an element read-only. *)
   Lemma saved_anything_persist γ dq v :
@@ -161,12 +180,12 @@ Section saved_prop.
     saved_prop_own γ dq1 P -∗ saved_prop_own γ dq2 Q -∗ ⌜✓ (dq1 ⋅ dq2)⌝ ∗ ▷ (P ≡ Q).
   Proof.
     iIntros "HP HQ".
-    iPoseProof (saved_anything_valid_2 (F := ▶ ∙) with "HP HQ") as "($ & Hag)".
+    iCombine "HP HQ" gives "($ & Hag)".
     by iApply later_equivI.
   Qed.
   Lemma saved_prop_agree γ dq1 dq2 P Q :
     saved_prop_own γ dq1 P -∗ saved_prop_own γ dq2 Q -∗ ▷ (P ≡ Q).
-  Proof. iIntros "HP HQ". iPoseProof (saved_prop_valid_2 with "HP HQ") as "[_ $]". Qed.
+  Proof. iIntros "HP HQ". iCombine "HP" "HQ" gives "[_ $]". Qed.
 
   (** Make an element read-only. *)
   Lemma saved_prop_persist γ dq P :
@@ -239,7 +258,7 @@ Section saved_pred.
     saved_pred_own γ dq1 Φ -∗ saved_pred_own γ dq2 Ψ -∗ ⌜✓ (dq1 ⋅ dq2)⌝ ∗ ▷ (Φ x ≡ Ψ x).
   Proof.
     iIntros "HΦ HΨ".
-    iPoseProof (saved_anything_valid_2 (F := A -d> ▶ ∙) with "HΦ HΨ") as "($ & Hag)".
+    iCombine "HΦ HΨ" gives "($ & Hag)".
     iApply later_equivI. by iApply (discrete_fun_equivI with "Hag").
   Qed.
   Lemma saved_pred_agree γ dq1 dq2 Φ Ψ x :

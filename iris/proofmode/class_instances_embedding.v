@@ -98,6 +98,16 @@ Global Instance from_sep_embed P Q1 Q2 :
   FromSep P Q1 Q2 → FromSep ⎡P⎤ ⎡Q1⎤ ⎡Q2⎤.
 Proof. by rewrite /FromSep -embed_sep => <-. Qed.
 
+Global Instance maybe_combine_sep_as_embed Q1 Q2 P progress :
+  MaybeCombineSepAs Q1 Q2 P progress →
+  MaybeCombineSepAs ⎡Q1⎤ ⎡Q2⎤ ⎡P⎤ progress.
+Proof. by rewrite /MaybeCombineSepAs -embed_sep => <-. Qed.
+
+Global Instance combine_sep_gives_embed Q1 Q2 P :
+  CombineSepGives Q1 Q2 P →
+  CombineSepGives ⎡Q1⎤ ⎡Q2⎤ ⎡P⎤.
+Proof. by rewrite /CombineSepGives -embed_sep -embed_persistently => ->. Qed.
+
 Global Instance into_and_embed p P Q1 Q2 :
   IntoAnd p P Q1 Q2 → IntoAnd p ⎡P⎤ ⎡Q1⎤ ⎡Q2⎤.
 Proof.

@@ -408,6 +408,28 @@ Section mapsto_tests.
     l ↦{#q/2} v -∗ l ↦{#q/2} v -∗ l ↦{#q} v.
   Proof. iIntros "H1 H2". iFrame "H1". iExact "H2". Qed.
 
+  Lemma mapsto_combine_2 l v1 q1 v2 q2 :
+    l ↦{#q1} v1 -∗ l ↦{#q2} v2 -∗
+    l ↦{#(q1 + q2)} v1 ∗ ⌜q1 + q2 ≤ 1⌝%Qp ∗ ⌜v1 = v2⌝.
+  Proof. iIntros "H1 H2". by iCombine "H1 H2" as "$" gives %[? ->]. Qed.
+
+  Lemma mapsto_combine_3 l v1 q1 v2 q2 v3 q3 :
+    l ↦{#q1} v1 -∗ l ↦{#q2} v2 -∗ l ↦{#q3} v3 -∗
+    l ↦{#(q1 + (q2 + q3))} v1 ∗ ⌜q1 + (q2 + q3) ≤ 1⌝%Qp ∗ ⌜v1 = v2⌝ ∗ ⌜v2 = v3⌝.
+  Proof.
+    iIntros "H1 H2 H3".
+    by iCombine "H1 H2 H3" as "$" gives %[[_ ->] [? ->]].
+  Qed.
+
+  Lemma mapsto_combine_4 l v1 q1 v2 q2 v3 q3 v4 q4 :
+    l ↦{#q1} v1 -∗ l ↦{#q2} v2 -∗ l ↦{#q3} v3 -∗ l ↦{#q4} v4 -∗
+    l ↦{#(q1 + (q2 + (q3 + q4)))} v1 ∗ ⌜q1 + (q2 + (q3 + q4)) ≤ 1⌝%Qp ∗
+      ⌜v1 = v2⌝ ∗ ⌜v2 = v3⌝ ∗ ⌜v3 = v4⌝.
+  Proof.
+    iIntros "H1 H2 H3 H4".
+    iCombine "H1 H2 H3 H4" as "$" gives %H. Show.
+    by destruct H as [[[_ ->] [_ ->]] [? ->]].
+  Qed.
 End mapsto_tests.
 
 Section inv_mapsto_tests.

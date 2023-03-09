@@ -83,7 +83,7 @@ Proof.
       wp_cmpxchg_suc. iModIntro. iSplitR "HΦ".
       * iNext; iRight; iExists n; by iFrame.
       * wp_pures. iSplitR; first done. by iApply "HΦ".
-    + by iDestruct (own_valid_2 with "Hγ1 Hγ'") as %?.
+    + by iCombine "Hγ1 Hγ'" gives %?.
   - clear Φ. iIntros "!> %Φ _ HΦ /=". wp_lam. wp_bind (! _)%E.
     iInv N as ">Hγ".
     iAssert (∃ v, l ↦ v ∗ (⌜v = NONEV⌝ ∗ own γ (Pending (1/2)%Qp) ∨
@@ -110,9 +110,9 @@ Proof.
       wp_load; iModIntro; (iSplitL "Hl Hγ"; first by eauto with iFrame);
       wp_pures; by iApply "HΦ".
     + iDestruct "Hinv" as "[[Hl >Hγ]|H]"; last iDestruct "H" as (m') "[Hl Hγ]".
-      { by iDestruct (own_valid_2 with "Hγ Hγ'") as %?. }
+      { by iCombine "Hγ Hγ'" gives %?. }
       wp_load. Show.
-      iDestruct (own_valid_2 with "Hγ Hγ'") as %?%to_agree_op_inv_L; subst.
+      iCombine "Hγ Hγ'" gives %?%to_agree_op_inv_L; subst.
       iModIntro. iSplitL "Hl Hγ"; first by eauto with iFrame.
       wp_pures. iApply wp_assert. wp_op.
       iSplitR; first by case_bool_decide.
