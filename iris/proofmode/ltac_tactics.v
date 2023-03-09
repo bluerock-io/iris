@@ -1626,7 +1626,7 @@ Tactic Notation "iCombine" constr(Hs) "as" constr(pat) :=
   let Hs := eval vm_compute in (INamed <$> Hs) in
   let H := iFresh in
   let Δ := iGetCtx in
-  eapply tac_combine with _ _ Hs _ _ H _;
+  notypeclasses refine (tac_combine_as _ _ _ Hs _ _ H _ _ _ _ _ _);
     [pm_reflexivity ||
      let Hs := iMissingHypsCore Δ Hs in
      fail "iCombine: hypotheses" Hs "not found"
@@ -1634,10 +1634,80 @@ Tactic Notation "iCombine" constr(Hs) "as" constr(pat) :=
     |pm_reflexivity ||
      let H := pretty_ident H in
      fail "iCombine:" H "not fresh"
+     (* should never happen in normal usage, since [H := iFresh]
+     FIXME: improve once consistent error messages are added,
+     see https://gitlab.mpi-sws.org/iris/iris/-/issues/499 *)
     |iDestructHyp H as pat].
 
 Tactic Notation "iCombine" constr(H1) constr(H2) "as" constr(pat) :=
   iCombine [H1;H2] as pat.
+
+Tactic Notation "iCombineGivesCore" constr(Hs) "gives" tactic3(tac) :=
+  let Hs := words Hs in
+  let Hs := eval vm_compute in (INamed <$> Hs) in
+  let H := iFresh in
+  let Δ := iGetCtx in
+  notypeclasses refine (tac_combine_gives _ _ _ Hs _ _ H _ _ _ _ _ _ _);
+    [pm_reflexivity ||
+     let Hs := iMissingHypsCore Δ Hs in
+     fail "iCombine: hypotheses" Hs "not found"
+    |tc_solve || fail "iCombine: cannot find 'gives' clause for hypotheses" Hs
+    |pm_reflexivity ||
+     let H := pretty_ident H in
+     fail "iCombine:" H "not fresh"
+     (* should never happen in normal usage, since [H := iFresh]
+     FIXME: improve once consistent error messages are added,
+     see https://gitlab.mpi-sws.org/iris/iris/-/issues/499 *)
+    |tac H].
+
+Tactic Notation "iCombine" constr(Hs) "gives" constr(pat) :=
+  iCombineGivesCore Hs gives (fun H => iDestructHyp H as pat).
+
+Tactic Notation "iCombine" constr(H1) constr(H2) "gives" constr(pat) :=
+  iCombine [H1;H2] gives pat.
+
+Tactic Notation "iCombine" constr(Hs) "gives" "%" simple_intropattern(pat) :=
+  iCombineGivesCore Hs gives (fun H => iPure H as pat).
+
+Tactic Notation "iCombine" constr(H1) constr(H2)
+                                      "gives" "%" simple_intropattern(pat) :=
+  iCombine [H1;H2] gives %pat.
+
+Tactic Notation "iCombineAsGivesCore" constr(Hs) "as" constr(pat1)
+                                      "gives" tactic3(tac) :=
+  let Hs := words Hs in
+  let Hs := eval vm_compute in (INamed <$> Hs) in
+  let H1 := iFresh in
+  let H2 := iFresh in
+  let Δ := iGetCtx in
+  notypeclasses refine (tac_combine_as_gives _ _ _ Hs _ _ H1 H2 _ _ _ _ _ _ _);
+    [pm_reflexivity ||
+     let Hs := iMissingHypsCore Δ Hs in
+     fail "iCombine: hypotheses" Hs "not found"
+    |tc_solve || fail "iCombine: cannot find 'gives' clause for hypotheses" Hs
+    |pm_reflexivity ||
+     let H1 := pretty_ident H1 in
+     let H2 := pretty_ident H2 in
+     fail "iCombine:" H1 "or" H2 "not fresh"
+     (* should never happen in normal usage, since [H1] and [H2] are [iFresh]
+     FIXME: improve once consistent error messages are added,
+     see https://gitlab.mpi-sws.org/iris/iris/-/issues/499 *)
+    |iDestructHyp H1 as pat1; tac H2].
+
+Tactic Notation "iCombine" constr(Hs) "as" constr(pat1) "gives" constr(pat2) :=
+  iCombineAsGivesCore Hs as pat1 gives (fun H => iDestructHyp H as pat2).
+
+Tactic Notation "iCombine" constr(H1) constr(H2) "as" constr(pat1)
+                                      "gives" constr(pat2) :=
+  iCombine [H1;H2] as pat1 gives pat2.
+
+Tactic Notation "iCombine" constr(Hs) "as" constr(pat1)
+                                      "gives" "%" simple_intropattern(pat2) :=
+  iCombineAsGivesCore Hs as pat1 gives (fun H => iPure H as pat2).
+
+Tactic Notation "iCombine" constr(H1) constr(H2) "as" constr(pat1)
+                                      "gives" "%" simple_intropattern(pat2) :=
+  iCombine [H1;H2] as pat1 gives %pat2.
 
 (** * Introduction tactic *)
 Ltac iIntros_go pats startproof :=

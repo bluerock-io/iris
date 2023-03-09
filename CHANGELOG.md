@@ -44,6 +44,19 @@ Coq 8.13 is no longer supported.
   intuitionistic. This means that tactics such as `iDestruct ... as "->"` will
   not dispose of hypotheses to perform the rewrite.
 * Remove tactic `iSolveTC` in favor of `tc_solve` in std++.
+* The result of `iCombine` is no longer computed with the `FromSep` typeclass,
+  but with a new `CombineSepAs` typeclass. If you provide custom `FromSep`
+  instances and use the `iCombine` tactic, you will need to define additional
+  `CombineSepAs` instances. This is done in preparation for making `iCombine`
+  combine propositions in ways that are not appropriate for how `FromSep` is used.
+  Note that `FromSep` is still used for determining the new goals when applying
+  the `iSplitL` and `iSplitR` tactics.
+* The `iCombine` tactic now accepts an (optional) 'gives' clause, with which one
+  can learn persistent facts from the combination of two hypotheses. One can
+  register such 'gives' clauses by providing instances of the new
+  `CombineSepGives` typeclass. The 'gives' clause is still experimental;
+  in future versions of Iris it will combine `own` connectives based on the
+  validity rules for cameras.
 
 **Changes in `base_logic`:**
 

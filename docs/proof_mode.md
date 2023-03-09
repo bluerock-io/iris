@@ -184,10 +184,17 @@ Separation logic-specific tactics
 - `iFrame select (pat)%I` : cancel the last hypothesis of the intuitionistic
   of spatial context that matches pattern `pat`.
 - `iCombine "H1 H2" as "ipat"` : combine `H1 : P1` and `H2 : P2` into `H: P1 ∗
-  P2` or something simplified but equivalent, then destruct the combined
+  P2` or something simplified but equivalent, then `destruct` the combined
   hypothesis using `ipat`. Some examples of simplifications `iCombine` knows
   about are to combine `own γ x` and `own γ y` into `own γ (x ⋅ y)`, and to
   combine `l ↦{1/2} v` and `l ↦{1/2} v` into `l ↦ v`.
+- `iCombine "H1 H2" gives "ipat"` : from `H1 : P1` and `H2 : P2`, find
+  persistent consequences of `P1 ∗ P2`, then `destruct` this consequence with
+  `ipat`. Some examples of persistent consequences `iCombine` knows about are
+  that `own γ x` and `own γ y` gives `✓ (x ⋅ y)`, and that
+  `l ↦{#q1} v1` and `l ↦{#q2} v2` gives `⌜(q1 + q2 ≤ 1) ∧ v1 = v2⌝`.
+- `iCombine "H1 H2" as "ipat1" gives "ipat2"` combines the two functionalities
+  of `iCombine` described above.
 - `iAccu` : solve a goal that is an evar by instantiating it with all
   hypotheses from the spatial context joined together with a separating
   conjunction (or `emp` in case the spatial context is empty). Not commonly

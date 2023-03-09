@@ -689,6 +689,53 @@ Global Instance from_sep_big_sepMS_disj_union `{Countable A} (Φ : A → PROP) X
   FromSep ([∗ mset] y ∈ X1 ⊎ X2, Φ y) ([∗ mset] y ∈ X1, Φ y) ([∗ mset] y ∈ X2, Φ y).
 Proof. by rewrite /FromSep big_sepMS_disj_union. Qed.
 
+(** MaybeCombineSepAs *)
+Global Instance maybe_combine_sep_as_affinely Q1 Q2 P progress :
+  MaybeCombineSepAs Q1 Q2 P progress →
+  MaybeCombineSepAs (<affine> Q1) (<affine> Q2) (<affine> P) progress | 30.
+Proof. rewrite /MaybeCombineSepAs =><-. by rewrite affinely_sep_2. Qed.
+Global Instance maybe_combine_sep_as_intuitionistically Q1 Q2 P progress :
+  MaybeCombineSepAs Q1 Q2 P progress →
+  MaybeCombineSepAs (□ Q1) (□ Q2) (□ P) progress | 30.
+Proof. rewrite /MaybeCombineSepAs =><-. by rewrite intuitionistically_sep_2. Qed.
+Global Instance maybe_combine_sep_as_absorbingly Q1 Q2 P progress :
+  MaybeCombineSepAs Q1 Q2 P progress →
+  MaybeCombineSepAs (<absorb> Q1) (<absorb> Q2) (<absorb> P) progress | 30.
+Proof. rewrite /MaybeCombineSepAs =><-. by rewrite absorbingly_sep. Qed.
+Global Instance maybe_combine_sep_as_persistently Q1 Q2 P progress :
+  MaybeCombineSepAs Q1 Q2 P progress →
+  MaybeCombineSepAs (<pers> Q1) (<pers> Q2) (<pers> P) progress | 30.
+Proof. rewrite /MaybeCombineSepAs =><-. by rewrite persistently_sep_2. Qed.
+
+(** CombineSepGives *)
+(* The results of these recursive instances drop the input modalities. This is
+fine, because the [P] argument in [CombineSepGives Q1 Q2 P] is by definition
+beneath a [<pers>] modality, and we have:
+         - [<affine><pers> P ⊢ <pers> P] holds, we have
+              [<pers><affine> P ⊣⊢ <pers> P] by [persistently_affinely_elim]
+              and the obtained [□ P] in [iCombine] is always [Affine] anyway.
+         - [□ <pers> P = <affine><pers> <pers> P], see [<affine>] and [<pers>]
+         - [<absorb><pers> P ⊣⊢ <pers> P], see [absorbingly_elim_persistently]
+         - [<pers><pers> P ⊣⊢ <pers> P], see [persistently_idemp] *)
+Global Instance combine_sep_as_affinely Q1 Q2 P :
+  CombineSepGives Q1 Q2 P → CombineSepGives (<affine> Q1) (<affine> Q2) P | 30.
+Proof. by rewrite /CombineSepGives affinely_sep_2 affinely_elim => ->. Qed.
+Global Instance combine_sep_as_intuitionistically Q1 Q2 P :
+  CombineSepGives Q1 Q2 P → CombineSepGives (□ Q1) (□ Q2) P | 30.
+Proof. rewrite /CombineSepGives => <-. by rewrite !intuitionistically_elim. Qed.
+Global Instance combine_sep_as_absorbingly Q1 Q2 P :
+  CombineSepGives Q1 Q2 P → CombineSepGives (<absorb> Q1) (<absorb> Q2) P | 30.
+Proof.
+  rewrite /CombineSepGives -absorbingly_sep =>->.
+  by rewrite absorbingly_elim_persistently.
+Qed.
+Global Instance combine_sep_as_persistently Q1 Q2 P :
+  CombineSepGives Q1 Q2 P → CombineSepGives (<pers> Q1) (<pers> Q2) P | 30.
+Proof.
+  rewrite /CombineSepGives persistently_sep_2 => ->.
+  by rewrite persistently_idemp.
+Qed.
+
 (** IntoAnd *)
 Global Instance into_and_and p P Q : IntoAnd p (P ∧ Q) P Q | 10.
 Proof. by rewrite /IntoAnd intuitionistically_if_and. Qed.

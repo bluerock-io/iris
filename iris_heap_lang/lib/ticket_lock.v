@@ -68,7 +68,7 @@ Section proof.
   Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
   Proof.
     iIntros "[%σ1 H1] [%σ2 H2]".
-    iDestruct (own_valid_2 with "H1 H2") as %[[] _]%auth_frag_op_valid_1.
+    iCombine "H1 H2" gives %[[] _]%auth_frag_op_valid_1.
   Qed.
 
   Lemma is_lock_iff γ lk R1 R2 :
@@ -106,8 +106,8 @@ Section proof.
         { iNext. iExists o, n. iFrame. }
         wp_pures. case_bool_decide; [|done]. wp_if.
         iApply ("HΦ" with "[-]"). rewrite /locked. iFrame. eauto.
-      + iDestruct (own_valid_2 with "Ht Haown")
-          as %[_ ?%gset_disj_valid_op]%auth_frag_op_valid_1.
+      + iCombine "Ht Haown"
+          gives %[_ ?%gset_disj_valid_op]%auth_frag_op_valid_1.
         set_solver.
     - iModIntro. iSplitL "Hlo Hln Ha".
       { iNext. iExists o, n. by iFrame. }
@@ -152,17 +152,17 @@ Section proof.
     wp_lam. wp_proj. wp_bind (! _)%E.
     iInv N as (o' n) "(>Hlo & >Hln & >Hauth & Haown)".
     wp_load.
-    iDestruct (own_valid_2 with "Hauth Hγo") as
+    iCombine "Hauth Hγo" gives
       %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_both_valid_discrete.
     iModIntro. iSplitL "Hlo Hln Hauth Haown".
     { iNext. iExists o, n. by iFrame. }
     wp_pures.
     iInv N as (o' n') "(>Hlo & >Hln & >Hauth & Haown)".
     iApply wp_fupd. wp_store.
-    iDestruct (own_valid_2 with "Hauth Hγo") as
+    iCombine "Hauth Hγo" gives
       %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_both_valid_discrete.
     iDestruct "Haown" as "[[Hγo' _]|Haown]".
-    { iDestruct (own_valid_2 with "Hγo Hγo'") as %[[] ?]%auth_frag_op_valid_1. }
+    { iCombine "Hγo Hγo'" gives %[[] ?]%auth_frag_op_valid_1. }
     iMod (own_update_2 with "Hauth Hγo") as "[Hauth Hγo]".
     { apply auth_update, prod_local_update_1.
       by apply option_local_update, (exclusive_local_update _ (Excl (S o))). }

@@ -157,9 +157,24 @@ Section gen_heap.
   Lemma mapsto_agree l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜v1 = v2⌝.
   Proof. rewrite mapsto_unseal. apply ghost_map_elem_agree. Qed.
 
+  Global Instance mapsto_combine_sep_gives l dq1 dq2 v1 v2 : 
+    CombineSepGives (l ↦{dq1} v1) (l ↦{dq2} v2) ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝ | 30.
+  Proof.
+    rewrite /CombineSepGives. iIntros "[H1 H2]".
+    iDestruct (mapsto_valid_2 with "H1 H2") as %?. eauto.
+  Qed.
+
   Lemma mapsto_combine l dq1 dq2 v1 v2 :
     l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ l ↦{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
   Proof. rewrite mapsto_unseal. apply ghost_map_elem_combine. Qed.
+
+  Global Instance mapsto_combine_as l dq1 dq2 v1 v2 :
+    CombineSepAs (l ↦{dq1} v1) (l ↦{dq2} v2) (l ↦{dq1 ⋅ dq2} v1) | 60. 
+    (* higher cost than the Fractional instance, which kicks in for #qs *)
+  Proof.
+    rewrite /CombineSepAs. iIntros "[H1 H2]".
+    iDestruct (mapsto_combine with "H1 H2") as "[$ _]".
+  Qed.
 
   Lemma mapsto_frac_ne l1 l2 dq1 dq2 v1 v2 :
     ¬ ✓(dq1 ⋅ dq2) → l1 ↦{dq1} v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
@@ -198,8 +213,8 @@ Section gen_heap.
   Proof.
     rewrite meta_token_unseal /meta_token_def.
     iIntros "(%γm1 & #Hγm1 & Hm1) (%γm2 & #Hγm2 & Hm2)".
-    iDestruct (ghost_map_elem_valid_2 with "Hγm1 Hγm2") as %[_ ->].
-    iDestruct (own_valid_2 with "Hm1 Hm2") as %?%reservation_map_token_valid_op.
+    iCombine "Hγm1 Hγm2" gives %[_ ->].
+    iCombine "Hm1 Hm2" gives %?%reservation_map_token_valid_op.
     iExists γm2. iFrame "Hγm2". rewrite reservation_map_token_union //. by iSplitL "Hm1".
   Qed.
   Lemma meta_token_union l E1 E2 :
@@ -221,8 +236,8 @@ Section gen_heap.
   Proof.
     rewrite meta_unseal /meta_def.
     iIntros "(%γm1 & Hγm1 & Hm1) (%γm2 & Hγm2 & Hm2)".
-    iDestruct (ghost_map_elem_valid_2 with "Hγm1 Hγm2") as %[_ ->].
-    iDestruct (own_valid_2 with "Hm1 Hm2") as %Hγ; iPureIntro.
+    iCombine "Hγm1 Hγm2" gives %[_ ->].
+    iCombine "Hm1 Hm2" gives %Hγ; iPureIntro.
     move: Hγ. rewrite -reservation_map_data_op reservation_map_data_valid.
     move=> /to_agree_op_inv_L. naive_solver.
   Qed.
@@ -274,7 +289,7 @@ Section gen_heap.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ _]". iIntros "Hl".
     rewrite /gen_heap_interp mapsto_unseal.
-    by iDestruct (ghost_map_lookup with "Hσ Hl") as %?.
+    by iCombine "Hσ Hl" gives %?.
   Qed.
 
   Lemma gen_heap_update σ l v1 v2 :
@@ -282,7 +297,7 @@ Section gen_heap.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
     iIntros "Hl". rewrite /gen_heap_interp mapsto_unseal /mapsto_def.
-    iDestruct (ghost_map_lookup with "Hσ Hl") as %Hl.
+    iCombine "Hσ Hl" gives %Hl.
     iMod (ghost_map_update with "Hσ Hl") as "[Hσ Hl]".
     iModIntro. iFrame "Hl". iExists m. iFrame.
     iPureIntro. apply elem_of_dom_2 in Hl.

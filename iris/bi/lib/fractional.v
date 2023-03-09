@@ -156,10 +156,13 @@ Section fractional.
     AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
     FromSep P P1 P2.
   Proof. by rewrite /FromSep=>-[-> ->] [-> _] [-> _]. Qed.
-  Global Instance from_sep_fractional_bwd P P1 P2 Φ q1 q2 :
+  Global Instance combine_sep_fractional_bwd P P1 P2 Φ q1 q2 :
     AsFractional P1 Φ q1 → AsFractional P2 Φ q2 → AsFractional P Φ (q1 + q2) →
-    FromSep P P1 P2 | 10.
-  Proof. by rewrite /FromSep=>-[-> _] [-> <-] [-> _]. Qed.
+    CombineSepAs P1 P2 P | 50.
+  (* Explicit cost, to make it easier to provide instances with higher or
+     lower cost. Higher-cost instances exist to combine (for example)
+     [l ↦{q1} v1] with [l ↦{q2} v2] where [v1] and [v2] are not unifiable. *)
+  Proof. by rewrite /CombineSepAs =>-[-> _] [-> <-] [-> _]. Qed.
 
   Global Instance from_sep_fractional_half_fwd P Q Φ q :
     AsFractional P Φ q → AsFractional Q Φ (q/2) →
@@ -167,8 +170,11 @@ Section fractional.
   Proof. by rewrite /FromSep -{1}(Qp.div_2 q)=>-[-> ->] [-> _]. Qed.
   Global Instance from_sep_fractional_half_bwd P Q Φ q :
     AsFractional P Φ (q/2) → AsFractional Q Φ q →
-    FromSep Q P P.
-  Proof. rewrite /FromSep=>-[-> <-] [-> _]. by rewrite Qp.div_2. Qed.
+    CombineSepAs P P Q | 50.
+  (* Explicit cost, to make it easier to provide instances with higher or
+     lower cost. Higher-cost instances exist to combine (for example)
+     [l ↦{q1} v1] with [l ↦{q2} v2] where [v1] and [v2] are not unifiable. *)
+  Proof. rewrite /CombineSepAs=>-[-> <-] [-> _]. by rewrite Qp.div_2. Qed.
 
   Global Instance into_sep_fractional P P1 P2 Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →

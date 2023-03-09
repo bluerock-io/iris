@@ -750,6 +750,36 @@ Lemma test_iCombine_frame P Q R `{!Persistent R} :
   P -∗ Q -∗ R → R ∗ Q ∗ P ∗ R.
 Proof. iIntros "HP HQ #HR". iCombine "HQ HP HR" as "$". by iFrame. Qed.
 
+Check "test_iCombine_nested_no_gives".
+Lemma test_iCombine_nested_no_gives P Q :
+  <absorb><affine> P -∗ <absorb><affine> Q -∗ <absorb><affine> (P ∗ Q).
+Proof.
+  iIntros "HP HQ".
+  Fail iCombine "HP HQ" gives "Htriv".
+  Fail iCombine "HP HQ" as "HPQ" gives "Htriv".
+  iCombine "HP HQ" as "HPQ".
+  iExact "HPQ".
+Qed.
+
+Lemma test_iCombine_nested_gives1 P Q R :
+  CombineSepGives P Q R →
+  <absorb><affine> P -∗ <absorb><affine> Q -∗ <pers> R.
+Proof.
+  move => HPQR. iIntros "HP HQ".
+  iCombine "HP HQ" gives "#HR".
+  iExact "HR".
+Qed.
+
+Lemma test_iCombine_nested_gives2 n P Q R :
+  CombineSepGives P Q R →
+  ▷^n ◇ P -∗ ▷^n ◇ Q -∗ ▷^n ◇ (P ∗ Q) ∗ <pers> ▷^n ◇ R.
+Proof.
+  move => HPQR. iIntros "HP HQ".
+  iCombine "HP HQ" as "HPQ" gives "#HR".
+  iSplitL "HPQ"; first iExact "HPQ".
+  iExact "HR".
+Qed.
+
 Lemma test_iNext_evar P : P -∗ True.
 Proof.
   iIntros "HP". iAssert (▷ _ -∗ ▷ P)%I as "?"; last done.

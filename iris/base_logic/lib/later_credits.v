@@ -69,7 +69,7 @@ Section later_credit_theory.
     rewrite lc_unseal /lc_def.
     rewrite lc_supply_unseal /lc_supply_def.
     iIntros "H1 H2".
-    iDestruct (own_valid_2 with "H1 H2") as "%Hop".
+    iCombine "H1 H2" gives %Hop.
     iPureIntro. eapply auth_both_valid_discrete in Hop as [Hlt _].
     by eapply nat_included.
   Qed.
@@ -116,6 +116,19 @@ Section later_credit_theory.
     FromSep (£ (S n)) (£ 1) (£ n) | 1.
   Proof.
     by rewrite /FromSep (lc_succ n).
+  Qed.
+  (** When combining later credits with [iCombine], the priorities are
+  reversed when compared to [FromSep] and [IntoSep]. This causes
+  [£ n] and [£ 1] to be combined as [£ (S n)], not as [£ (n + 1)]. *)
+  Global Instance combine_sep_lc_add n m :
+    CombineSepAs (£ n) (£ m) (£ (n + m)) | 1.
+  Proof.
+    by rewrite /CombineSepAs lc_split.
+  Qed.
+  Global Instance combine_sep_lc_S_l n :
+    CombineSepAs (£ n) (£ 1) (£ (S n)) | 0.
+  Proof.
+    by rewrite /CombineSepAs comm (lc_succ n).
   Qed.
 
   Global Instance into_sep_lc_add n m :

@@ -50,7 +50,7 @@ Section tada.
     tada_lock_state γ s1 -∗ tada_lock_state γ s2 -∗ False.
   Proof.
     iIntros "[Hvar1 _] [Hvar2 _]".
-    iDestruct (ghost_var_valid_2 with "Hvar1 Hvar2") as %[Hval _].
+    iCombine "Hvar1 Hvar2" gives %[Hval _].
     exfalso. done.
   Qed.
 
@@ -80,7 +80,7 @@ Section tada.
     wp_apply (l.(acquire_spec) with "Hislock").
     iIntros "[Hlocked Hvar1]".
     iMod "AU" as (s) "[[Hvar2 _] [_ Hclose]]".
-    iDestruct (ghost_var_agree with "Hvar1 Hvar2") as %<-.
+    iCombine "Hvar1 Hvar2" gives %[_ <-].
     iMod (ghost_var_update_2 Locked with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".
     { rewrite Qp.quarter_three_quarter //. }
     iMod ("Hclose" with "[$Hvar2 $Hlocked $Hvar1]"); done.

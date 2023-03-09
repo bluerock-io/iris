@@ -67,7 +67,7 @@ Section mono_nat.
     ⌜(q1 + q2 ≤ 1)%Qp ∧ n1 = n2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    iDestruct (own_valid_2 with "H1 H2") as %?%mono_nat_auth_dfrac_op_valid; done.
+    iCombine "H1 H2" gives %?%mono_nat_auth_dfrac_op_valid; done.
   Qed.
   Lemma mono_nat_auth_own_exclusive γ n1 n2 :
     mono_nat_auth_own γ 1 n1 -∗ mono_nat_auth_own γ 1 n2 -∗ False.
@@ -80,7 +80,7 @@ Section mono_nat.
     mono_nat_auth_own γ q n -∗ mono_nat_lb_own γ m -∗ ⌜(q ≤ 1)%Qp ∧ m ≤ n⌝.
   Proof.
     unseal. iIntros "Hauth Hlb".
-    iDestruct (own_valid_2 with "Hauth Hlb") as %Hvalid%mono_nat_both_dfrac_valid.
+    iCombine "Hauth Hlb" gives %Hvalid%mono_nat_both_dfrac_valid.
     auto.
   Qed.
 

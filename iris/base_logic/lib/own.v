@@ -372,6 +372,19 @@ Section proofmode_instances.
   Global Instance from_sep_own γ a b1 b2 :
     IsOp a b1 b2 → FromSep (own γ a) (own γ b1) (own γ b2).
   Proof. intros. by rewrite /FromSep -own_op -is_op. Qed.
+  (* TODO: Improve this instance with generic own simplification machinery
+  once https://gitlab.mpi-sws.org/iris/iris/-/issues/460 is fixed *)
+  Global Instance combine_sep_as_own γ a b1 b2 :
+    IsOp a b1 b2 → CombineSepAs (own γ b1) (own γ b2) (own γ a).
+  Proof. intros. by rewrite /CombineSepAs -own_op -is_op. Qed.
+  (* TODO: Improve this instance with generic own validity simplification
+  machinery once https://gitlab.mpi-sws.org/iris/iris/-/issues/460 is fixed *)
+  Global Instance combine_sep_gives_own γ b1 b2 :
+    CombineSepGives (own γ b1) (own γ b2) (✓ (b1 ⋅ b2)).
+  Proof.
+    intros. rewrite /CombineSepGives -own_op own_valid.
+    by apply: bi.persistently_intro.
+  Qed.
   Global Instance from_and_own_persistent γ a b1 b2 :
     IsOp a b1 b2 → TCOr (CoreId b1) (CoreId b2) →
     FromAnd (own γ a) (own γ b1) (own γ b2).

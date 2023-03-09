@@ -1,6 +1,6 @@
 (** A simple "ghost variable" of arbitrary type with fractional ownership.
 Can be mutated when fully owned. *)
-From iris.algebra Require Import dfrac_agree.
+From iris.algebra Require Import dfrac_agree proofmode_classes frac.
 From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import proofmode.
 From iris.base_logic.lib Require Export own.
@@ -55,7 +55,7 @@ Section lemmas.
     ghost_var γ q1 a1 -∗ ghost_var γ q2 a2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ a1 = a2⌝.
   Proof.
     unseal. iIntros "Hvar1 Hvar2".
-    iDestruct (own_valid_2 with "Hvar1 Hvar2") as %[Hq Ha]%frac_agree_op_valid.
+    iCombine "Hvar1 Hvar2" gives %[Hq Ha]%frac_agree_op_valid.
     done.
   Qed.
   (** Almost all the time, this is all you really need. *)
@@ -64,6 +64,26 @@ Section lemmas.
   Proof.
     iIntros "Hvar1 Hvar2".
     iDestruct (ghost_var_valid_2 with "Hvar1 Hvar2") as %[_ ?]. done.
+  Qed.
+
+  Global Instance ghost_var_combine_gives γ a1 q1 a2 q2 :
+    CombineSepGives (ghost_var γ q1 a1) (ghost_var γ q2 a2)
+      ⌜(q1 + q2 ≤ 1)%Qp ∧ a1 = a2⌝.
+  Proof.
+    rewrite /CombineSepGives. iIntros "[H1 H2]".
+    iDestruct (ghost_var_valid_2 with "H1 H2") as %[H1 H2].
+    eauto.
+  Qed.
+
+  Global Instance ghost_var_combine_as γ a1 q1 a2 q2 q :
+    IsOp q q1 q2 →
+    CombineSepAs (ghost_var γ q1 a1) (ghost_var γ q2 a2)
+      (ghost_var γ q a1) | 60.
+  (* higher cost than the Fractional instance, which is used for a1 = a2 *)
+  Proof.
+    rewrite /CombineSepAs /IsOp => ->. iIntros "[H1 H2]".
+    iCombine "H1 H2" gives %[_ ->].
+    by iCombine "H1 H2" as "H".
   Qed.
 
   (** This is just an instance of fractionality above, but that can be hard to find. *)

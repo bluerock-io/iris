@@ -83,7 +83,7 @@ Section gset_bij.
     ⌜✓ (dq1 ⋅ dq2) ∧ L1 = L2 ∧ gset_bijective L1⌝.
   Proof.
     rewrite gset_bij_own_auth_eq. iIntros "H1 H2".
-    by iDestruct (own_valid_2 with "H1 H2") as %?%gset_bij_auth_dfrac_op_valid.
+    by iCombine "H1 H2" gives %?%gset_bij_auth_dfrac_op_valid.
   Qed.
   Lemma gset_bij_own_auth_exclusive γ L1 L2 :
     gset_bij_own_auth γ (DfracOwn 1) L1 -∗ gset_bij_own_auth γ (DfracOwn 1) L2 -∗ False.
@@ -104,7 +104,7 @@ Section gset_bij.
     ⌜a = a' ↔ b = b'⌝.
   Proof.
     rewrite gset_bij_own_elem_eq. iIntros "Hel1 Hel2".
-    by iDestruct (own_valid_2 with "Hel1 Hel2") as %?%gset_bij_elem_agree.
+    by iCombine "Hel1 Hel2" gives %?%gset_bij_elem_agree.
   Qed.
 
   Lemma gset_bij_own_elem_get {γ q L} a b :
@@ -119,7 +119,7 @@ Section gset_bij.
     gset_bij_own_auth γ q L -∗ gset_bij_own_elem γ a b -∗ ⌜(a, b) ∈ L⌝.
   Proof.
     iIntros "Hauth Helem". rewrite gset_bij_own_auth_eq gset_bij_own_elem_eq.
-    iPoseProof (own_valid_2 with "Hauth Helem") as "%Ha".
+    iCombine "Hauth Helem" gives "%Ha".
     iPureIntro. revert Ha. rewrite bij_both_dfrac_valid. intros (_ & _ & ?); done.
   Qed.
 

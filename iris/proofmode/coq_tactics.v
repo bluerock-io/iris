@@ -1,5 +1,6 @@
 From iris.bi Require Export bi telescopes.
-From iris.proofmode Require Export base environments classes modality_instances.
+From iris.proofmode Require Export base environments classes classes_make
+                                   modality_instances.
 From iris.prelude Require Import options.
 Import bi.
 Import env_notations.
@@ -618,29 +619,166 @@ Proof.
   rewrite envs_split_sound //. by rewrite HQ1 HQ2.
 Qed.
 
-(** * Combining *)
-Class FromSeps {PROP : bi} (P : PROP) (Qs : list PROP) :=
-  from_seps : [∗] Qs ⊢ P.
-Local Arguments FromSeps {_} _%I _%I.
-Local Arguments from_seps {_} _%I _%I {_}.
+(** * Combining
+For the [iCombine] tactic, users provide a [Ps : list PROP] which should be
+combined to a single [PROP]. The (public) classes currently available,
+[MaybeCombineSepAs] and [CombineSepGives], can combine two given [PROP]s. The
+following [CombineSepsAs] and [CombineSepsAsGives] typeclasses are an
+implementation detail of [iCombine], lifting the combining operation to
+one on [list PROP].
 
-Global Instance from_seps_nil : @FromSeps PROP emp [].
-Proof. by rewrite /FromSeps. Qed.
-Global Instance from_seps_singleton P : FromSeps P [P] | 1.
-Proof. by rewrite /FromSeps /= right_id. Qed.
-Global Instance from_seps_cons P P' Q Qs :
-  FromSeps P' Qs → FromSep P Q P' → FromSeps P (Q :: Qs) | 2.
-Proof. by rewrite /FromSeps /FromSep /= => ->. Qed.
+Computing the 'gives' clause for a list of hypotheses is somewhat involved.
+We cannot just fold [CombineSepGives] over the list, since the output of the
+first [CombineSepGives] is not suitable as the input for the next iteration. For
+example, one might have [CombineSepGives (own γ a) (own γ b) (✓ (a ⋅ b))]. This
+does not directly allow us to combine [[own γ a; own γ b; own γ c]] to
+[✓ (a ⋅ b ⋅ c)], since [CombineSepGives (✓ (b ⋅ c)) (own γ a) ?] does not work.
+We need to first compute the 'as' clause of the tail to proceed: that is, use
+the fact that the 'as' clause of [[own γ b; own γ c]] is [own γ (b ⋅ c)].
+We could let [CombineSepsAs] compute the 'as' clause of the tail separately, but
+this results in quadratic complexity. We therefore bundle both clauses
+in the [CombineSepsAsGives] typeclass given below.
 
-Lemma tac_combine Δ1 Δ2 Δ3 js p Ps j P Q :
+Note that an alternative would be to compute pairwise 'gives' clauses of the
+head of the list with every element in the tail, and [∧]-ing that with the
+'gives' clause of the tail. In the example above, this would result in
+[✓ (a ⋅ b) ∧ ✓ (a ⋅ c) ∧ ✓ (b ⋅ c)]. This approach is not strong enough:
+it does not allow us to conclude [✓ (a ⋅ b ⋅ c)]. *)
+Class CombineSepsAsGives {PROP : bi} (Ps : list PROP) (Q R : PROP) := {
+  combine_seps_as_gives_as : [∗] Ps ⊢ Q;
+  combine_seps_as_gives_gives : [∗] Ps ⊢ <pers> R;
+}.
+Global Arguments CombineSepsAsGives {_} _%I _%I _%I.
+Global Arguments combine_seps_as_gives_as {_} _%I _%I _%I {_}.
+Global Arguments combine_seps_as_gives_gives {_} _%I _%I _%I {_}.
+(* FIXME: Hint Modes for this class are located after section closure due to
+Coq < 8.15 not supporting Global Hint Mode inside a section. Move them back
+once support for Coq < 8.15 is dropped *)
+
+Global Instance combine_seps_as_gives_nil : @CombineSepsAsGives PROP [] emp True.
+Proof.
+  split; first done. rewrite -persistently_True.
+  by apply pure_intro.
+Qed.
+Global Instance combine_seps_as_gives_singleton P :
+  CombineSepsAsGives [P] P True | 1.
+Proof.
+  split; first by rewrite /= right_id. rewrite -persistently_True.
+  by apply pure_intro.
+Qed.
+Global Instance combine_seps_gives_cons P Ps Q R Q' progress R' R'':
+  CombineSepsAsGives Ps Q R → (* [Q] and [R] are result from combining tail *)
+  MaybeCombineSepAs P Q Q' progress → (* [Q'] is [P] and [Q] combined *)
+  CombineSepGives P Q R' → (* [R'] is obtained for free from [P] and [Q] *)
+  MakeAnd R R' R'' → (* [R''] is nicely and-ing [R] and [R'] *)
+  CombineSepsAsGives (P :: Ps) Q' R'' | 2.
+(** By and-ing [R] and [R'], the resulting 'gives' clause [R''] will contain
+redundant information in some cases. However, this is necessary in other cases.
+
+For example, if we take [Ps = [own γ q1; own γ q2; own γ q3]] with [fracR] as
+the cmra, we get [R'' = (q2 + q3 ≤ 1) ∧ (q1 + q2 + q3 ≤ 1)]. Here, the first
+conjunct [R] follows from the second [R'], so there is redundancy.
+
+However, if we take
+[Ps = [own γ (CoPset E1); own γ (CoPset E2); own γ (CoPset E3)]] with
+[coPset_disjR] as the cmra, we get [R'' = (E2 ## E3) ∧ (E1 ## (E2 ∪ E3))], where
+the first conjunct does not follow from the second conjunct. Similarly for
+[Ps = [l ↦{q1} v1; l ↦{q2} v2; l ↦ {q3} v3]], where
+[R'' = (v1 = v2) ∧ (v2 = v3) ∧ {..other info about qs..}]. *)
+Proof.
+  case => HPsQ.
+  rewrite /CombineSepGives /MakeAnd => HPsR HQ' HR' HR''.
+  split; first by rewrite /= HPsQ HQ'.
+  rewrite -HR'' /=.
+  rewrite persistently_and. apply and_intro.
+  - by rewrite HPsR sep_elim_r.
+  - by rewrite HPsQ.
+Qed.
+
+(** If just the 'as' clause is needed, we will instead look for instances of
+the following [CombineSepsAs] typeclass. *)
+Class CombineSepsAs {PROP : bi} (Ps : list PROP) (Q : PROP) :=
+  combine_seps_as : [∗] Ps ⊢ Q.
+Global Arguments CombineSepsAs {_} _%I _%I.
+Global Arguments combine_seps_as {_} _%I _%I {_}.
+(* FIXME: Hint Modes for this class are located after section closure due to
+Coq < 8.15 not supporting Global Hint Mode inside a section. Move them back
+once support for Coq < 8.15 is dropped *)
+
+(** To ensure consistency of the output [Q] with that of [CombineSepsAsGives],
+the only instance of [CombineSepsAs] is constructed with an instance of
+[CombineSepsAsGives]. The one thing we need to keep in mind here is that
+instances of [CombineSepsAsGives] can only be found if [CombineSepGives]
+instances exist. Unlike for the 'as' clause, there is no trivial 'gives'
+combination --- if the user writes a 'gives' clause, they intend to receive
+non-trivial information, and should receive an error if this cannot be found.
+
+To still allow trivial combining with an 'as' clause, we add a trivial
+[CombineSepGives] instance _only_ during the typeclass search of [CombineSepsAs]
+via [CombineSepsAsGives]. This means we both get consistent output [Q] from
+[CombineSepsAsGives] and [CombineSepsAs], while [iCombine "H1 H2" gives "H"]
+still fails if "H1" and "H2" are unrelated *)
+Global Instance combine_seps_as_from_as_gives Ps Q R :
+  ((∀ P P', CombineSepGives P P' True%I) → CombineSepsAsGives Ps Q R) →
+  CombineSepsAs Ps Q.
+Proof.
+  move => HPsQ. apply HPsQ. move => P P'. rewrite /CombineSepGives.
+  rewrite -persistently_True. by apply pure_intro.
+Qed.
+
+Lemma tac_combine_as Δ1 Δ2 Δ3 js p Ps j P Q :
   envs_lookup_delete_list false js Δ1 = Some (p, Ps, Δ2) →
-  FromSeps P Ps →
+  CombineSepsAs Ps P →
   envs_app p (Esnoc Enil j P) Δ2 = Some Δ3 →
   envs_entails Δ3 Q → envs_entails Δ1 Q.
 Proof.
   rewrite envs_entails_unseal => ??? <-. rewrite envs_lookup_delete_list_sound //.
-  rewrite from_seps. rewrite envs_app_singleton_sound //=.
+  rewrite combine_seps_as. rewrite envs_app_singleton_sound //=.
   by rewrite wand_elim_r.
+Qed.
+
+Lemma combine_seps_gives_of_envs Δ1 Δ2 js p Ps P R :
+  envs_lookup_delete_list false js Δ1 = Some (p, Ps, Δ2) →
+  CombineSepsAsGives Ps P R →
+  of_envs Δ1 ⊢ of_envs Δ1 ∗ □ R.
+Proof.
+  move => ??.
+  assert (of_envs Δ1 ⊢ of_envs Δ1 ∧ <pers> R) as H.
+  { apply and_intro; first done.
+    rewrite envs_lookup_delete_list_sound //.
+    by rewrite combine_seps_as_gives_gives
+        intuitionistically_if_elim sep_elim_l. }
+  by rewrite {1}H persistently_and_intuitionistically_sep_r.
+Qed.
+
+Lemma tac_combine_gives Δ1 Δ2 Δ3 js p Ps j P Q R :
+  envs_lookup_delete_list false js Δ1 = Some (p, Ps, Δ2) →
+  CombineSepsAsGives Ps P R →
+  envs_app true (Esnoc Enil j R) Δ1 = Some Δ3 →
+  envs_entails Δ3 Q → envs_entails Δ1 Q.
+Proof.
+  rewrite envs_entails_unseal => ??? <-.
+  erewrite combine_seps_gives_of_envs => //.
+  rewrite envs_app_singleton_sound //=.
+  by apply wand_elim_l'.
+Qed.
+
+Lemma tac_combine_as_gives Δ1 Δ2 Δ3 js p Ps j k P R Q :
+  envs_lookup_delete_list false js Δ1 = Some (p, Ps, Δ2) →
+  CombineSepsAsGives Ps P R →
+    (* this □ is okay, since we will call iDestructHyp anyway *)
+  envs_app p (Esnoc (Esnoc Enil j P) k (□ R)%I) Δ2 = Some Δ3 →
+  envs_entails Δ3 Q → envs_entails Δ1 Q.
+Proof.
+  rewrite envs_entails_unseal => ??? <-.
+  rewrite combine_seps_gives_of_envs //.
+  rewrite envs_lookup_delete_list_sound //.
+  rewrite combine_seps_as_gives_as envs_app_sound //.
+  destruct p => /=.
+  - rewrite right_id affinely_and -!intuitionistically_def.
+    rewrite intuitionistically_idemp and_sep_intuitionistically.
+    by rewrite -(comm _ (□ R)%I) assoc wand_elim_r.
+  - by rewrite right_id -(comm _ (□ R)%I) assoc wand_elim_r.
 Qed.
 
 (** * Conjunction/separating conjunction elimination *)
@@ -900,6 +1038,9 @@ Proof.
   apply löb_wand_intuitionistically.
 Qed.
 End tactics.
+
+Global Hint Mode CombineSepsAs + ! - : typeclass_instances.
+Global Hint Mode CombineSepsAsGives + ! - - : typeclass_instances.
 
 (** * Introduction of modalities *)
 (** The following _private_ classes are used internally by [tac_modal_intro] /

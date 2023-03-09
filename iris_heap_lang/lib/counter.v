@@ -55,8 +55,8 @@ Section mono_proof.
     wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as (c') ">[Hγ Hl]".
     destruct (decide (c' = c)) as [->|].
-    - iDestruct (own_valid_2 with "Hγ Hγf")
-        as %[?%max_nat_included _]%auth_both_valid_discrete.
+    - iCombine "Hγ Hγf"
+        gives %[?%max_nat_included _]%auth_both_valid_discrete.
       iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
       { apply auth_update, (max_nat_local_update _ _ (MaxNat (S c))). simpl. auto. }
       wp_cmpxchg_suc. iModIntro. iSplitL "Hl Hγ".
@@ -77,8 +77,8 @@ Section mono_proof.
     iIntros (ϕ) "Hc HΦ". iDestruct "Hc" as (γ) "[#Hinv Hγf]".
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]".
     wp_load.
-    iDestruct (own_valid_2 with "Hγ Hγf")
-      as %[?%max_nat_included _]%auth_both_valid_discrete.
+    iCombine "Hγ Hγf"
+      gives %[?%max_nat_included _]%auth_both_valid_discrete.
     iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
     { apply auth_update, (max_nat_local_update _ _ (MaxNat c)); auto. }
     iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
@@ -152,7 +152,7 @@ Section contrib_spec.
   Proof.
     iIntros (Φ) "[#? Hγf] HΦ".
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]". wp_load.
-    iDestruct (own_valid_2 with "Hγ Hγf") as % ?%frac_auth_included_total%nat_included.
+    iCombine "Hγ Hγf" gives % ?%frac_auth_included_total%nat_included.
     iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     iApply ("HΦ" with "[-]"); rewrite /ccounter; eauto 10.
   Qed.
@@ -163,7 +163,7 @@ Section contrib_spec.
   Proof.
     iIntros (Φ) "[#? Hγf] HΦ".
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]". wp_load.
-    iDestruct (own_valid_2 with "Hγ Hγf") as % <-%frac_auth_agree_L.
+    iCombine "Hγ Hγf" gives % <-%frac_auth_agree_L.
     iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     by iApply "HΦ".
   Qed.

@@ -139,7 +139,7 @@ Section inv_heap.
     ⌜∃ v I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hl_inv H◯".
-    iDestruct (own_valid_2 with "H◯ Hl_inv") as %[Hincl Hvalid]%auth_both_valid_discrete.
+    iCombine "H◯ Hl_inv" gives %[Hincl Hvalid]%auth_both_valid_discrete.
     iPureIntro.
     move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
     apply lookup_to_inv_heap_Some_2 in Hsome as (v'' & I'' & _ & HI & Hh).
@@ -152,7 +152,7 @@ Section inv_heap.
     ⌜ ∃ I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hl_inv H●".
-    iDestruct (own_valid_2 with "H● Hl_inv") as %[Hincl Hvalid]%auth_both_valid_discrete.
+    iCombine "H● Hl_inv" gives %[Hincl Hvalid]%auth_both_valid_discrete.
     iPureIntro.
     move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
     apply lookup_to_inv_heap_Some_2 in Hsome as (v'' & I'' & -> & HI & Hh).
@@ -203,7 +203,7 @@ Section inv_heap.
     destruct (h !! l) as [v'| ] eqn: Hlookup.
     - (* auth map contains l --> contradiction *)
       iDestruct (big_sepM_lookup with "HsepM") as "[_ Hl']"; first done.
-      by iDestruct (mapsto_valid_2 with "Hl Hl'") as %[??].
+      by iCombine "Hl Hl'" gives %[??].
     - iMod (own_update with "H●") as "[H● H◯]".
       { apply lookup_to_inv_heap_None in Hlookup.
         apply (auth_update_alloc _
