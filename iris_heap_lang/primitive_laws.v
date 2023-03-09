@@ -206,9 +206,9 @@ Lemma mapsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝.
 Proof. apply mapsto_valid. Qed.
 Lemma mapsto_valid_2 l dq1 dq2 v1 v2 :
   l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
-Proof. iIntros "H1 H2". iCombine "H1 H2" gives %[? [=?]]. done. Qed.
+Proof. iIntros "H1 H2". iCombine "H1 H2" gives %[? [= ?]]. done. Qed.
 Lemma mapsto_agree l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜v1 = v2⌝.
-Proof. iIntros "H1 H2". iCombine "H1 H2" gives %[_ [=?]]. done. Qed.
+Proof. iIntros "H1 H2". iCombine "H1 H2" gives %[_ [= ?]]. done. Qed.
 
 Global Instance mapsto_combine_sep_gives l dq1 dq2 v1 v2 : 
   CombineSepGives (l ↦{dq1} v1) (l ↦{dq2} v2) ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝ | 20. 
