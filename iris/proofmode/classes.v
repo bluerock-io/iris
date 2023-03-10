@@ -271,7 +271,7 @@ candidate for [P], but not [R], or the other way around.
 
 Note that [FromSep] and [CombineSepAs] have nearly the same definition. However,
 they have different Hint Modes and are used for different tactics. [FromSep] is
-used to compute the two new goals obtained after applying `iSplitL`/`iSplitR`,
+used to compute the two new goals obtained after applying [iSplitL]/[iSplitR],
 taking the current goal as input. [CombineSepAs] is used to combine two
 hypotheses into one. *)
 Class CombineSepAs {PROP : bi} (P Q R : PROP) := combine_sep_as : P ∗ Q ⊢ R.
