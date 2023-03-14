@@ -70,6 +70,8 @@ Coq 8.13 is no longer supported.
   timeless hypotheses when proving an invariant (without an update).
 * Make `uPred.unseal` tactic more robust by using types to unfold the right
   BI projections.
+* Turn `internal_eq_entails` into a bi-implication.
+* Add lemmas to relate internal/external non-expansiveness and contractiveness.
 
 **Changes in `heap_lang`:**
 
