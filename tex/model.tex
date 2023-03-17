@@ -15,9 +15,9 @@ The semantic  domains are interpreted as follows:
 \end{array}
 \qquad\qquad
 \begin{array}[t]{@{}l@{\ }c@{\ }l@{}}
-\Sem{\type + \type'} &\eqdef& \Sem{\type} + \Sem{\type} \\
-\Sem{\type \times \type'} &\eqdef& \Sem{\type} \times \Sem{\type} \\
-\Sem{\type \to \type'} &\eqdef& \Sem{\type} \nfn \Sem{\type} \\
+\Sem{\type + \type'} &\eqdef& \Sem{\type} + \Sem{\type'} \\
+\Sem{\type \times \type'} &\eqdef& \Sem{\type} \times \Sem{\type'} \\
+\Sem{\type \to \type'} &\eqdef& \Sem{\type} \nfn \Sem{\type'} \\
 \end{array}
 \]
 For the remaining base types $\type$ defined by the signature $\Sig$, we pick an object $X_\type$ in $\OFEs$ and define
