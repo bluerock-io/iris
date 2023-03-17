@@ -63,6 +63,10 @@ Coq 8.13 is no longer supported.
 * Add `IsExcept0` instance for invariants, allowing you to remove laters of
   timeless hypotheses when proving an invariant (without an update).
 
+**Changes in `heap_lang`:**
+
+* Move operations and lemmas about locations into a module `Loc`.
+
 **LaTeX changes:**
 
 - Rename `\Alloc` to `\AllocN` and `\Ref` to `\Alloc` for better consistency
@@ -78,6 +82,9 @@ s/iSolveTC\b/tc_solve/g
 # _alt -> _def
 s/\bsig_equiv_alt\b/sig_equiv_def/g
 s/\bsig_dist_alt\b/sig_dist_def/g
+# Loc
+s/\bloc_add(_assoc|_0|_inj|)\b/Loc.add\1/g
+s/\bfresh_locs(_fresh|)\b/Loc.fresh\1/g
 EOF
 ```
 

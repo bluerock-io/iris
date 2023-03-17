@@ -150,10 +150,10 @@ Section proof.
       wp_smart_apply (wp_wand with "Hf"); iIntros (v) "Hv". wp_store. wp_pures.
       rewrite Z.add_1_r -Nat2Z.inj_succ.
       iApply ("IH" with "[%] [HSl] HSf"); first lia.
-      { by rewrite loc_add_assoc Z.add_1_r -Nat2Z.inj_succ. }
+      { by rewrite Loc.add_assoc Z.add_1_r -Nat2Z.inj_succ. }
       iIntros "!>" (vs). iDestruct 1 as (<-) "[HSl Hvs]".
       iApply ("HΦ" $! (v :: vs)). iSplit; [naive_solver|]. iSplitL "Hl HSl".
-      - iFrame "Hl". by rewrite loc_add_assoc Z.add_1_r -Nat2Z.inj_succ.
+      - iFrame "Hl". by rewrite Loc.add_assoc Z.add_1_r -Nat2Z.inj_succ.
       - iEval (rewrite /= Nat.add_0_r; setoid_rewrite Nat.add_succ_r). iFrame.
     Qed.
     Local Lemma twp_array_init_loop stk E l i n k f  :
@@ -177,10 +177,10 @@ Section proof.
       wp_smart_apply (twp_wand with "Hf"); iIntros (v) "Hv". wp_store. wp_pures.
       rewrite Z.add_1_r -Nat2Z.inj_succ.
       iApply ("IH" with "[%] [HSl] HSf"); first lia.
-      { by rewrite loc_add_assoc Z.add_1_r -Nat2Z.inj_succ. }
+      { by rewrite Loc.add_assoc Z.add_1_r -Nat2Z.inj_succ. }
       iIntros (vs). iDestruct 1 as (<-) "[HSl Hvs]".
       iApply ("HΦ" $! (v :: vs)). iSplit; [naive_solver|]. iSplitL "Hl HSl".
-      - iFrame "Hl". by rewrite loc_add_assoc Z.add_1_r -Nat2Z.inj_succ.
+      - iFrame "Hl". by rewrite Loc.add_assoc Z.add_1_r -Nat2Z.inj_succ.
       - iEval (rewrite /= Nat.add_0_r; setoid_rewrite Nat.add_succ_r). iFrame.
     Qed.
 
@@ -197,11 +197,11 @@ Section proof.
       iIntros (Hn Φ) "Hf HΦ". wp_lam. wp_alloc l as "Hl"; first done.
       wp_smart_apply (wp_array_init_loop _ _ _ 0 n (Z.to_nat n) with "[Hl $Hf] [HΦ]").
       { by rewrite /= Z2Nat.id; last lia. }
-      { by rewrite loc_add_0. }
+      { by rewrite Loc.add_0. }
       iIntros "!>" (vs). iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
       iApply ("HΦ" $! _ vs). iModIntro. iSplit.
       { iPureIntro. by rewrite Hlen Z2Nat.id; last lia. }
-      rewrite loc_add_0. iFrame.
+      rewrite Loc.add_0. iFrame.
     Qed.
     Lemma twp_array_init stk E n f :
       (0 < n)%Z →
@@ -216,11 +216,11 @@ Section proof.
       iIntros (Hn Φ) "Hf HΦ". wp_lam. wp_alloc l as "Hl"; first done.
       wp_smart_apply (twp_array_init_loop _ _ _ 0 n (Z.to_nat n) with "[Hl $Hf] [HΦ]").
       { by rewrite /= Z2Nat.id; last lia. }
-      { by rewrite loc_add_0. }
+      { by rewrite Loc.add_0. }
       iIntros (vs). iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
       iApply ("HΦ" $! _ vs). iModIntro. iSplit.
       { iPureIntro. by rewrite Hlen Z2Nat.id; last lia. }
-      rewrite loc_add_0. iFrame.
+      rewrite Loc.add_0. iFrame.
     Qed.
   End array_init.
 
