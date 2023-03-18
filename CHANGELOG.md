@@ -36,7 +36,7 @@ Coq 8.13 is no longer supported.
 * Use `binder` in notations for big ops. This means one can write things such
   as `[∗ map] '(k,_) ↦ '(_,y) ∈ m, ⌜ k = y ⌝`.
 * Add constructions `bi_tc`/`bi_nsteps` to create the transitive/`n`-step
-  closure of a PROP-level binary relation. (by  Simcha van Collem).
+  closure of a PROP-level binary relation. (by Simcha van Collem).
 * Make the `unseal` tactic of `monPred` more consistent with `uPred`:
   + Rename `MonPred.unseal` → `monPred.unseal`
   + No longer unfold derived BI connectives `<affine>`, `<absorb>` and `◇`.
