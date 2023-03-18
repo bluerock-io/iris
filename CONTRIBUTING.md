@@ -42,6 +42,9 @@ requests are easier to review, and will typically be merged more quickly
 (because it avoids blocking the whole merge request on a single
 discussion).
 
+Please follow the coding style laid out in our [style
+guide](docs/style_guide.md).
+
 ## How to update the std++ dependency
 
 * Do the change in std++, push it.

@@ -164,6 +164,7 @@ that should be compatible with this version:
 
 Getting along with Iris in Coq:
 
+* The coding style is documented in the [style guide](docs/style_guide.md).
 * Iris proof patterns and conventions are documented in the
   [proof guide](docs/proof_guide.md).
 * Various notions of equality and logical entailment in Iris and their Coq
