@@ -373,6 +373,9 @@ Section plainly_derived.
   Lemma plain_persistent P : Plain P → Persistent P.
   Proof. intros. by rewrite /Persistent -plainly_elim_persistently. Qed.
 
+  Global Instance plain_separable P : Plain P → Separable P.
+  Proof. intros. by apply persistent_separable, plain_persistent. Qed.
+
   Global Instance impl_persistent `{!BiPersistentlyImplPlainly PROP} P Q :
     Absorbing P → Plain P → Persistent Q → Persistent (P → Q).
   Proof.
