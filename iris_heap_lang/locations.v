@@ -44,8 +44,7 @@ Module Loc.
   Definition fresh (ls : gset loc) : loc :=
     {| loc_car := set_fold (λ k r, (1 + loc_car k) `max` r) 1 ls |}.
 
-  Lemma fresh_fresh ls i :
-    (0 ≤ i)%Z → fresh ls +ₗ i ∉ ls.
+  Lemma fresh_fresh ls i : 0 ≤ i → fresh ls +ₗ i ∉ ls.
   Proof.
     intros Hi. cut (∀ l, l ∈ ls → loc_car l < loc_car (fresh ls) + i).
     { intros help Hf%help. simpl in *. lia. }
