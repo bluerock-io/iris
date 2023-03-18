@@ -130,8 +130,8 @@ Section increment.
     <<< ⌜v = v'⌝ ∗ l ↦ #(v + 1), RET #v >>>.
   Proof.
     iIntros "Hl" (Φ) "AU". wp_lam.
-    wp_apply (atomic_wp_seq $! (load_spec _) with "Hl").
-    iIntros "Hl". wp_pures. awp_apply store_spec.
+    wp_apply (atomic_wp_seq $! (load_spec _) with "Hl") as "Hl".
+    wp_pures. awp_apply store_spec.
     (* Prove the atomic update for store *)
     iApply (aacc_aupd_commit with "AU"); first done.
     iIntros (x) "H↦".

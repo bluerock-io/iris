@@ -76,6 +76,8 @@ Coq 8.13 is no longer supported.
 **Changes in `heap_lang`:**
 
 * Move operations and lemmas about locations into a module `Loc`.
+* Extend `wp_apply` and `wp_smart_apply` to support immediately introducing the
+  postcondition into the context via `as (x1 ... xn) "ipat1 ... ipatn"`.
 
 **LaTeX changes:**
 

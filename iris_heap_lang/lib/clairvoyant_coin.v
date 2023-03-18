@@ -40,10 +40,8 @@ Section proof.
   Proof.
     iIntros (Φ) "_ HΦ".
     wp_lam.
-    wp_apply wp_new_proph; first done.
-    iIntros (vs p) "Hp".
-    wp_apply nondet_bool_spec; first done.
-    iIntros (b) "_".
+    wp_apply wp_new_proph as (vs p) "Hp"; first done.
+    wp_apply nondet_bool_spec as (b) "_"; first done.
     wp_alloc c as "Hc".
     wp_pair.
     iApply ("HΦ" $! (#c, #p)%V (b :: prophecy_to_list_bool vs)).
@@ -72,11 +70,9 @@ Section proof.
     iDestruct "Hc" as (c p vs -> ? ?) "[Hp Hb]".
     destruct bs as [|b bs]; simplify_eq/=.
     wp_lam. do 2 (wp_proj; wp_let).
-    wp_apply nondet_bool_spec; first done.
-    iIntros (r) "_".
+    wp_apply nondet_bool_spec as (r) "_"; first done.
     wp_store.
-    wp_apply (wp_resolve_proph with "[Hp]"); first done.
-    iIntros (ws) "[-> Hp]".
+    wp_apply (wp_resolve_proph with "[Hp]") as (ws) "[-> Hp]"; first done.
     wp_seq.
     iApply "HΦ"; iSplitR; first done.
     destruct r; rewrite /coin; eauto 10 with iFrame.

@@ -64,8 +64,7 @@ Section tada.
     replace 1%Qp with (3/4 + 1/4)%Qp; last first.
     { rewrite Qp.three_quarter_quarter //. }
     iDestruct "Hvar" as "[Hvar1 Hvar2]".
-    wp_apply (l.(newlock_spec) with "Hvar2").
-    iIntros (lk γlock) "Hlock".
+    wp_apply (l.(newlock_spec) with "Hvar2") as (lk γlock) "Hlock".
     iApply ("HΦ" $! lk (TadaLockName _ _)).
     iFrame.
   Qed.
@@ -77,8 +76,7 @@ Section tada.
     <<< ⌜ s = Free ⌝ ∗ tada_lock_state γ Locked, RET #() >>>.
   Proof.
     iIntros "#Hislock %Φ AU". iApply wp_fupd.
-    wp_apply (l.(acquire_spec) with "Hislock").
-    iIntros "[Hlocked Hvar1]".
+    wp_apply (l.(acquire_spec) with "Hislock") as "[Hlocked Hvar1]".
     iMod "AU" as (s) "[[Hvar2 _] [_ Hclose]]".
     iCombine "Hvar1 Hvar2" gives %[_ <-].
     iMod (ghost_var_update_2 Locked with "Hvar1 Hvar2") as "[Hvar1 Hvar2]".

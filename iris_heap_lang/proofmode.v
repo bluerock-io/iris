@@ -629,6 +629,98 @@ Tactic Notation "wp_smart_apply" open_constr(lem) :=
   wp_apply_core lem ltac:(fun H => iApplyHyp H; try iNext; try wp_expr_simpl)
                     ltac:(fun cont => wp_pure _; []; cont ()).
 
+Tactic Notation "wp_apply" open_constr(lem) "as" constr(pat) :=
+  wp_apply lem; last iIntros pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1) ")"
+    constr(pat) :=
+  wp_apply lem; last iIntros ( x1 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) ")" constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) ")" constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 x3 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4) ")"
+    constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 x3 x4 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) ")" constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 x3 x4 x5 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) ")" constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7) ")"
+    constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 x7 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
+    simple_intropattern(x8) ")" constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 x7 x8 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
+    simple_intropattern(x8) simple_intropattern(x9) ")" constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 x7 x8 x9 ) pat.
+Tactic Notation "wp_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
+    simple_intropattern(x8) simple_intropattern(x9) simple_intropattern(x10) ")"
+    constr(pat) :=
+  wp_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 ) pat.
+
+
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" constr(pat) :=
+  wp_smart_apply lem; last iIntros pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1) ")"
+    constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) ")" constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) ")" constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 x3 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4) ")"
+    constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 x3 x4 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) ")" constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 x3 x4 x5 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) ")" constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7) ")"
+    constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 x7 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
+    simple_intropattern(x8) ")" constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 x7 x8 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
+    simple_intropattern(x8) simple_intropattern(x9) ")" constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 x7 x8 x9 ) pat.
+Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x1)
+    simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
+    simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
+    simple_intropattern(x8) simple_intropattern(x9) simple_intropattern(x10) ")"
+    constr(pat) :=
+  wp_smart_apply lem; last iIntros ( x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 ) pat.
+
+
 (** Tactic tailored for atomic triples: the first, simple one just runs
 [iAuIntro] on the goal, as atomic triples always have an atomic update as their
 premise. The second one additionaly does some framing: it gets rid of [Hs] from
