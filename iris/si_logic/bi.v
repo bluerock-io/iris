@@ -185,5 +185,44 @@ Section restate.
 
   Lemma later_soundness (P : siProp) : (⊢ ▷ P) → ⊢ P.
   Proof. apply later_soundness. Qed.
+
+  (** We restate the unsealing lemmas so that they also unfold the BI layer. The
+  sealing lemmas are partially applied so that they also work under binders. *)
+  Local Lemma siProp_emp_unseal : bi_emp = @siprop.siProp_pure_def True.
+  Proof. by rewrite -siprop.siProp_pure_unseal. Qed.
+  Local Lemma siProp_pure_unseal : bi_pure = @siprop.siProp_pure_def.
+  Proof. by rewrite -siprop.siProp_pure_unseal. Qed.
+  Local Lemma siProp_and_unseal : bi_and = @siprop.siProp_and_def.
+  Proof. by rewrite -siprop.siProp_and_unseal. Qed.
+  Local Lemma siProp_or_unseal : bi_or = @siprop.siProp_or_def.
+  Proof. by rewrite -siprop.siProp_or_unseal. Qed.
+  Local Lemma siProp_impl_unseal : bi_impl = @siprop.siProp_impl_def.
+  Proof. by rewrite -siprop.siProp_impl_unseal. Qed.
+  Local Lemma siProp_forall_unseal : @bi_forall _ = @siprop.siProp_forall_def.
+  Proof. by rewrite -siprop.siProp_forall_unseal. Qed.
+  Local Lemma siProp_exist_unseal : @bi_exist _ = @siprop.siProp_exist_def.
+  Proof. by rewrite -siprop.siProp_exist_unseal. Qed.
+  Local Lemma siProp_internal_eq_unseal :
+    @internal_eq _ _ = @siprop.siProp_internal_eq_def.
+  Proof. by rewrite -siprop.siProp_internal_eq_unseal. Qed.
+  Local Lemma siProp_sep_unseal : bi_sep = @siprop.siProp_and_def.
+  Proof. by rewrite -siprop.siProp_and_unseal. Qed.
+  Local Lemma siProp_wand_unseal : bi_wand = @siprop.siProp_impl_def.
+  Proof. by rewrite -siprop.siProp_impl_unseal. Qed.
+  Local Lemma siProp_plainly_unseal : plainly = @id siProp.
+  Proof. done. Qed.
+  Local Lemma siProp_persistently_unseal : bi_persistently = @id siProp.
+  Proof. done. Qed.
+  Local Lemma siProp_later_unseal : bi_later = @siprop.siProp_later_def.
+  Proof. by rewrite -siprop.siProp_later_unseal. Qed.
+
+  Local Definition siProp_unseal :=
+    (siProp_emp_unseal, siProp_pure_unseal, siProp_and_unseal, siProp_or_unseal,
+    siProp_impl_unseal, siProp_forall_unseal, siProp_exist_unseal,
+    siProp_internal_eq_unseal, siProp_sep_unseal, siProp_wand_unseal,
+    siProp_plainly_unseal, siProp_persistently_unseal, siProp_later_unseal).
 End restate.
+
+(** The final unseal tactic that also unfolds the BI layer. *)
+Ltac unseal := rewrite !siProp_unseal /=.
 End siProp.
