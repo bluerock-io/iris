@@ -193,7 +193,8 @@ Section proof.
       }}}.
     Proof.
       iIntros (Hn Φ) "Hf HΦ". wp_lam. wp_alloc l as "Hl"; first done.
-      wp_smart_apply (wp_array_init_loop _ _ _ 0 n (Z.to_nat n) with "[Hl $Hf] [HΦ]") as "!> %vs".
+      wp_smart_apply (wp_array_init_loop _ _ _ 0 n (Z.to_nat n)
+        with "[Hl $Hf] [HΦ]") as "!> %vs".
       { by rewrite /= Z2Nat.id; last lia. }
       { by rewrite Loc.add_0. }
       iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
@@ -212,7 +213,8 @@ Section proof.
       }]].
     Proof.
       iIntros (Hn Φ) "Hf HΦ". wp_lam. wp_alloc l as "Hl"; first done.
-      wp_smart_apply (twp_array_init_loop _ _ _ 0 n (Z.to_nat n) with "[Hl $Hf] [HΦ]") as "%vs".
+      wp_smart_apply (twp_array_init_loop _ _ _ 0 n (Z.to_nat n)
+        with "[Hl $Hf] [HΦ]") as "%vs".
       { by rewrite /= Z2Nat.id; last lia. }
       { by rewrite Loc.add_0. }
       iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
