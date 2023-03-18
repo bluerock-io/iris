@@ -216,7 +216,7 @@ Section restate.
   to express the more general case. This temporary proof rule will
   be replaced by the proper one eventually. *)
   Lemma internal_eq_entails {A B : ofe} (a1 a2 : A) (b1 b2 : B) :
-    (∀ n, a1 ≡{n}≡ a2 → b1 ≡{n}≡ b2) → a1 ≡ a2 ⊢ b1 ≡ b2.
+    (a1 ≡ a2 ⊢ b1 ≡ b2) ↔ (∀ n, a1 ≡{n}≡ a2 → b1 ≡{n}≡ b2).
   Proof. exact: uPred_primitive.internal_eq_entails. Qed.
 
   Lemma ownM_valid (a : M) : uPred_ownM a ⊢ ✓ a.
