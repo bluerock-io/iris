@@ -545,10 +545,11 @@ Section instances.
   (** And finally the proper [unseal] tactic (which we also redefine outside
   of the section since Ltac definitions do not outlive a section). *)
   Local Definition monPred_unseal :=
-    (monPred_unseal_bi, @monPred_embed_unseal, @monPred_internal_eq_unseal,
-    @monPred_bupd_unseal, @monPred_fupd_unseal, @monPred_plainly_unseal,
+    (monPred_unseal_bi,
     @monPred_defs.monPred_objectively_unseal,
     @monPred_defs.monPred_subjectively_unseal,
+    @monPred_embed_unseal, @monPred_internal_eq_unseal,
+    @monPred_bupd_unseal, @monPred_fupd_unseal, @monPred_plainly_unseal,
     @monPred_defs.monPred_in_unseal).
   Ltac unseal := rewrite !monPred_unseal /=.
 

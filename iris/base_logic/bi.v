@@ -291,7 +291,7 @@ Section restate.
     upred.uPred_ownM_unseal, upred.uPred_cmra_valid_unseal, @uPred_bupd_unseal).
 End restate.
 
-(** The final unseal tactic that also unfolds the BI layer. This is used by
-[base_logic.algebra] and [base_logic.bupd_alt]. *)
+(** A tactic for rewriting with the above lemmas. Unfolds [uPred] goals that use
+the BI layer. This is used by [base_logic.algebra] and [base_logic.bupd_alt]. *)
 Ltac unseal := rewrite !uPred_unseal /=.
 End uPred.
