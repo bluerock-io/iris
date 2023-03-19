@@ -24,9 +24,7 @@
      : val + Error
 "fail loc order"
      : string
-     = inr
-         (Stuck
-            "bin-op failed: the only supported operation on locations is +ₗ #i, got < #(loc 2)")
+     = inr (Stuck "bin-op failed: cannot use < on location #(loc 1) and #1")
      : val + Error
 "fail compare pairs"
      : string

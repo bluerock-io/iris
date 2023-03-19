@@ -403,8 +403,12 @@ Section interpreter.
            match op, v2 with
            | OffsetOp, LitV (LitInt _) => None
            | OffsetOp, _ => Some $ "can only call +ₗ on integers, got " + v2
-           | _, _ => Some $ "the only supported operation on locations is +ₗ #i, got "
-                            + op + " " + v2
+           | LeOp, LitV (LitLoc _) => None
+           | LeOp, _ => Some $ "cannot use ≤ on location " + v1 + " and " + v2
+           | LtOp, LitV (LitLoc _) => None
+           | LtOp, _ => Some $ "cannot use < on location " + v1 + " and " + v2
+           | _, _ => Some $ "the only supported operations on locations are " +
+                            " +ₗ #i, ≤ #l and < #l; got " + op + " " + v2
            end
          | _, _ => Some $ "mismatched types of values " + v1 + " and " + v2
          end.
