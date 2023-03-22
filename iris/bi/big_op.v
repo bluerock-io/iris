@@ -1685,11 +1685,10 @@ Lemma big_sepM_sepL2_map_to_list `{Countable K, LeibnizEquiv A}
   ([∗ map] k↦v ∈ m, φ k v) ⊣⊢
   ([∗ list] k;v ∈ (map_to_list m).*1;(map_to_list m).*2, φ k v).
 Proof.
-  induction m using map_ind.
+  induction m as [|k v m Hm IHm] using map_ind .
   - by rewrite big_sepM_empty map_to_list_empty /=.
-  - rewrite (big_sepM_insert _ _ _ _ H2) IHm !big_sepL2_alt !zip_fst_snd.
-    specialize (map_to_list_insert m i x H2) as Hf.
-    rewrite (big_opL_permutation _ _ _ Hf) !map_length.
+  - rewrite (big_sepM_insert _ _ _ _ Hm) IHm !big_sepL2_alt !zip_fst_snd.
+    rewrite (big_opL_permutation _ _ _ (map_to_list_insert m k v Hm)) !map_length.
     assert (Heq: ∀ b : nat, (⌜b = b⌝:PROP) ⊣⊢ True).
     { intros. apply (anti_symm (⊢)); [ apply True_intro | by apply pure_intro ]. }
     by rewrite !Heq /= !True_and.
