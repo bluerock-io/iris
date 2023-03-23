@@ -424,6 +424,14 @@ Proof.
   - apply pure_elim_l=> /Forall2_same_length Hl. revert Φ.
     induction Hl as [|x1 l1 x2 l2 _ _ IH]=> Φ //=. by rewrite -IH.
 Qed.
+Lemma big_sepL2_alt2 {A B} (Φ : nat → A → B → PROP) l :
+  ([∗ list] k↦y1;y2 ∈ l.*1; l.*2, Φ k y1 y2) ⊣⊢
+  [∗ list] k ↦ xy ∈ l, Φ k (xy.1) (xy.2).
+Proof.
+  rewrite big_sepL2_alt !fmap_length.
+  assert (Hr: length l = length l ↔ True). { done. }
+  by rewrite Hr True_and zip_fst_snd.
+Qed.
 
 Section sep_list2.
   Context {A B : Type}.
@@ -1598,6 +1606,15 @@ Section sep_map.
   Lemma big_sepM_laterN_2 Φ n m :
     ([∗ map] k↦x ∈ m, ▷^n Φ k x) ⊢ ▷^n [∗ map] k↦x ∈ m, Φ k x.
   Proof. by rewrite big_opM_commute. Qed.
+
+  Lemma big_sepM_map_to_list Φ m :
+    ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ [∗ list] xk ∈ map_to_list m, Φ (xk.1) (xk.2).
+  Proof. apply big_opM_map_to_list. Qed.
+  Lemma big_sepM_list_to_map Φ l :
+    NoDup l.*1 →
+    ([∗ map] k↦x ∈ list_to_map l, Φ k x) ⊣⊢ [∗ list] xk ∈ l, Φ (xk.1) (xk.2).
+  Proof. apply big_opM_list_to_map. Qed.
+
 End sep_map.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
@@ -1678,20 +1695,6 @@ Proof.
     do 2 rewrite pure_True // left_id //. apply wand_elim_l.
   - apply elem_of_dom_2 in Hlm2. apply not_elem_of_dom in Hlm1.
     set_solver.
-Qed.
-
-Lemma big_sepM_sepL2_map_to_list `{Countable K, LeibnizEquiv A}
-    (φ : K → A → PROP) (m : gmap K A) :
-  ([∗ map] k↦v ∈ m, φ k v) ⊣⊢
-  ([∗ list] k;v ∈ (map_to_list m).*1;(map_to_list m).*2, φ k v).
-Proof.
-  induction m as [|k v m Hm IHm] using map_ind .
-  - by rewrite big_sepM_empty map_to_list_empty /=.
-  - rewrite (big_sepM_insert _ _ _ _ Hm) IHm !big_sepL2_alt !zip_fst_snd.
-    rewrite (big_opL_permutation _ _ _ (map_to_list_insert m k v Hm)) !map_length.
-    assert (Heq: ∀ b : nat, (⌜b = b⌝:PROP) ⊣⊢ True).
-    { intros. apply (anti_symm (⊢)); [ apply True_intro | by apply pure_intro ]. }
-    by rewrite !Heq /= !True_and.
 Qed.
 
 Section and_map.
