@@ -424,14 +424,6 @@ Proof.
   - apply pure_elim_l=> /Forall2_same_length Hl. revert Φ.
     induction Hl as [|x1 l1 x2 l2 _ _ IH]=> Φ //=. by rewrite -IH.
 Qed.
-Lemma big_sepL2_alt2 {A B} (Φ : nat → A → B → PROP) l :
-  ([∗ list] k↦y1;y2 ∈ l.*1; l.*2, Φ k y1 y2) ⊣⊢
-  [∗ list] k ↦ xy ∈ l, Φ k (xy.1) (xy.2).
-Proof.
-  rewrite big_sepL2_alt !fmap_length.
-  assert (Hr: length l = length l ↔ True). { done. }
-  by rewrite Hr True_and zip_fst_snd.
-Qed.
 
 Section sep_list2.
   Context {A B : Type}.
@@ -476,6 +468,15 @@ Section sep_list2.
   Lemma big_sepL2_length Φ l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2) -∗ ⌜ length l1 = length l2 ⌝.
   Proof. by rewrite big_sepL2_alt and_elim_l. Qed.
+
+  Lemma big_sepL2_fst_snd {A B} (Φ : nat → A → B → PROP) l :
+    ([∗ list] k↦y1;y2 ∈ l.*1; l.*2, Φ k y1 y2) ⊣⊢
+    [∗ list] k ↦ xy ∈ l, Φ k (xy.1) (xy.2).
+  Proof.
+    rewrite big_sepL2_alt !fmap_length.
+    assert (Hr: length l = length l ↔ True). { done. }
+    by rewrite Hr True_and zip_fst_snd.
+  Qed.
 
   Lemma big_sepL2_app Φ l1 l2 l1' l2' :
     ([∗ list] k↦y1;y2 ∈ l1; l1', Φ k y1 y2) -∗
