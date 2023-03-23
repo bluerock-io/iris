@@ -469,7 +469,7 @@ Section sep_list2.
     ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2) -∗ ⌜ length l1 = length l2 ⌝.
   Proof. by rewrite big_sepL2_alt and_elim_l. Qed.
 
-  Lemma big_sepL2_fst_snd {A B} (Φ : nat → A → B → PROP) l :
+  Lemma big_sepL2_fst_snd Φ l :
     ([∗ list] k↦y1;y2 ∈ l.*1; l.*2, Φ k y1 y2) ⊣⊢
     [∗ list] k ↦ xy ∈ l, Φ k (xy.1) (xy.2).
   Proof.
