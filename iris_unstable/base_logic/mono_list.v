@@ -121,7 +121,7 @@ Section mono_list_own.
     iDestruct 1 as (l1 Hl1) "H1". iDestruct 1 as (l2 Hl2) "H2".
     iDestruct (mono_list_lb_valid with "H1 H2") as %Hpre.
     iPureIntro.
-    destruct Hpre as [Hpre|Hpre]; eapply prefix_lookup in Hpre; eauto; congruence.
+    destruct Hpre as [Hpre|Hpre]; eapply prefix_lookup_Some in Hpre; eauto; congruence.
   Qed.
 
   Lemma mono_list_auth_idx_lookup γ q l i a :
@@ -130,7 +130,7 @@ Section mono_list_own.
     iIntros "Hauth". iDestruct 1 as (l1 Hl1) "Hl1".
     iDestruct (mono_list_auth_lb_valid with "Hauth Hl1") as %[_ Hpre].
     iPureIntro.
-    eapply prefix_lookup in Hpre; eauto; congruence.
+    eapply prefix_lookup_Some in Hpre; eauto; congruence.
   Qed.
 
   Lemma mono_list_lb_own_get γ q l :
