@@ -2497,7 +2497,7 @@ Section gset.
   (** No need to declare instances for non-expansiveness and properness, we
   get both from the generic [big_opS] instances. *)
   Global Instance big_sepS_mono' :
-     Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opS (@bi_sep PROP) (A:=A)).
+    Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepS_mono. Qed.
 
   Global Instance big_sepS_empty_persistent Φ :
