@@ -202,9 +202,6 @@ Section restate.
   Proof. by rewrite -siprop.siProp_forall_unseal. Qed.
   Local Lemma siProp_exist_unseal : @bi_exist _ = @siprop.siProp_exist_def.
   Proof. by rewrite -siprop.siProp_exist_unseal. Qed.
-  Local Lemma siProp_internal_eq_unseal :
-    @internal_eq _ _ = @siprop.siProp_internal_eq_def.
-  Proof. by rewrite -siprop.siProp_internal_eq_unseal. Qed.
   Local Lemma siProp_sep_unseal : bi_sep = @siprop.siProp_and_def.
   Proof. by rewrite -siprop.siProp_and_unseal. Qed.
   Local Lemma siProp_wand_unseal : bi_wand = @siprop.siProp_impl_def.
@@ -215,12 +212,16 @@ Section restate.
   Proof. done. Qed.
   Local Lemma siProp_later_unseal : bi_later = @siprop.siProp_later_def.
   Proof. by rewrite -siprop.siProp_later_unseal. Qed.
+  Local Lemma siProp_internal_eq_unseal :
+    @internal_eq _ _ = @siprop.siProp_internal_eq_def.
+  Proof. by rewrite -siprop.siProp_internal_eq_unseal. Qed.
 
   Local Definition siProp_unseal :=
     (siProp_emp_unseal, siProp_pure_unseal, siProp_and_unseal, siProp_or_unseal,
     siProp_impl_unseal, siProp_forall_unseal, siProp_exist_unseal,
-    siProp_internal_eq_unseal, siProp_sep_unseal, siProp_wand_unseal,
-    siProp_plainly_unseal, siProp_persistently_unseal, siProp_later_unseal).
+    siProp_sep_unseal, siProp_wand_unseal,
+    siProp_plainly_unseal, siProp_persistently_unseal, siProp_later_unseal,
+    siProp_internal_eq_unseal).
 End restate.
 
 (** The final unseal tactic that also unfolds the BI layer. *)

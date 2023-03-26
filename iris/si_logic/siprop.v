@@ -103,14 +103,6 @@ Definition siProp_exist {A} := unseal siProp_exist_aux A.
 Local Definition siProp_exist_unseal :
   @siProp_exist = @siProp_exist_def := seal_eq siProp_exist_aux.
 
-Local Program Definition siProp_internal_eq_def {A : ofe} (a1 a2 : A) : siProp :=
-  {| siProp_holds n := a1 ≡{n}≡ a2 |}.
-Solve Obligations with naive_solver eauto 2 using dist_le.
-Local Definition siProp_internal_eq_aux : seal (@siProp_internal_eq_def). Proof. by eexists. Qed.
-Definition siProp_internal_eq {A} := unseal siProp_internal_eq_aux A.
-Local Definition siProp_internal_eq_unseal :
-  @siProp_internal_eq = @siProp_internal_eq_def := seal_eq siProp_internal_eq_aux.
-
 Local Program Definition siProp_later_def (P : siProp) : siProp :=
   {| siProp_holds n := match n return _ with 0 => True | S n' => P n' end |}.
 Next Obligation. intros P [|n1] [|n2]; eauto using siProp_closed with lia. Qed.
@@ -119,6 +111,14 @@ Definition siProp_later := unseal siProp_later_aux.
 Local Definition siProp_later_unseal :
   @siProp_later = @siProp_later_def := seal_eq siProp_later_aux.
 
+Local Program Definition siProp_internal_eq_def {A : ofe} (a1 a2 : A) : siProp :=
+  {| siProp_holds n := a1 ≡{n}≡ a2 |}.
+Solve Obligations with naive_solver eauto 2 using dist_le.
+Local Definition siProp_internal_eq_aux : seal (@siProp_internal_eq_def). Proof. by eexists. Qed.
+Definition siProp_internal_eq {A} := unseal siProp_internal_eq_aux A.
+Local Definition siProp_internal_eq_unseal :
+  @siProp_internal_eq = @siProp_internal_eq_def := seal_eq siProp_internal_eq_aux.
+
 (** Primitive logical rules.
     These are not directly usable later because they do not refer to the BI
     connectives. *)
@@ -126,7 +126,7 @@ Module siProp_primitive.
 Local Definition siProp_unseal :=
   (siProp_pure_unseal, siProp_and_unseal, siProp_or_unseal,
   siProp_impl_unseal, siProp_forall_unseal, siProp_exist_unseal,
-  siProp_internal_eq_unseal, siProp_later_unseal).
+  siProp_later_unseal, siProp_internal_eq_unseal).
 Ltac unseal := rewrite !siProp_unseal /=.
 
 Section primitive.
@@ -145,8 +145,8 @@ Section primitive.
     (siProp_forall (λ x, .. (siProp_forall (λ y, P%I)) ..)) : bi_scope.
   Notation "∃ x .. y , P" :=
     (siProp_exist (λ x, .. (siProp_exist (λ y, P%I)) ..)) : bi_scope.
-  Notation "x ≡ y" := (siProp_internal_eq x y) : bi_scope.
   Notation "▷ P" := (siProp_later P) : bi_scope.
+  Notation "x ≡ y" := (siProp_internal_eq x y) : bi_scope.
 
   (** Below there follow the primitive laws for [siProp]. There are no derived laws
   in this file. *)
@@ -257,28 +257,6 @@ Section primitive.
   Lemma exist_elim {A} (Φ : A → siProp) Q : (∀ a, Φ a ⊢ Q) → (∃ a, Φ a) ⊢ Q.
   Proof. unseal; intros HΨ; split=> n [a ?]; by apply HΨ with a. Qed.
 
-  (** Equality *)
-  Lemma internal_eq_refl {A : ofe} P (a : A) : P ⊢ (a ≡ a).
-  Proof. unseal; by split=> n ? /=. Qed.
-  Lemma internal_eq_rewrite {A : ofe} a b (Ψ : A → siProp) :
-    NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
-  Proof.
-    intros Hnonexp. unseal; split=> n Hab n' ? HΨ. eapply Hnonexp with n a; auto.
-  Qed.
-
-  Lemma fun_ext {A} {B : A → ofe} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g.
-  Proof. by unseal. Qed.
-  Lemma sig_eq {A : ofe} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y.
-  Proof. by unseal. Qed.
-  Lemma discrete_eq_1 {A : ofe} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
-  Proof. unseal=> ?. split=> n. by apply (discrete_iff n). Qed.
-
-  Lemma prop_ext_2 P Q : ((P → Q) ∧ (Q → P)) ⊢ P ≡ Q.
-  Proof.
-    unseal; split=> n /= HPQ. split=> n' ?.
-    move: HPQ=> [] /(_ n') ? /(_ n'). naive_solver.
-  Qed.
-
   (** Later *)
   Lemma later_eq_1 {A : ofe} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
   Proof.
@@ -305,6 +283,28 @@ Section primitive.
   Proof.
     unseal; split=> -[|n] /= HP; [by left|right].
     intros [|n'] ?; eauto using siProp_closed with lia.
+  Qed.
+
+  (** Equality *)
+  Lemma internal_eq_refl {A : ofe} P (a : A) : P ⊢ (a ≡ a).
+  Proof. unseal; by split=> n ? /=. Qed.
+  Lemma internal_eq_rewrite {A : ofe} a b (Ψ : A → siProp) :
+    NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
+  Proof.
+    intros Hnonexp. unseal; split=> n Hab n' ? HΨ. eapply Hnonexp with n a; auto.
+  Qed.
+
+  Lemma fun_ext {A} {B : A → ofe} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g.
+  Proof. by unseal. Qed.
+  Lemma sig_eq {A : ofe} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y.
+  Proof. by unseal. Qed.
+  Lemma discrete_eq_1 {A : ofe} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
+  Proof. unseal=> ?. split=> n. by apply (discrete_iff n). Qed.
+
+  Lemma prop_ext_2 P Q : ((P → Q) ∧ (Q → P)) ⊢ P ≡ Q.
+  Proof.
+    unseal; split=> n /= HPQ. split=> n' ?.
+    move: HPQ=> [] /(_ n') ? /(_ n'). naive_solver.
   Qed.
 
   (** Consistency/soundness statement *)
