@@ -62,6 +62,8 @@ Lemma later_wand P Q : ▷ (P -∗ Q) ⊢ ▷ P -∗ ▷ Q.
 Proof. apply wand_intro_l. by rewrite -later_sep wand_elim_r. Qed.
 Lemma later_iff P Q : ▷ (P ↔ Q) ⊢ ▷ P ↔ ▷ Q.
 Proof. by rewrite /bi_iff later_and !later_impl. Qed.
+Lemma later_wand_iff P Q : ▷ (P ∗-∗ Q) ⊢ ▷ P ∗-∗ ▷ Q.
+Proof. by rewrite /bi_wand_iff later_and !later_wand. Qed.
 Lemma later_persistently P : ▷ <pers> P ⊣⊢ <pers> ▷ P.
 Proof. apply (anti_symm _); auto using later_persistently_1, later_persistently_2. Qed.
 Lemma later_affinely_2 P : <affine> ▷ P ⊢ ▷ <affine> P.
