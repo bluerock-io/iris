@@ -1014,6 +1014,9 @@ Ltac iSpecializePat_go H1 pats :=
          |tc_solve ||
           let Q := match goal with |- Persistent ?Q => Q end in
           fail "iSpecialize:" Q "not persistent"
+         |tc_solve ||
+          fail "iSpecialize: Cannot find IntoAbsorbingly;"
+               "this should not happen, please report a bug"
          |pm_reduce; solve [iFrame "∗ #"]
          |pm_reduce; iSpecializePat_go H1 pats]
     | SAutoFrame ?m :: ?pats =>
