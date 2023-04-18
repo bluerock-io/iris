@@ -252,7 +252,7 @@ Section counter_proof.
     iIntros "!> Hl /=". iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
     rewrite /read /=. wp_lam. Show. iApply wp_inv_open; last iFrame "Hinv"; auto.
     iDestruct 1 as (c) "[Hl Hγ]". wp_load. Show.
-    iDestruct (own_valid γ (Frag n ⋅ Auth c) with "[-]") as % ?%auth_frag_valid.
+    iDestruct (own_valid γ (Auth c ⋅ Frag n) with "[-]") as %H%auth_frag_valid.
     { iApply own_op. by iFrame. }
     rewrite (auth_frag_op c c); last lia; iDestruct "Hγ" as "[Hγ Hγf']".
     iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
