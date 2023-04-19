@@ -72,6 +72,9 @@ Coq 8.13 is no longer supported.
   BI projections.
 * Turn `internal_eq_entails` into a bi-implication.
 * Add lemmas to relate internal/external non-expansiveness and contractiveness.
+* Refactor soundness lemmas: `bupd_plain_soundness` → `bupd_soundness`,
+  `soundness` → `laterN_soundness` + `pure_soundness`; removed
+  `consistency_modal`.
 
 **Changes in `heap_lang`:**
 
