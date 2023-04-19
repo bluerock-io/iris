@@ -232,6 +232,8 @@ Coercion ucmra_cmraR (A : ucmra) : cmra :=
   Cmra' A (ucmra_ofe_mixin A) (ucmra_cmra_mixin A).
 Canonical Structure ucmra_cmraR.
 
+Global Strategy expand [ucmra_cmraR ucmra_equiv ucmra_dist ucmra_pcore ucmra_op ucmra_valid ucmra_validN ucmra_ofe_mixin ucmra_cmra_mixin].
+
 (** Lifting properties from the mixin *)
 Section ucmra_mixin.
   Context {A : ucmra}.
