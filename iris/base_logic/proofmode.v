@@ -11,7 +11,7 @@ Section class_instances.
 
   Global Instance into_pure_cmra_valid `{!CmraDiscrete A} (a : A) :
     @IntoPure (uPredI M) (✓ a) (✓ a).
-  Proof. by rewrite /IntoPure discrete_valid. Qed.
+  Proof. rewrite /IntoPure. by rewrite uPred.discrete_valid. Qed.
 
   Global Instance from_pure_cmra_valid {A : cmra} (a : A) :
     @FromPure (uPredI M) false (✓ a) (✓ a).

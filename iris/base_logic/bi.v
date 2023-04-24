@@ -223,14 +223,12 @@ Section restate.
   Proof. exact: uPred_primitive.ownM_valid. Qed.
   Lemma cmra_valid_intro {A : cmra} P (a : A) : ✓ a → P ⊢ (✓ a).
   Proof. exact: uPred_primitive.cmra_valid_intro. Qed.
-  Lemma cmra_valid_elim {A : cmra} (a : A) : ¬ ✓{0} a → ✓ a ⊢ False.
+  Lemma cmra_valid_elim {A : cmra} (a : A) : ✓ a ⊢ ⌜ ✓{0} a ⌝.
   Proof. exact: uPred_primitive.cmra_valid_elim. Qed.
   Lemma plainly_cmra_valid_1 {A : cmra} (a : A) : ✓ a ⊢ ■ ✓ a.
   Proof. exact: uPred_primitive.plainly_cmra_valid_1. Qed.
   Lemma cmra_valid_weaken {A : cmra} (a b : A) : ✓ (a ⋅ b) ⊢ ✓ a.
   Proof. exact: uPred_primitive.cmra_valid_weaken. Qed.
-  Lemma discrete_valid {A : cmra} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
-  Proof. exact: uPred_primitive.discrete_valid. Qed.
 
   (** This is really just a special case of an entailment
   between two [siProp], but we do not have the infrastructure
