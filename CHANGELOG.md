@@ -79,6 +79,7 @@ Coq 8.13 is no longer supported.
 * Refactor soundness lemmas: `bupd_plain_soundness` → `bupd_soundness`,
   `soundness` → `laterN_soundness` + `pure_soundness`; removed
   `consistency_modal`.
+* Strengthen `cmra_valid_elim` to `✓ a ⊢ ⌜ ✓{0} a ⌝`; make `discrete_valid` a derived law.
 
 **Changes in `heap_lang`:**
 

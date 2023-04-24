@@ -890,15 +890,12 @@ Section primitive.
   Qed.
   Lemma cmra_valid_intro {A : cmra} P (a : A) : ✓ a → P ⊢ (✓ a).
   Proof. unseal=> ?; split=> n x ? _ /=; by apply cmra_valid_validN. Qed.
-  Lemma cmra_valid_elim {A : cmra} (a : A) : ¬ ✓{0} a → ✓ a ⊢ False.
-  Proof. unseal=> Ha; split=> n x ??; apply Ha, cmra_validN_le with n; auto. Qed.
+  Lemma cmra_valid_elim {A : cmra} (a : A) : ✓ a ⊢ ⌜ ✓{0} a ⌝.
+  Proof. unseal; split=> n x ??; apply cmra_validN_le with n; auto. Qed.
   Lemma plainly_cmra_valid_1 {A : cmra} (a : A) : ✓ a ⊢ ■ ✓ a.
   Proof. by unseal. Qed.
   Lemma cmra_valid_weaken {A : cmra} (a b : A) : ✓ (a ⋅ b) ⊢ ✓ a.
   Proof. unseal; split=> n x _; apply cmra_validN_op_l. Qed.
-
-  Lemma discrete_valid {A : cmra} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
-  Proof. unseal; split=> n x _. by rewrite /= -cmra_discrete_valid_iff. Qed.
 
   (** This is really just a special case of an entailment
   between two [siProp], but we do not have the infrastructure

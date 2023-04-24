@@ -33,7 +33,7 @@ Section derived.
     by rewrite {1}persistently_ownM_core core_id_core.
   Qed.
   Lemma ownM_invalid (a : M) : ¬ ✓{0} a → uPred_ownM a ⊢ False.
-  Proof. by intros; rewrite ownM_valid cmra_valid_elim. Qed.
+  Proof. intros. rewrite ownM_valid cmra_valid_elim. by apply pure_elim'. Qed.
   Global Instance ownM_mono : Proper (flip (≼) ==> (⊢)) (@uPred_ownM M).
   Proof. intros a b [b' ->]. by rewrite ownM_op sep_elim_l. Qed.
   Lemma ownM_unit' : uPred_ownM ε ⊣⊢ True.
@@ -46,6 +46,13 @@ Section derived.
       first by rewrite persistently_elim.
     apply:persistently_cmra_valid_1.
   Qed.
+  Lemma discrete_valid {A : cmra} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
+  Proof.
+    apply (anti_symm _).
+    - rewrite cmra_valid_elim. by apply pure_mono, cmra_discrete_valid.
+    - apply pure_elim'=> ?. by apply cmra_valid_intro.
+  Qed.
+
   Lemma bupd_ownM_update x y : x ~~> y → uPred_ownM x ⊢ |==> uPred_ownM y.
   Proof.
     intros; rewrite (bupd_ownM_updateP _ (y =.)); last by apply cmra_update_updateP.
