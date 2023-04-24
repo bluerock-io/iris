@@ -271,7 +271,7 @@ Proof.
     { apply inG_unfold_validN. }
     by apply cmra_transport_updateP'.
   - apply exist_elim=> m; apply pure_elim_l=> -[a' [-> HP]].
-    rewrite -(exist_intro a'). rewrite -persistent_and_sep.
+    rewrite -(exist_intro a'). rewrite -and_sep.
     by apply and_intro; [apply pure_intro|].
 Qed.
 
@@ -392,6 +392,6 @@ Section proofmode_instances.
     FromAnd (own γ a) (own γ b1) (own γ b2).
   Proof.
     intros ? Hb. rewrite /FromAnd (is_op a) own_op.
-    destruct Hb; by rewrite persistent_and_sep.
+    destruct Hb; by rewrite and_sep.
   Qed.
 End proofmode_instances.

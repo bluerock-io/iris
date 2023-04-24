@@ -1078,14 +1078,12 @@ Proof.
   by rewrite {1}HP persistently_and_sep_elim_emp.
 Qed.
 
-Lemma persistently_and_sep_assoc P Q R : <pers> P ∧ (Q ∗ R) ⊣⊢ (<pers> P ∧ Q) ∗ R.
-Proof. apply: and_sep_assoc. Qed.
 Lemma persistently_and_emp_elim P : emp ∧ <pers> P ⊢ P.
 Proof. by rewrite comm persistently_and_sep_elim_emp right_id and_elim_r. Qed.
 Lemma persistently_into_absorbingly P : <pers> P ⊢ <absorb> P.
 Proof.
   rewrite -(right_id True%I _ (<pers> _)%I) -{1}(emp_sep True%I).
-  rewrite persistently_and_sep_assoc.
+  rewrite and_sep_assoc.
   rewrite (comm bi_and) persistently_and_emp_elim comm //.
 Qed.
 Lemma persistently_elim P `{!Absorbing P} : <pers> P ⊢ P.
@@ -1111,19 +1109,11 @@ Proof.
   auto using persistently_mono, pure_intro.
 Qed.
 
-Lemma persistently_sep_dup P : <pers> P ⊣⊢ <pers> P ∗ <pers> P.
-Proof. apply: sep_dup. Qed.
-
-Lemma persistently_and_sep_l_1 P Q : <pers> P ∧ Q ⊢ <pers> P ∗ Q.
-Proof. apply: and_sep_l_1. Qed.
-Lemma persistently_and_sep_r_1 P Q : P ∧ <pers> Q ⊢ P ∗ <pers> Q.
-Proof. apply: and_sep_r_1. Qed.
-
 Lemma persistently_and_sep P Q : <pers> (P ∧ Q) ⊢ <pers> (P ∗ Q).
 Proof.
   rewrite persistently_and.
   rewrite -{1}persistently_idemp -persistently_and -{1}(emp_sep Q).
-  by rewrite persistently_and_sep_assoc (comm bi_and) persistently_and_emp_elim.
+  by rewrite and_sep_assoc (comm bi_and) persistently_and_emp_elim.
 Qed.
 
 Lemma persistently_affinely_elim P : <pers> <affine> P ⊣⊢ <pers> P.
@@ -1167,19 +1157,16 @@ Lemma persistently_wand P Q : <pers> (P -∗ Q) ⊢ <pers> P -∗ <pers> Q.
 Proof. apply wand_intro_r. by rewrite persistently_sep_2 wand_elim_l. Qed.
 
 Lemma persistently_entails_l P Q : (P ⊢ <pers> Q) → P ⊢ <pers> Q ∗ P.
-Proof. intros; rewrite -persistently_and_sep_l_1; auto. Qed.
+Proof. intros; rewrite -and_sep_l_1; auto. Qed.
 Lemma persistently_entails_r P Q : (P ⊢ <pers> Q) → P ⊢ P ∗ <pers> Q.
-Proof. intros; rewrite -persistently_and_sep_r_1; auto. Qed.
+Proof. intros; rewrite -and_sep_r_1; auto. Qed.
 
 Lemma persistently_impl_wand_2 P Q : <pers> (P -∗ Q) ⊢ <pers> (P → Q).
 Proof.
   apply persistently_intro', impl_intro_r.
-  rewrite -{2}(emp_sep P) persistently_and_sep_assoc.
+  rewrite -{2}(emp_sep P) and_sep_assoc.
   by rewrite (comm bi_and) persistently_and_emp_elim wand_elim_l.
 Qed.
-
-Lemma impl_wand_persistently_2 P Q : (<pers> P -∗ Q) ⊢ (<pers> P → Q).
-Proof. apply: impl_wand_2. Qed.
 
 Section persistently_affine_bi.
   Context `{!BiAffine PROP}.
@@ -1187,20 +1174,12 @@ Section persistently_affine_bi.
   Lemma persistently_emp : <pers> emp ⊣⊢ emp.
   Proof. by rewrite -!True_emp persistently_pure. Qed.
 
-  Lemma persistently_and_sep_l P Q : <pers> P ∧ Q ⊣⊢ <pers> P ∗ Q.
-  Proof. apply: and_sep_l. Qed.
-  Lemma persistently_and_sep_r P Q : P ∧ <pers> Q ⊣⊢ P ∗ <pers> Q.
-  Proof. apply: and_sep_r. Qed.
-
   Lemma persistently_impl_wand P Q : <pers> (P → Q) ⊣⊢ <pers> (P -∗ Q).
   Proof.
     apply (anti_symm (⊢)); auto using persistently_impl_wand_2.
     apply persistently_intro', wand_intro_l.
-    by rewrite -persistently_and_sep_r persistently_elim impl_elim_r.
+    by rewrite -and_sep_r persistently_elim impl_elim_r.
   Qed.
-
-  Lemma impl_wand_persistently P Q : (<pers> P → Q) ⊣⊢ (<pers> P -∗ Q).
-  Proof. apply: impl_wand. Qed.
 
   Lemma wand_alt P Q : (P -∗ Q) ⊣⊢ ∃ R, R ∗ <pers> (P ∗ R → Q).
   Proof.
@@ -1210,7 +1189,7 @@ Section persistently_affine_bi.
       apply persistently_intro', impl_intro_l.
       by rewrite wand_elim_r persistently_pure right_id.
     - apply exist_elim=> R. apply wand_intro_l.
-      rewrite assoc -persistently_and_sep_r.
+      rewrite assoc -and_sep_r.
       by rewrite persistently_elim impl_elim_r.
   Qed.
 End persistently_affine_bi.
@@ -1610,53 +1589,15 @@ Qed.
 
 Lemma persistently_intro P Q `{!Persistent P} : (P ⊢ Q) → P ⊢ <pers> Q.
 Proof. intros HP. by rewrite (persistent P) HP. Qed.
-Lemma persistent_and_affinely_sep_l_1 P Q `{!Persistent P} :
-  P ∧ Q ⊢ <affine> P ∗ Q.
-Proof. apply: and_affinely_sep_l_1. Qed.
-Lemma persistent_and_affinely_sep_r_1 P Q `{!Persistent Q} :
-  P ∧ Q ⊢ P ∗ <affine> Q.
-Proof. apply: and_affinely_sep_r_1. Qed.
-
-Lemma persistent_and_sep_1 P Q `{HPQ : !TCOr (Persistent P) (Persistent Q)} :
-  P ∧ Q ⊢ P ∗ Q.
-Proof. apply and_sep_1; destruct HPQ; apply _. Qed.
-
-Lemma persistent_sep_dup P
-    `{HP : !TCOr (Affine P) (Absorbing P), !Persistent P} :
-  P ⊣⊢ P ∗ P.
-Proof. apply: sep_dup. Qed.
 
 Lemma persistent_entails_l P Q `{!Persistent Q} : (P ⊢ Q) → P ⊢ Q ∗ P.
-Proof. intros. rewrite -persistent_and_sep_1; auto. Qed.
+Proof. intros. rewrite -and_sep_1; auto. Qed.
 Lemma persistent_entails_r P Q `{!Persistent Q} : (P ⊢ Q) → P ⊢ P ∗ Q.
-Proof. intros. rewrite -persistent_and_sep_1; auto. Qed.
+Proof. intros. rewrite -and_sep_1; auto. Qed.
 
 Lemma absorbingly_intuitionistically_into_persistently P :
   <absorb> □ P ⊣⊢ <pers> P.
 Proof. apply: absorbingly_affinely. Qed.
-
-Lemma persistent_absorbingly_affinely_2 P `{!Persistent P} :
-  P ⊢ <absorb> <affine> P.
-Proof. apply: absorbingly_affinely_2. Qed.
-
-Lemma persistent_impl_wand_2 P `{!Persistent P} Q : (P -∗ Q) ⊢ P → Q.
-Proof. apply: impl_wand_2. Qed.
-
-Lemma persistent_and_affinely_sep_l P Q `{!Persistent P, !Absorbing P} :
-  P ∧ Q ⊣⊢ <affine> P ∗ Q.
-Proof. apply: and_affinely_sep_l. Qed.
-Lemma persistent_and_affinely_sep_r P Q `{!Persistent Q, !Absorbing Q} :
-  P ∧ Q ⊣⊢ P ∗ <affine> Q.
-Proof. apply: and_affinely_sep_r. Qed.
-Lemma persistent_and_sep_assoc P `{!Persistent P, !Absorbing P} Q R :
-  P ∧ (Q ∗ R) ⊣⊢ (P ∧ Q) ∗ R.
-Proof. apply: and_sep_assoc. Qed.
-Lemma persistent_absorbingly_affinely P `{!Persistent P, !Absorbing P} :
-  <absorb> <affine> P ⊣⊢ P.
-Proof. apply: absorbingly_affinely. Qed.
-Lemma persistent_impl_wand_affinely P `{!Persistent P, !Absorbing P} Q :
-  (P → Q) ⊣⊢ (<affine> P -∗ Q).
-Proof. apply: impl_wand_affinely. Qed.
 
 (** We don't have a [Intuitionistic] typeclass, but if we did, this
 would be its only field. *)
@@ -1665,21 +1606,6 @@ Proof. rewrite intuitionistic_intuitionistically. done. Qed.
 
 Lemma intuitionistically_intro P Q `{!Affine P, !Persistent P} : (P ⊢ Q) → P ⊢ □ Q.
 Proof. intros. apply: affinely_intro. by apply: persistently_intro. Qed.
-
-Section persistent_bi_absorbing.
-  Context `{!BiAffine PROP}.
-
-  Lemma persistent_and_sep P Q `{HPQ : !TCOr (Persistent P) (Persistent Q)} :
-    P ∧ Q ⊣⊢ P ∗ Q.
-  Proof.
-    destruct HPQ.
-    - by rewrite -(persistent_persistently P) persistently_and_sep_l.
-    - by rewrite -(persistent_persistently Q) persistently_and_sep_r.
-  Qed.
-
-  Lemma persistent_impl_wand P `{!Persistent P} Q : (P → Q) ⊣⊢ (P -∗ Q).
-  Proof. apply: impl_wand. Qed.
-End persistent_bi_absorbing.
 
 (* For big ops *)
 Global Instance bi_and_monoid : Monoid (@bi_and PROP) :=

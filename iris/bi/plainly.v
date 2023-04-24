@@ -161,7 +161,7 @@ Section plainly_derived.
   Lemma plainly_and_sep_elim P Q : ■ P ∧ Q ⊢ (emp ∧ P) ∗ Q.
   Proof. by rewrite plainly_elim_persistently persistently_and_sep_elim_emp. Qed.
   Lemma plainly_and_sep_assoc P Q R : ■ P ∧ (Q ∗ R) ⊣⊢ (■ P ∧ Q) ∗ R.
-  Proof. by rewrite -(persistently_elim_plainly P) persistently_and_sep_assoc. Qed.
+  Proof. by rewrite -(persistently_elim_plainly P) and_sep_assoc. Qed.
   Lemma plainly_and_emp_elim P : emp ∧ ■ P ⊢ P.
   Proof. by rewrite plainly_elim_persistently persistently_and_emp_elim. Qed.
   Lemma plainly_into_absorbingly P : ■ P ⊢ <absorb> P.

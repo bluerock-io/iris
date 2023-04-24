@@ -282,8 +282,8 @@ Global Instance from_pure_pure_sep_true a1 a2 (φ1 φ2 : Prop) P1 P2 :
   FromPure (if a1 then a2 else false) (P1 ∗ P2) (φ1 ∧ φ2).
 Proof.
   rewrite /FromPure=> <- <-. destruct a1; simpl.
-  - by rewrite pure_and -persistent_and_affinely_sep_l affinely_if_and_r.
-  - by rewrite pure_and -affinely_affinely_if -persistent_and_affinely_sep_r_1.
+  - by rewrite pure_and -and_affinely_sep_l affinely_if_and_r.
+  - by rewrite pure_and -affinely_affinely_if -and_affinely_sep_r_1.
 Qed.
 Global Instance from_pure_pure_wand a (φ1 φ2 : Prop) P1 P2 :
   IntoPure P1 φ1 → FromPure a P2 φ2 →
@@ -293,7 +293,7 @@ Proof.
   rewrite /FromPure /IntoPure=> HP1 <- Ha /=. apply wand_intro_l.
   destruct a; simpl.
   - destruct Ha as [Ha|?]; first inversion Ha.
-    rewrite -persistent_and_affinely_sep_r -(affine_affinely P1) HP1.
+    rewrite -and_affinely_sep_r -(affine_affinely P1) HP1.
     by rewrite affinely_and_l pure_impl_1 impl_elim_r.
   - by rewrite HP1 sep_and pure_impl_1 impl_elim_r.
 Qed.
@@ -318,7 +318,7 @@ Global Instance from_pure_absorbingly a P φ :
   FromPure a P φ → FromPure false (<absorb> P) φ.
 Proof.
   rewrite /FromPure=> <- /=. rewrite -affinely_affinely_if.
-  by rewrite -persistent_absorbingly_affinely_2.
+  by rewrite -absorbingly_affinely_2.
 Qed.
 
 Global Instance from_pure_big_sepL {A}
@@ -449,7 +449,7 @@ Proof.
   rewrite /MakeAffinely /IntoWand /FromAssumption /= => ? Hpers <- ->.
   apply wand_intro_l. destruct Hpers.
   - rewrite impl_wand_1 affinely_elim wand_elim_r //.
-  - rewrite persistent_impl_wand_affinely wand_elim_r //.
+  - rewrite impl_wand_affinely wand_elim_r //.
 Qed.
 Global Instance into_wand_impl_false_true P Q P' :
   Absorbing P' →
@@ -458,7 +458,7 @@ Global Instance into_wand_impl_false_true P Q P' :
 Proof.
   rewrite /IntoWand /FromAssumption /= => ? HP. apply wand_intro_l.
   rewrite -(persistently_elim P').
-  rewrite persistent_impl_wand_affinely.
+  rewrite impl_wand_affinely.
   rewrite -(intuitionistically_idemp P) HP.
   apply wand_elim_r.
 Qed.
@@ -503,7 +503,7 @@ Global Instance into_wand_forall_prop_false p (φ : Prop) Pφ P :
 Proof.
   rewrite /MakeAffinely /IntoWand=> <-.
   rewrite (intuitionistically_if_elim p) /=.
-  by rewrite -pure_impl_forall -persistent_impl_wand_affinely.
+  by rewrite -pure_impl_forall -impl_wand_affinely.
 Qed.
 
 Global Instance into_wand_forall {A} p q (Φ : A → PROP) P Q x :
@@ -573,14 +573,14 @@ Global Instance from_and_sep_persistent_l P1 P1' P2 :
   Persistent P1 → IntoAbsorbingly P1' P1 → FromAnd (P1 ∗ P2) P1' P2 | 9.
 Proof.
   rewrite /IntoAbsorbingly /FromAnd=> ? ->.
-  rewrite persistent_and_affinely_sep_l_1 {1}(persistent_persistently_2 P1).
+  rewrite and_affinely_sep_l_1 {1}(persistent_persistently_2 P1).
   by rewrite absorbingly_elim_persistently -{2}(intuitionistically_elim P1).
 Qed.
 Global Instance from_and_sep_persistent_r P1 P2 P2' :
   Persistent P2 → IntoAbsorbingly P2' P2 → FromAnd (P1 ∗ P2) P1 P2' | 10.
 Proof.
   rewrite /IntoAbsorbingly /FromAnd=> ? ->.
-  rewrite persistent_and_affinely_sep_r_1 {1}(persistent_persistently_2 P2).
+  rewrite and_affinely_sep_r_1 {1}(persistent_persistently_2 P2).
   by rewrite absorbingly_elim_persistently -{2}(intuitionistically_elim P2).
 Qed.
 
@@ -600,13 +600,13 @@ Global Instance from_and_big_sepL_cons_persistent {A} (Φ : nat → A → PROP) 
   IsCons l x l' →
   Persistent (Φ 0 x) →
   FromAnd ([∗ list] k ↦ y ∈ l, Φ k y) (Φ 0 x) ([∗ list] k ↦ y ∈ l', Φ (S k) y).
-Proof. rewrite /IsCons=> -> ?. by rewrite /FromAnd big_sepL_cons persistent_and_sep_1. Qed.
+Proof. rewrite /IsCons=> -> ?. by rewrite /FromAnd big_sepL_cons and_sep_1. Qed.
 Global Instance from_and_big_sepL_app_persistent {A} (Φ : nat → A → PROP) l l1 l2 :
   IsApp l l1 l2 →
   (∀ k y, Persistent (Φ k y)) →
   FromAnd ([∗ list] k ↦ y ∈ l, Φ k y)
     ([∗ list] k ↦ y ∈ l1, Φ k y) ([∗ list] k ↦ y ∈ l2, Φ (length l1 + k) y).
-Proof. rewrite /IsApp=> -> ?. by rewrite /FromAnd big_sepL_app persistent_and_sep_1. Qed.
+Proof. rewrite /IsApp=> -> ?. by rewrite /FromAnd big_sepL_app and_sep_1. Qed.
 
 Global Instance from_and_big_sepL2_cons_persistent {A B}
     (Φ : nat → A → B → PROP) l1 x1 l1' l2 x2 l2' :
@@ -616,7 +616,7 @@ Global Instance from_and_big_sepL2_cons_persistent {A B}
     (Φ 0 x1 x2) ([∗ list] k ↦ y1;y2 ∈ l1';l2', Φ (S k) y1 y2).
 Proof.
   rewrite /IsCons=> -> -> ?.
-  by rewrite /FromAnd big_sepL2_cons persistent_and_sep_1.
+  by rewrite /FromAnd big_sepL2_cons and_sep_1.
 Qed.
 Global Instance from_and_big_sepL2_app_persistent {A B}
     (Φ : nat → A → B → PROP) l1 l1' l1'' l2 l2' l2'' :
@@ -626,7 +626,7 @@ Global Instance from_and_big_sepL2_app_persistent {A B}
     ([∗ list] k ↦ y1;y2 ∈ l1';l2', Φ k y1 y2)
     ([∗ list] k ↦ y1;y2 ∈ l1'';l2'', Φ (length l1' + k) y1 y2).
 Proof.
-  rewrite /IsApp=> -> -> ?. rewrite /FromAnd persistent_and_sep_1.
+  rewrite /IsApp=> -> -> ?. rewrite /FromAnd and_sep_1.
   apply wand_elim_l', big_sepL2_app.
 Qed.
 
@@ -634,7 +634,7 @@ Global Instance from_and_big_sepMS_disj_union_persistent
     `{Countable A} (Φ : A → PROP) X1 X2 :
   (∀ y, Persistent (Φ y)) →
   FromAnd ([∗ mset] y ∈ X1 ⊎ X2, Φ y) ([∗ mset] y ∈ X1, Φ y) ([∗ mset] y ∈ X2, Φ y).
-Proof. intros. by rewrite /FromAnd big_sepMS_disj_union persistent_and_sep_1. Qed.
+Proof. intros. by rewrite /FromAnd big_sepMS_disj_union and_sep_1. Qed.
 
 (** FromSep *)
 Global Instance from_sep_sep P1 P2 : FromSep (P1 ∗ P2) P1 P2 | 100.
@@ -804,20 +804,20 @@ Global Instance into_sep_and_persistent_l P P' Q Q' :
 Proof.
   destruct 2 as [P Q Q'|P Q]; rewrite /IntoSep.
   - rewrite -(from_affinely Q' Q) -(affine_affinely P) affinely_and_lr.
-    by rewrite persistent_and_affinely_sep_l_1.
-  - by rewrite persistent_and_affinely_sep_l_1.
+    by rewrite and_affinely_sep_l_1.
+  - by rewrite and_affinely_sep_l_1.
 Qed.
 Global Instance into_sep_and_persistent_r P P' Q Q' :
   Persistent Q → AndIntoSep Q Q' P P' → IntoSep (P ∧ Q) P' Q'.
 Proof.
   destruct 2 as [Q P P'|Q P]; rewrite /IntoSep.
   - rewrite -(from_affinely P' P) -(affine_affinely Q) -affinely_and_lr.
-    by rewrite persistent_and_affinely_sep_r_1.
-  - by rewrite persistent_and_affinely_sep_r_1.
+    by rewrite and_affinely_sep_r_1.
+  - by rewrite and_affinely_sep_r_1.
 Qed.
 
 Global Instance into_sep_pure φ ψ : @IntoSep PROP ⌜φ ∧ ψ⌝ ⌜φ⌝ ⌜ψ⌝.
-Proof. by rewrite /IntoSep pure_and persistent_and_sep_1. Qed.
+Proof. by rewrite /IntoSep pure_and and_sep_1. Qed.
 
 Global Instance into_sep_affinely `{!BiPositive PROP} P Q1 Q2 :
   IntoSep P Q1 Q2 → IntoSep (<affine> P) (<affine> Q1) (<affine> Q2) | 0.
@@ -842,7 +842,7 @@ Global Instance into_sep_persistently_affine P Q1 Q2 :
   IntoSep (<pers> P) (<pers> Q1) (<pers> Q2).
 Proof.
   rewrite /IntoSep /= => -> ??.
-  by rewrite sep_and persistently_and persistently_and_sep_l_1.
+  by rewrite sep_and persistently_and and_sep_l_1.
 Qed.
 Global Instance into_sep_intuitionistically_affine P Q1 Q2 :
   IntoSep P Q1 Q2 →
@@ -1065,7 +1065,7 @@ Global Instance from_forall_wand_pure P Q φ :
   FromForall (P -∗ Q) (λ _ : φ, Q)%I (to_ident_name H).
 Proof.
   intros (φ'&->&?) [|]; rewrite /FromForall; apply wand_intro_r.
-  - rewrite -(affine_affinely P) (into_pure P) -persistent_and_affinely_sep_r.
+  - rewrite -(affine_affinely P) (into_pure P) -and_affinely_sep_r.
     apply pure_elim_r=>?. by rewrite forall_elim.
   - by rewrite (into_pure P) -pure_wand_forall wand_elim_l.
 Qed.

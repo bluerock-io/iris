@@ -43,7 +43,7 @@ Section class_instances.
     FromAnd (uPred_ownM a) (uPred_ownM b1) (uPred_ownM b2).
   Proof.
     intros ? H. rewrite /FromAnd (is_op a) ownM_op.
-    destruct H; by rewrite bi.persistent_and_sep.
+    destruct H; by rewrite bi.and_sep.
   Qed.
 
   Global Instance into_and_ownM p (a b1 b2 : M) :
