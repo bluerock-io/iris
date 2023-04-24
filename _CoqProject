@@ -58,6 +58,7 @@ iris/algebra/lib/ufrac_auth.v
 iris/algebra/lib/dfrac_agree.v
 iris/algebra/lib/gmap_view.v
 iris/algebra/lib/mono_nat.v
+iris/algebra/lib/mono_Z.v
 iris/algebra/lib/mono_list.v
 iris/algebra/lib/gset_bij.v
 iris/si_logic/siprop.v

@@ -30,6 +30,7 @@ Coq 8.13 is no longer supported.
   - If you need to deal with a `dist_later`/`dist_later_fin` in a manual proof,
     use the tactic `dist_later_intro`/`dist_later_fin_intro` to introduce it.
   (by Michael Sammler, Lennard Gäher, and Simon Spies).
+* Add `max_Z` and `mono_Z` cameras.
 
 **Changes in `bi`:**
 
