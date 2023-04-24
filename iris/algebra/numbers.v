@@ -233,3 +233,61 @@ Section Z.
   Global Instance Z_is_op (n1 n2 : Z) : IsOp (n1 + n2) n1 n2.
   Proof. done. Qed.
 End Z.
+
+(** ** Integers (positive and negative) with [Z.max] as the operation. *)
+Record max_Z := MaxZ { max_Z_car : Z }.
+Add Printing Constructor max_Z.
+
+Canonical Structure max_ZO := leibnizO max_Z.
+
+Section max_Z.
+  Local Open Scope Z_scope.
+
+  Local Instance max_Z_unit_instance : Unit max_Z := MaxZ 0.
+  Local Instance max_Z_valid_instance : Valid max_Z := λ x, True.
+  Local Instance max_Z_validN_instance : ValidN max_Z := λ n x, True.
+  Local Instance max_Z_pcore_instance : PCore max_Z := Some.
+  Local Instance max_Z_op_instance : Op max_Z := λ n m,
+    MaxZ (max_Z_car n `max` max_Z_car m).
+  Definition max_Z_op x y : MaxZ x ⋅ MaxZ y = MaxZ (x `max` y) := eq_refl.
+
+  Lemma max_Z_included x y : x ≼ y ↔ max_Z_car x ≤ max_Z_car y.
+  Proof.
+    split.
+    - intros [z ->]. simpl. lia.
+    - exists y. rewrite /op /max_Z_op_instance. rewrite Z.max_r; last lia.
+      by destruct y.
+  Qed.
+  Lemma max_Z_ra_mixin : RAMixin max_Z.
+  Proof.
+    apply ra_total_mixin; apply _ || eauto.
+    - intros [x] [y] [z]. repeat rewrite max_Z_op. by rewrite Z.max_assoc.
+    - intros [x] [y]. by rewrite max_Z_op Z.max_comm.
+    - intros [x]. by rewrite max_Z_op Z.max_id.
+  Qed.
+  Canonical Structure max_ZR : cmra := discreteR max_Z max_Z_ra_mixin.
+
+  Global Instance max_Z_cmra_total : CmraTotal max_ZR.
+  Proof. intros x. eauto. Qed.
+
+  Global Instance max_Z_cmra_discrete : CmraDiscrete max_ZR.
+  Proof. apply discrete_cmra_discrete. Qed.
+
+  Global Instance max_Z_core_id (x : max_Z) : CoreId x.
+  Proof. by constructor. Qed.
+
+  Lemma max_Z_local_update (x y x' : max_Z) :
+    max_Z_car x ≤ max_Z_car x' → (x,y) ~l~> (x',x').
+  Proof.
+    move: x y x' => [x] [y] [y'] /= ?.
+    rewrite local_update_discrete=> [[[z]|]] //= _ [?].
+    split; first done. rewrite max_Z_op. f_equal. lia.
+  Qed.
+
+  Global Instance : IdemP (=@{max_Z}) (⋅).
+  Proof. intros [x]. rewrite max_Z_op. apply f_equal. lia. Qed.
+
+  Global Instance max_Z_is_op (x y : nat) :
+    IsOp (MaxZ (x `max` y)) (MaxZ x) (MaxZ y).
+  Proof. done. Qed.
+End max_Z.

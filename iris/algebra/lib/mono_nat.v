@@ -11,8 +11,8 @@ Definition mono_natUR := authUR max_natUR.
 
 (** [mono_nat_auth] is the authoritative element. The definition includes the
 fragment at the same value so that lemma [mono_nat_included], which states that
-[mono_nat_lb n ≼ mono_nat_auth dq n], does not require a frame-preserving
-update. *)
+[mono_nat_lb n ≼ mono_nat_auth dq n], holds. Without this trick, a
+frame-preserving update lemma would be required instead. *)
 Definition mono_nat_auth (dq : dfrac) (n : nat) : mono_nat :=
   ●{dq} MaxNat n ⋅ ◯ MaxNat n.
 Definition mono_nat_lb (n : nat) : mono_nat := ◯ MaxNat n.
