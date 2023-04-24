@@ -2212,6 +2212,15 @@ Section map2.
       naive_solver.
   Qed.
 
+  Lemma big_sepM2_fst_snd Φ m :
+    ([∗ map] k↦y1;y2 ∈ fst <$> m; snd <$> m, Φ k y1 y2) ⊣⊢
+    [∗ map] k ↦ xy ∈ m, Φ k (xy.1) (xy.2).
+  Proof.
+    rewrite big_sepM2_alt.
+    setoid_rewrite lookup_fmap. setoid_rewrite fmap_is_Some.
+    by rewrite pure_True // True_and map_zip_fst_snd.
+  Qed.
+
   Lemma big_sepM2_fmap {A' B'} (f : A → A') (g : B → B') (Φ : K → A' → B' → PROP) m1 m2 :
     ([∗ map] k↦y1;y2 ∈ f <$> m1; g <$> m2, Φ k y1 y2)
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k (f y1) (g y2)).
