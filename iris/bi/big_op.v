@@ -469,6 +469,14 @@ Section sep_list2.
     ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2) -∗ ⌜ length l1 = length l2 ⌝.
   Proof. by rewrite big_sepL2_alt and_elim_l. Qed.
 
+  Lemma big_sepL2_fst_snd Φ l :
+    ([∗ list] k↦y1;y2 ∈ l.*1; l.*2, Φ k y1 y2) ⊣⊢
+    [∗ list] k ↦ xy ∈ l, Φ k (xy.1) (xy.2).
+  Proof.
+    rewrite big_sepL2_alt !fmap_length.
+    by rewrite pure_True // True_and zip_fst_snd.
+  Qed.
+
   Lemma big_sepL2_app Φ l1 l2 l1' l2' :
     ([∗ list] k↦y1;y2 ∈ l1; l1', Φ k y1 y2) -∗
     ([∗ list] k↦y1;y2 ∈ l2; l2', Φ (length l1 + k) y1 y2) -∗
@@ -1598,6 +1606,15 @@ Section sep_map.
   Lemma big_sepM_laterN_2 Φ n m :
     ([∗ map] k↦x ∈ m, ▷^n Φ k x) ⊢ ▷^n [∗ map] k↦x ∈ m, Φ k x.
   Proof. by rewrite big_opM_commute. Qed.
+
+  Lemma big_sepM_map_to_list Φ m :
+    ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ [∗ list] xk ∈ map_to_list m, Φ (xk.1) (xk.2).
+  Proof. apply big_opM_map_to_list. Qed.
+  Lemma big_sepM_list_to_map Φ l :
+    NoDup l.*1 →
+    ([∗ map] k↦x ∈ list_to_map l, Φ k x) ⊣⊢ [∗ list] xk ∈ l, Φ (xk.1) (xk.2).
+  Proof. apply big_opM_list_to_map. Qed.
+
 End sep_map.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
@@ -2193,6 +2210,15 @@ Section map2.
       apply and_mono=>//. apply pure_mono=>_ k.
       rewrite !lookup_insert_is_Some' !lookup_empty -!not_eq_None_Some.
       naive_solver.
+  Qed.
+
+  Lemma big_sepM2_fst_snd Φ m :
+    ([∗ map] k↦y1;y2 ∈ fst <$> m; snd <$> m, Φ k y1 y2) ⊣⊢
+    [∗ map] k ↦ xy ∈ m, Φ k (xy.1) (xy.2).
+  Proof.
+    rewrite big_sepM2_alt.
+    setoid_rewrite lookup_fmap. setoid_rewrite fmap_is_Some.
+    by rewrite pure_True // True_and map_zip_fst_snd.
   Qed.
 
   Lemma big_sepM2_fmap {A' B'} (f : A → A') (g : B → B') (Φ : K → A' → B' → PROP) m1 m2 :

@@ -357,6 +357,13 @@ Section gmap.
   Lemma big_opM_map_to_list f m :
     ([^o map] k↦x ∈ m, f k x) ≡ [^o list] xk ∈ map_to_list m, f (xk.1) (xk.2).
   Proof. rewrite big_opM_unseal. apply big_opL_proper'; [|done]. by intros ? [??]. Qed.
+  Lemma big_opM_list_to_map f l :
+    NoDup l.*1 →
+    ([^o map] k↦x ∈ list_to_map l, f k x) ≡ [^o list] xk ∈ l, f (xk.1) (xk.2).
+  Proof.
+    intros. rewrite big_opM_map_to_list.
+    by apply big_opL_permutation, map_to_list_to_map.
+  Qed.
 
   Lemma big_opM_singleton f i x : ([^o map] k↦y ∈ {[i:=x]}, f k y) ≡ f i x.
   Proof.
