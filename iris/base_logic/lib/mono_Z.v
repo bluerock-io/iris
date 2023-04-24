@@ -3,12 +3,18 @@ This is basically a [Z]-typed wrapper over [mono_nat], which can be useful when
 one wants to use [Z] consistently for everything.
 Provides an authoritative proposition [mono_Z_auth_own γ q n] for the
 underlying number [n] and a persistent proposition [mono_nat_lb_own γ m]
-witnessing that the authoritative nat is at least m.
+witnessing that the authoritative nat is at least [m].
 
 The key rules are [mono_Z_lb_own_valid], which asserts that an auth at [n] and
 a lower-bound at [m] imply that [m ≤ n], and [mono_Z_update], which allows to
 increase the auth element. At any time the auth nat can be "snapshotted" with
-[mono_Z_get_lb] to produce a persistent lower-bound proposition. *)
+[mono_Z_get_lb] to produce a persistent lower-bound proposition.
+
+Note: This construction requires the integers to be non-negative, i.e., to have
+the lower bound 0, which gives [mono_Z_lb_own_0 : |==> mono_Z_lb_own γ 0]. This
+rule would be false if we were to generalize to negative integers. See
+https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/889 for a discussion about
+the generalization to negative integers. *)
 From iris.proofmode Require Import proofmode.
 From iris.algebra.lib Require Import mono_nat.
 From iris.bi.lib Require Import fractional.
@@ -18,11 +24,14 @@ From iris.prelude Require Import options.
 
 Local Open Scope Z_scope.
 
-Notation mono_ZG := mono_natG.
-Notation mono_ZΣ := mono_natΣ.
+Class mono_ZG Σ :=
+  MonoZG { mono_ZG_natG : mono_natG Σ; }.
+Local Existing Instance mono_ZG_natG.
+Definition mono_ZΣ := mono_natΣ.
 
 Local Definition mono_Z_auth_own_def `{!mono_ZG Σ}
-    (γ : gname) (q : Qp) (n : Z) : iProp Σ := ⌜0 ≤ n⌝ ∗ mono_nat_auth_own γ q (Z.to_nat n).
+    (γ : gname) (q : Qp) (n : Z) : iProp Σ :=
+  ⌜0 ≤ n⌝ ∗ mono_nat_auth_own γ q (Z.to_nat n).
 Local Definition mono_Z_auth_own_aux : seal (@mono_Z_auth_own_def).
 Proof. by eexists. Qed.
 Definition mono_Z_auth_own := mono_Z_auth_own_aux.(unseal).
@@ -30,7 +39,7 @@ Local Definition mono_Z_auth_own_unseal :
   @mono_Z_auth_own = @mono_Z_auth_own_def := mono_Z_auth_own_aux.(seal_eq).
 Global Arguments mono_Z_auth_own {Σ _} γ q n.
 
-Local Definition mono_Z_lb_own_def `{!mono_ZG Σ} (γ : gname) (n : Z): iProp Σ :=
+Local Definition mono_Z_lb_own_def `{!mono_ZG Σ} (γ : gname) (n : Z) : iProp Σ :=
   ⌜0 ≤ n⌝ ∗ mono_nat_lb_own γ (Z.to_nat n).
 Local Definition mono_Z_lb_own_aux : seal (@mono_Z_lb_own_def). Proof. by eexists. Qed.
 Definition mono_Z_lb_own := mono_Z_lb_own_aux.(unseal).
@@ -124,9 +133,7 @@ Section mono_Z.
     iIntros (?) "Hauth".
     iAssert (mono_Z_auth_own γ 1 n') with "[> Hauth]" as "Hauth".
     { unseal. iDestruct "Hauth" as "[% Hauth]".
-      iMod (mono_nat_own_update with "Hauth") as "[$ _]".
-      2:iPureIntro.
-      all:lia. }
+      iMod (mono_nat_own_update with "Hauth") as "[$ _]"; auto with lia. }
     iModIntro. iSplit; [done|]. by iApply mono_Z_lb_own_get.
   Qed.
 End mono_Z.
