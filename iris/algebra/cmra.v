@@ -106,6 +106,8 @@ Global Hint Extern 0 (ValidN _) => refine (cmra_validN _); shelve : typeclass_in
 Coercion cmra_ofeO (A : cmra) : ofe := Ofe A (cmra_ofe_mixin A).
 Canonical Structure cmra_ofeO.
 
+Global Strategy expand [cmra_ofeO cmra_equiv cmra_dist cmra_pcore cmra_op cmra_valid cmra_validN cmra_ofe_mixin cmra_mixin].
+
 Definition cmra_mixin_of' A {Ac : cmra} (f : Ac → A) : CmraMixin Ac := cmra_mixin Ac.
 Notation cmra_mixin_of A :=
   ltac:(let H := eval hnf in (cmra_mixin_of' A id) in exact H) (only parsing).
