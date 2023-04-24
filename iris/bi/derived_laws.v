@@ -528,99 +528,6 @@ Lemma wandM_sound (mP : option PROP) Q :
   (mP -∗? Q) ⊣⊢ (default emp mP -∗ Q).
 Proof. destruct mP; simpl; first done. rewrite emp_wand //. Qed.
 
-(* Pure stuff *)
-Lemma pure_elim φ Q R : (Q ⊢ ⌜φ⌝) → (φ → Q ⊢ R) → Q ⊢ R.
-Proof.
-  intros HQ HQR. rewrite -(idemp (∧)%I Q) {1}HQ.
-  apply impl_elim_l', pure_elim'=> ?. apply impl_intro_l.
-  rewrite and_elim_l; auto.
-Qed.
-Lemma pure_mono φ1 φ2 : (φ1 → φ2) → ⌜φ1⌝ ⊢ ⌜φ2⌝.
-Proof. auto using pure_elim', pure_intro. Qed.
-Global Instance pure_mono' : Proper (impl ==> (⊢)) (@bi_pure PROP).
-Proof. intros φ1 φ2; apply pure_mono. Qed.
-Global Instance pure_flip_mono : Proper (flip impl ==> flip (⊢)) (@bi_pure PROP).
-Proof. intros φ1 φ2; apply pure_mono. Qed.
-Lemma pure_iff φ1 φ2 : (φ1 ↔ φ2) → ⌜φ1⌝ ⊣⊢ ⌜φ2⌝.
-Proof. intros [??]; apply (anti_symm _); auto using pure_mono. Qed.
-Lemma pure_elim_l φ Q R : (φ → Q ⊢ R) → ⌜φ⌝ ∧ Q ⊢ R.
-Proof. intros; apply pure_elim with φ; eauto. Qed.
-Lemma pure_elim_r φ Q R : (φ → Q ⊢ R) → Q ∧ ⌜φ⌝ ⊢ R.
-Proof. intros; apply pure_elim with φ; eauto. Qed.
-
-Lemma pure_True (φ : Prop) : φ → ⌜φ⌝ ⊣⊢ True.
-Proof. intros; apply (anti_symm _); auto. Qed.
-Lemma pure_False (φ : Prop) : ¬φ → ⌜φ⌝ ⊣⊢ False.
-Proof. intros; apply (anti_symm _); eauto using pure_mono. Qed.
-
-Lemma pure_and φ1 φ2 : ⌜φ1 ∧ φ2⌝ ⊣⊢ ⌜φ1⌝ ∧ ⌜φ2⌝.
-Proof.
-  apply (anti_symm _).
-  - apply and_intro; apply pure_mono; tauto.
-  - eapply (pure_elim φ1); [auto|]=> ?. rewrite and_elim_r. auto using pure_mono.
-Qed.
-Lemma pure_or φ1 φ2 : ⌜φ1 ∨ φ2⌝ ⊣⊢ ⌜φ1⌝ ∨ ⌜φ2⌝.
-Proof.
-  apply (anti_symm _).
-  - eapply pure_elim=> // -[?|?]; auto using pure_mono.
-  - apply or_elim; eauto using pure_mono.
-Qed.
-Lemma pure_impl_1 φ1 φ2 : ⌜φ1 → φ2⌝ ⊢ (⌜φ1⌝ → ⌜φ2⌝).
-Proof. apply impl_intro_l. rewrite -pure_and. apply pure_mono. naive_solver. Qed.
-Lemma pure_impl_2 `{!BiPureForall PROP} φ1 φ2 : (⌜φ1⌝ → ⌜φ2⌝) ⊢ ⌜φ1 → φ2⌝.
-Proof.
-  rewrite -pure_forall_2. apply forall_intro=> ?.
-  by rewrite -(left_id True bi_and (_→_))%I (pure_True φ1) // impl_elim_r.
-Qed.
-Lemma pure_impl `{!BiPureForall PROP} φ1 φ2 : ⌜φ1 → φ2⌝ ⊣⊢ (⌜φ1⌝ → ⌜φ2⌝).
-Proof. apply (anti_symm _); auto using pure_impl_1, pure_impl_2. Qed.
-Lemma pure_forall_1 {A} (φ : A → Prop) : ⌜∀ x, φ x⌝ ⊢ ∀ x, ⌜φ x⌝.
-Proof. apply forall_intro=> x. eauto using pure_mono. Qed.
-Lemma pure_forall `{!BiPureForall PROP} {A} (φ : A → Prop) :
-  ⌜∀ x, φ x⌝ ⊣⊢ ∀ x, ⌜φ x⌝.
-Proof. apply (anti_symm _); auto using pure_forall_1, pure_forall_2. Qed.
-Lemma pure_exist {A} (φ : A → Prop) : ⌜∃ x, φ x⌝ ⊣⊢ ∃ x, ⌜φ x⌝.
-Proof.
-  apply (anti_symm _).
-  - eapply pure_elim=> // -[x ?]. rewrite -(exist_intro x); auto using pure_mono.
-  - apply exist_elim=> x. eauto using pure_mono.
-Qed.
-
-Lemma bi_pure_forall_em : (∀ φ : Prop, φ ∨ ¬φ) → BiPureForall PROP.
-Proof.
-  intros Hem A φ. destruct (Hem (∃ a, ¬φ a)) as [[a Hφ]|Hφ].
-  { rewrite (forall_elim a). by apply pure_elim'. }
-  apply pure_intro=> a. destruct (Hem (φ a)); naive_solver.
-Qed.
-
-Lemma pure_impl_forall φ P : (⌜φ⌝ → P) ⊣⊢ (∀ _ : φ, P).
-Proof.
-  apply (anti_symm _).
-  - apply forall_intro=> ?. by rewrite pure_True // left_id.
-  - apply impl_intro_l, pure_elim_l=> Hφ. by rewrite (forall_elim Hφ).
-Qed.
-Lemma pure_alt φ : ⌜φ⌝ ⊣⊢ ∃ _ : φ, True.
-Proof.
-  apply (anti_symm _).
-  - eapply pure_elim; eauto=> H. rewrite -(exist_intro H); auto.
-  - by apply exist_elim, pure_intro.
-Qed.
-Lemma pure_wand_forall φ P `{!Absorbing P} : (⌜φ⌝ -∗ P) ⊣⊢ (∀ _ : φ, P).
-Proof.
-  apply (anti_symm _).
-  - apply forall_intro=> Hφ.
-    rewrite -(pure_intro φ emp) // emp_wand //.
-  - apply wand_intro_l, wand_elim_l', pure_elim'=> Hφ.
-    apply wand_intro_l. rewrite (forall_elim Hφ) comm. by apply absorbing.
-Qed.
-Lemma decide_bi_True φ `{!Decision φ} (P : PROP) :
-  (if decide φ then P else True) ⊣⊢ (⌜φ⌝ → P).
-Proof.
-  destruct (decide _).
-  - by rewrite pure_True // True_impl.
-  - by rewrite (pure_False φ) // False_impl.
-Qed.
-
 (* Properties of the affinely modality *)
 Global Instance affinely_ne : NonExpansive (@bi_affinely PROP).
 Proof. solve_proper. Qed.
@@ -892,15 +799,106 @@ Section bi_affine.
 
   Lemma impl_wand_1 P Q : (P → Q) ⊢ P -∗ Q.
   Proof. apply wand_intro_l. by rewrite sep_and impl_elim_r. Qed.
-
-  Lemma decide_emp φ `{!Decision φ} (P : PROP) :
-    (if decide φ then P else emp) ⊣⊢ (⌜φ⌝ → P).
-  Proof.
-    destruct (decide _).
-    - by rewrite pure_True // True_impl.
-    - by rewrite pure_False // False_impl True_emp.
-  Qed.
 End bi_affine.
+
+(* Pure stuff *)
+Lemma pure_elim φ Q R : (Q ⊢ ⌜φ⌝) → (φ → Q ⊢ R) → Q ⊢ R.
+Proof.
+  intros HQ HQR. rewrite -(idemp (∧)%I Q) {1}HQ.
+  apply impl_elim_l', pure_elim'=> ?. apply impl_intro_l.
+  rewrite and_elim_l; auto.
+Qed.
+Lemma pure_mono φ1 φ2 : (φ1 → φ2) → ⌜φ1⌝ ⊢ ⌜φ2⌝.
+Proof. auto using pure_elim', pure_intro. Qed.
+Global Instance pure_mono' : Proper (impl ==> (⊢)) (@bi_pure PROP).
+Proof. intros φ1 φ2; apply pure_mono. Qed.
+Global Instance pure_flip_mono : Proper (flip impl ==> flip (⊢)) (@bi_pure PROP).
+Proof. intros φ1 φ2; apply pure_mono. Qed.
+Lemma pure_iff φ1 φ2 : (φ1 ↔ φ2) → ⌜φ1⌝ ⊣⊢ ⌜φ2⌝.
+Proof. intros [??]; apply (anti_symm _); auto using pure_mono. Qed.
+Lemma pure_elim_l φ Q R : (φ → Q ⊢ R) → ⌜φ⌝ ∧ Q ⊢ R.
+Proof. intros; apply pure_elim with φ; eauto. Qed.
+Lemma pure_elim_r φ Q R : (φ → Q ⊢ R) → Q ∧ ⌜φ⌝ ⊢ R.
+Proof. intros; apply pure_elim with φ; eauto. Qed.
+
+Lemma pure_True (φ : Prop) : φ → ⌜φ⌝ ⊣⊢ True.
+Proof. intros; apply (anti_symm _); auto. Qed.
+Lemma pure_False (φ : Prop) : ¬φ → ⌜φ⌝ ⊣⊢ False.
+Proof. intros; apply (anti_symm _); eauto using pure_mono. Qed.
+
+Lemma pure_and φ1 φ2 : ⌜φ1 ∧ φ2⌝ ⊣⊢ ⌜φ1⌝ ∧ ⌜φ2⌝.
+Proof.
+  apply (anti_symm _).
+  - apply and_intro; apply pure_mono; tauto.
+  - eapply (pure_elim φ1); [auto|]=> ?. rewrite and_elim_r. auto using pure_mono.
+Qed.
+Lemma pure_or φ1 φ2 : ⌜φ1 ∨ φ2⌝ ⊣⊢ ⌜φ1⌝ ∨ ⌜φ2⌝.
+Proof.
+  apply (anti_symm _).
+  - eapply pure_elim=> // -[?|?]; auto using pure_mono.
+  - apply or_elim; eauto using pure_mono.
+Qed.
+Lemma pure_impl_1 φ1 φ2 : ⌜φ1 → φ2⌝ ⊢ (⌜φ1⌝ → ⌜φ2⌝).
+Proof. apply impl_intro_l. rewrite -pure_and. apply pure_mono. naive_solver. Qed.
+Lemma pure_impl_2 `{!BiPureForall PROP} φ1 φ2 : (⌜φ1⌝ → ⌜φ2⌝) ⊢ ⌜φ1 → φ2⌝.
+Proof.
+  rewrite -pure_forall_2. apply forall_intro=> ?.
+  by rewrite -(left_id True bi_and (_→_))%I (pure_True φ1) // impl_elim_r.
+Qed.
+Lemma pure_impl `{!BiPureForall PROP} φ1 φ2 : ⌜φ1 → φ2⌝ ⊣⊢ (⌜φ1⌝ → ⌜φ2⌝).
+Proof. apply (anti_symm _); auto using pure_impl_1, pure_impl_2. Qed.
+Lemma pure_forall_1 {A} (φ : A → Prop) : ⌜∀ x, φ x⌝ ⊢ ∀ x, ⌜φ x⌝.
+Proof. apply forall_intro=> x. eauto using pure_mono. Qed.
+Lemma pure_forall `{!BiPureForall PROP} {A} (φ : A → Prop) :
+  ⌜∀ x, φ x⌝ ⊣⊢ ∀ x, ⌜φ x⌝.
+Proof. apply (anti_symm _); auto using pure_forall_1, pure_forall_2. Qed.
+Lemma pure_exist {A} (φ : A → Prop) : ⌜∃ x, φ x⌝ ⊣⊢ ∃ x, ⌜φ x⌝.
+Proof.
+  apply (anti_symm _).
+  - eapply pure_elim=> // -[x ?]. rewrite -(exist_intro x); auto using pure_mono.
+  - apply exist_elim=> x. eauto using pure_mono.
+Qed.
+
+Lemma bi_pure_forall_em : (∀ φ : Prop, φ ∨ ¬φ) → BiPureForall PROP.
+Proof.
+  intros Hem A φ. destruct (Hem (∃ a, ¬φ a)) as [[a Hφ]|Hφ].
+  { rewrite (forall_elim a). by apply pure_elim'. }
+  apply pure_intro=> a. destruct (Hem (φ a)); naive_solver.
+Qed.
+
+Lemma pure_impl_forall φ P : (⌜φ⌝ → P) ⊣⊢ (∀ _ : φ, P).
+Proof.
+  apply (anti_symm _).
+  - apply forall_intro=> ?. by rewrite pure_True // left_id.
+  - apply impl_intro_l, pure_elim_l=> Hφ. by rewrite (forall_elim Hφ).
+Qed.
+Lemma pure_alt φ : ⌜φ⌝ ⊣⊢ ∃ _ : φ, True.
+Proof.
+  apply (anti_symm _).
+  - eapply pure_elim; eauto=> H. rewrite -(exist_intro H); auto.
+  - by apply exist_elim, pure_intro.
+Qed.
+Lemma pure_wand_forall φ P `{!Absorbing P} : (⌜φ⌝ -∗ P) ⊣⊢ (∀ _ : φ, P).
+Proof.
+  apply (anti_symm _).
+  - apply forall_intro=> Hφ.
+    rewrite -(pure_intro φ emp) // emp_wand //.
+  - apply wand_intro_l, wand_elim_l', pure_elim'=> Hφ.
+    apply wand_intro_l. rewrite (forall_elim Hφ) comm. by apply absorbing.
+Qed.
+Lemma decide_bi_True φ `{!Decision φ} (P : PROP) :
+  (if decide φ then P else True) ⊣⊢ (⌜φ⌝ → P).
+Proof.
+  destruct (decide _).
+  - by rewrite pure_True // True_impl.
+  - by rewrite (pure_False φ) // False_impl.
+Qed.
+
+Lemma decide_emp `{!BiAffine PROP} φ `{!Decision φ} (P : PROP) :
+  (if decide φ then P else emp) ⊣⊢ (⌜φ⌝ → P).
+Proof.
+  rewrite -decide_bi_True. destruct (decide _); [done|]. by rewrite True_emp.
+Qed.
 
 (* Properties of the persistence modality *)
 Local Hint Resolve persistently_mono : core.
