@@ -474,8 +474,7 @@ Section sep_list2.
     [∗ list] k ↦ xy ∈ l, Φ k (xy.1) (xy.2).
   Proof.
     rewrite big_sepL2_alt !fmap_length.
-    assert (Hr: length l = length l ↔ True). { done. }
-    by rewrite Hr True_and zip_fst_snd.
+    by rewrite pure_True // True_and zip_fst_snd.
   Qed.
 
   Lemma big_sepL2_app Φ l1 l2 l1' l2' :
