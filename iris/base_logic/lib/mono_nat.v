@@ -1,7 +1,7 @@
 (** Ghost state for a monotonically increasing nat, wrapping the [mono_natR]
 RA. Provides an authoritative proposition [mono_nat_auth_own γ q n] for the
 underlying number [n] and a persistent proposition [mono_nat_lb_own γ m]
-witnessing that the authoritative nat is at least m.
+witnessing that the authoritative nat is at least [m].
 
 The key rules are [mono_nat_lb_own_valid], which asserts that an auth at [n] and
 a lower-bound at [m] imply that [m ≤ n], and [mono_nat_update], which allows to
