@@ -57,7 +57,7 @@ Global Instance into_sep_plainly `{!BiPositive PROP} P Q1 Q2 :
 Proof. rewrite /IntoSep /= => ->. by rewrite plainly_sep. Qed.
 Global Instance into_sep_plainly_affine P Q1 Q2 :
   IntoSep P Q1 Q2 →
-  TCOr (Affine Q1) (Absorbing Q2) → TCOr (Absorbing Q1) (Affine Q2) →
+  TCOr (Affine Q1) (Absorbing Q2) → TCOr (Affine Q2) (Absorbing Q1) →
   IntoSep (■ P) (■ Q1) (■ Q2).
 Proof.
   rewrite /IntoSep /= => -> ??. by rewrite sep_and plainly_and plainly_and_sep_l_1.

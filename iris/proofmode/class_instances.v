@@ -640,7 +640,7 @@ Proof. intros. by rewrite /FromAnd big_sepMS_disj_union persistent_and_sep_1. Qe
 Global Instance from_sep_sep P1 P2 : FromSep (P1 ∗ P2) P1 P2 | 100.
 Proof. by rewrite /FromSep. Qed.
 Global Instance from_sep_and P1 P2 :
-  TCOr (Affine P1) (Absorbing P2) → TCOr (Absorbing P1) (Affine P2) →
+  TCOr (Affine P1) (Absorbing P2) → TCOr (Affine P2) (Absorbing P1) →
   FromSep (P1 ∧ P2) P1 P2 | 101.
 Proof. intros. by rewrite /FromSep sep_and. Qed.
 
@@ -758,7 +758,7 @@ Proof.
     -and_sep_intuitionistically intuitionistically_and //.
 Qed.
 Global Instance into_and_sep_affine p P Q :
-  TCOr (Affine P) (Absorbing Q) → TCOr (Absorbing P) (Affine Q) →
+  TCOr (Affine P) (Absorbing Q) → TCOr (Affine Q) (Absorbing P) →
   IntoAnd p (P ∗ Q) P Q.
 Proof. intros. by rewrite /IntoAnd /= sep_and. Qed.
 
@@ -838,7 +838,7 @@ Global Instance into_sep_persistently `{!BiPositive PROP} P Q1 Q2 :
 Proof. rewrite /IntoSep /= => ->. by rewrite persistently_sep. Qed.
 Global Instance into_sep_persistently_affine P Q1 Q2 :
   IntoSep P Q1 Q2 →
-  TCOr (Affine Q1) (Absorbing Q2) → TCOr (Absorbing Q1) (Affine Q2) →
+  TCOr (Affine Q1) (Absorbing Q2) → TCOr (Affine Q2) (Absorbing Q1) →
   IntoSep (<pers> P) (<pers> Q1) (<pers> Q2).
 Proof.
   rewrite /IntoSep /= => -> ??.
@@ -846,7 +846,7 @@ Proof.
 Qed.
 Global Instance into_sep_intuitionistically_affine P Q1 Q2 :
   IntoSep P Q1 Q2 →
-  TCOr (Affine Q1) (Absorbing Q2) → TCOr (Absorbing Q1) (Affine Q2) →
+  TCOr (Affine Q1) (Absorbing Q2) → TCOr (Affine Q2) (Absorbing Q1) →
   IntoSep (□ P) (□ Q1) (□ Q2).
 Proof.
   rewrite /IntoSep /= => -> ??.
