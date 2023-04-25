@@ -743,7 +743,7 @@ Lemma sep_elim_r P Q `{TCOr (Affine P) (Absorbing Q)} : P ∗ Q ⊢ Q.
 Proof. by rewrite comm sep_elim_l. Qed.
 
 Lemma sep_and P Q :
-  TCOr (Affine P) (Absorbing Q) → TCOr (Absorbing P) (Affine Q) →
+  TCOr (Affine P) (Absorbing Q) → TCOr (Affine Q) (Absorbing P) →
   P ∗ Q ⊢ P ∧ Q.
 Proof.
   intros [?|?] [?|?];
