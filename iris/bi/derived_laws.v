@@ -951,8 +951,11 @@ Qed.
 
 Lemma persistently_True_emp : <pers> True ⊣⊢ <pers> emp.
 Proof. apply (anti_symm _); auto using persistently_emp_intro. Qed.
-Lemma persistently_True : True ⊢ <pers> True.
-Proof. rewrite persistently_True_emp. apply persistently_emp_intro. Qed.
+Lemma persistently_True : <pers> True ⊣⊢ True.
+Proof.
+  apply (anti_symm _); auto.
+  rewrite persistently_True_emp. apply persistently_emp_intro.
+Qed.
 
 Lemma persistently_and_emp P : <pers> P ⊣⊢ <pers> (emp ∧ P).
 Proof.
@@ -1005,7 +1008,7 @@ Lemma persistently_pure φ : <pers> ⌜φ⌝ ⊣⊢ ⌜φ⌝.
 Proof.
   apply (anti_symm _).
   { by rewrite persistently_into_absorbingly absorbingly_pure. }
-  apply pure_elim'=> Hφ. rewrite persistently_True.
+  apply pure_elim'=> Hφ. rewrite -persistently_True.
   auto using persistently_mono, pure_intro.
 Qed.
 

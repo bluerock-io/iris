@@ -657,13 +657,13 @@ once support for Coq < 8.15 is dropped *)
 
 Global Instance combine_seps_as_gives_nil : @CombineSepsAsGives PROP [] emp True.
 Proof.
-  split; first done. rewrite -persistently_True.
+  split; first done. rewrite persistently_True.
   by apply pure_intro.
 Qed.
 Global Instance combine_seps_as_gives_singleton P :
   CombineSepsAsGives [P] P True | 1.
 Proof.
-  split; first by rewrite /= right_id. rewrite -persistently_True.
+  split; first by rewrite /= right_id. rewrite persistently_True.
   by apply pure_intro.
 Qed.
 Global Instance combine_seps_gives_cons P Ps Q R Q' progress R' R'':
@@ -723,7 +723,7 @@ Global Instance combine_seps_as_from_as_gives Ps Q R :
   CombineSepsAs Ps Q.
 Proof.
   move => HPsQ. apply HPsQ. move => P P'. rewrite /CombineSepGives.
-  rewrite -persistently_True. by apply pure_intro.
+  rewrite persistently_True. by apply pure_intro.
 Qed.
 
 Lemma tac_combine_as Δ1 Δ2 Δ3 js p Ps j P Q :
