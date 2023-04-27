@@ -398,7 +398,8 @@ Proof.
   rewrite /of_envs'. f_equiv.
   rewrite -persistent_and_affinely_sep_l. f_equiv.
   clear. induction Γp as [|Γp IH ? Q]; simpl.
-  { apply (anti_symm (⊢)); last by apply True_intro. apply persistently_True. }
+  { apply (anti_symm (⊢)); last by apply True_intro.
+    by rewrite persistently_True. }
   rewrite IH persistently_and. done.
 Qed.
 Lemma of_envs_alt Δ :
