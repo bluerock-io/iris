@@ -553,6 +553,18 @@ Section instances.
     @monPred_defs.monPred_in_unseal).
   Ltac unseal := rewrite !monPred_unseal /=.
 
+  Global Instance monPred_bi_persistently_forall :
+    BiPersistentlyForall PROP → BiPersistentlyForall monPredI.
+  Proof. intros ? A φ. split=> /= i. unseal. by apply persistently_forall_2. Qed.
+
+  Global Instance monPred_bi_pure_forall :
+    BiPureForall PROP → BiPureForall monPredI.
+  Proof. intros ? A φ. split=> /= i. unseal. by apply pure_forall_2. Qed.
+
+  Global Instance monPred_bi_later_contractive :
+    BiLaterContractive PROP → BiLaterContractive monPredI.
+  Proof. intros ? n. unseal=> P Q HPQ. split=> i /=. f_contractive. apply HPQ. Qed.
+
   Global Instance monPred_bi_embed_emp : BiEmbedEmp PROP monPredI.
   Proof. split. by unseal. Qed.
 
@@ -719,16 +731,6 @@ Section bi_facts.
   Global Instance monPred_in_flip_mono : Proper ((⊑) ==> flip (⊢)) (@monPred_in I PROP).
   Proof. solve_proper. Qed.
 
-  Global Instance monPred_persistently_forall :
-    BiPersistentlyForall PROP → BiPersistentlyForall monPredI.
-  Proof. intros ? A φ. split=> /= i. unseal. by apply persistently_forall_2. Qed.
-
-  Global Instance monPred_pure_forall : BiPureForall PROP → BiPureForall monPredI.
-  Proof. intros ? A φ. split=> /= i. unseal. by apply pure_forall_2. Qed.
-
-  Global Instance monPred_later_contractive :
-    BiLaterContractive PROP → BiLaterContractive monPredI.
-  Proof. intros ? n. unseal=> P Q HPQ. split=> i /=. f_contractive. apply HPQ. Qed.
   Global Instance monPred_bi_löb : BiLöb PROP → BiLöb monPredI.
   Proof. rewrite {2}/BiLöb; unseal=> ? P HP; split=> i /=. apply löb_weak, HP. Qed.
   Global Instance monPred_bi_positive : BiPositive PROP → BiPositive monPredI.
