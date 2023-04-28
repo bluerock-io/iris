@@ -230,6 +230,15 @@ Section internal_eq_derived.
     Persistent (PROP:=PROP) (a ≡ b).
   Proof. by intros; rewrite /Persistent persistently_internal_eq. Qed.
 
+  Global Instance internal_eq_separable {A : ofe} (a b : A) :
+    Separable (PROP:=PROP) (a ≡ b).
+  Proof.
+    intros Q. rewrite absorbingly_internal_eq.
+    apply (internal_eq_rewrite' a b (λ b', <affine> (a ≡ b') ∗ Q)%I); auto.
+    rewrite and_elim_r -(equiv_internal_eq True) //.
+    by rewrite affinely_True_emp left_id.
+  Qed.
+
   (* Equality under a later. *)
   Lemma internal_eq_rewrite_contractive {A : ofe} a b (Ψ : A → PROP)
     {HΨ : Contractive Ψ} : ▷ (a ≡ b) ⊢ Ψ a → Ψ b.
