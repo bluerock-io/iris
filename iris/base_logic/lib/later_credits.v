@@ -266,7 +266,7 @@ Module le_upd.
        with the basic updates. *)
     Local Lemma bi_bupd_mixin_le_upd : BiBUpdMixin (iPropI Σ) le_upd.
     Proof.
-      split.
+      split; rewrite /bupd.
       - apply _.
       - apply le_upd_intro.
       - apply le_upd_mono.

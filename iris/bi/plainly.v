@@ -15,6 +15,8 @@ Class Plainly (PROP : Type) := plainly : PROP → PROP.
 Global Arguments plainly {PROP}%type_scope {_} _%I.
 Global Hint Mode Plainly ! : typeclass_instances.
 Global Instance: Params (@plainly) 2 := {}.
+Typeclasses Opaque plainly.
+
 Notation "■ P" := (plainly P) : bi_scope.
 
 (* Mixins allow us to create instances easily without having to use Program *)
