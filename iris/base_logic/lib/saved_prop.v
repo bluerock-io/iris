@@ -116,7 +116,8 @@ Section saved_anything.
   Qed.
   Lemma saved_anything_update_2 y γ q1 q2 x1 x2 :
     (q1 + q2 = 1)%Qp →
-    saved_anything_own γ (DfracOwn q1) x1 -∗ saved_anything_own γ (DfracOwn q2) x2 ==∗ saved_anything_own γ (DfracOwn q1) y ∗ saved_anything_own γ (DfracOwn q2) y.
+    saved_anything_own γ (DfracOwn q1) x1 -∗ saved_anything_own γ (DfracOwn q2) x2 ==∗
+    saved_anything_own γ (DfracOwn q1) y ∗ saved_anything_own γ (DfracOwn q2) y.
   Proof.
     intros Hq. rewrite -own_op. iApply own_update_2.
     apply dfrac_agree_update_2.
@@ -198,7 +199,8 @@ Section saved_prop.
   Proof. apply saved_anything_update. Qed.
   Lemma saved_prop_update_2 Q γ q1 q2 P1 P2 :
     (q1 + q2 = 1)%Qp →
-    saved_prop_own γ (DfracOwn q1) P1 -∗ saved_prop_own γ (DfracOwn q2) P2 ==∗ saved_prop_own γ (DfracOwn q1) Q ∗ saved_prop_own γ (DfracOwn q2) Q.
+    saved_prop_own γ (DfracOwn q1) P1 -∗ saved_prop_own γ (DfracOwn q2) P2 ==∗
+    saved_prop_own γ (DfracOwn q1) Q ∗ saved_prop_own γ (DfracOwn q2) Q.
   Proof. apply saved_anything_update_2. Qed.
   Lemma saved_prop_update_halves Q γ P1 P2 :
     saved_prop_own γ (DfracOwn (1/2)) P1 -∗
@@ -276,7 +278,8 @@ Section saved_pred.
   Proof. apply saved_anything_update. Qed.
   Lemma saved_pred_update_2 Ψ γ q1 q2 Φ1 Φ2 :
     (q1 + q2 = 1)%Qp →
-    saved_pred_own γ (DfracOwn q1) Φ1 -∗ saved_pred_own γ (DfracOwn q2) Φ2 ==∗ saved_pred_own γ (DfracOwn q1) Ψ ∗ saved_pred_own γ (DfracOwn q2) Ψ.
+    saved_pred_own γ (DfracOwn q1) Φ1 -∗ saved_pred_own γ (DfracOwn q2) Φ2 ==∗
+    saved_pred_own γ (DfracOwn q1) Ψ ∗ saved_pred_own γ (DfracOwn q2) Ψ.
   Proof. apply saved_anything_update_2. Qed.
   Lemma saved_pred_update_halves Ψ γ Φ1 Φ2 :
     saved_pred_own γ (DfracOwn (1/2)) Φ1 -∗
