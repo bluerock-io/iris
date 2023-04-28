@@ -125,7 +125,7 @@ Global Instance siProp_pure_forall : BiPureForall siPropI.
 Proof. exact: @pure_forall_2. Qed.
 
 Global Instance siProp_later_contractive : BiLaterContractive siPropI.
-Proof. apply later_contractive. Qed.
+Proof. exact: @later_contractive. Qed.
 
 Lemma siProp_internal_eq_mixin : BiInternalEqMixin siPropI (@siProp_internal_eq).
 Proof.

@@ -165,7 +165,7 @@ Global Instance uPred_pure_forall M : BiPureForall (uPredI M).
 Proof. exact: @pure_forall_2. Qed.
 
 Global Instance uPred_later_contractive {M} : BiLaterContractive (uPredI M).
-Proof. apply later_contractive. Qed.
+Proof. exact: @later_contractive. Qed.
 
 Global Instance uPred_persistently_impl_plainly M : BiPersistentlyImplPlainly (uPredI M).
 Proof. exact: persistently_impl_plainly. Qed.

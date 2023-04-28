@@ -728,7 +728,7 @@ Section bi_facts.
 
   Global Instance monPred_later_contractive :
     BiLaterContractive PROP → BiLaterContractive monPredI.
-  Proof. unseal=> ? n P Q HPQ. split=> i /=. f_contractive. apply HPQ. Qed.
+  Proof. intros ? n. unseal=> P Q HPQ. split=> i /=. f_contractive. apply HPQ. Qed.
   Global Instance monPred_bi_löb : BiLöb PROP → BiLöb monPredI.
   Proof. rewrite {2}/BiLöb; unseal=> ? P HP; split=> i /=. apply löb_weak, HP. Qed.
   Global Instance monPred_bi_positive : BiPositive PROP → BiPositive monPredI.

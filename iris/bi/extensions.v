@@ -25,8 +25,8 @@ Class BiLöb (PROP : bi) :=
 Global Hint Mode BiLöb ! : typeclass_instances.
 Global Arguments löb_weak {_ _} _ _.
 
-Notation BiLaterContractive PROP :=
-  (Contractive (bi_later (PROP:=PROP))) (only parsing).
+Class BiLaterContractive (PROP : bi) :=
+  later_contractive :> Contractive (bi_later (PROP:=PROP)).
 
 (** The class [BiPersistentlyForall] states that universal quantification
 commutes with the persistently modality. The reverse direction of the entailment
