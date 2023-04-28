@@ -373,7 +373,9 @@ Section plainly_derived.
   Lemma plain_persistent P : Plain P → Persistent P.
   Proof. intros. by rewrite /Persistent -plainly_elim_persistently. Qed.
 
-  Global Instance plain_separable P : Plain P → Separable P.
+  (** High cost, should only be used if no other [Separable] instances can be
+  applied *)
+  Global Instance plain_separable P : Plain P → Separable P | 100.
   Proof. intros. by apply persistent_separable, plain_persistent. Qed.
 
   Global Instance impl_persistent `{!BiPersistentlyImplPlainly PROP} P Q :
@@ -452,30 +454,40 @@ Section plainly_derived.
   Proof. apply (big_opMS_commute _). Qed.
 
   (* Plainness instances *)
+  Global Instance plainly_plain P : Plain (■ P).
+  Proof. by rewrite /Plain plainly_idemp. Qed.
+
   Global Instance pure_plain φ : Plain (PROP:=PROP) ⌜φ⌝.
   Proof. by rewrite /Plain plainly_pure. Qed.
+  Global Hint Cut [_* plain_separable pure_plain] : typeclass_instances.
   Global Instance emp_plain : Plain (PROP:=PROP) emp.
   Proof. apply plainly_emp_intro. Qed.
+  Global Hint Cut [_* plain_separable emp_plain] : typeclass_instances.
   Global Instance and_plain P Q : Plain P → Plain Q → Plain (P ∧ Q).
   Proof. intros. by rewrite /Plain plainly_and -!plain. Qed.
+  Global Hint Cut [_* plain_separable and_plain] : typeclass_instances.
   Global Instance or_plain P Q : Plain P → Plain Q → Plain (P ∨ Q).
   Proof. intros. by rewrite /Plain -plainly_or_2 -!plain. Qed.
+  Global Hint Cut [_* plain_separable or_plain] : typeclass_instances.
   Global Instance forall_plain {A} (Ψ : A → PROP) :
     (∀ x, Plain (Ψ x)) → Plain (∀ x, Ψ x).
   Proof.
     intros. rewrite /Plain plainly_forall. apply forall_mono=> x. by rewrite -plain.
   Qed.
+  (** No [Hint Cut] because [Separable] is not closed under ∀. *)
   Global Instance exist_plain {A} (Ψ : A → PROP) :
     (∀ x, Plain (Ψ x)) → Plain (∃ x, Ψ x).
   Proof.
     intros. rewrite /Plain -plainly_exist_2. apply exist_mono=> x. by rewrite -plain.
   Qed.
+  Global Hint Cut [_* plain_separable exist_plain] : typeclass_instances.
 
   Global Instance impl_plain P Q : Absorbing P → Plain P → Plain Q → Plain (P → Q).
   Proof.
     intros. by rewrite /Plain {2}(plain P) -plainly_impl_plainly -(plain Q)
                        (plainly_into_absorbingly P) absorbing.
   Qed.
+  (** No [Hint Cut] because [Separable] is not closed under [→]. *)
   Global Instance wand_plain P Q :
     Plain P → Plain Q → Absorbing Q → Plain (P -∗ Q).
   Proof.
@@ -484,24 +496,29 @@ Section plainly_derived.
       by rewrite affinely_plainly_elim.
     - apply plainly_mono, wand_intro_l. by rewrite sep_and impl_elim_r.
   Qed.
+  (** No [Hint Cut] because [Separable] is not closed under [-∗]. *)
   Global Instance sep_plain P Q : Plain P → Plain Q → Plain (P ∗ Q).
   Proof. intros. by rewrite /Plain -plainly_sep_2 -!plain. Qed.
+  Global Hint Cut [_* plain_separable sep_plain] : typeclass_instances.
 
-  Global Instance plainly_plain P : Plain (■ P).
-  Proof. by rewrite /Plain plainly_idemp. Qed.
   Global Instance persistently_plain P : Plain P → Plain (<pers> P).
   Proof.
     rewrite /Plain=> HP. rewrite {1}HP plainly_persistently_elim persistently_elim_plainly //.
   Qed.
+  Global Hint Cut [_* plain_separable persistently_plain] : typeclass_instances.
   Global Instance affinely_plain P : Plain P → Plain (<affine> P).
   Proof. rewrite /bi_affinely. apply _. Qed.
+  Global Hint Cut [_* plain_separable affinely_plain] : typeclass_instances.
   Global Instance intuitionistically_plain P : Plain P → Plain (□ P).
   Proof. rewrite /bi_intuitionistically. apply _. Qed.
+  Global Hint Cut [_* plain_separable intuitionistically_plain] : typeclass_instances.
   Global Instance absorbingly_plain P : Plain P → Plain (<absorb> P).
   Proof. rewrite /bi_absorbingly. apply _. Qed.
+  Global Hint Cut [_* plain_separable absorbingly_plain] : typeclass_instances.
   Global Instance from_option_plain {A} P (Ψ : A → PROP) (mx : option A) :
     (∀ x, Plain (Ψ x)) → Plain P → Plain (from_option Ψ P mx).
   Proof. destruct mx; apply _. Qed.
+  Global Hint Cut [_* plain_separable from_option_plain] : typeclass_instances.
 
   Global Instance big_sepL_nil_plain `{!BiAffine PROP} {A} (Φ : nat → A → PROP) :
     Plain ([∗ list] k↦x ∈ [], Φ k x).
@@ -591,6 +608,7 @@ Section plainly_derived.
     Global Instance internal_eq_plain {A : ofe} (a b : A) :
       Plain (PROP:=PROP) (a ≡ b).
     Proof. by intros; rewrite /Plain plainly_internal_eq. Qed.
+    Global Hint Cut [plain_separable internal_eq_plain] : typeclass_instances.
   End internal_eq.
 
   Section prop_ext.

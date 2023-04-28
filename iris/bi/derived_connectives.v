@@ -86,16 +86,7 @@ The class of [Separable] propositions is useful for BIs with a degenerative
 persistence modality, i.e., without [BiPersistentlyTrue : True ⊢ <pers> True],
 see https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/843. For those BIs,
 the only persistent proposition is [False], but emp/plain and friends are still
-[Separable].
-
-We do not provide instances that close [Separable] under the BI connectives, we
-only provide the following instances:
-
-- [pure_separable : Separable ⌜φ⌝]
-- [persistent_separable P : Persistent P → Separable P]
-- [plain_separable P : Plain P → Separable P], necessary because
-  [plain_persistent : Plain P → Persistent P] is not an instance, but a
-  [Hint Immediate]. *)
+[Separable]. *)
 Class Separable {PROP : bi} (P : PROP) :=
   separable Q : <absorb> P ∧ Q ⊢ <affine> P ∗ Q.
 Global Arguments Separable {_} _%I : simpl never.

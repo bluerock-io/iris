@@ -951,18 +951,21 @@ Proof.
   intros ?? Q. rewrite absorbingly_or affinely_or.
   by rewrite and_or_r sep_or_r 2!separable.
 Qed.
-Global Instance affinely_separable P : Separable P → Separable (<affine> P).
-Proof. rewrite /bi_affinely. apply _. Qed.
 Global Instance sep_separable P1 P2 :
   Separable P1 → Separable P2 → Separable (P1 ∗ P2).
 Proof.
   intros ?? Q. rewrite absorbingly_sep sep_and -assoc 2!separable assoc.
   by rewrite affinely_sep_2.
 Qed.
+Global Instance affinely_separable P : Separable P → Separable (<affine> P).
+Proof. rewrite /bi_affinely. apply _. Qed.
 Global Instance absorbingly_separable P : Separable P → Separable (<absorb> P).
 Proof.
   intros ? Q. by rewrite absorbingly_idemp separable -absorbingly_intro.
 Qed.
+Global Instance from_option_separable {A} P (Ψ : A → PROP) (mx : option A) :
+  (∀ x, Separable (Ψ x)) → Separable P → Separable (from_option Ψ P mx).
+Proof. destruct mx; apply _. Qed.
 
 (* Pure stuff *)
 Lemma pure_elim φ Q R : (Q ⊢ ⌜φ⌝) → (φ → Q ⊢ R) → Q ⊢ R.
@@ -1139,7 +1142,9 @@ Proof.
   apply persistently_and_sep_elim.
 Qed.
 
-Global Instance persistent_separable P : Persistent P → Separable P.
+(** High cost, should only be used if no other [Separable] instances can be
+applied *)
+Global Instance persistent_separable P : Persistent P → Separable P | 100.
 Proof.
   rewrite /Persistent /Separable=> HP Q.
   by rewrite {1}HP absorbingly_elim_persistently persistently_and_sep_elim_emp.
@@ -1264,39 +1269,45 @@ End persistently_affine_bi.
 (* Persistence instances *)
 Global Instance pure_persistent φ : Persistent (PROP:=PROP) ⌜φ⌝.
 Proof. by rewrite /Persistent persistently_pure. Qed.
+Global Hint Cut [_* persistent_separable pure_persistent] : typeclass_instances.
 Global Instance emp_persistent : Persistent (PROP:=PROP) emp.
 Proof. rewrite /Persistent. apply persistently_emp_intro. Qed.
+Global Hint Cut [_* persistent_separable emp_persistent] : typeclass_instances.
 Global Instance and_persistent P Q :
   Persistent P → Persistent Q → Persistent (P ∧ Q).
 Proof. intros. by rewrite /Persistent persistently_and -!persistent. Qed.
+Global Hint Cut [_* persistent_separable and_persistent] : typeclass_instances.
 Global Instance or_persistent P Q :
   Persistent P → Persistent Q → Persistent (P ∨ Q).
 Proof. intros. by rewrite /Persistent persistently_or -!persistent. Qed.
+Global Hint Cut [_* persistent_separable or_persistent] : typeclass_instances.
 Global Instance forall_persistent `{!BiPersistentlyForall PROP} {A} (Ψ : A → PROP) :
   (∀ x, Persistent (Ψ x)) → Persistent (∀ x, Ψ x).
 Proof.
   intros. rewrite /Persistent persistently_forall.
   apply forall_mono=> x. by rewrite -!persistent.
 Qed.
+(** No [Hint Cut] because [Separable] is not closed under [∀]. *)
 Global Instance exist_persistent {A} (Ψ : A → PROP) :
   (∀ x, Persistent (Ψ x)) → Persistent (∃ x, Ψ x).
 Proof.
   intros. rewrite /Persistent persistently_exist.
   apply exist_mono=> x. by rewrite -!persistent.
 Qed.
-
+Global Hint Cut [_* persistent_separable exist_persistent] : typeclass_instances.
 Global Instance sep_persistent P Q :
   Persistent P → Persistent Q → Persistent (P ∗ Q).
 Proof. intros. by rewrite /Persistent -persistently_sep_2 -!persistent. Qed.
-
 Global Instance affinely_persistent P : Persistent P → Persistent (<affine> P).
 Proof. rewrite /bi_affinely. apply _. Qed.
-
+Global Hint Cut [_* persistent_separable affinely_persistent] : typeclass_instances.
 Global Instance absorbingly_persistent P : Persistent P → Persistent (<absorb> P).
 Proof. rewrite /bi_absorbingly. apply _. Qed.
+Global Hint Cut [_* persistent_separable absorbingly_persistent] : typeclass_instances.
 Global Instance from_option_persistent {A} P (Ψ : A → PROP) (mx : option A) :
   (∀ x, Persistent (Ψ x)) → Persistent P → Persistent (from_option Ψ P mx).
 Proof. destruct mx; apply _. Qed.
+Global Hint Cut [_* persistent_separable from_option_persistent] : typeclass_instances.
 
 (* The intuitionistic modality *)
 Global Instance intuitionistically_ne : NonExpansive (@bi_intuitionistically PROP).

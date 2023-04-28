@@ -20,3 +20,72 @@ P : PROP
 
 ?p : "Persistent (■ P)"
 
+The command has indeed failed with message:
+Cannot infer this placeholder of type
+"Separable
+   (True
+    ∧ True
+      ∧ True
+        ∧ True
+          ∧ True
+            ∧ True
+              ∧ True
+                ∧ True
+                  ∧ True
+                    ∧ True
+                      ∧ True
+                        ∧ True
+                          ∧ True
+                            ∧ True
+                              ∧ True
+                                ∧ True
+                                  ∧ True
+                                    ∧ True
+                                      ∧ True
+                                        ∧ True
+                                          ∧ True
+                                            ∧ True
+                                              ∧ True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True
+                                                ∧ 
+                                                True ∧ True ∧ True ∧ ...)"
+(no type class instance found) in
+environment:
+PROP : bi
+BiPlainly0 : BiPlainly PROP
+P : PROP
