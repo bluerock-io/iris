@@ -96,7 +96,8 @@ only provide the following instances:
 - [plain_separable P : Plain P → Separable P], necessary because
   [plain_persistent : Plain P → Persistent P] is not an instance, but a
   [Hint Immediate]. *)
-Class Separable {PROP : bi} (P : PROP) := separable Q : P ∧ Q ⊢ <affine> P ∗ Q.
+Class Separable {PROP : bi} (P : PROP) :=
+  separable Q : <absorb> P ∧ Q ⊢ <affine> P ∗ Q.
 Global Arguments Separable {_} _%I : simpl never.
 Global Arguments separable {_} _%I.
 Global Hint Mode Separable + ! : typeclass_instances.

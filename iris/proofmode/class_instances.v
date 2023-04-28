@@ -449,7 +449,7 @@ Proof.
   rewrite /MakeAffinely /IntoWand /FromAssumption /= => ? Hpers <- ->.
   apply wand_intro_l. destruct Hpers.
   - rewrite impl_wand_1 affinely_elim wand_elim_r //.
-  - rewrite impl_wand_affinely wand_elim_r //.
+  - rewrite impl_affinely_wand wand_elim_r //.
 Qed.
 Global Instance into_wand_impl_false_true P Q P' :
   Absorbing P' →
@@ -458,7 +458,7 @@ Global Instance into_wand_impl_false_true P Q P' :
 Proof.
   rewrite /IntoWand /FromAssumption /= => ? HP. apply wand_intro_l.
   rewrite -(persistently_elim P').
-  rewrite impl_wand_affinely.
+  rewrite impl_affinely_wand.
   rewrite -(intuitionistically_idemp P) HP.
   apply wand_elim_r.
 Qed.
@@ -503,7 +503,7 @@ Global Instance into_wand_forall_prop_false p (φ : Prop) Pφ P :
 Proof.
   rewrite /MakeAffinely /IntoWand=> <-.
   rewrite (intuitionistically_if_elim p) /=.
-  by rewrite -pure_impl_forall -impl_wand_affinely.
+  by rewrite -pure_impl_forall -impl_affinely_wand.
 Qed.
 
 Global Instance into_wand_forall {A} p q (Φ : A → PROP) P Q x :
