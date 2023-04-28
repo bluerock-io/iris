@@ -50,6 +50,14 @@ build-coq.8.17.0:
     OPAM_PINS: "coq version 8.17.0"
     DENY_WARNINGS: "1"
 
+build-coq.8.17.0-mr:
+  <<: *template
+  <<: *only_mr
+  variables:
+    OPAM_PINS: "coq version 8.17.0"
+    DENY_WARNINGS: "1"
+    MANGLE_NAMES: "1"
+
 build-coq.8.16.1:
   <<: *template
   variables:
@@ -63,27 +71,12 @@ build-coq.8.16.1:
   - fp-timing
   interruptible: false
 
-build-coq.8.16.1-mr:
-  <<: *template
-  <<: *only_mr
-  variables:
-    OPAM_PINS: "coq version 8.16.1"
-    DENY_WARNINGS: "1"
-    MANGLE_NAMES: "1"
-
 build-coq.8.15.2:
-  <<: *template
-  variables:
-    OPAM_PINS: "coq version 8.15.2"
-    DENY_WARNINGS: "1"
-
-build-coq.8.14.1:
   <<: *template
   <<: *branches_and_mr
   variables:
-    OPAM_PINS: "coq version 8.14.1"
+    OPAM_PINS: "coq version 8.15.2"
     DENY_WARNINGS: "1"
-    OCAML: "ocaml-base-compiler.4.07.1"
 
 # Nightly job with a known-to-work Coq version
 # (so failures must be caused by std++)
