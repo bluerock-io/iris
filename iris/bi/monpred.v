@@ -553,6 +553,13 @@ Section instances.
     @monPred_defs.monPred_in_unseal).
   Ltac unseal := rewrite !monPred_unseal /=.
 
+  Global Instance monPred_bi_löb : BiLöb PROP → BiLöb monPredI.
+  Proof. rewrite {2}/BiLöb; unseal=> ? P HP; split=> i /=. apply löb_weak, HP. Qed.
+  Global Instance monPred_bi_positive : BiPositive PROP → BiPositive monPredI.
+  Proof. split => ?. rewrite /bi_affinely. unseal. apply bi_positive. Qed.
+  Global Instance monPred_bi_affine : BiAffine PROP → BiAffine monPredI.
+  Proof. split => ?. unseal. by apply affine. Qed.
+
   Global Instance monPred_bi_persistently_forall :
     BiPersistentlyForall PROP → BiPersistentlyForall monPredI.
   Proof. intros ? A φ. split=> /= i. unseal. by apply persistently_forall_2. Qed.
@@ -730,13 +737,6 @@ Section bi_facts.
   Proof. unseal. split. solve_proper. Qed.
   Global Instance monPred_in_flip_mono : Proper ((⊑) ==> flip (⊢)) (@monPred_in I PROP).
   Proof. solve_proper. Qed.
-
-  Global Instance monPred_bi_löb : BiLöb PROP → BiLöb monPredI.
-  Proof. rewrite {2}/BiLöb; unseal=> ? P HP; split=> i /=. apply löb_weak, HP. Qed.
-  Global Instance monPred_bi_positive : BiPositive PROP → BiPositive monPredI.
-  Proof. split => ?. rewrite /bi_affinely. unseal. apply bi_positive. Qed.
-  Global Instance monPred_bi_affine : BiAffine PROP → BiAffine monPredI.
-  Proof. split => ?. unseal. by apply affine. Qed.
 
   Lemma monPred_persistent P : (∀ i, Persistent (P i)) → Persistent P.
   Proof. intros HP. constructor=> i. unseal. apply HP. Qed.
