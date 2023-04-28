@@ -49,6 +49,8 @@ Coq 8.13 is no longer supported.
   `map_to_list`. (by Dorian Lesbre).
 - Make `persistently_True` a bi-entailment.
 - Make `BiLaterContractive` a class instead of a notation.
+- Make projections of `Bupd`/`Fupd`/`InternalEq`/`Plainly` operational type
+  classes `Typeclasses Opaque`.
 
 **Changes in `proofmode`:**
 
