@@ -48,6 +48,7 @@ Coq 8.13 is no longer supported.
   with list/maps of pairs; and `big_sepM <-> big_sepL` via `list_to_map` and
   `map_to_list`. (by Dorian Lesbre).
 - Make `persistently_True` a bi-entailment.
+- Make `BiLaterContractive` a class instead of a notation.
 
 **Changes in `proofmode`:**
 
