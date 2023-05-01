@@ -1,4 +1,4 @@
-(** The main proofmode file taht everyone should import.
+(** The main proofmode file that everyone should import.
 Unless you are working with the guts of the proofmode, do not import any other
 file from this folder! *)
 From iris.proofmode Require Export ltac_tactics.
