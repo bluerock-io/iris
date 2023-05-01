@@ -196,11 +196,10 @@ Section properties.
 
   Lemma replicate_valid n (x : A) : ✓ x → ✓ replicate n x.
   Proof. apply Forall_replicate. Qed.
-  Global Instance list_singletonM_ne i :
-    NonExpansive (@list_singletonM A i).
+  Global Instance list_singletonM_ne i : NonExpansive (singletonM (M:=list A) i).
   Proof. intros n l1 l2 ?. apply Forall2_app; by repeat constructor. Qed.
   Global Instance list_singletonM_proper i :
-    Proper ((≡) ==> (≡)) (list_singletonM i) := ne_proper _.
+    Proper ((≡) ==> (≡)) (singletonM (M:=list A) i) := ne_proper _.
 
   Lemma elem_of_list_singletonM i z x : z ∈ ({[i := x]} : list A) → z = ε ∨ z = x.
   Proof.
@@ -239,7 +238,7 @@ Section properties.
   Lemma list_singletonM_core i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
   Proof.
     rewrite /singletonM /list_singletonM.
-    by rewrite {1}/core /= fmap_app fmap_replicate (core_id_core ∅).
+    by rewrite {1}/core /= fmap_app fmap_replicate (core_id_core _).
   Qed.
   Lemma list_singletonM_op i (x y : A) :
     {[ i := x ]} ⋅ {[ i := y ]} ≡@{list A} {[ i := x ⋅ y ]}.

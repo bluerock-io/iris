@@ -92,7 +92,7 @@ Section cmra.
   Proof.
     move=>x'; destruct (decide (x = x')) as [->|];
       by rewrite discrete_fun_lookup_core ?discrete_fun_lookup_singleton
-      ?discrete_fun_lookup_singleton_ne // (core_id_core ∅).
+      ?discrete_fun_lookup_singleton_ne // (core_id_core _).
   Qed.
 
   Global Instance discrete_fun_singleton_core_id x (y : B x) :

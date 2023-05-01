@@ -90,7 +90,8 @@ Proof.
   by apply: discrete; rewrite -Hm lookup_insert_ne.
 Qed.
 Global Instance gmap_singleton_discrete i x :
-  Discrete x → Discrete ({[ i := x ]} : gmap K A) := _.
+  Discrete x → Discrete ({[ i := x ]} : gmap K A).
+Proof. rewrite /singletonM /map_singleton. apply _. Qed.
 Lemma insert_idN n m i x :
   m !! i ≡{n}≡ Some x → <[i:=x]>m ≡{n}≡ m.
 Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.

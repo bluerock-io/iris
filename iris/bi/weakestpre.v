@@ -18,7 +18,7 @@ Definition stuckness_leb (s1 s2 : stuckness) : bool :=
   | _, _ => true
   end.
 Global Instance stuckness_le : SqSubsetEq stuckness := stuckness_leb.
-Global Instance stuckness_le_po : PreOrder stuckness_le.
+Global Instance stuckness_le_po : PreOrder (⊑@{stuckness}).
 Proof. split; by repeat intros []. Qed.
 
 (** Weakest preconditions [WP e @ s ; E {{ Φ }}] have an additional argument [s]

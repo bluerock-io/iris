@@ -389,7 +389,7 @@ Global Instance frame_monPred_at_wand p P R Q1 Q2 i j :
   Frame p R Q1 Q2 →
   FrameMonPredAt p j (R i) (P -∗ Q1) ((P -∗ Q2) i).
 Proof.
-  rewrite /Frame /FrameMonPredAt=>-> Hframe.
+  rewrite /IsBiIndexRel /Frame /FrameMonPredAt=>-> Hframe.
   rewrite -monPred_at_intuitionistically_if -monPred_at_sep. apply monPred_in_entails.
   change ((□?p R ∗ (P -∗ Q2)) -∗ P -∗ Q1). apply bi.wand_intro_r.
   rewrite -assoc bi.wand_elim_l. done.
@@ -399,7 +399,7 @@ Global Instance frame_monPred_at_impl P R Q1 Q2 i j :
   Frame true R Q1 Q2 →
   FrameMonPredAt true j (R i) (P → Q1) ((P → Q2) i).
 Proof.
-  rewrite /Frame /FrameMonPredAt=>-> Hframe.
+  rewrite /IsBiIndexRel /Frame /FrameMonPredAt=>-> Hframe.
   rewrite -monPred_at_intuitionistically_if -monPred_at_sep. apply monPred_in_entails.
   change ((□ R ∗ (P → Q2)) -∗ P → Q1).
   rewrite -bi.persistently_and_intuitionistically_sep_l. apply bi.impl_intro_r.

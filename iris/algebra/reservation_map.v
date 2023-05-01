@@ -258,18 +258,17 @@ Section cmra.
     k ∈ E → ✓ a → reservation_map_token E ~~> reservation_map_data k a.
   Proof.
     intros ??. apply cmra_total_update=> n [mf [Ef|]] //.
-    rewrite reservation_map_validN_eq /= {1}/op /cmra_op /=. case_decide; last done.
-    rewrite left_id_L {1}left_id. intros [Hmf Hdisj]; split.
+    rewrite reservation_map_validN_eq /= {1}/op {1}/cmra_op /=.
+    case_decide; last done.
+    rewrite !left_id_L. intros [Hmf Hdisj]; split.
     - destruct (Hdisj k) as [Hmfi|]; last set_solver.
-      move: Hmfi. rewrite lookup_op lookup_empty left_id_L=> Hmfi.
       intros j. rewrite lookup_op.
       destruct (decide (k = j)) as [<-|].
       + rewrite Hmfi lookup_singleton right_id_L. by apply cmra_valid_validN.
       + by rewrite lookup_singleton_ne // left_id_L.
     - intros j. destruct (decide (k = j)); first set_solver.
       rewrite lookup_op lookup_singleton_ne //.
-      destruct (Hdisj j) as [Hmfi|?]; last set_solver.
-      move: Hmfi. rewrite lookup_op lookup_empty; auto.
+      destruct (Hdisj j) as [Hmfi|?]; last set_solver. rewrite Hmfi; auto.
   Qed.
   Lemma reservation_map_updateP P (Q : reservation_map A → Prop) k a :
     a ~~>: P →
