@@ -1,6 +1,7 @@
 From stdpp Require Import finite.
 From iris.algebra Require Export ofe monoid.
 From iris.prelude Require Import options.
+Local Set Primitive Projections.
 
 Class PCore (A : Type) := pcore : A → option A.
 Global Hint Mode PCore ! : typeclass_instances.
@@ -41,7 +42,6 @@ Global Instance: Params (@includedN) 4 := {}.
 Global Hint Extern 0 (_ ≼{_} _) => reflexivity : core.
 
 Section mixin.
-  Local Set Primitive Projections.
   Record CmraMixin A `{!Dist A, !Equiv A, !PCore A, !Op A, !Valid A, !ValidN A} := {
     (* setoids *)
     mixin_cmra_op_ne (x : A) : NonExpansive (op x);
@@ -66,6 +66,8 @@ Section mixin.
 End mixin.
 
 (** Bundled version *)
+#[projections(primitive=no)] (* FIXME: making this primitive leads to strange
+TC resolution failures in view.v *)
 Structure cmra := Cmra' {
   cmra_car :> Type;
   cmra_equiv : Equiv cmra_car;
@@ -190,6 +192,8 @@ Record UcmraMixin A `{!Dist A, !Equiv A, !PCore A, !Op A, !Valid A, !Unit A} := 
   mixin_ucmra_pcore_unit : pcore ε ≡@{option A} Some ε
 }.
 
+#[projections(primitive=no)] (* FIXME: making this primitive leads to strange
+TC resolution failures in view.v *)
 Structure ucmra := Ucmra' {
   ucmra_car :> Type;
   ucmra_equiv : Equiv ucmra_car;
@@ -238,6 +242,8 @@ Section ucmra_mixin.
 End ucmra_mixin.
 
 (** * Discrete CMRAs *)
+#[projections(primitive=no)] (* FIXME: making this primitive means we cannot use
+the projections with eauto any more (see https://github.com/coq/coq/issues/17561) *)
 Class CmraDiscrete (A : cmra) := {
   cmra_discrete_ofe_discrete :> OfeDiscrete A;
   cmra_discrete_valid (x : A) : ✓{0} x → ✓ x
@@ -1226,9 +1232,9 @@ Section prod.
   Proof. intros ???[][][][]. constructor; simpl in *; by eapply cancelableN. Qed.
 
   Global Instance pair_id_free_l x y : IdFree x → IdFree (x,y).
-  Proof. move=>? [??] [? _] [/=? _]. eauto. Qed.
+  Proof. move=> Hx [a b] [? _] [/=? _]. apply (Hx a); eauto. Qed.
   Global Instance pair_id_free_r x y : IdFree y → IdFree (x,y).
-  Proof. move=>? [??] [_ ?] [_ /=?]. eauto. Qed.
+  Proof. move=> Hy [a b] [_ ?] [_ /=?]. apply (Hy b); eauto. Qed.
 End prod.
 
 (* Registering as [Hint Extern] with new unification. *)
