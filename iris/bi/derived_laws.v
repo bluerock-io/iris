@@ -733,22 +733,19 @@ Proof.
   rewrite -(absorbing emp) absorbingly_sep_l left_id //.
 Qed.
 
-Lemma sep_elim_l P Q `{HQP : TCOr (Affine Q) (Absorbing P)} : P ∗ Q ⊢ P.
+Lemma sep_elim_l P Q `{!TCOr (Affine Q) (Absorbing P)} : P ∗ Q ⊢ P.
 Proof.
-  destruct HQP.
+  destruct select (TCOr _ _).
   - by rewrite (affine Q) right_id.
   - by rewrite (True_intro Q) comm.
 Qed.
-Lemma sep_elim_r P Q `{TCOr (Affine P) (Absorbing Q)} : P ∗ Q ⊢ Q.
+Lemma sep_elim_r P Q `{!TCOr (Affine P) (Absorbing Q)} : P ∗ Q ⊢ Q.
 Proof. by rewrite comm sep_elim_l. Qed.
 
-Lemma sep_and P Q :
-  TCOr (Affine P) (Absorbing Q) → TCOr (Affine Q) (Absorbing P) →
+Lemma sep_and P Q
+    `{!TCOr (Affine P) (Absorbing Q), !TCOr (Affine Q) (Absorbing P)} :
   P ∗ Q ⊢ P ∧ Q.
-Proof.
-  intros [?|?] [?|?];
-    apply and_intro; apply: sep_elim_l || apply: sep_elim_r.
-Qed.
+Proof. apply and_intro; [apply: sep_elim_l|apply: sep_elim_r]. Qed.
 
 Lemma affinely_intro P Q `{!Affine P} : (P ⊢ Q) → P ⊢ <affine> Q.
 Proof. intros <-. by rewrite affine_affinely. Qed.
