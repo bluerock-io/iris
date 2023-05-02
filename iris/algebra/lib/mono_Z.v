@@ -120,4 +120,4 @@ Section mono_Z.
   Qed.
 End mono_Z.
 
-Typeclasses Opaque mono_Z_auth mono_Z_lb.
+Global Typeclasses Opaque mono_Z_auth mono_Z_lb.

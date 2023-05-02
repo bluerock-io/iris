@@ -285,4 +285,4 @@ Section inv_heap.
 
 End inv_heap.
 
-Typeclasses Opaque inv_heap_inv inv_mapsto inv_mapsto_own.
+Global Typeclasses Opaque inv_heap_inv inv_mapsto inv_mapsto_own.

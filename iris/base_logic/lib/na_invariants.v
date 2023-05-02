@@ -29,7 +29,7 @@ Section defs.
 End defs.
 
 Global Instance: Params (@na_inv) 3 := {}.
-Typeclasses Opaque na_own na_inv.
+Global Typeclasses Opaque na_own na_inv.
 
 Section proofs.
   Context `{!invGS_gen hlc Σ, !na_invG Σ}.

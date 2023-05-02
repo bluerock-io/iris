@@ -37,7 +37,7 @@ Definition ufrac_auth_auth {A : cmra} (q : Qp) (x : A) : ufrac_authR A :=
 Definition ufrac_auth_frag {A : cmra} (q : Qp) (x : A) : ufrac_authR A :=
   ◯ (Some (q : ufracR,x)).
 
-Typeclasses Opaque ufrac_auth_auth ufrac_auth_frag.
+Global Typeclasses Opaque ufrac_auth_auth ufrac_auth_frag.
 
 Global Instance: Params (@ufrac_auth_auth) 2 := {}.
 Global Instance: Params (@ufrac_auth_frag) 2 := {}.

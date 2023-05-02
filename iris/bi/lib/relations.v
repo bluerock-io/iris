@@ -21,7 +21,7 @@ Section definitions.
     bi_least_fixpoint (bi_rtc_pre R x2) x1.
 
   Global Instance: Params (@bi_rtc) 4 := {}.
-  Typeclasses Opaque bi_rtc.
+  Global Typeclasses Opaque bi_rtc.
 
   Local Definition bi_tc_pre (R : A → A → PROP)
       (x2 : A) (rec : A → PROP) (x1 : A) : PROP :=
@@ -32,7 +32,7 @@ Section definitions.
     bi_least_fixpoint (bi_tc_pre R x2) x1.
 
   Global Instance: Params (@bi_tc) 4 := {}.
-  Typeclasses Opaque bi_tc.
+  Global Typeclasses Opaque bi_tc.
 
   (** Reductions of exactly [n] steps. *)
   Fixpoint bi_nsteps (R : A → A → PROP) (n : nat) (x1 x2 : A) : PROP :=
@@ -42,7 +42,7 @@ Section definitions.
     end.
 
   Global Instance: Params (@bi_nsteps) 5 := {}.
-  Typeclasses Opaque bi_nsteps.
+  Global Typeclasses Opaque bi_nsteps.
 End definitions.
 
 Local Instance bi_rtc_pre_mono {PROP : bi} `{!BiInternalEq PROP}

@@ -526,4 +526,4 @@ Global Instance gmap_viewRF_contractive (K : Type) `{Countable K} F :
   oFunctorContractive F → rFunctorContractive (gmap_viewRF K F).
 Proof. apply gmap_viewURF_contractive. Qed.
 
-Typeclasses Opaque gmap_view_auth gmap_view_frag.
+Global Typeclasses Opaque gmap_view_auth gmap_view_frag.

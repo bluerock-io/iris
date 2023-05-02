@@ -12,7 +12,7 @@ Definition max_prefix_listUR (A : ofe) := gmapUR nat (agreeR A).
 Definition to_max_prefix_list {A} (l : list A) : gmap nat (agree A) :=
   to_agree <$> map_seq 0 l.
 Global Instance: Params (@to_max_prefix_list) 1 := {}.
-Typeclasses Opaque to_max_prefix_list.
+Global Typeclasses Opaque to_max_prefix_list.
 
 Section max_prefix_list.
   Context {A : ofe}.

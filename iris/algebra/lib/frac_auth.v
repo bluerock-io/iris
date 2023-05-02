@@ -19,7 +19,7 @@ Definition frac_auth_auth {A : cmra} (x : A) : frac_authR A :=
 Definition frac_auth_frag {A : cmra} (q : frac) (x : A) : frac_authR A :=
   ◯ (Some (q,x)).
 
-Typeclasses Opaque frac_auth_auth frac_auth_frag.
+Global Typeclasses Opaque frac_auth_auth frac_auth_frag.
 
 Global Instance: Params (@frac_auth_auth) 1 := {}.
 Global Instance: Params (@frac_auth_frag) 2 := {}.

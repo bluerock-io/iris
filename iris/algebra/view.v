@@ -87,7 +87,7 @@ Global Instance: Params (@view_frag_proj) 3 := {}.
 Definition view_auth {A B} {rel : view_rel A B} (dq : dfrac) (a : A) : view rel :=
   View (Some (dq, to_agree a)) ε.
 Definition view_frag {A B} {rel : view_rel A B} (b : B) : view rel := View None b.
-Typeclasses Opaque view_auth view_frag.
+Global Typeclasses Opaque view_auth view_frag.
 
 Global Instance: Params (@view_auth) 3 := {}.
 Global Instance: Params (@view_frag) 3 := {}.

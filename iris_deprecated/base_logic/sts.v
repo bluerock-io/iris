@@ -118,7 +118,7 @@ Section sts.
     - apply sts.closed_up; set_solver.
   Qed.
 
-  Typeclasses Opaque sts_own sts_ownS sts_inv sts_ctx.
+  Local Typeclasses Opaque sts_own sts_ownS sts_inv sts_ctx.
 
   Lemma sts_alloc φ E N s :
     ▷ φ s ={E}=∗ ∃ γ, sts_ctx γ N φ ∧ sts_own γ s (⊤ ∖ sts.tok s).
@@ -181,4 +181,4 @@ Section sts.
   Proof. by apply sts_accS. Qed.
 End sts.
 
-Typeclasses Opaque sts_own sts_ownS sts_inv sts_ctx.
+Global Typeclasses Opaque sts_own sts_ownS sts_inv sts_ctx.

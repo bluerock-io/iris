@@ -284,7 +284,7 @@ Notation "▷ P" := (bi_later P) : bi_scope.
 Definition bi_emp_valid {PROP : bi} (P : PROP) : Prop := emp ⊢ P.
 
 Global Arguments bi_emp_valid {_} _%I : simpl never.
-Typeclasses Opaque bi_emp_valid.
+Global Typeclasses Opaque bi_emp_valid.
 
 Notation "⊢ Q" := (bi_emp_valid Q%I) : stdpp_scope.
 Notation "'⊢@{' PROP } Q" := (bi_emp_valid (PROP:=PROP) Q%I) (only parsing) : stdpp_scope.

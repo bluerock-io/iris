@@ -172,7 +172,7 @@ Section proof.
   Qed.
 End proof.
 
-Typeclasses Opaque is_lock issued locked.
+Global Typeclasses Opaque is_lock issued locked.
 
 Canonical Structure ticket_lock `{!heapGS_gen hlc Σ, !tlockG Σ} : lock :=
   {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;

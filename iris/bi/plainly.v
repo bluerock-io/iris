@@ -15,7 +15,7 @@ Class Plainly (PROP : Type) := plainly : PROP → PROP.
 Global Arguments plainly {PROP}%type_scope {_} _%I.
 Global Hint Mode Plainly ! : typeclass_instances.
 Global Instance: Params (@plainly) 2 := {}.
-Typeclasses Opaque plainly.
+Global Typeclasses Opaque plainly.
 
 Notation "■ P" := (plainly P) : bi_scope.
 
@@ -112,7 +112,7 @@ Definition plainly_if {PROP: bi} `{!BiPlainly PROP} (p : bool) (P : PROP) : PROP
   (if p then ■ P else P)%I.
 Global Arguments plainly_if {_ _} !_ _%I /.
 Global Instance: Params (@plainly_if) 2 := {}.
-Typeclasses Opaque plainly_if.
+Global Typeclasses Opaque plainly_if.
 
 Notation "■? p P" := (plainly_if p P) : bi_scope.
 

@@ -308,4 +308,4 @@ Proof.
 Qed.
 End box.
 
-Typeclasses Opaque slice box.
+Global Typeclasses Opaque slice box.

@@ -893,7 +893,7 @@ Global Instance uncurry4_ne {A B C D E : ofe} n :
   Proper (((≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) ==>
           (≡{n}@{A*B*C*D}≡) ==> (≡{n}@{E}≡)) uncurry4 := _.
 
-Typeclasses Opaque prod_dist.
+Global Typeclasses Opaque prod_dist.
 
 Global Instance prod_map_ne {A A' B B' : ofe} n :
   Proper ((dist n ==> dist n) ==> (dist n ==> dist n) ==>
@@ -1087,7 +1087,7 @@ Section sum.
 End sum.
 
 Global Arguments sumO : clear implicits.
-Typeclasses Opaque sum_dist.
+Global Typeclasses Opaque sum_dist.
 
 Global Instance sum_map_ne {A A' B B' : ofe} n :
   Proper ((dist n ==> dist n) ==> (dist n ==> dist n) ==>
@@ -1278,7 +1278,7 @@ Section option.
   Proof. intros ?%(dist_Some_inv_r _ _ _ y); naive_solver. Qed.
 End option.
 
-Typeclasses Opaque option_dist.
+Global Typeclasses Opaque option_dist.
 Global Arguments optionO : clear implicits.
 
 Global Instance option_fmap_ne {A B : ofe} n:

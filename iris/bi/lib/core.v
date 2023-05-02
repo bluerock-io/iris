@@ -11,7 +11,7 @@ Definition coreP `{!BiPlainly PROP} (P : PROP) : PROP :=
   using conjunction/implication here. *)
   ∀ Q : PROP, <affine> ■ (Q -∗ <pers> Q) -∗ <affine> ■ (P -∗ Q) -∗ Q.
 Global Instance: Params (@coreP) 1 := {}.
-Typeclasses Opaque coreP.
+Global Typeclasses Opaque coreP.
 
 Section core.
   Context {PROP : bi} `{!BiPlainly PROP}.

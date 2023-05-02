@@ -27,7 +27,7 @@ Fixpoint big_opL {M : ofe} {o : M → M → M} `{!Monoid o} {A} (f : nat → A �
   end.
 Global Instance: Params (@big_opL) 4 := {}.
 Global Arguments big_opL {M} o {_ A} _ !_ /.
-Typeclasses Opaque big_opL.
+Global Typeclasses Opaque big_opL.
 Notation "'[^' o 'list]' k ↦ x ∈ l , P" := (big_opL o (λ k x, P) l)
   (at level 200, o at level 1, l at level 10, k, x at level 1, right associativity,
    format "[^ o  list]  k ↦ x  ∈  l ,  P") : stdpp_scope.

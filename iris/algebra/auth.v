@@ -65,7 +65,7 @@ Definition authUR (A : ucmra) : ucmra := viewUR (A:=A) (B:=A) auth_view_rel.
 Definition auth_auth {A: ucmra} : dfrac → A → auth A := view_auth.
 Definition auth_frag {A: ucmra} : A → auth A := view_frag.
 
-Typeclasses Opaque auth_auth auth_frag.
+Global Typeclasses Opaque auth_auth auth_frag.
 
 Global Instance: Params (@auth_auth) 2 := {}.
 Global Instance: Params (@auth_frag) 1 := {}.

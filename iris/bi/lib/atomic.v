@@ -452,4 +452,4 @@ Tactic Notation "iAaccIntro" "with" constr(sel) :=
   end.
 
 (* From here on, prevent TC search from implicitly unfolding these. *)
-Typeclasses Opaque atomic_acc atomic_update.
+Global Typeclasses Opaque atomic_acc atomic_update.

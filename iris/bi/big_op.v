@@ -48,7 +48,7 @@ Fixpoint big_sepL2 {PROP : bi} {A B}
   end%I.
 Global Instance: Params (@big_sepL2) 3 := {}.
 Global Arguments big_sepL2 {PROP A B} _ !_ !_ /.
-Typeclasses Opaque big_sepL2.
+Global Typeclasses Opaque big_sepL2.
 Notation "'[∗' 'list]' k ↦ x1 ; x2 ∈ l1 ; l2 , P" :=
   (big_sepL2 (λ k x1 x2, P%I) l1 l2) : bi_scope.
 Notation "'[∗' 'list]' x1 ; x2 ∈ l1 ; l2 , P" :=
