@@ -86,7 +86,10 @@ The class of [Separable] propositions is useful for BIs with a degenerative
 persistence modality, i.e., without [BiPersistentlyTrue : True ⊢ <pers> True],
 see https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/843. For those BIs,
 the only persistent proposition is [False], but emp/plain and friends are still
-[Separable]. *)
+[Separable].
+
+Note that the reverse direction [<affine> P ∗ Q ⊢ <absorb> P ∧ Q] is a
+tautology, see [affinely_sep_absorbingly_and] in [derived_laws]. *)
 Class Separable {PROP : bi} (P : PROP) :=
   separable Q : <absorb> P ∧ Q ⊢ <affine> P ∗ Q.
 Global Arguments Separable {_} _%I : simpl never.

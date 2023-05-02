@@ -802,6 +802,14 @@ Section bi_affine.
 End bi_affine.
 
 (* Separable propositions *)
+(** This lemma shows that the reverse direction of [Separable] is a tautology. *)
+Lemma affinely_sep_absorbingly_and P Q : <affine> P ∗ Q ⊢ <absorb> P ∧ Q.
+Proof.
+  apply and_intro.
+  - rewrite affinely_elim (comm _ P). apply sep_mono; auto.
+  - by rewrite sep_elim_r.
+Qed.
+
 Lemma and_affinely_sep_l_1 P Q `{!Separable P} :
   P ∧ Q ⊢ <affine> P ∗ Q.
 Proof. by rewrite -separable -absorbingly_intro. Qed.
