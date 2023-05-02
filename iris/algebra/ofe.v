@@ -1,6 +1,6 @@
 From iris.prelude Require Export prelude.
 From iris.prelude Require Import options.
-Set Primitive Projections.
+Local Set Primitive Projections.
 
 (** This files defines (a shallow embedding of) the category of OFEs:
     Complete ordered families of equivalences. This is a cartesian closed
