@@ -50,6 +50,8 @@ Coq 8.13 is no longer supported.
 - Make `persistently_True` a bi-entailment; this changes the default `rewrite`
   direction.
 - Make `BiLaterContractive` a class instead of a notation.
+- Make projections of `Bupd`/`Fupd`/`InternalEq`/`Plainly` operational type
+  classes `Typeclasses Opaque`.
 
 **Changes in `proofmode`:**
 

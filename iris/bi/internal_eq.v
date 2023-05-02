@@ -16,6 +16,8 @@ Class InternalEq (PROP : Type) :=
 Global Arguments internal_eq {_ _ _} _ _ : simpl never.
 Global Hint Mode InternalEq ! : typeclass_instances.
 Global Instance: Params (@internal_eq) 3 := {}.
+Typeclasses Opaque internal_eq.
+
 Infix "≡" := internal_eq : bi_scope.
 Infix "≡@{ A }" := (internal_eq (A := A)) (only parsing) : bi_scope.
 

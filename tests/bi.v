@@ -60,3 +60,13 @@ Section big_sepM_implicit_type.
   Definition big_sepM_implicit_type {PROP : bi} (m : gmap nat nat) : PROP :=
     [∗ map] x ∈ m, ⌜ 10%Z = x ⌝.
 End big_sepM_implicit_type.
+
+(** This tests that [bupd] is [Typeclasses Opaque]. If [bupd] were transparent,
+Coq would unify [bupd_instance] with [persistently]. *)
+Goal ∀ {PROP : bi} (P : PROP),
+  ∃ bupd_instance, Persistent (@bupd PROP bupd_instance P).
+Proof. intros. eexists _. Fail apply _. Abort.
+(* Similarly for [plainly]. *)
+Goal ∀ {PROP : bi} (P : PROP),
+  ∃ plainly_instance, Persistent (@plainly PROP plainly_instance P).
+Proof. intros. eexists _. Fail apply _. Abort.
