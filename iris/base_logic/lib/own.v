@@ -185,7 +185,7 @@ Proof. apply entails_wand, wand_intro_r. by rewrite -own_op own_valid. Qed.
 Lemma own_valid_3 γ a1 a2 a3 : own γ a1 -∗ own γ a2 -∗ own γ a3 -∗ ✓ (a1 ⋅ a2 ⋅ a3).
 Proof. apply entails_wand. do 2 apply wand_intro_r. by rewrite -!own_op own_valid. Qed.
 Lemma own_valid_r γ a : own γ a ⊢ own γ a ∗ ✓ a.
-Proof. apply: bi.persistent_entails_r. apply own_valid. Qed.
+Proof. apply: bi.entails_r. apply own_valid. Qed.
 Lemma own_valid_l γ a : own γ a ⊢ ✓ a ∗ own γ a.
 Proof. by rewrite comm -own_valid_r. Qed.
 

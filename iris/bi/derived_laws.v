@@ -915,6 +915,11 @@ Proof.
   by rewrite affinely_elim wand_elim_r.
 Qed.
 
+Lemma entails_l P Q `{!Separable Q} : (P ⊢ Q) → P ⊢ Q ∗ P.
+Proof. intros. rewrite -and_sep_1; auto. Qed.
+Lemma entails_r P Q `{!Separable Q} : (P ⊢ Q) → P ⊢ P ∗ Q.
+Proof. intros. rewrite -and_sep_1; auto. Qed.
+
 Section separable_affine_bi.
   Context `{!BiAffine PROP}.
 
@@ -1229,9 +1234,9 @@ Lemma persistently_wand P Q : <pers> (P -∗ Q) ⊢ <pers> P -∗ <pers> Q.
 Proof. apply wand_intro_r. by rewrite persistently_sep_2 wand_elim_l. Qed.
 
 Lemma persistently_entails_l P Q : (P ⊢ <pers> Q) → P ⊢ <pers> Q ∗ P.
-Proof. intros; rewrite -and_sep_l_1; auto. Qed.
+Proof. apply: entails_l. Qed.
 Lemma persistently_entails_r P Q : (P ⊢ <pers> Q) → P ⊢ P ∗ <pers> Q.
-Proof. intros; rewrite -and_sep_r_1; auto. Qed.
+Proof. apply: entails_r. Qed.
 
 Lemma persistently_impl_wand_2 P Q : <pers> (P -∗ Q) ⊢ <pers> (P → Q).
 Proof.
@@ -1667,11 +1672,6 @@ Qed.
 
 Lemma persistently_intro P Q `{!Persistent P} : (P ⊢ Q) → P ⊢ <pers> Q.
 Proof. intros HP. by rewrite (persistent P) HP. Qed.
-
-Lemma persistent_entails_l P Q `{!Persistent Q} : (P ⊢ Q) → P ⊢ Q ∗ P.
-Proof. intros. rewrite -and_sep_1; auto. Qed.
-Lemma persistent_entails_r P Q `{!Persistent Q} : (P ⊢ Q) → P ⊢ P ∗ Q.
-Proof. intros. rewrite -and_sep_1; auto. Qed.
 
 Lemma absorbingly_intuitionistically_into_persistently P :
   <absorb> □ P ⊣⊢ <pers> P.
