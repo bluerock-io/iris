@@ -66,7 +66,8 @@ Section mixin.
 End mixin.
 
 (** Bundled version *)
-#[projections(primitive=no)] (* FIXME: making this primitive leads to strange TC resolution failures later in this file *)
+#[projections(primitive=no)] (* FIXME: making this primitive leads to strange
+TC resolution failures in view.v *)
 Structure cmra := Cmra' {
   cmra_car :> Type;
   cmra_equiv : Equiv cmra_car;
@@ -191,7 +192,8 @@ Record UcmraMixin A `{!Dist A, !Equiv A, !PCore A, !Op A, !Valid A, !Unit A} := 
   mixin_ucmra_pcore_unit : pcore ε ≡@{option A} Some ε
 }.
 
-#[projections(primitive=no)] (* FIXME: making this primitive leads to strange TC resolution failures in view.v *)
+#[projections(primitive=no)] (* FIXME: making this primitive leads to strange
+TC resolution failures in view.v *)
 Structure ucmra := Ucmra' {
   ucmra_car :> Type;
   ucmra_equiv : Equiv ucmra_car;
@@ -240,7 +242,8 @@ Section ucmra_mixin.
 End ucmra_mixin.
 
 (** * Discrete CMRAs *)
-#[projections(primitive=no)] (* FIXME: making this primitive means we cannot use the projections with eauto any more (see https://github.com/coq/coq/issues/17561) *)
+#[projections(primitive=no)] (* FIXME: making this primitive means we cannot use
+the projections with eauto any more (see https://github.com/coq/coq/issues/17561) *)
 Class CmraDiscrete (A : cmra) := {
   cmra_discrete_ofe_discrete :> OfeDiscrete A;
   cmra_discrete_valid (x : A) : ✓{0} x → ✓ x
@@ -1229,9 +1232,9 @@ Section prod.
   Proof. intros ???[][][][]. constructor; simpl in *; by eapply cancelableN. Qed.
 
   Global Instance pair_id_free_l x y : IdFree x → IdFree (x,y).
-  Proof. move=>Hx [a b] [? _] [/=? _]. apply (Hx a); eauto. Qed.
+  Proof. move=> Hx [a b] [? _] [/=? _]. apply (Hx a); eauto. Qed.
   Global Instance pair_id_free_r x y : IdFree y → IdFree (x,y).
-  Proof. move=>Hy [a b] [_ ?] [_ /=?]. apply (Hy b); eauto. Qed.
+  Proof. move=> Hy [a b] [_ ?] [_ /=?]. apply (Hy b); eauto. Qed.
 End prod.
 
 (* Registering as [Hint Extern] with new unification. *)
