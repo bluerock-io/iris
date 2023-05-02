@@ -32,7 +32,7 @@ Lemma test_string_to_ident_not_fresh (n:nat) : ∀ (n:nat), nat.
 Proof.
   (* we want to check that this [string_to_ident "n"] call succeeds even with
   [n] in the context *)
-  let x := string_to_ident "n" in
+  string_to_ident_cps "n" ltac:(fun x =>
   let x := fresh x in
-  intros x.
+  intros x).
 Abort.

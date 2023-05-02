@@ -80,15 +80,5 @@ by ident [id] into the name given by string [s]. *)
 Ltac rename_by_string id s :=
   StringToIdent.string_to_ident_cps s ltac:(fun x => rename id into x).
 
-(** We can also use this to write Ltac that *returns* the desired ident.
-However, this function will produce wrong results under [Set Mangle Names], so
-use with caution. *)
-Ltac string_to_ident s :=
-  let s := (eval cbv in s) in
-  let x := constr:(ltac:(clear; (* needed since s might already be in scope
-                         where this is called *)
-                         StringToIdent.string_to_ident_cps s ltac:(fun x => intros x);
-                         exact tt) : unit -> unit) in
-  match x with
-  | (fun (name:_) => _) => name
-  end.
+(* We also directly expose the CPS primitive. *)
+Ltac string_to_ident_cps := StringToIdent.string_to_ident_cps.
