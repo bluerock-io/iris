@@ -52,6 +52,8 @@ Coq 8.13 is no longer supported.
 - Make `BiLaterContractive` a class instead of a notation.
 - Make projections of `Bupd`/`Fupd`/`InternalEq`/`Plainly` operational type
   classes `Typeclasses Opaque`.
+- Make BI relations (`bi_rtc`, `bi_tc`, `bi_nsteps`) typeclasses opaque (they
+  were accidentally transparent).
 
 **Changes in `proofmode`:**
 
