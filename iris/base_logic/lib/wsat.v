@@ -36,18 +36,18 @@ Definition invariant_unfold {Σ} (P : iProp Σ) : later (iProp Σ) :=
   Next P.
 Definition ownI `{!wsatGS Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
   own invariant_name (gmap_view_frag i DfracDiscarded (invariant_unfold P)).
-Typeclasses Opaque ownI.
+Global Typeclasses Opaque ownI.
 Global Instance: Params (@invariant_unfold) 1 := {}.
 Global Instance: Params (@ownI) 3 := {}.
 
 Definition ownE `{!wsatGS Σ} (E : coPset) : iProp Σ :=
   own enabled_name (CoPset E).
-Typeclasses Opaque ownE.
+Global Typeclasses Opaque ownE.
 Global Instance: Params (@ownE) 3 := {}.
 
 Definition ownD `{!wsatGS Σ} (E : gset positive) : iProp Σ :=
   own disabled_name (GSet E).
-Typeclasses Opaque ownD.
+Global Typeclasses Opaque ownD.
 Global Instance: Params (@ownD) 3 := {}.
 
 Definition wsat `{!wsatGS Σ} : iProp Σ :=

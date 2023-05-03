@@ -116,4 +116,4 @@ Section mono_nat.
   Qed.
 End mono_nat.
 
-Typeclasses Opaque mono_nat_auth mono_nat_lb.
+Global Typeclasses Opaque mono_nat_auth mono_nat_lb.

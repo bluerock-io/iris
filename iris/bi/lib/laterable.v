@@ -252,4 +252,4 @@ Section instances.
 
 End instances.
 
-Typeclasses Opaque make_laterable.
+Global Typeclasses Opaque make_laterable.

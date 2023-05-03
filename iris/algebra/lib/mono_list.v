@@ -14,7 +14,7 @@ Definition mono_list_lb {A : ofe} (l : list A) : mono_listR A :=
   ◯ (to_max_prefix_list l).
 Global Instance: Params (@mono_list_auth) 2 := {}.
 Global Instance: Params (@mono_list_lb) 1 := {}.
-Typeclasses Opaque mono_list_auth mono_list_lb.
+Global Typeclasses Opaque mono_list_auth mono_list_lb.
 
 Notation "●ML dq l" := (mono_list_auth dq l)
   (at level 20, dq custom dfrac at level 1, format "●ML dq  l").

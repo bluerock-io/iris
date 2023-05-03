@@ -46,7 +46,7 @@ Proof. solve_inG. Qed.
 (** Ownership *)
 Definition ownP `{!ownPGS Λ Σ} (σ : state Λ) : iProp Σ :=
   own ownP_name (◯E σ).
-Typeclasses Opaque ownP.
+Global Typeclasses Opaque ownP.
 Global Instance: Params (@ownP) 3 := {}.
 
 (* Adequacy *)

@@ -60,7 +60,7 @@ Section definitions.
   Proof. apply _. Qed.
 End definitions.
 
-Typeclasses Opaque auth_own auth_inv auth_ctx.
+Global Typeclasses Opaque auth_own auth_inv auth_ctx.
 Global Instance: Params (@auth_own) 4 := {}.
 Global Instance: Params (@auth_inv) 5 := {}.
 Global Instance: Params (@auth_ctx) 7 := {}.

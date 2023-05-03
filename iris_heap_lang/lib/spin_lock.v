@@ -102,7 +102,7 @@ Section proof.
   Qed.
 End proof.
 
-Typeclasses Opaque is_lock locked.
+Global Typeclasses Opaque is_lock locked.
 
 Canonical Structure spin_lock `{!heapGS_gen hlc Σ, !lockG Σ} : lock :=
   {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;

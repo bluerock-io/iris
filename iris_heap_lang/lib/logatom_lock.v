@@ -101,4 +101,4 @@ Section tada.
 
 End tada.
 
-Typeclasses Opaque tada_is_lock tada_lock_state.
+Global Typeclasses Opaque tada_is_lock tada_lock_state.

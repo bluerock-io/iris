@@ -36,7 +36,7 @@ Section ofe.
 End ofe.
 
 Global Arguments vecO : clear implicits.
-Typeclasses Opaque vec_dist.
+Global Typeclasses Opaque vec_dist.
 
 Section proper.
   Context {A : ofe}.

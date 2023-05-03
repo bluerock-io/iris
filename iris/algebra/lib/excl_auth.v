@@ -16,7 +16,7 @@ Definition excl_auth_auth {A : ofe} (a : A) : excl_authR A :=
 Definition excl_auth_frag {A : ofe} (a : A) : excl_authR A :=
   ◯ (Some (Excl a)).
 
-Typeclasses Opaque excl_auth_auth excl_auth_frag.
+Global Typeclasses Opaque excl_auth_auth excl_auth_frag.
 
 Global Instance: Params (@excl_auth_auth) 1 := {}.
 Global Instance: Params (@excl_auth_frag) 2 := {}.

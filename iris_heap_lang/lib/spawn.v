@@ -76,4 +76,4 @@ Proof.
 Qed.
 End proof.
 
-Typeclasses Opaque join_handle.
+Global Typeclasses Opaque join_handle.

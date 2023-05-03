@@ -17,7 +17,7 @@ Class BUpd (PROP : Type) : Type := bupd : PROP → PROP.
 Global Instance : Params (@bupd) 2 := {}.
 Global Hint Mode BUpd ! : typeclass_instances.
 Global Arguments bupd {_}%type_scope {_} _%bi_scope.
-Typeclasses Opaque bupd.
+Global Typeclasses Opaque bupd.
 
 Notation "|==> Q" := (bupd Q) : bi_scope.
 Notation "P ==∗ Q" := (P ⊢ |==> Q) (only parsing) : stdpp_scope.
@@ -27,7 +27,7 @@ Class FUpd (PROP : Type) : Type := fupd : coPset → coPset → PROP → PROP.
 Global Instance: Params (@fupd) 4 := {}.
 Global Hint Mode FUpd ! : typeclass_instances.
 Global Arguments fupd {_}%type_scope {_} _ _ _%bi_scope.
-Typeclasses Opaque fupd.
+Global Typeclasses Opaque fupd.
 
 Notation "|={ E1 , E2 }=> Q" := (fupd E1 E2 Q) : bi_scope.
 Notation "P ={ E1 , E2 }=∗ Q" := (P -∗ |={E1,E2}=> Q)%I : bi_scope.

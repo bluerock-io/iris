@@ -132,5 +132,5 @@ Global Instance dfrac_agreeRF_contractive F :
   oFunctorContractive F → rFunctorContractive (dfrac_agreeRF F).
 Proof. apply _. Qed.
 
-Typeclasses Opaque to_dfrac_agree.
+Global Typeclasses Opaque to_dfrac_agree.
 (* [to_frac_agree] is deliberately transparent to reuse the [to_dfrac_agree] instances *)
