@@ -90,7 +90,7 @@ Section dfrac.
     end.
 
   (** When elements are combined, ownership is added together and knowledge of
-     discarded fractions is combined with the max operation. *)
+     discarded fractions is preserved. *)
   Local Instance dfrac_op_instance : Op dfrac := λ dq dp,
     match dq, dp with
     | DfracOwn q, DfracOwn q' => DfracOwn (q + q')
