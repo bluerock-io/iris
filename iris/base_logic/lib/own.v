@@ -1,5 +1,5 @@
 From iris.algebra Require Import functions gmap proofmode_classes.
-From iris.proofmode Require Import classes.
+From iris.proofmode Require Import proofmode.
 From iris.base_logic.lib Require Export iprop.
 From iris.prelude Require Import options.
 Import uPred.
@@ -181,9 +181,9 @@ Proof. intros a1 a2. apply own_mono. Qed.
 Lemma own_valid γ a : own γ a ⊢ ✓ a.
 Proof. by rewrite !own_eq /own_def ownM_valid iRes_singleton_validI. Qed.
 Lemma own_valid_2 γ a1 a2 : own γ a1 -∗ own γ a2 -∗ ✓ (a1 ⋅ a2).
-Proof. apply wand_intro_r. by rewrite -own_op own_valid. Qed.
+Proof. apply entails_wand, wand_intro_r. by rewrite -own_op own_valid. Qed.
 Lemma own_valid_3 γ a1 a2 a3 : own γ a1 -∗ own γ a2 -∗ own γ a3 -∗ ✓ (a1 ⋅ a2 ⋅ a3).
-Proof. do 2 apply wand_intro_r. by rewrite -!own_op own_valid. Qed.
+Proof. apply entails_wand. do 2 apply wand_intro_r. by rewrite -!own_op own_valid. Qed.
 Lemma own_valid_r γ a : own γ a ⊢ own γ a ∗ ✓ a.
 Proof. apply: bi.persistent_entails_r. apply own_valid. Qed.
 Lemma own_valid_l γ a : own γ a ⊢ ✓ a ∗ own γ a.
@@ -194,7 +194,7 @@ Proof. rewrite !own_eq /own_def. apply _. Qed.
 Global Instance own_core_persistent γ a : CoreId a → Persistent (own γ a).
 Proof. rewrite !own_eq /own_def; apply _. Qed.
 
-Lemma later_own γ a : ▷ own γ a -∗ ◇ ∃ b, own γ b ∧ ▷ (a ≡ b).
+Lemma later_own γ a : ▷ own γ a ⊢ ◇ ∃ b, own γ b ∧ ▷ (a ≡ b).
 Proof.
   rewrite own_eq /own_def later_ownM. apply exist_elim=> r.
   assert (NonExpansive (λ r : iResUR Σ, r (inG_id i) !! γ)).
@@ -256,7 +256,7 @@ Lemma own_alloc a : ✓ a → ⊢ |==> ∃ γ, own γ a.
 Proof. intros Ha. eapply (own_alloc_dep (λ _, a)); eauto. Qed.
 
 (** ** Frame preserving updates *)
-Lemma own_updateP P γ a : a ~~>: P → own γ a ==∗ ∃ a', ⌜P a'⌝ ∗ own γ a'.
+Lemma own_updateP P γ a : a ~~>: P → own γ a ⊢ |==> ∃ a', ⌜P a'⌝ ∗ own γ a'.
 Proof.
   intros Hupd. rewrite !own_eq.
   rewrite -(bupd_mono (∃ m,
@@ -275,17 +275,19 @@ Proof.
     by apply and_intro; [apply pure_intro|].
 Qed.
 
-Lemma own_update γ a a' : a ~~> a' → own γ a ==∗ own γ a'.
+Lemma own_update γ a a' : a ~~> a' → own γ a ⊢ |==> own γ a'.
 Proof.
-  intros; rewrite (own_updateP (a' =.)); last by apply cmra_update_updateP.
-  apply bupd_mono, exist_elim=> a''. rewrite sep_and. apply pure_elim_l=> -> //.
+  intros. iIntros "?".
+  iMod (own_updateP (a' =.) with "[$]") as (a'') "[-> $]".
+  { by apply cmra_update_updateP. }
+  done.
 Qed.
 Lemma own_update_2 γ a1 a2 a' :
   a1 ⋅ a2 ~~> a' → own γ a1 -∗ own γ a2 ==∗ own γ a'.
-Proof. intros. apply wand_intro_r. rewrite -own_op. by apply own_update. Qed.
+Proof. intros. apply entails_wand, wand_intro_r. rewrite -own_op. by iApply own_update. Qed.
 Lemma own_update_3 γ a1 a2 a3 a' :
   a1 ⋅ a2 ⋅ a3 ~~> a' → own γ a1 -∗ own γ a2 -∗ own γ a3 ==∗ own γ a'.
-Proof. intros. do 2 apply wand_intro_r. rewrite -!own_op. by apply own_update. Qed.
+Proof. intros. apply entails_wand. do 2 apply wand_intro_r. rewrite -!own_op. by iApply own_update. Qed.
 End global.
 
 Global Arguments own_valid {_ _} [_] _ _.

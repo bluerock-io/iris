@@ -23,7 +23,7 @@ Global Hint Extern 1 (IsBiIndexRel _ _) => unfold IsBiIndexRel; assumption
     Used when framing encounters a monPred_at in the goal. *)
 Class FrameMonPredAt {I : biIndex} {PROP : bi} (p : bool) (i : I)
       (𝓡 : PROP) (P : monPred I PROP) (𝓠 : PROP) :=
-  frame_monPred_at : □?p 𝓡 ∗ 𝓠 -∗ P i.
+  frame_monPred_at : □?p 𝓡 ∗ 𝓠 ⊢ P i.
 Global Arguments FrameMonPredAt {_ _} _ _ _%I _%I _%I.
 Global Hint Mode FrameMonPredAt + + + - ! ! - : typeclass_instances.
 
@@ -391,7 +391,7 @@ Global Instance frame_monPred_at_wand p P R Q1 Q2 i j :
 Proof.
   rewrite /IsBiIndexRel /Frame /FrameMonPredAt=>-> Hframe.
   rewrite -monPred_at_intuitionistically_if -monPred_at_sep. apply monPred_in_entails.
-  change ((□?p R ∗ (P -∗ Q2)) -∗ P -∗ Q1). apply bi.wand_intro_r.
+  change ((□?p R ∗ (P -∗ Q2)) ⊢ P -∗ Q1). apply bi.wand_intro_r.
   rewrite -assoc bi.wand_elim_l. done.
 Qed.
 Global Instance frame_monPred_at_impl P R Q1 Q2 i j :
@@ -401,7 +401,7 @@ Global Instance frame_monPred_at_impl P R Q1 Q2 i j :
 Proof.
   rewrite /IsBiIndexRel /Frame /FrameMonPredAt=>-> Hframe.
   rewrite -monPred_at_intuitionistically_if -monPred_at_sep. apply monPred_in_entails.
-  change ((□ R ∗ (P → Q2)) -∗ P → Q1).
+  change ((□ R ∗ (P → Q2)) ⊢ P → Q1).
   rewrite -bi.persistently_and_intuitionistically_sep_l. apply bi.impl_intro_r.
   rewrite -assoc bi.impl_elim_l bi.persistently_and_intuitionistically_sep_l. done.
 Qed.

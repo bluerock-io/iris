@@ -56,7 +56,7 @@ Section steps.
 
   Lemma steps_lb_le n n' :
     n' ≤ n → steps_lb n -∗ steps_lb n'.
-  Proof. intros Hle. by apply mono_nat_lb_own_le. Qed.
+  Proof. intros Hle. by iApply mono_nat_lb_own_le. Qed.
 
 End steps.
 

@@ -219,7 +219,7 @@ Section inv_heap.
 
   Lemma inv_mapsto_own_inv l v I : l ↦_I v -∗ l ↦_I □.
   Proof.
-    apply own_mono, auth_frag_mono. rewrite singleton_included pair_included.
+    iApply own_mono. apply auth_frag_mono. rewrite singleton_included pair_included.
     right. split; [apply: ucmra_unit_least|done].
   Qed.
 

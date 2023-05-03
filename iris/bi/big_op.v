@@ -226,7 +226,7 @@ Section sep_list.
     ([∗ list] k↦x ∈ l, Φ k x) -∗
     ([∗ list] k↦x ∈ l, Ψ k x) -∗
     ([∗ list] k↦x ∈ l, Φ k x ∗ Ψ k x).
-  Proof. apply wand_intro_r. rewrite big_sepL_sep //. Qed.
+  Proof. apply entails_wand, wand_intro_r. rewrite big_sepL_sep //. Qed.
 
   Lemma big_sepL_and Φ Ψ l :
     ([∗ list] k↦x ∈ l, Φ k x ∧ Ψ k x)
@@ -299,7 +299,7 @@ Section sep_list.
     □ (∀ k x, ⌜l !! k = Some x⌝ → Φ k x -∗ Ψ k x) -∗
     [∗ list] k↦x ∈ l, Ψ k x.
   Proof.
-    apply wand_intro_l. rewrite big_sepL_intro -big_sepL_sep.
+    apply entails_wand, wand_intro_l. rewrite big_sepL_intro -big_sepL_sep.
     by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -308,14 +308,14 @@ Section sep_list.
     ([∗ list] k↦x ∈ l, Φ k x -∗ Ψ k x) -∗
     [∗ list] k↦x ∈ l, Ψ k x.
   Proof.
-    apply wand_intro_r. rewrite -big_sepL_sep.
+    apply entails_wand, wand_intro_r. rewrite -big_sepL_sep.
     setoid_rewrite wand_elim_r. done.
   Qed.
 
   Lemma big_sepL_dup P `{!Affine P} l :
     □ (P -∗ P ∗ P) -∗ P -∗ [∗ list] k↦x ∈ l, P.
   Proof.
-    apply wand_intro_l.
+    apply entails_wand, wand_intro_l.
     induction l as [|x l IH]=> /=; first by apply: affine.
     rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
     rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
@@ -353,10 +353,11 @@ Section sep_list.
       Ψ i x -∗
       [∗ list] k↦y ∈ l, Ψ k y.
   Proof.
-    intros. rewrite big_sepL_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    intros. apply entails_wand.
+    rewrite big_sepL_delete //. apply sep_mono_r, forall_intro=> Ψ.
     apply wand_intro_r, wand_intro_l.
     rewrite (big_sepL_delete Ψ l i x) //. apply sep_mono_r.
-    eapply wand_apply; [apply big_sepL_impl|apply sep_mono_r].
+    eapply wand_apply; [apply wand_entails, big_sepL_impl|apply sep_mono_r].
     apply intuitionistically_intro', forall_intro=> k; apply forall_intro=> y.
     apply impl_intro_l, pure_elim_l=> ?; apply wand_intro_r.
     rewrite (forall_elim ) (forall_elim y) pure_True // left_id.
@@ -434,10 +435,10 @@ Section sep_list2.
   Lemma big_sepL2_nil' P `{!Affine P} Φ : P ⊢ [∗ list] k↦y1;y2 ∈ [];[], Φ k y1 y2.
   Proof. apply: affine. Qed.
   Lemma big_sepL2_nil_inv_l Φ l2 :
-    ([∗ list] k↦y1;y2 ∈ []; l2, Φ k y1 y2) -∗ ⌜l2 = []⌝.
+    ([∗ list] k↦y1;y2 ∈ []; l2, Φ k y1 y2) ⊢ ⌜l2 = []⌝.
   Proof. destruct l2; simpl; auto using False_elim, pure_intro. Qed.
   Lemma big_sepL2_nil_inv_r Φ l1 :
-    ([∗ list] k↦y1;y2 ∈ l1; [], Φ k y1 y2) -∗ ⌜l1 = []⌝.
+    ([∗ list] k↦y1;y2 ∈ l1; [], Φ k y1 y2) ⊢ ⌜l1 = []⌝.
   Proof. destruct l1; simpl; auto using False_elim, pure_intro. Qed.
 
   Lemma big_sepL2_cons Φ x1 x2 l1 l2 :
@@ -445,7 +446,7 @@ Section sep_list2.
     ⊣⊢ Φ 0 x1 x2 ∗ [∗ list] k↦y1;y2 ∈ l1;l2, Φ (S k) y1 y2.
   Proof. done. Qed.
   Lemma big_sepL2_cons_inv_l Φ x1 l1 l2 :
-    ([∗ list] k↦y1;y2 ∈ x1 :: l1; l2, Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ x1 :: l1; l2, Φ k y1 y2) ⊢
     ∃ x2 l2', ⌜ l2 = x2 :: l2' ⌝ ∧
               Φ 0 x1 x2 ∗ [∗ list] k↦y1;y2 ∈ l1;l2', Φ (S k) y1 y2.
   Proof.
@@ -453,7 +454,7 @@ Section sep_list2.
     by rewrite -(exist_intro x2) -(exist_intro l2) pure_True // left_id.
   Qed.
   Lemma big_sepL2_cons_inv_r Φ x2 l1 l2 :
-    ([∗ list] k↦y1;y2 ∈ l1; x2 :: l2, Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1; x2 :: l2, Φ k y1 y2) ⊢
     ∃ x1 l1', ⌜ l1 = x1 :: l1' ⌝ ∧
               Φ 0 x1 x2 ∗ [∗ list] k↦y1;y2 ∈ l1';l2, Φ (S k) y1 y2.
   Proof.
@@ -466,7 +467,7 @@ Section sep_list2.
   Proof. by rewrite /= right_id. Qed.
 
   Lemma big_sepL2_length Φ l1 l2 :
-    ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2) -∗ ⌜ length l1 = length l2 ⌝.
+    ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2) ⊢ ⌜ length l1 = length l2 ⌝.
   Proof. by rewrite big_sepL2_alt and_elim_l. Qed.
 
   Lemma big_sepL2_fst_snd Φ l :
@@ -478,7 +479,7 @@ Section sep_list2.
   Qed.
 
   Lemma big_sepL2_app Φ l1 l2 l1' l2' :
-    ([∗ list] k↦y1;y2 ∈ l1; l1', Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1; l1', Φ k y1 y2) ⊢
     ([∗ list] k↦y1;y2 ∈ l2; l2', Φ (length l1 + k) y1 y2) -∗
     ([∗ list] k↦y1;y2 ∈ l1 ++ l2; l1' ++ l2', Φ k y1 y2).
   Proof.
@@ -489,7 +490,7 @@ Section sep_list2.
     - by rewrite -assoc IH.
   Qed.
   Lemma big_sepL2_app_inv_l Φ l1' l1'' l2 :
-    ([∗ list] k↦y1;y2 ∈ l1' ++ l1''; l2, Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1' ++ l1''; l2, Φ k y1 y2) ⊢
     ∃ l2' l2'', ⌜ l2 = l2' ++ l2'' ⌝ ∧
                 ([∗ list] k↦y1;y2 ∈ l1';l2', Φ k y1 y2) ∗
                 ([∗ list] k↦y1;y2 ∈ l1'';l2'', Φ (length l1' + k) y1 y2).
@@ -501,7 +502,7 @@ Section sep_list2.
     by rewrite IH -assoc.
   Qed.
   Lemma big_sepL2_app_inv_r Φ l1 l2' l2'' :
-    ([∗ list] k↦y1;y2 ∈ l1; l2' ++ l2'', Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1; l2' ++ l2'', Φ k y1 y2) ⊢
     ∃ l1' l1'', ⌜ l1 = l1' ++ l1'' ⌝ ∧
                 ([∗ list] k↦y1;y2 ∈ l1';l2', Φ k y1 y2) ∗
                 ([∗ list] k↦y1;y2 ∈ l1'';l2'', Φ (length l2' + k) y1 y2).
@@ -514,7 +515,7 @@ Section sep_list2.
   Qed.
   Lemma big_sepL2_app_inv Φ l1 l2 l1' l2' :
     length l1 = length l1' ∨ length l2 = length l2' →
-    ([∗ list] k↦y1;y2 ∈ l1 ++ l2; l1' ++ l2', Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1 ++ l2; l1' ++ l2', Φ k y1 y2) ⊢
     ([∗ list] k↦y1;y2 ∈ l1; l1', Φ k y1 y2) ∗
     ([∗ list] k↦y1;y2 ∈ l2; l2', Φ (length l1 + k)%nat y1 y2).
   Proof.
@@ -534,7 +535,7 @@ Section sep_list2.
   Proof.
     intros. apply (anti_symm _).
     - by apply big_sepL2_app_inv.
-    - apply wand_elim_l'. apply big_sepL2_app.
+    - apply wand_elim_l', big_sepL2_app.
   Qed.
 
   Lemma big_sepL2_snoc Φ x1 x2 l1 l2 :
@@ -707,7 +708,7 @@ Section sep_list2.
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) -∗
     ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2) -∗
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y1 y2).
-  Proof. apply wand_intro_r. rewrite big_sepL2_sep //. Qed.
+  Proof. apply entails_wand, wand_intro_r. rewrite big_sepL2_sep //. Qed.
 
   Lemma big_sepL2_and Φ Ψ l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∧ Ψ k y1 y2)
@@ -798,7 +799,7 @@ Section sep_list2.
       ⌜l1 !! k = Some x1⌝ → ⌜l2 !! k = Some x2⌝ → Φ k x1 x2 -∗ Ψ k x1 x2) -∗
     [∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2.
   Proof.
-    rewrite -(idemp bi_and (big_sepL2 _ _ _)) {1}big_sepL2_length.
+    apply entails_wand. rewrite -(idemp bi_and (big_sepL2 _ _ _)) {1}big_sepL2_length.
     apply pure_elim_l=> ?. rewrite big_sepL2_intro //.
     apply bi.wand_intro_l. rewrite -big_sepL2_sep. by setoid_rewrite wand_elim_l.
   Qed.
@@ -808,7 +809,7 @@ Section sep_list2.
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 -∗ Ψ k y1 y2) -∗
     [∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2.
   Proof.
-    apply wand_intro_r. rewrite -big_sepL2_sep.
+    apply entails_wand, wand_intro_r. rewrite -big_sepL2_sep.
     setoid_rewrite wand_elim_r. done.
   Qed.
 
@@ -850,10 +851,10 @@ Section sep_list2.
       Ψ i x1 x2 -∗
       [∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2.
   Proof.
-    intros. rewrite big_sepL2_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    intros. rewrite big_sepL2_delete //. apply entails_wand, sep_mono_r, forall_intro=> Ψ.
     apply wand_intro_r, wand_intro_l.
     rewrite (big_sepL2_delete Ψ l1 l2 i) //. apply sep_mono_r.
-    eapply wand_apply; [apply big_sepL2_impl|apply sep_mono_r].
+    eapply wand_apply; [apply wand_entails, big_sepL2_impl|apply sep_mono_r].
     apply intuitionistically_intro', forall_intro=> k;
       apply forall_intro=> y1; apply forall_intro=> y2.
     do 2 (apply impl_intro_l, pure_elim_l=> ?); apply wand_intro_r.
@@ -903,7 +904,7 @@ Section sep_list2.
     ([∗ list] k↦y1 ∈ l1, Φ1 k y1) -∗
     ([∗ list] k↦y2 ∈ l2, Φ2 k y2) -∗
     [∗ list] k↦y1;y2 ∈ l1;l2, Φ1 k y1 ∗ Φ2 k y2.
-  Proof. intros. apply wand_intro_r. by rewrite big_sepL2_sepL. Qed.
+  Proof. intros. apply entails_wand, wand_intro_r. by rewrite big_sepL2_sepL. Qed.
 End sep_list2.
 
 Lemma big_sepL2_const_sepL_l {A B} (Φ : nat → A → PROP) (l1 : list A) (l2 : list B) :
@@ -946,7 +947,7 @@ Proof.
 Qed.
 
 Lemma big_sepL_sepL2_diag {A} (Φ : nat → A → A → PROP) (l : list A) :
-  ([∗ list] k↦y ∈ l, Φ k y y) -∗
+  ([∗ list] k↦y ∈ l, Φ k y y) ⊢
   ([∗ list] k↦y1;y2 ∈ l;l, Φ k y1 y2).
 Proof.
   rewrite big_sepL2_alt. rewrite pure_True // left_id.
@@ -1091,7 +1092,7 @@ Section and_list.
 
   Lemma big_andL_impl Φ Ψ m :
     ([∧ list] k↦x ∈ m, Φ k x) ∧
-    (∀ k x, ⌜m !! k = Some x⌝ → Φ k x → Ψ k x) -∗
+    (∀ k x, ⌜m !! k = Some x⌝ → Φ k x → Ψ k x) ⊢
     [∧ list] k↦x ∈ m, Ψ k x.
   Proof.
     rewrite -big_andL_forall -big_andL_and.
@@ -1362,7 +1363,7 @@ Section sep_map.
 
   Lemma big_sepM_insert_2 Φ m i x
     `{!TCOr (∀ y, Affine (Φ i y)) (Absorbing (Φ i x))} :
-    Φ i x -∗ ([∗ map] k↦y ∈ m, Φ k y) -∗ [∗ map] k↦y ∈ <[i:=x]> m, Φ k y.
+    Φ i x ⊢ ([∗ map] k↦y ∈ m, Φ k y) -∗ [∗ map] k↦y ∈ <[i:=x]> m, Φ k y.
   Proof.
     apply wand_intro_r. destruct (m !! i) as [y|] eqn:Hi; last first.
     { by rewrite -big_sepM_insert. }
@@ -1477,7 +1478,7 @@ Section sep_map.
     ([∗ map] k↦x ∈ m, Φ k x) -∗
     ([∗ map] k↦x ∈ m, Ψ k x) -∗
     ([∗ map] k↦x ∈ m, Φ k x ∗ Ψ k x).
-  Proof. apply wand_intro_r. rewrite big_sepM_sep //. Qed.
+  Proof. apply entails_wand, wand_intro_r. rewrite big_sepM_sep //. Qed.
 
   Lemma big_sepM_and Φ Ψ m :
     ([∗ map] k↦x ∈ m, Φ k x ∧ Ψ k x)
@@ -1550,7 +1551,7 @@ Section sep_map.
     □ (∀ k x, ⌜m !! k = Some x⌝ → Φ k x -∗ Ψ k x) -∗
     [∗ map] k↦x ∈ m, Ψ k x.
   Proof.
-    apply wand_intro_l. rewrite big_sepM_intro -big_sepM_sep.
+    apply entails_wand, wand_intro_l. rewrite big_sepM_intro -big_sepM_sep.
     by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -1559,14 +1560,14 @@ Section sep_map.
     ([∗ map] k↦x ∈ m, Φ k x -∗ Ψ k x) -∗
     [∗ map] k↦x ∈ m, Ψ k x.
   Proof.
-    apply wand_intro_r. rewrite -big_sepM_sep.
+    apply entails_wand, wand_intro_r. rewrite -big_sepM_sep.
     setoid_rewrite wand_elim_r. done.
   Qed.
 
   Lemma big_sepM_dup P `{!Affine P} m :
     □ (P -∗ P ∗ P) -∗ P -∗ [∗ map] k↦x ∈ m, P.
   Proof.
-    apply wand_intro_l. induction m as [|i x m ? IH] using map_ind.
+    apply entails_wand, wand_intro_l. induction m as [|i x m ? IH] using map_ind.
     { apply: big_sepM_empty'. }
     rewrite !big_sepM_insert //.
     rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
@@ -1584,10 +1585,10 @@ Section sep_map.
       Ψ i x -∗
       [∗ map] k↦y ∈ m, Ψ k y.
   Proof.
-    intros. rewrite big_sepM_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    intros. rewrite big_sepM_delete //. apply entails_wand, sep_mono_r, forall_intro=> Ψ.
     apply wand_intro_r, wand_intro_l.
     rewrite (big_sepM_delete Ψ m i x) //. apply sep_mono_r.
-    eapply wand_apply; [apply big_sepM_impl|apply sep_mono_r].
+    eapply wand_apply; [apply wand_entails, big_sepM_impl|apply sep_mono_r].
     f_equiv; f_equiv=> k; f_equiv=> y.
     rewrite impl_curry -pure_and lookup_delete_Some.
     do 2 f_equiv. intros ?; naive_solver.
@@ -1637,7 +1638,7 @@ Proof. apply big_opM_sep_zip. Qed.
 
 Lemma big_sepM_impl_strong `{Countable K} {A B}
     (Φ : K → A → PROP) (Ψ : K → B → PROP) (m1 : gmap K A) (m2 : gmap K B) :
-  ([∗ map] k↦x ∈ m1, Φ k x) -∗
+  ([∗ map] k↦x ∈ m1, Φ k x) ⊢
   □ (∀ (k : K) (y : B),
     (if m1 !! k is Some x then Φ k x else emp) -∗
     ⌜m2 !! k = Some y⌝ →
@@ -1687,7 +1688,7 @@ Lemma big_sepM_impl_dom_subseteq `{Countable K} {A B}
   ([∗ map] k↦y ∈ m2, Ψ k y) ∗
   ([∗ map] k↦x ∈ filter (λ '(k, _), m2 !! k = None) m1, Φ k x).
 Proof.
-  intros. rewrite big_sepM_impl_strong.
+  intros. apply entails_wand. rewrite big_sepM_impl_strong.
   apply wand_mono; last done. f_equiv. f_equiv=> k. apply forall_intro=> y.
   apply wand_intro_r, impl_intro_l, pure_elim_l=> Hlm2.
   destruct (m1 !! k) as [x|] eqn:Hlm1.
@@ -1772,7 +1773,7 @@ Section and_map.
   Proof. apply big_opM_insert_delete. Qed.
 
   Lemma big_andM_insert_2 Φ m i x :
-    Φ i x ∧ ([∧ map] k↦y ∈ m, Φ k y) -∗ [∧ map] k↦y ∈ <[i:=x]> m, Φ k y.
+    Φ i x ∧ ([∧ map] k↦y ∈ m, Φ k y) ⊢ [∧ map] k↦y ∈ <[i:=x]> m, Φ k y.
   Proof.
     rewrite big_andM_insert_delete.
     destruct (m !! i) eqn:Hi; [ | by rewrite delete_notin ].
@@ -1861,7 +1862,7 @@ Section and_map.
 
   Lemma big_andM_impl Φ Ψ m :
     ([∧ map] k↦x ∈ m, Φ k x) ∧
-    (∀ k x, ⌜m !! k = Some x⌝ → Φ k x → Ψ k x) -∗
+    (∀ k x, ⌜m !! k = Some x⌝ → Φ k x → Ψ k x) ⊢
     [∧ map] k↦x ∈ m, Ψ k x.
   Proof.
     rewrite -big_andM_forall -big_andM_and.
@@ -2152,7 +2153,7 @@ Section map2.
     rewrite !big_sepM2_alt.
     assert (TCOr (∀ x, Affine (Φ i x.1 x.2)) (Absorbing (Φ i x1 x2))).
     { destruct select (TCOr _ _); apply _. }
-    apply wand_intro_r.
+    apply entails_wand, wand_intro_r.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite (sep_comm  (Φ _ _ _)) -sep_assoc. apply sep_mono.
     { apply affinely_mono, pure_mono. intros Hm k.
@@ -2258,7 +2259,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) -∗
     ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2) -∗
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2 ∗ Ψ k y1 y2).
-  Proof. apply wand_intro_r. rewrite big_sepM2_sep //. Qed.
+  Proof. apply entails_wand, wand_intro_r. rewrite big_sepM2_sep //. Qed.
 
   Lemma big_sepM2_and Φ Ψ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2 ∧ Ψ k y1 y2)
@@ -2351,6 +2352,7 @@ Section map2.
       ⌜m1 !! k = Some x1⌝ → ⌜m2 !! k = Some x2⌝ → Φ k x1 x2 -∗ Ψ k x1 x2) -∗
     [∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2.
   Proof.
+    apply entails_wand.
     rewrite -(idemp bi_and (big_sepM2 _ _ _)) {1}big_sepM2_lookup_iff.
     apply pure_elim_l=> ?. rewrite big_sepM2_intro //.
     apply bi.wand_intro_l. rewrite -big_sepM2_sep. by setoid_rewrite wand_elim_l.
@@ -2361,7 +2363,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2 -∗ Ψ k y1 y2) -∗
     [∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2.
   Proof.
-    apply wand_intro_r. rewrite -big_sepM2_sep.
+    apply entails_wand, wand_intro_r. rewrite -big_sepM2_sep.
     setoid_rewrite wand_elim_r. done.
   Qed.
 
@@ -2379,10 +2381,10 @@ Section map2.
       Ψ i x1 x2 -∗
       [∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2.
   Proof.
-    intros. rewrite big_sepM2_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    intros. rewrite big_sepM2_delete //. apply entails_wand, sep_mono_r, forall_intro=> Ψ.
     apply wand_intro_r, wand_intro_l.
     rewrite (big_sepM2_delete Ψ m1 m2 i) //. apply sep_mono_r.
-    eapply wand_apply; [apply big_sepM2_impl|apply sep_mono_r].
+    eapply wand_apply; [apply wand_entails, big_sepM2_impl|apply sep_mono_r].
     f_equiv; f_equiv=> k; f_equiv=> y1; f_equiv=> y2.
     rewrite !impl_curry -!pure_and !lookup_delete_Some.
     do 2 f_equiv. intros ?; naive_solver.
@@ -2425,7 +2427,7 @@ Section map2.
     ([∗ map] k↦y1 ∈ m1, Φ1 k y1) -∗
     ([∗ map] k↦y2 ∈ m2, Φ2 k y2) -∗
     [∗ map] k↦y1;y2 ∈ m1;m2, Φ1 k y1 ∗ Φ2 k y2.
-  Proof. intros. apply wand_intro_r. by rewrite big_sepM2_sepM. Qed.
+  Proof. intros. apply entails_wand, wand_intro_r. by rewrite big_sepM2_sepM. Qed.
 
  Lemma big_sepM2_union_inv_l (Φ : K → A → B → PROP) m1 m2 m' :
     m1 ##ₘ m2 →
@@ -2472,7 +2474,7 @@ Proof.
 Qed.
 
 Lemma big_sepM_sepM2_diag `{Countable K} {A} (Φ : K → A → A → PROP) (m : gmap K A) :
-  ([∗ map] k↦y ∈ m, Φ k y y) -∗
+  ([∗ map] k↦y ∈ m, Φ k y y) ⊢
   ([∗ map] k↦y1;y2 ∈ m;m, Φ k y1 y2).
 Proof.
   rewrite big_sepM2_alt. rewrite pure_True; last naive_solver. rewrite left_id.
@@ -2601,7 +2603,7 @@ Section gset.
 
   Lemma big_sepS_insert_2 {Φ X} x
     `{!TCOr (Affine (Φ x)) (Absorbing (Φ x))} :
-    Φ x -∗ ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ {[ x ]} ∪ X, Φ y).
+    Φ x ⊢ ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ {[ x ]} ∪ X, Φ y).
   Proof.
     apply wand_intro_r. destruct (decide (x ∈ X)); last first.
     { rewrite -big_sepS_insert //. }
@@ -2614,13 +2616,13 @@ Section gset.
   Lemma big_sepS_insert_2' {Φ X} x
     `{!TCOr (Affine (Φ x)) (Absorbing (Φ x))} :
     Φ x -∗ ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ X ∪ {[ x ]}, Φ y).
-  Proof. rewrite comm_L. by apply big_sepS_insert_2. Qed.
+  Proof. apply entails_wand. rewrite comm_L. by apply big_sepS_insert_2. Qed.
 
   Lemma big_sepS_union_2 {Φ} X Y
     `{!∀ x, TCOr (Affine (Φ x)) (Absorbing (Φ x))} :
     ([∗ set] y ∈ X, Φ y) -∗ ([∗ set] y ∈ Y, Φ y) -∗ ([∗ set] y ∈ X ∪ Y, Φ y).
   Proof.
-    apply wand_intro_r. induction X as [|x X ? IH] using set_ind_L.
+    apply entails_wand, wand_intro_r. induction X as [|x X ? IH] using set_ind_L.
     { by rewrite left_id_L big_sepS_empty left_id. }
     rewrite big_sepS_insert // -assoc IH -assoc_L.
     destruct (decide (x ∈ Y)).
@@ -2632,7 +2634,7 @@ Section gset.
 
   Lemma big_sepS_delete_2 {Φ X} x :
     Affine (Φ x) →
-    Φ x -∗ ([∗ set] y ∈ X ∖ {[ x ]}, Φ y) -∗ [∗ set] y ∈ X, Φ y.
+    Φ x ⊢ ([∗ set] y ∈ X ∖ {[ x ]}, Φ y) -∗ [∗ set] y ∈ X, Φ y.
   Proof.
     intros Haff. apply wand_intro_r. destruct (decide (x ∈ X)).
     { rewrite -big_sepS_delete //. }
@@ -2677,7 +2679,7 @@ Section gset.
     intros ?. destruct (proj1 (subseteq_disjoint_union_L (filter φ Y) X))
       as (Z&->&?); first set_solver.
     rewrite big_sepS_union // big_sepS_filter'.
-    by apply sep_mono_r, wand_intro_l.
+    by apply entails_wand, sep_mono_r, wand_intro_l.
   Qed.
   Lemma big_sepS_filter_acc `{!BiAffine PROP}
       (φ : A → Prop) `{∀ y, Decision (φ y)} Φ X Y :
@@ -2700,7 +2702,7 @@ Section gset.
     ([∗ set] y ∈ X, Φ y) -∗
     ([∗ set] y ∈ X, Ψ y) -∗
     ([∗ set] y ∈ X, Φ y ∗ Ψ y).
-  Proof. apply wand_intro_r. rewrite big_sepS_sep //. Qed.
+  Proof. apply entails_wand, wand_intro_r. rewrite big_sepS_sep //. Qed.
 
   Lemma big_sepS_and Φ Ψ X :
     ([∗ set] y ∈ X, Φ y ∧ Ψ y) ⊢ ([∗ set] y ∈ X, Φ y) ∧ ([∗ set] y ∈ X, Ψ y).
@@ -2774,7 +2776,7 @@ Section gset.
     □ (∀ x, ⌜x ∈ X⌝ → Φ x -∗ Ψ x) -∗
     [∗ set] x ∈ X, Ψ x.
   Proof.
-    apply wand_intro_l. rewrite big_sepS_intro -big_sepS_sep.
+    apply entails_wand, wand_intro_l. rewrite big_sepS_intro -big_sepS_sep.
     by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -2783,7 +2785,7 @@ Section gset.
     ([∗ set] x ∈ X, Φ x -∗ Ψ x) -∗
     [∗ set] x ∈ X, Ψ x.
   Proof.
-    apply wand_intro_r. rewrite -big_sepS_sep.
+    apply entails_wand, wand_intro_r. rewrite -big_sepS_sep.
     setoid_rewrite wand_elim_r. done.
   Qed.
 
@@ -2798,10 +2800,10 @@ Section gset.
       Ψ x -∗
       [∗ set] y ∈ X, Ψ y.
   Proof.
-    intros. rewrite big_sepS_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    intros. rewrite big_sepS_delete //. apply entails_wand, sep_mono_r, forall_intro=> Ψ.
     apply wand_intro_r, wand_intro_l.
     rewrite (big_sepS_delete Ψ X x) //. apply sep_mono_r.
-    eapply wand_apply; [apply big_sepS_impl|apply sep_mono_r].
+    eapply wand_apply; [apply wand_entails, big_sepS_impl|apply sep_mono_r].
     f_equiv; f_equiv=> y. rewrite impl_curry -pure_and.
     do 2 f_equiv. intros ?; set_solver.
   Qed.
@@ -2809,7 +2811,7 @@ Section gset.
   Lemma big_sepS_dup P `{!Affine P} X :
     □ (P -∗ P ∗ P) -∗ P -∗ [∗ set] x ∈ X, P.
   Proof.
-    apply wand_intro_l. induction X as [|x X ? IH] using set_ind_L.
+    apply entails_wand, wand_intro_l. induction X as [|x X ? IH] using set_ind_L.
     { apply: big_sepS_empty'. }
     rewrite !big_sepS_insert //.
     rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
@@ -2946,7 +2948,7 @@ Section gmultiset.
     ([∗ mset] y ∈ X, Φ y) -∗
     ([∗ mset] y ∈ X, Ψ y) -∗
     ([∗ mset] y ∈ X, Φ y ∗ Ψ y).
-  Proof. apply wand_intro_r. rewrite big_sepMS_sep //. Qed.
+  Proof. apply entails_wand, wand_intro_r. rewrite big_sepMS_sep //. Qed.
 
   Lemma big_sepMS_and Φ Ψ X :
     ([∗ mset] y ∈ X, Φ y ∧ Ψ y) ⊢ ([∗ mset] y ∈ X, Φ y) ∧ ([∗ mset] y ∈ X, Ψ y).
@@ -3036,7 +3038,7 @@ Section gmultiset.
     □ (∀ x, ⌜x ∈ X⌝ → Φ x -∗ Ψ x) -∗
     [∗ mset] x ∈ X, Ψ x.
   Proof.
-    apply wand_intro_l. rewrite big_sepMS_intro -big_sepMS_sep.
+    apply entails_wand, wand_intro_l. rewrite big_sepMS_intro -big_sepMS_sep.
     by setoid_rewrite wand_elim_l.
   Qed.
 
@@ -3045,14 +3047,14 @@ Section gmultiset.
     ([∗ mset] x ∈ X, Φ x -∗ Ψ x) -∗
     [∗ mset] x ∈ X, Ψ x.
   Proof.
-    apply wand_intro_r. rewrite -big_sepMS_sep.
+    apply entails_wand, wand_intro_r. rewrite -big_sepMS_sep.
     setoid_rewrite wand_elim_r. done.
   Qed.
 
   Lemma big_sepMS_dup P `{!Affine P} X :
     □ (P -∗ P ∗ P) -∗ P -∗ [∗ mset] x ∈ X, P.
   Proof.
-    apply wand_intro_l. induction X as [|x X IH] using gmultiset_ind.
+    apply entails_wand, wand_intro_l. induction X as [|x X IH] using gmultiset_ind.
     { apply: big_sepMS_empty'. }
     rewrite !big_sepMS_disj_union big_sepMS_singleton.
     rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
@@ -3070,10 +3072,10 @@ Section gmultiset.
       Ψ x -∗
       [∗ mset] y ∈ X, Ψ y.
   Proof.
-    intros. rewrite big_sepMS_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    intros. rewrite big_sepMS_delete //. apply entails_wand, sep_mono_r, forall_intro=> Ψ.
     apply wand_intro_r, wand_intro_l.
     rewrite (big_sepMS_delete Ψ X x) //. apply sep_mono_r.
-    apply wand_elim_l', big_sepMS_impl.
+    apply wand_elim_l', wand_entails, big_sepMS_impl.
   Qed.
 End gmultiset.
 

@@ -86,7 +86,7 @@ Lemma box_own_auth_update γ b1 b2 b3 :
   box_own_auth γ (●E b1) ∗ box_own_auth γ (◯E b2)
   ==∗ box_own_auth γ (●E b3) ∗ box_own_auth γ (◯E b3).
 Proof.
-  rewrite /box_own_auth -!own_op. apply own_update, prod_update; last done.
+  rewrite /box_own_auth -!own_op. iApply own_update. apply prod_update; last done.
   apply excl_auth_update.
 Qed.
 

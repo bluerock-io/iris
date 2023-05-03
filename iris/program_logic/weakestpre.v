@@ -43,7 +43,7 @@ Class irisGS_gen (hlc : has_lc) (Λ : language) (Σ : gFunctors) := IrisG {
   complicate the formalization in Iris, we prefer simplifying the
   client. *)
   state_interp_mono σ ns κs nt:
-    state_interp σ ns κs nt ={∅}=∗ state_interp σ (S ns) κs nt
+    state_interp σ ns κs nt ⊢ |={∅}=> state_interp σ (S ns) κs nt
 }.
 Global Opaque iris_invGS.
 Global Arguments IrisG {hlc Λ Σ}.

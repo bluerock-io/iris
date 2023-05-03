@@ -127,17 +127,17 @@ Proof.
     iApply "IH"; auto.
 Qed.
 
-Lemma fupd_twp s E e Φ : (|={E}=> WP e @ s; E [{ Φ }]) -∗ WP e @ s; E [{ Φ }].
+Lemma fupd_twp s E e Φ : (|={E}=> WP e @ s; E [{ Φ }]) ⊢ WP e @ s; E [{ Φ }].
 Proof.
   rewrite twp_unfold /twp_pre. iIntros "H". destruct (to_val e) as [v|] eqn:?.
   { by iMod "H". }
   iIntros (σ1 ns κs nt) "Hσ1". iMod "H". by iApply "H".
 Qed.
-Lemma twp_fupd s E e Φ : WP e @ s; E [{ v, |={E}=> Φ v }] -∗ WP e @ s; E [{ Φ }].
+Lemma twp_fupd s E e Φ : WP e @ s; E [{ v, |={E}=> Φ v }] ⊢ WP e @ s; E [{ Φ }].
 Proof. iIntros "H". iApply (twp_strong_mono with "H"); auto. Qed.
 
 Lemma twp_atomic s E1 E2 e Φ `{!Atomic (stuckness_to_atomicity s) e} :
-  (|={E1,E2}=> WP e @ s; E2 [{ v, |={E2,E1}=> Φ v }]) -∗ WP e @ s; E1 [{ Φ }].
+  (|={E1,E2}=> WP e @ s; E2 [{ v, |={E2,E1}=> Φ v }]) ⊢ WP e @ s; E1 [{ Φ }].
 Proof.
   iIntros "H". rewrite !twp_unfold /twp_pre /=.
   destruct (to_val e) as [v|] eqn:He.
@@ -155,7 +155,7 @@ Proof.
 Qed.
 
 Lemma twp_bind K `{!LanguageCtx K} s E e Φ :
-  WP e @ s; E [{ v, WP K (of_val v) @ s; E [{ Φ }] }] -∗ WP K e @ s; E [{ Φ }].
+  WP e @ s; E [{ v, WP K (of_val v) @ s; E [{ Φ }] }] ⊢ WP K e @ s; E [{ Φ }].
 Proof.
   revert Φ. cut (∀ Φ', WP e @ s; E [{ Φ' }] -∗ ∀ Φ,
     (∀ v, Φ' v -∗ WP K (of_val v) @ s; E [{ Φ }]) -∗ WP K e @ s; E [{ Φ }]).
@@ -215,7 +215,7 @@ Qed.
 
 (** * Derived rules *)
 Lemma twp_mono s E e Φ Ψ :
-  (∀ v, Φ v -∗ Ψ v) → WP e @ s; E [{ Φ }] -∗ WP e @ s; E [{ Ψ }].
+  (∀ v, Φ v ⊢ Ψ v) → WP e @ s; E [{ Φ }] ⊢ WP e @ s; E [{ Ψ }].
 Proof.
   iIntros (HΦ) "H"; iApply (twp_strong_mono with "H"); auto.
   iIntros (v) "?". by iApply HΦ.
@@ -240,9 +240,9 @@ Proof. rewrite twp_value_fupd'. auto. Qed.
 Lemma twp_value s E Φ e v : IntoVal e v → Φ v ⊢ WP e @ s; E [{ Φ }].
 Proof. intros <-. apply twp_value'. Qed.
 
-Lemma twp_frame_l s E e Φ R : R ∗ WP e @ s; E [{ Φ }] -∗ WP e @ s; E [{ v, R ∗ Φ v }].
+Lemma twp_frame_l s E e Φ R : R ∗ WP e @ s; E [{ Φ }] ⊢ WP e @ s; E [{ v, R ∗ Φ v }].
 Proof. iIntros "[? H]". iApply (twp_strong_mono with "H"); auto with iFrame. Qed.
-Lemma twp_frame_r s E e Φ R : WP e @ s; E [{ Φ }] ∗ R -∗ WP e @ s; E [{ v, Φ v ∗ R }].
+Lemma twp_frame_r s E e Φ R : WP e @ s; E [{ Φ }] ∗ R ⊢ WP e @ s; E [{ v, Φ v ∗ R }].
 Proof. iIntros "[H ?]". iApply (twp_strong_mono with "H"); auto with iFrame. Qed.
 
 Lemma twp_wand s E e Φ Ψ :

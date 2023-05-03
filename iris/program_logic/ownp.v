@@ -197,7 +197,7 @@ Section lifting.
     {{{ ▷ (ownP σ1) }}} e1 @ s; E {{{ RET v2; ownP σ2 }}}.
   Proof.
     intros. rewrite -(ownP_lift_atomic_det_step σ1 v2 σ2 []); [|done..].
-    rewrite big_sepL_nil right_id. apply bi.wand_intro_r. iIntros "[Hs Hs']".
+    rewrite big_sepL_nil right_id. iIntros "Hs Hs'".
     iSplitL "Hs"; first by iFrame. iModIntro. iIntros "Hσ2". iApply "Hs'". iFrame.
   Qed.
 

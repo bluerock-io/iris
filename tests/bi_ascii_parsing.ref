@@ -5,4 +5,4 @@ True%I
 "test2"
      : string
 False%I True%I
-(False -∗ True)
+(False ⊢ True)

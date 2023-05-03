@@ -90,12 +90,12 @@ Section mono_nat.
   with "Hauth") as "#Hfrag"]. *)
   Lemma mono_nat_lb_own_get γ q n :
     mono_nat_auth_own γ q n -∗ mono_nat_lb_own γ n.
-  Proof. unseal. apply own_mono, mono_nat_included. Qed.
+  Proof. unseal. iApply own_mono. apply mono_nat_included. Qed.
 
   Lemma mono_nat_lb_own_le {γ n} n' :
     n' ≤ n →
     mono_nat_lb_own γ n -∗ mono_nat_lb_own γ n'.
-  Proof. unseal. intros. by apply own_mono, mono_nat_lb_mono. Qed.
+  Proof. unseal. intros. iApply own_mono. by apply mono_nat_lb_mono. Qed.
 
   Lemma mono_nat_lb_own_0 γ :
     ⊢ |==> mono_nat_lb_own γ 0.

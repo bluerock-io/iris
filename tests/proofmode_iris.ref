@@ -116,21 +116,6 @@
   N : namespace
   E1, E2 : coPset
   P : iProp Σ
-  ============================
-  ↑N ⊆ E2
-  → na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2 ={⊤}=∗
-    na_own t E1 ∗ na_own t E2 ∗ ▷ P
-1 goal
-  
-  hlc : has_lc
-  Σ : gFunctors
-  invGS_gen0 : invGS_gen hlc Σ
-  cinvG0 : cinvG Σ
-  na_invG0 : na_invG Σ
-  t : na_inv_pool_name
-  N : namespace
-  E1, E2 : coPset
-  P : iProp Σ
   H : ↑N ⊆ E2
   ============================
   _ : na_inv t N (<pers> P)

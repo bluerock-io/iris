@@ -158,7 +158,7 @@ Section plainly_derived.
   Lemma absorbingly_elim_plainly P : <absorb> ■ P ⊣⊢ ■ P.
   Proof. by rewrite -(persistently_elim_plainly P) absorbingly_elim_persistently. Qed.
 
-  Lemma plainly_and_sep_elim P Q : ■ P ∧ Q -∗ (emp ∧ P) ∗ Q.
+  Lemma plainly_and_sep_elim P Q : ■ P ∧ Q ⊢ (emp ∧ P) ∗ Q.
   Proof. by rewrite plainly_elim_persistently persistently_and_sep_elim_emp. Qed.
   Lemma plainly_and_sep_assoc P Q R : ■ P ∧ (Q ∗ R) ⊣⊢ (■ P ∧ Q) ∗ R.
   Proof. by rewrite -(persistently_elim_plainly P) persistently_and_sep_assoc. Qed.
@@ -235,9 +235,9 @@ Section plainly_derived.
   Lemma plainly_affinely_elim P : ■ <affine> P ⊣⊢ ■ P.
   Proof. by rewrite /bi_affinely plainly_and -plainly_True_emp plainly_pure left_id. Qed.
 
-  Lemma intuitionistically_plainly_elim P : □ ■ P -∗ □ P.
+  Lemma intuitionistically_plainly_elim P : □ ■ P ⊢ □ P.
   Proof. rewrite intuitionistically_affinely plainly_elim_persistently //. Qed.
-  Lemma intuitionistically_plainly P : □ ■ P -∗ ■ □ P.
+  Lemma intuitionistically_plainly P : □ ■ P ⊢ ■ □ P.
   Proof.
     rewrite /bi_intuitionistically plainly_affinely_elim affinely_elim.
     rewrite persistently_elim_plainly plainly_persistently_elim. done.

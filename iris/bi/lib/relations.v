@@ -321,7 +321,7 @@ Section general.
   Qed.
 
   Lemma bi_nsteps_add_inv n m x z :
-    bi_nsteps R (n + m) x z -∗ ∃ y, bi_nsteps R n x y ∗ bi_nsteps R m y z.
+    bi_nsteps R (n + m) x z ⊢ ∃ y, bi_nsteps R n x y ∗ bi_nsteps R m y z.
   Proof.
     iInduction n as [|n] "IH" forall (x).
     - iIntros "Hxz". iExists x. auto.
@@ -332,7 +332,7 @@ Section general.
   Qed.
 
   Lemma bi_nsteps_inv_r n x z :
-    bi_nsteps R (S n) x z -∗ ∃ y, bi_nsteps R n x y ∗ R y z.
+    bi_nsteps R (S n) x z ⊢ ∃ y, bi_nsteps R n x y ∗ R y z.
   Proof.
     rewrite -Nat.add_1_r bi_nsteps_add_inv /=.
     iDestruct 1 as (y) "[Hxy (%x' & Hxx' & Heq)]".
