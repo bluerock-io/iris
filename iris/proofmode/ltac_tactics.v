@@ -827,6 +827,11 @@ time.
 *)
 Ltac iIntoEmpValid_go :=
   lazymatch goal with
+  | |- IntoEmpValid (let _ := _ in _) _ =>
+    (* Normalize [let] so we don't need to rely on type class search to do so.
+    Letting type class search do so is unreliable, see Iris issue #520, and test
+    [test_apply_wand_below_let]. *)
+    lazy zeta; iIntoEmpValid_go
   | |- IntoEmpValid (?φ → ?ψ) _ =>
     (* Case [φ → ψ] *)
     (* note: the ltac pattern [_ → _] would not work as it would also match
