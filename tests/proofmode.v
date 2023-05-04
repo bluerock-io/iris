@@ -885,10 +885,45 @@ Proof.
   iIntros (help) "HP".
   iPoseProof (help with "[$HP]") as "?". done.
 Qed.
+Lemma test_iPoseProof_let_wand P Q :
+  (let R := True%I in R ∗ P ⊢ Q) →
+  P -∗ Q.
+Proof.
+  iIntros (help) "HP".
+  iPoseProof (help with "[$HP]") as "?". done.
+Qed.
+
+Lemma test_iPoseProof_let_in_string P Q :
+  (let R := True%I in R ∗ P ⊢ Q) →
+  P ⊢ Q.
+Proof.
+  iIntros "%help HP".
+  iPoseProof (help with "[$HP]") as "?". done.
+Qed.
 
 Lemma test_iIntros_let P :
   ∀ Q, let R := emp%I in P -∗ R -∗ Q -∗ P ∗ Q.
 Proof. iIntros (Q R) "$ _ $". Qed.
+
+Lemma test_iIntros_let_wand P :
+  ∀ Q, let R := emp%I in P ⊢ R -∗ Q -∗ P ∗ Q.
+Proof. iIntros (Q R) "$ _ $". Qed.
+
+Lemma lemma_for_test_apply_below_let (Φ : nat → PROP) :
+  let Q := Φ 5 in
+  Q ⊢ Q.
+Proof. iIntros (?) "?". done. Qed.
+Lemma test_apply_below_let (Φ : nat → PROP) :
+  Φ 5 -∗ Φ 5.
+Proof. iIntros "?". iApply lemma_for_test_apply_below_let. done. Qed.
+
+Lemma lemma_for_test_apply_wand_below_let (Φ : nat → PROP) :
+  let Q := Φ 5 in
+  Q -∗ Q.
+Proof. iIntros (?) "?". done. Qed.
+Lemma test_apply_wand_below_let (Φ : nat → PROP) :
+  Φ 5 -∗ Φ 5.
+Proof. iIntros "?". iApply lemma_for_test_apply_wand_below_let. done. Qed.
 
 Lemma test_iNext_iRewrite `{!BiInternalEq PROP} P Q :
   <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
@@ -1754,6 +1789,22 @@ Lemma iInduction_wrong_sel_pat (n m : nat) (P Q : nat → PROP) :
   ⌜ n = m ⌝ -∗ P n -∗ P m.
 Proof.
   Fail iInduction n as [|n] "IH" forall m.
+Abort.
+
+Check "test_iIntros_let_fail".
+Lemma test_iIntros_let_fail P :
+  let Q := (P ∗ P)%I in
+  Q ⊢ Q.
+Proof.
+  Fail iIntros "Q".
+Abort.
+
+Check "test_iIntros_let_wand_fail".
+Lemma test_iIntros_let_wand_fail P :
+  let Q := (P ∗ P)%I in
+  Q ⊢ Q.
+Proof.
+  Fail iIntros "Q".
 Abort.
 
 End error_tests.

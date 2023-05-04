@@ -66,6 +66,8 @@ Tactic Notation "iSelect" open_constr(pat) tactic1(tac) :=
 (** * Start a proof *)
 Tactic Notation "iStartProof" :=
   lazymatch goal with
+  | |- (let _ := _ in _) => fail "iStartProof: goal is a `let`, use `simpl`,"
+                                 "`intros x`, `iIntros (x)`, or `iIntros ""%x"""
   | |- envs_entails _ _ => idtac
   | |- ?φ => notypeclasses refine (as_emp_valid_2 φ _ _);
                [tc_solve || fail "iStartProof: not a BI assertion"
@@ -825,6 +827,11 @@ time.
 *)
 Ltac iIntoEmpValid_go :=
   lazymatch goal with
+  | |- IntoEmpValid (let _ := _ in _) _ =>
+    (* Normalize [let] so we don't need to rely on type class search to do so.
+    Letting type class search do so is unreliable, see Iris issue #520, and test
+    [test_apply_wand_below_let]. *)
+    lazy zeta; iIntoEmpValid_go
   | |- IntoEmpValid (?φ → ?ψ) _ =>
     (* Case [φ → ψ] *)
     (* note: the ltac pattern [_ → _] would not work as it would also match
