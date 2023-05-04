@@ -66,6 +66,8 @@ Tactic Notation "iSelect" open_constr(pat) tactic1(tac) :=
 (** * Start a proof *)
 Tactic Notation "iStartProof" :=
   lazymatch goal with
+  | |- (let _ := _ in _) => fail "iStartProof: goal is a `let`, use `simpl`,"
+                                 "`intros x`, `iIntros (x)`, or `iIntros ""%x"""
   | |- envs_entails _ _ => idtac
   | |- ?φ => notypeclasses refine (as_emp_valid_2 φ _ _);
                [tc_solve || fail "iStartProof: not a BI assertion"
