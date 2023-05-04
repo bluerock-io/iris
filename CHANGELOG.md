@@ -90,6 +90,8 @@ Coq 8.13 is no longer supported.
 - Make sure that `iStartProof` fails with a proper error message on goals with
   `let`. These `let`s should either be `simpl`ed or introduced into the Coq
   context using `intros x`, `iIntros (x)`, or `iIntros "%x"`.
+  This can break some proofs that did `iIntros "?"` on a goal of the shape
+  `let ... in P ⊢ Q`.
 - Make `iApply`/`iPoseProof`/`iDestruct` more reliable for lemmas whose
   statement involves `let`.
 
