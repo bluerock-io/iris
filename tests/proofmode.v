@@ -878,7 +878,7 @@ Proof.
   iIntros "?". done.
 Qed.
 
-Lemma test_iPoseProof_let P Q :
+Lemma test_iPoseProof_let_entails P Q :
   (let R := True%I in R ∗ P ⊢ Q) →
   P ⊢ Q.
 Proof.
@@ -886,14 +886,14 @@ Proof.
   iPoseProof (help with "[$HP]") as "?". done.
 Qed.
 Lemma test_iPoseProof_let_wand P Q :
-  (let R := True%I in R ∗ P ⊢ Q) →
+  (let R := True%I in R ∗ P -∗ Q) →
   P -∗ Q.
 Proof.
   iIntros (help) "HP".
   iPoseProof (help with "[$HP]") as "?". done.
 Qed.
 
-Lemma test_iPoseProof_let_in_string P Q :
+Lemma test_iPoseProof_let_entails_pm_intro_pat P Q :
   (let R := True%I in R ∗ P ⊢ Q) →
   P ⊢ Q.
 Proof.
@@ -901,21 +901,21 @@ Proof.
   iPoseProof (help with "[$HP]") as "?". done.
 Qed.
 
-Lemma test_iIntros_let P :
-  ∀ Q, let R := emp%I in P -∗ R -∗ Q -∗ P ∗ Q.
-Proof. iIntros (Q R) "$ _ $". Qed.
-
-Lemma test_iIntros_let_wand P :
+Lemma test_iIntros_let_entails P :
   ∀ Q, let R := emp%I in P ⊢ R -∗ Q -∗ P ∗ Q.
 Proof. iIntros (Q R) "$ _ $". Qed.
 
-Lemma lemma_for_test_apply_below_let (Φ : nat → PROP) :
+Lemma test_iIntros_let_wand P :
+  ∀ Q, let R := emp%I in P -∗ R -∗ Q -∗ P ∗ Q.
+Proof. iIntros (Q R) "$ _ $". Qed.
+
+Lemma lemma_for_test_apply_entails_below_let (Φ : nat → PROP) :
   let Q := Φ 5 in
   Q ⊢ Q.
 Proof. iIntros (?) "?". done. Qed.
-Lemma test_apply_below_let (Φ : nat → PROP) :
+Lemma test_apply_entails_below_let (Φ : nat → PROP) :
   Φ 5 -∗ Φ 5.
-Proof. iIntros "?". iApply lemma_for_test_apply_below_let. done. Qed.
+Proof. iIntros "?". iApply lemma_for_test_apply_entails_below_let. done. Qed.
 
 Lemma lemma_for_test_apply_wand_below_let (Φ : nat → PROP) :
   let Q := Φ 5 in
@@ -1791,8 +1791,8 @@ Proof.
   Fail iInduction n as [|n] "IH" forall m.
 Abort.
 
-Check "test_iIntros_let_fail".
-Lemma test_iIntros_let_fail P :
+Check "test_iIntros_let_entails_fail".
+Lemma test_iIntros_let_entails_fail P :
   let Q := (P ∗ P)%I in
   Q ⊢ Q.
 Proof.
@@ -1802,7 +1802,7 @@ Abort.
 Check "test_iIntros_let_wand_fail".
 Lemma test_iIntros_let_wand_fail P :
   let Q := (P ∗ P)%I in
-  Q ⊢ Q.
+  Q -∗ Q.
 Proof.
   Fail iIntros "Q".
 Abort.

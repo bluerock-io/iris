@@ -954,7 +954,7 @@ The command has indeed failed with message:
 Tactic failure: sel_pat.parse: the term m
 is expected to be a selection pattern (usually a string),
 but has unexpected type nat.
-"test_iIntros_let_fail"
+"test_iIntros_let_entails_fail"
      : string
 The command has indeed failed with message:
 Tactic failure: iStartProof: goal is a `let`, use `simpl`,
