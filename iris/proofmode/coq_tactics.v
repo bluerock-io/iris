@@ -36,7 +36,7 @@ Proof.
   cbv zeta. destruct (env_spatial Δ).
   - rewrite env_to_prop_and_pers_sound. rewrite comm. done.
   - rewrite env_to_prop_and_pers_sound env_to_prop_sound.
-    rewrite /bi_affinely [(emp ∧ _)%I]comm -and_sep_assoc left_id //.
+    rewrite /bi_affinely [(emp ∧ _)%I]comm -persistent_and_sep_assoc left_id //.
 Qed.
 
 (** * Basic rules *)
@@ -168,10 +168,10 @@ Proof.
   - rewrite (into_pure P) -persistently_and_intuitionistically_sep_l persistently_pure.
     by apply pure_elim_l.
   - destruct HPQ.
-    + rewrite -(affine_affinely P) (into_pure P) -and_affinely_sep_l.
+    + rewrite -(affine_affinely P) (into_pure P) -persistent_and_affinely_sep_l.
       by apply pure_elim_l.
-    + rewrite (into_pure P) -(absorbingly_affinely ⌜ _ ⌝) absorbingly_sep_lr.
-      rewrite -and_affinely_sep_l. apply pure_elim_l=> ?. by rewrite HQ.
+    + rewrite (into_pure P) -(persistent_absorbingly_affinely ⌜ _ ⌝) absorbingly_sep_lr.
+      rewrite -persistent_and_affinely_sep_l. apply pure_elim_l=> ?. by rewrite HQ.
 Qed.
 
 Lemma tac_pure_revert Δ φ P Q :
@@ -240,7 +240,7 @@ Proof.
     rewrite -(from_affinely P' P) -affinely_and_lr.
     by rewrite persistently_and_intuitionistically_sep_r intuitionistically_elim wand_elim_r.
   - apply impl_intro_l. rewrite envs_app_singleton_sound //; simpl.
-    by rewrite -(from_affinely P' P) and_affinely_sep_l_1 wand_elim_r.
+    by rewrite -(from_affinely P' P) persistent_and_affinely_sep_l_1 wand_elim_r.
 Qed.
 Lemma tac_impl_intro_intuitionistic Δ i P P' Q R :
   FromImpl R P Q →
@@ -1014,8 +1014,8 @@ Proof.
   rewrite -(idemp bi_and (of_envs Δ)) {2}(envs_lookup_sound _ i) //.
   rewrite (envs_simple_replace_singleton_sound _ _ j) //=.
   rewrite HP HPxy (intuitionistically_if_elim _ (_ ≡ _)) sep_elim_l.
-  rewrite and_affinely_sep_r -assoc. apply wand_elim_r'.
-  rewrite -and_affinely_sep_r. apply impl_elim_r'. destruct d.
+  rewrite persistent_and_affinely_sep_r -assoc. apply wand_elim_r'.
+  rewrite -persistent_and_affinely_sep_r. apply impl_elim_r'. destruct d.
   - apply (internal_eq_rewrite x y (λ y, □?q Φ y -∗ of_envs Δ')%I). solve_proper.
   - rewrite internal_eq_sym.
     eapply (internal_eq_rewrite y x (λ y, □?q Φ y -∗ of_envs Δ')%I). solve_proper.
@@ -1241,7 +1241,7 @@ Section tac_modal_intro.
     trans (<absorb>?fi Q')%I; last first.
     { destruct fi; last done. apply: absorbing. }
     simpl. rewrite -(HQ' Hφ). rewrite -HQ pure_True // left_id. clear HQ' HQ.
-    rewrite !and_affinely_sep_l.
+    rewrite !persistent_and_affinely_sep_l.
     rewrite -modality_sep absorbingly_if_sep. f_equiv.
     - rewrite -absorbingly_if_intro.
       remember (modality_intuitionistic_action M).
@@ -1288,7 +1288,7 @@ Lemma into_laterN_env_sound {PROP : bi} n (Δ1 Δ2 : envs PROP) :
   MaybeIntoLaterNEnvs n Δ1 Δ2 → of_envs Δ1 ⊢ ▷^n (of_envs Δ2).
 Proof.
   intros [[Hp ??] [Hs ??]]; rewrite !of_envs_eq.
-  rewrite ![(env_and_persistently _ ∧ _)%I]and_affinely_sep_l.
+  rewrite ![(env_and_persistently _ ∧ _)%I]persistent_and_affinely_sep_l.
   rewrite !laterN_and !laterN_sep.
   rewrite -{1}laterN_intro. apply and_mono, sep_mono.
   - apply pure_mono; destruct 1; constructor; naive_solver.

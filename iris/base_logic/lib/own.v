@@ -185,7 +185,7 @@ Proof. apply entails_wand, wand_intro_r. by rewrite -own_op own_valid. Qed.
 Lemma own_valid_3 γ a1 a2 a3 : own γ a1 -∗ own γ a2 -∗ own γ a3 -∗ ✓ (a1 ⋅ a2 ⋅ a3).
 Proof. apply entails_wand. do 2 apply wand_intro_r. by rewrite -!own_op own_valid. Qed.
 Lemma own_valid_r γ a : own γ a ⊢ own γ a ∗ ✓ a.
-Proof. apply: bi.entails_r. apply own_valid. Qed.
+Proof. apply: bi.persistent_entails_r. apply own_valid. Qed.
 Lemma own_valid_l γ a : own γ a ⊢ ✓ a ∗ own γ a.
 Proof. by rewrite comm -own_valid_r. Qed.
 
@@ -271,7 +271,7 @@ Proof.
     { apply inG_unfold_validN. }
     by apply cmra_transport_updateP'.
   - apply exist_elim=> m; apply pure_elim_l=> -[a' [-> HP]].
-    rewrite -(exist_intro a'). rewrite -and_sep.
+    rewrite -(exist_intro a'). rewrite -persistent_and_sep.
     by apply and_intro; [apply pure_intro|].
 Qed.
 
@@ -392,6 +392,6 @@ Section proofmode_instances.
     FromAnd (own γ a) (own γ b1) (own γ b2).
   Proof.
     intros ? Hb. rewrite /FromAnd (is_op a) own_op.
-    destruct Hb; by rewrite and_sep.
+    destruct Hb; by rewrite persistent_and_sep.
   Qed.
 End proofmode_instances.
