@@ -2,13 +2,9 @@
 (* Everything here should be [Export Set], which means when this
 file is *imported*, the option will only apply on the import site
 but not transitively. *)
+From stdpp Require Export options.
 
-Export Set Default Proof Using "Type".
 Export Set Suggest Proof Using. (* also warns about forgotten [Proof.] *)
-
-(* Enforces that every tactic is executed with a single focused goal, meaning
-that bullets and curly braces must be used to structure the proof. *)
-Export Set Default Goal Selector "!".
 
 (* We always annotate hints with locality ([Global] or [Local]). This enforces
 that at least global hints are annotated. *)
