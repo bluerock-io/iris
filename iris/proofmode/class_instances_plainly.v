@@ -61,7 +61,7 @@ Global Instance into_sep_plainly_affine P Q1 Q2 :
   IntoSep (■ P) (■ Q1) (■ Q2).
 Proof.
   rewrite /IntoSep /= => -> ??.
-  by rewrite sep_and plainly_and plainly_and_sep_l_1.
+  by rewrite sep_and plainly_and and_sep_l_1.
 Qed.
 
 Global Instance from_or_plainly P Q1 Q2 :

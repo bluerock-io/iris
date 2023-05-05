@@ -1204,17 +1204,15 @@ Proof.
              persistently_pure left_id.
 Qed.
 
-Lemma and_sep_persistently P Q : <pers> P ∧ <pers> Q ⊣⊢ <pers> P ∗ <pers> Q.
-Proof. apply: and_sep. Qed.
 Lemma persistently_sep_2 P Q : <pers> P ∗ <pers> Q ⊢ <pers> (P ∗ Q).
 Proof.
-  by rewrite -persistently_and_sep persistently_and -and_sep_persistently.
+  by rewrite -persistently_and_sep persistently_and -and_sep.
 Qed.
 Lemma persistently_sep `{!BiPositive PROP} P Q :
   <pers> (P ∗ Q) ⊣⊢ <pers> P ∗ <pers> Q.
 Proof.
   apply (anti_symm _); auto using persistently_sep_2.
-  rewrite -persistently_affinely_elim affinely_sep -and_sep_persistently.
+  rewrite -persistently_affinely_elim affinely_sep -and_sep.
   apply and_intro.
   - by rewrite (affinely_elim_emp Q) right_id affinely_elim.
   - by rewrite (affinely_elim_emp P) left_id affinely_elim.
@@ -1237,11 +1235,6 @@ Qed.
 
 Lemma persistently_wand P Q : <pers> (P -∗ Q) ⊢ <pers> P -∗ <pers> Q.
 Proof. apply wand_intro_r. by rewrite persistently_sep_2 wand_elim_l. Qed.
-
-Lemma persistently_entails_l P Q : (P ⊢ <pers> Q) → P ⊢ <pers> Q ∗ P.
-Proof. apply: entails_l. Qed.
-Lemma persistently_entails_r P Q : (P ⊢ <pers> Q) → P ⊢ P ∗ <pers> Q.
-Proof. apply: entails_r. Qed.
 
 Lemma persistently_impl_wand_2 P Q : <pers> (P -∗ Q) ⊢ <pers> (P → Q).
 Proof.

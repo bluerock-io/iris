@@ -239,6 +239,7 @@ Section internal_eq_derived.
     rewrite and_elim_r -(equiv_internal_eq True) //.
     by rewrite affinely_True_emp left_id.
   Qed.
+  (* Hint Cut [plain_separable internal_eq_plain] is in [bi.plainly] *)
 
   (* Equality under a later. *)
   Lemma internal_eq_rewrite_contractive {A : ofe} a b (Ψ : A → PROP)
