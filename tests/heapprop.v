@@ -94,7 +94,7 @@ Local Definition heapProp_wand_unseal:
   @heapProp_wand = @heapProp_wand_def := seal_eq heapProp_wand_aux.
 
 Local Definition heapProp_persistently_def (P : heapProp) : heapProp :=
-  {| heapProp_holds σ := P ∅ |}.
+  heapProp_pure (heapProp_entails heapProp_emp P).
 Local Definition heapProp_persistently_aux : seal (@heapProp_persistently_def).
 Proof. by eexists. Qed.
 Definition heapProp_persistently := unseal heapProp_persistently_aux.
@@ -120,7 +120,7 @@ Section mixins.
     BiMixin
       heapProp_entails heapProp_emp heapProp_pure heapProp_and heapProp_or
       heapProp_impl (@heapProp_forall) (@heapProp_exist)
-      heapProp_sep heapProp_wand heapProp_persistently.
+      heapProp_sep heapProp_wand.
   Proof.
     split.
     - (* [PreOrder heapProp_entails] *)
@@ -145,8 +145,6 @@ Section mixins.
       unseal=> n P1 P2 [HP] Q1 Q2 [HQ]; split; naive_solver.
     - (* [NonExpansive2 bi_wand] *)
       unseal=> n P1 P2 [HP] Q1 Q2 [HQ]; split; naive_solver.
-    - (* [NonExpansive2 bi_persistently] *)
-      unseal=> n P1 P2 [HP]; split; naive_solver.
     - (* [φ → P ⊢ ⌜ φ ⌝] *)
       unseal=> φ P ?; by split.
     - (* [(φ → True ⊢ P) → ⌜ φ ⌝ ⊢ P] *)
@@ -193,21 +191,18 @@ Section mixins.
       unseal=> P Q R [HPQR]; split=> σ1 ? σ2 ??. apply HPQR. by exists σ1, σ2.
     - (* [(P ⊢ Q -∗ R) → P ∗ Q ⊢ R] *)
       unseal=> P Q R [HPQR]; split; intros ? (σ1&σ2&->&?&?&?). by apply HPQR.
-    - (* [(P ⊢ Q) → <pers> P ⊢ <pers> Q] *)
-      unseal=> P Q [HPQ]; split=> σ. apply HPQ.
-    - (* [<pers> P ⊢ <pers> <pers> P] *)
-      unseal=> P; split=> σ; done.
-    - (* [emp ⊢ <pers> emp] *)
-      unseal; split=> σ; done.
-    - (* [(∀ a, <pers> (Ψ a)) ⊢ <pers> (∀ a, Ψ a)] *)
-      unseal=> A Ψ; split=> σ; done.
-    - (* [<pers> (∃ a, Ψ a) ⊢ ∃ a, <pers> (Ψ a)] *)
-      unseal=> A Ψ; split=> σ; done.
-    - (* [<pers> P ∗ Q ⊢ <pers> P] *)
-      unseal=> P Q; split; intros ? (σ1&σ2&->&?&?&?); done.
-    - (* [<pers> P ∧ Q ⊢ P ∗ Q] *)
-      unseal=> P Q; split=> σ [??]. eexists ∅, σ. rewrite left_id_L.
-      split_and!; done || apply map_disjoint_empty_l.
+  Qed.
+
+  Lemma heapProp_bi_persistently_mixin :
+    BiPersistentlyMixin
+      heapProp_entails heapProp_emp heapProp_and
+      (@heapProp_exist) heapProp_sep heapProp_persistently.
+  Proof.
+    eapply bi_persistently_mixin_discrete, heapProp_bi_mixin; [done|..].
+    - (* [(emp ⊢ ∃ x, Φ x) → ∃ x, emp ⊢ Φ x] *)
+      unseal. intros A Φ [H]. destruct (H ∅) as [x ?]; [done|].
+      exists x. by split=> σ ->.
+    - by rewrite heapProp_persistently_unseal.
   Qed.
 
   Lemma heapProp_bi_later_mixin :
@@ -220,7 +215,9 @@ End mixins.
 
 Canonical Structure heapPropI : bi :=
   {| bi_ofe_mixin := ofe_mixin_of heapProp;
-     bi_bi_mixin := heapProp_bi_mixin; bi_bi_later_mixin := heapProp_bi_later_mixin |}.
+     bi_bi_mixin := heapProp_bi_mixin;
+     bi_bi_persistently_mixin := heapProp_bi_persistently_mixin;
+     bi_bi_later_mixin := heapProp_bi_later_mixin |}.
 
 Global Instance heapProp_pure_forall : BiPureForall heapPropI.
 Proof. intros A φ. rewrite /bi_forall /bi_pure /=. unseal. by split. Qed.

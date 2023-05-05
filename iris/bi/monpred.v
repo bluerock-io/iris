@@ -315,8 +315,7 @@ Section instances.
 
   Lemma monPred_bi_mixin : BiMixin (PROP:=monPred I PROP)
     monPred_entails monPred_emp monPred_pure monPred_and monPred_or
-    monPred_impl monPred_forall monPred_exist monPred_sep monPred_wand
-    monPred_persistently.
+    monPred_impl monPred_forall monPred_exist monPred_sep monPred_wand.
   Proof.
     split; rewrite ?monPred_defs.monPred_unseal;
       try by (split=> ? /=; repeat f_equiv).
@@ -354,6 +353,15 @@ Section instances.
       apply bi.wand_intro_r. by rewrite -HR /= !Hij.
     - intros P Q R [HP]. split=> i. apply bi.wand_elim_l'.
       rewrite HP /= bi.forall_elim bi.pure_impl_forall bi.forall_elim //.
+  Qed.
+
+  Lemma monPred_bi_persistently_mixin :
+    BiPersistentlyMixin (PROP:=monPred I PROP)
+      monPred_entails monPred_emp monPred_and
+      monPred_exist monPred_sep monPred_persistently.
+  Proof.
+    split; rewrite ?monPred_defs.monPred_unseal;
+      try by (split=> ? /=; repeat f_equiv).
     - intros P Q [?]. split=> i /=. by f_equiv.
     - intros P. split=> i. by apply bi.persistently_idemp_2.
     - split=> i. by apply bi.persistently_emp_intro.
@@ -386,7 +394,9 @@ Section instances.
   Qed.
 
   Canonical Structure monPredI : bi :=
-    {| bi_ofe_mixin := monPred_ofe_mixin; bi_bi_mixin := monPred_bi_mixin;
+    {| bi_ofe_mixin := monPred_ofe_mixin;
+       bi_bi_mixin := monPred_bi_mixin;
+       bi_bi_persistently_mixin := monPred_bi_persistently_mixin;
        bi_bi_later_mixin := monPred_bi_later_mixin |}.
 
   (** We restate the unsealing lemmas so that they also unfold the BI layer. The

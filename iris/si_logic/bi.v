@@ -20,8 +20,7 @@ Local Existing Instance entails_po.
 Lemma siProp_bi_mixin :
   BiMixin
     siProp_entails siProp_emp siProp_pure siProp_and siProp_or siProp_impl
-    (@siProp_forall) (@siProp_exist) siProp_sep siProp_wand
-    siProp_persistently.
+    (@siProp_forall) (@siProp_exist) siProp_sep siProp_wand.
 Proof.
   split.
   - exact: entails_po.
@@ -34,7 +33,6 @@ Proof.
   - exact: exist_ne.
   - exact: and_ne.
   - exact: impl_ne.
-  - solve_proper.
   - exact: pure_intro.
   - exact: pure_elim'.
   - exact: and_elim_l.
@@ -68,6 +66,15 @@ Proof.
     apply impl_intro_r.
   - (* (P ⊢ Q -∗ R) → P ∗ Q ⊢ R *)
     apply impl_elim_l'.
+Qed.
+
+Lemma siProp_bi_persistently_mixin :
+  BiPersistentlyMixin
+    siProp_entails siProp_emp siProp_and
+    (@siProp_exist) siProp_sep siProp_persistently.
+Proof.
+  split.
+  - solve_proper.
   - (* (P ⊢ Q) → <pers> P ⊢ <pers> Q *)
     done.
   - (* <pers> P ⊢ <pers> <pers> P *)
@@ -119,7 +126,9 @@ Qed.
 
 Canonical Structure siPropI : bi :=
   {| bi_ofe_mixin := ofe_mixin_of siProp;
-     bi_bi_mixin := siProp_bi_mixin; bi_bi_later_mixin := siProp_bi_later_mixin |}.
+     bi_bi_mixin := siProp_bi_mixin;
+     bi_bi_persistently_mixin := siProp_bi_persistently_mixin;
+     bi_bi_later_mixin := siProp_bi_later_mixin |}.
 
 Global Instance siProp_pure_forall : BiPureForall siPropI.
 Proof. exact: @pure_forall_2. Qed.

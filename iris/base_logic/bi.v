@@ -13,8 +13,7 @@ Local Existing Instance entails_po.
 Lemma uPred_bi_mixin (M : ucmra) :
   BiMixin
     uPred_entails uPred_emp uPred_pure uPred_and uPred_or uPred_impl
-    (@uPred_forall M) (@uPred_exist M) uPred_sep uPred_wand
-    uPred_persistently.
+    (@uPred_forall M) (@uPred_exist M) uPred_sep uPred_wand.
 Proof.
   split.
   - exact: entails_po.
@@ -27,7 +26,6 @@ Proof.
   - exact: exist_ne.
   - exact: sep_ne.
   - exact: wand_ne.
-  - exact: persistently_ne.
   - exact: pure_intro.
   - exact: pure_elim'.
   - exact: and_elim_l.
@@ -49,6 +47,15 @@ Proof.
   - exact: sep_assoc'.
   - exact: wand_intro_r.
   - exact: wand_elim_l'.
+Qed.
+
+Lemma uPred_bi_persistently_mixin (M : ucmra) :
+  BiPersistentlyMixin
+    uPred_entails uPred_emp uPred_and
+    (@uPred_exist M) uPred_sep uPred_persistently.
+Proof.
+  split.
+  - exact: persistently_ne.
   - exact: persistently_mono.
   - exact: persistently_idemp_2.
   - (* emp ⊢ <pers> emp (ADMISSIBLE) *)
@@ -96,7 +103,8 @@ Qed.
 Canonical Structure uPredI (M : ucmra) : bi :=
   {| bi_ofe_mixin := ofe_mixin_of (uPred M);
      bi_bi_mixin := uPred_bi_mixin M;
-     bi_bi_later_mixin := uPred_bi_later_mixin M |}.
+     bi_bi_later_mixin := uPred_bi_later_mixin M;
+     bi_bi_persistently_mixin := uPred_bi_persistently_mixin M |}.
 
 Lemma uPred_internal_eq_mixin M : BiInternalEqMixin (uPredI M) (@uPred_internal_eq M).
 Proof.
