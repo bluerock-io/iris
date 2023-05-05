@@ -7,6 +7,13 @@ lemma.
 
 Coq 8.13 is no longer supported.
 
+**Changes in `prelude`:**
+
+* Re-export `stdpp.options` from `iris.prelude.options`. This enables 'light'
+  name mangling, which prefixes auto-generated names with `__`. This only
+  affects developments that explicitly opt-in to following the Iris
+  configuration by importing `iris.prelude.options`.
+
 **Changes in `algebra`:**
 
 * Add (basic) support for `gset` and `gset_disj` cameras to `set_solver`.
@@ -90,6 +97,9 @@ Coq 8.13 is no longer supported.
 
 **Changes in `base_logic`:**
 
+* Add `mono_Z` library for monotone non-negative integers.
+  (This has exactly the same lemmas as `mono_nat`. It is useful in cases
+  where one wants to avoid `nat` entirely and use `Z` throughout.)
 * Add `IsExcept0` instance for invariants, allowing you to remove laters of
   timeless hypotheses when proving an invariant (without an update).
 * Make `uPred.unseal` tactic more robust by using types to unfold the right
@@ -107,12 +117,6 @@ Coq 8.13 is no longer supported.
 * Extend `wp_apply` and `wp_smart_apply` to support immediately introducing the
   postcondition into the context via `as (x1 ... xn) "ipat1 ... ipatn"`.
 * Add comparison `≤` and `<` for locations. (by Arthur Azevedo de Amorim).
-
-**Changes in `base_logic`:**
-
-* Add `mono_Z` library for monotone non-negative integers.
-  (This has exactly the same lemmas as `mono_nat`. It is useful in cases
-  where one wants to avoid `nat` entirely and use `Z` throughout.)
 
 **LaTeX changes:**
 
