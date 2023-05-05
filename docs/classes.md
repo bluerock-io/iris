@@ -72,14 +72,15 @@ Global Hint Cut [_* persistent_separable and_persistent] : typeclass_instances.
 
 This hint says that at any point during the instance search (`_*`), if
 `persistent_separable` has been applied, the next instance to be applied should
-**not** be `and_persistent`.
+**not** be `and_persistent`. This rules out the derivation on the right
+in the example above.
 
 **Warning from the Coq reference manual:** The regexp matches the entire path.
 Most hints will start with a leading `_*` to match the tail of the path.
 
 The order matters. Having a cut for `[_* and_persistent persistent_separable]`
 (i.e., excluding the first derivation) would result in incompleteness. It
-become impossible to derive `Separable (P ∧ Q)` from `Persistent P` and
+becomes impossible to derive `Separable (P ∧ Q)` from `Persistent P` and
 `Separable Q`.
 
 Note that `Separable` is not closed under `∀`, but `Persistent` is. Hence we
