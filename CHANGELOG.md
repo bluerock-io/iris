@@ -67,6 +67,34 @@ Coq 8.13 is no longer supported.
     particular, replace `apply` by `iApply`).
   - Add some `apply bi.entails_wand`/`apply bi.wand_entails` to 'convert'
     between the old and new way of interpreting `P -∗ Q`.
+* Add the class of `Separable` propositions, which generalizes `Persistent`
+  propositions. The class will be useful when we introduce BIs with a
+  degenerative persistence modality, i.e., BIs without the proof rule
+  `True ⊢ <pers> True`/BIs with `<pers> P := False`.
+* Generalize lemmas about `persistently`/`plainly`/`Plain` to `Separable`:
+  + `persistently_and_sep_assoc`, `persistent_and_sep_assoc`,
+    `plainly_and_sep_assoc` → `and_sep_assoc`
+  + `persistently_sep_dup`, `persistent_sep_dup`, `plainly_sep_dup` → `sep_dup`
+  + `persistently_and_sep_l_1`, `plainly_and_sep_l_1` → `and_sep_l_1`
+  + `persistently_and_sep_r_1`, `plainly_and_sep_r_1` → `and_sep_l_1`
+  + `persistently_and_sep_l`, `plainly_and_sep_l` → `and_sep_l`
+  + `persistently_and_sep_r`, `plainly_and_sep_r` → `and_sep_r`
+  + `persistent_and_sep_1` → `and_sep_1`
+  + `persistent_and_sep`, `and_sep_persistently`, `and_sep_plainly` → `and_sep`
+  + `persistently_entails_l`, `persistent_entails_l`, `plainly_entails_l` →
+    `entails_l`
+  + `persistently_entails_r`, `persistent_entails_r`, `plainly_entails_r` →
+    `entails_r`
+  + `impl_wand_persistently_2`, `impl_wand_plainly_2` → `impl_wand_2`
+  + `impl_wand_persistently`, `impl_wand_plainly` → `impl_wand`
+  + `persistent_and_affinely_sep_l_1` → `and_affinely_sep_l_1`
+  + `persistent_and_affinely_sep_r_1` → `and_affinely_sep_r_1`
+  + `persistent_and_affinely_sep_l` → `and_affinely_sep_l`
+  + `persistent_and_affinely_sep_r` → `and_affinely_sep_r`
+  + `persistent_absorbingly_affinely_2` → `absorbingly_affinely_2`
+  + `persistent_absorbingly_affinely` → `absorbingly_affinely`
+  + `persistent_impl_wand_affinely`, `impl_wand_affinely_plainly` →
+    `impl_affinely_wand`
 
 **Changes in `proofmode`:**
 
@@ -141,6 +169,17 @@ s/\bloc_add(_assoc|_0|_inj|)\b/Loc.add\1/g
 s/\bfresh_locs(_fresh|)\b/Loc.fresh\1/g
 # unseal
 s/\bMonPred\.unseal\b/monPred\.unseal/g
+# separable
+s/\b(persistently|persistent|plainly)_and_sep_assoc\b/and_sep_assoc/g
+s/\b(persistently|persistent|plainly)_sep_dup\b/sep_dup/g
+s/\b(persistently|plainly)_and_sep_(l_1|r_1|l|r)\b/and_sep_\2/g
+s/\bpersistent_and_sep_1\b/and_sep_1/g
+s/\b(persistent_and_sep|and_sep_persistently|and_sep_plainly)\b/and_sep/g
+s/\b(persistently|persistent|plainly)_entails_(l|r)\b/entails_\2/g
+s/\bimpl_wand_(persistently|plainly)(|_2)\b/impl_wand\2/g
+s/\bpersistent_and_affinely_sep_(l_1|r_1|l|r)\b/and_affinely_sep_\1/g
+s/\bpersistent_absorbingly_affinely(|_2)\b/absorbingly_affinely\1/g
+s/\b(persistent_impl_wand_affinely|impl_wand_affinely_plainly)\b/impl_affinely_wand/g
 EOF
 ```
 
