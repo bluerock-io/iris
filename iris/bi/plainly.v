@@ -134,7 +134,7 @@ Section plainly_derived.
     Proper (flip (⊢) ==> flip (⊢)) (@plainly PROP _).
   Proof. intros P Q; apply plainly_mono. Qed.
 
-  (* Not an instance, see the bottom of this file *)
+  (* Not an instance; registered as [Hint Immediate] at the bottom of this file *)
   Lemma plain_persistent P : Plain P → Persistent P.
   Proof. intros. by rewrite /Persistent -plainly_elim_persistently. Qed.
 
