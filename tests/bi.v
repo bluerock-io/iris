@@ -70,3 +70,12 @@ Proof. intros. eexists _. Fail apply _. Abort.
 Goal ∀ {PROP : bi} (P : PROP),
   ∃ plainly_instance, Persistent (@plainly PROP plainly_instance P).
 Proof. intros. eexists _. Fail apply _. Abort.
+
+(** Without the right [Hint Cut] declarations, this will backtrack on trying to
+establish that each conjunction is [Separable], [Persistent], and [Plain], i.e.,
+taking [100^3] steps. *)
+Lemma separable_big `{!BiPlainly PROP} (P : PROP) :
+  Separable (Nat.iter 100 (λ rec, True ∧ rec)%I P).
+Proof.
+  simpl. Fail apply _.
+Abort.

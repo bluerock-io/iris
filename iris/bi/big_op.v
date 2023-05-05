@@ -250,7 +250,7 @@ Section sep_list.
     induction l as [|x l IH] using rev_ind.
     { rewrite big_sepL_nil. apply affinely_elim_emp. }
     rewrite big_sepL_snoc // -IH.
-    rewrite -persistent_and_sep_1 -affinely_and -pure_and.
+    rewrite -and_sep_1 -affinely_and -pure_and.
     f_equiv. f_equiv=>- Hlx. split.
     - intros k y Hy. apply Hlx. rewrite lookup_app Hy //.
     - apply Hlx. rewrite lookup_app lookup_ge_None_2 //.
@@ -289,7 +289,7 @@ Section sep_list.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepL_lookup. }
     revert Φ HΦ. induction l as [|x l IH]=> Φ HΦ /=.
     { apply: affine. }
-    rewrite -persistent_and_sep_1. apply and_intro.
+    rewrite -and_sep_1. apply and_intro.
     - rewrite (forall_elim 0) (forall_elim x) pure_True // True_impl. done.
     - rewrite -IH. apply forall_intro => k. by rewrite (forall_elim (S k)).
   Qed.
@@ -698,10 +698,10 @@ Section sep_list2.
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y1 y2)
     ⊣⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∗ ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2).
   Proof.
-    rewrite !big_sepL2_alt big_sepL_sep !persistent_and_affinely_sep_l.
+    rewrite !big_sepL2_alt big_sepL_sep !and_affinely_sep_l.
     rewrite -assoc (assoc _ _ (<affine> _)%I). rewrite -(comm bi_sep (<affine> _)%I).
-    rewrite -assoc (assoc _ _ (<affine> _)%I) -!persistent_and_affinely_sep_l.
-    by rewrite affinely_and_r persistent_and_affinely_sep_l idemp.
+    rewrite -assoc (assoc _ _ (<affine> _)%I) -!and_affinely_sep_l.
+    by rewrite affinely_and_r and_affinely_sep_l idemp.
   Qed.
 
   Lemma big_sepL2_sep_2 Φ Ψ l1 l2 :
@@ -786,7 +786,7 @@ Section sep_list2.
     apply pure_elim_l=> Hlen.
     revert l2 Φ HΦ Hlen. induction l1 as [|x1 l1 IH]=> -[|x2 l2] Φ HΦ Hlen; simplify_eq/=.
     { by apply (affine _). }
-    rewrite -persistent_and_sep_1. apply and_intro.
+    rewrite -and_sep_1. apply and_intro.
     - rewrite (forall_elim 0) (forall_elim x1) (forall_elim x2).
       by rewrite !pure_True // !True_impl.
     - rewrite -IH //.
@@ -930,7 +930,7 @@ Lemma big_sepL2_sep_sepL_l {A B} (Φ : nat → A → PROP)
 Proof.
   rewrite big_sepL2_sep big_sepL2_const_sepL_l. apply (anti_symm _).
   { rewrite and_elim_r. done. }
-  rewrite !big_sepL2_alt [(_ ∗ _)%I]comm -!persistent_and_sep_assoc.
+  rewrite !big_sepL2_alt [(_ ∗ _)%I]comm -!and_sep_assoc.
   apply pure_elim_l=>Hl. apply and_intro.
   { apply pure_intro. done. }
   rewrite [(_ ∗ _)%I]comm. apply sep_mono; first done.
@@ -1254,7 +1254,7 @@ Section or_list.
   Proof.
     rewrite !big_orL_exist sep_exist_l.
     f_equiv=> k. rewrite sep_exist_l. f_equiv=> x.
-    by rewrite !persistent_and_affinely_sep_l !assoc (comm _ P).
+    by rewrite !and_affinely_sep_l !assoc (comm _ P).
  Qed.
   Lemma big_orL_sep_r Q Φ l :
     ([∨ list] k↦x ∈ l, Φ k x) ∗ Q ⊣⊢ ([∨ list] k↦x ∈ l, Φ k x ∗ Q).
@@ -1499,7 +1499,7 @@ Section sep_map.
     induction m as [|k x m ? IH] using map_ind.
     { rewrite big_sepM_empty. apply affinely_elim_emp. }
     rewrite big_sepM_insert // -IH.
-    by rewrite -persistent_and_sep_1 -affinely_and -pure_and map_Forall_insert.
+    by rewrite -and_sep_1 -affinely_and -pure_and map_Forall_insert.
   Qed.
   (** The general backwards direction requires [BiAffine] to cover the empty case. *)
   Lemma big_sepM_pure `{!BiAffine PROP} (φ : K → A → Prop) m :
@@ -1537,7 +1537,7 @@ Section sep_map.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepM_lookup. }
     revert Φ HΦ. induction m as [|i x m ? IH] using map_ind=> Φ HΦ.
     { rewrite big_sepM_empty. apply: affine. }
-    rewrite big_sepM_insert // -persistent_and_sep_1. apply and_intro.
+    rewrite big_sepM_insert // -and_sep_1. apply and_intro.
     - rewrite (forall_elim i) (forall_elim x) lookup_insert.
       by rewrite pure_True // True_impl.
     - rewrite -IH. apply forall_mono=> k; apply forall_mono=> y.
@@ -2048,7 +2048,7 @@ Section map2.
     intros Hm1 Hm2. rewrite !big_sepM2_alt -map_insert_zip_with.
     rewrite big_sepM_insert;
       last by rewrite map_lookup_zip_with Hm1.
-    rewrite !persistent_and_affinely_sep_l /=.
+    rewrite !and_affinely_sep_l /=.
     rewrite sep_assoc (sep_comm _ (Φ _ _ _)) -sep_assoc.
     repeat apply sep_proper=>//.
     apply affinely_proper, pure_proper.
@@ -2067,7 +2067,7 @@ Section map2.
       Φ i x1 x2 ∗ [∗ map] k↦x;y ∈ delete i m1;delete i m2, Φ k x y.
   Proof.
     rewrite !big_sepM2_alt=> Hx1 Hx2.
-    rewrite !persistent_and_affinely_sep_l /=.
+    rewrite !and_affinely_sep_l /=.
     rewrite sep_assoc (sep_comm  (Φ _ _ _)) -sep_assoc.
     apply sep_proper.
     - apply affinely_proper, pure_proper. split.
@@ -2154,7 +2154,7 @@ Section map2.
     assert (TCOr (∀ x, Affine (Φ i x.1 x.2)) (Absorbing (Φ i x1 x2))).
     { destruct select (TCOr _ _); apply _. }
     apply entails_wand, wand_intro_r.
-    rewrite !persistent_and_affinely_sep_l /=.
+    rewrite !and_affinely_sep_l /=.
     rewrite (sep_comm  (Φ _ _ _)) -sep_assoc. apply sep_mono.
     { apply affinely_mono, pure_mono. intros Hm k.
       rewrite !lookup_insert_is_Some. naive_solver. }
@@ -2249,7 +2249,7 @@ Section map2.
     rewrite !big_sepM2_alt.
     rewrite -{1}(idemp bi_and ⌜∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)⌝%I).
     rewrite -assoc.
-    rewrite !persistent_and_affinely_sep_l /=.
+    rewrite !and_affinely_sep_l /=.
     rewrite -assoc. apply sep_proper=>//.
     rewrite assoc (comm _ _ (<affine> _)%I) -assoc.
     apply sep_proper=>//. apply big_sepM_sep.
@@ -2724,7 +2724,7 @@ Section gset.
     induction X as [|x X ? IH] using set_ind_L.
     { rewrite big_sepS_empty. apply affinely_elim_emp. }
     rewrite big_sepS_insert // -IH.
-    rewrite -persistent_and_sep_1 -affinely_and -pure_and.
+    rewrite -and_sep_1 -affinely_and -pure_and.
     f_equiv. f_equiv=>HX. split.
     - apply HX. set_solver+.
     - apply set_Forall_union_inv_2 in HX. done.
@@ -2764,7 +2764,7 @@ Section gset.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepS_elem_of. }
     revert Φ HΦ. induction X as [|x X ? IH] using set_ind_L=> Φ HΦ.
     { rewrite big_sepS_empty. apply: affine. }
-    rewrite big_sepS_insert // -persistent_and_sep_1. apply and_intro.
+    rewrite big_sepS_insert // -and_sep_1. apply and_intro.
     - rewrite (forall_elim x) pure_True ?True_impl; last set_solver. done.
     - rewrite -IH. apply forall_mono=> y.
       apply impl_intro_l, pure_elim_l=> ?.
@@ -2984,7 +2984,7 @@ Section gmultiset.
     induction X as [|x X IH] using gmultiset_ind.
     { rewrite big_sepMS_empty. apply affinely_elim_emp. }
     rewrite big_sepMS_insert // -IH.
-    rewrite -persistent_and_sep_1 -affinely_and -pure_and.
+    rewrite -and_sep_1 -affinely_and -pure_and.
     f_equiv. f_equiv=>HX. split.
     - apply HX. set_solver+.
     - intros y Hy. apply HX. multiset_solver.
@@ -3026,7 +3026,7 @@ Section gmultiset.
     revert Φ HΦ. induction X as [|x X IH] using gmultiset_ind=> Φ HΦ.
     { rewrite big_sepMS_empty. apply: affine. }
     rewrite big_sepMS_disj_union.
-    rewrite big_sepMS_singleton -persistent_and_sep_1. apply and_intro.
+    rewrite big_sepMS_singleton -and_sep_1. apply and_intro.
     - rewrite (forall_elim x) pure_True ?True_impl; last multiset_solver. done.
     - rewrite -IH. apply forall_mono=> y.
       apply impl_intro_l, pure_elim_l=> ?.

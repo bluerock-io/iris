@@ -76,6 +76,26 @@ Global Instance: Params (@bi_intuitionistically_if) 2 := {}.
 Global Typeclasses Opaque bi_intuitionistically_if.
 Notation "'□?' p P" := (bi_intuitionistically_if p P) : bi_scope.
 
+(* The class of [Separable] propositions generalizes [bi_pure] and [Persistent]
+propositions. Being separable implies being duplicable, but it is strictly
+stronger than that: [P := ∃ q, l ↦{q} v] is duplicable but not separable.
+Counterexample: [P ∧ l ↦ v] does not entail [P ∗ l ↦ v]. Therefore, the
+hierarchy is: Plain → Persistent → Separable → Duplicable.
+
+The class of [Separable] propositions is useful for BIs with a degenerative
+persistence modality, i.e., without [BiPersistentlyTrue : True ⊢ <pers> True],
+see https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/843. For those BIs,
+the only persistent proposition is [False], but emp/plain and friends are still
+[Separable].
+
+Note that the reverse direction [<affine> P ∗ Q ⊢ <absorb> P ∧ Q] is a
+tautology, see [affinely_sep_absorbingly_and] in [derived_laws]. *)
+Class Separable {PROP : bi} (P : PROP) :=
+  separable Q : <absorb> P ∧ Q ⊢ <affine> P ∗ Q.
+Global Arguments Separable {_} _%I : simpl never.
+Global Arguments separable {_} _%I.
+Global Hint Mode Separable + ! : typeclass_instances.
+
 Fixpoint bi_laterN {PROP : bi} (n : nat) (P : PROP) : PROP :=
   match n with
   | O => P

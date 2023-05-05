@@ -442,7 +442,7 @@ Section fupd_derived.
   Lemma big_sepL2_fupd {A B} E (Φ : nat → A → B → PROP) l1 l2 :
     ([∗ list] k↦x;y ∈ l1;l2, |={E}=> Φ k x y) ⊢ |={E}=> [∗ list] k↦x;y ∈ l1;l2, Φ k x y.
   Proof.
-    rewrite !big_sepL2_alt !persistent_and_affinely_sep_l.
+    rewrite !big_sepL2_alt !and_affinely_sep_l.
     etrans; [| by apply fupd_frame_l]. apply sep_mono_r. apply big_sepL_fupd.
   Qed.
 
