@@ -71,7 +71,7 @@ Section fractional.
   (** Fractional and logical connectives *)
   Global Instance persistent_fractional (P : PROP) :
     Persistent P → TCOr (Affine P) (Absorbing P) → Fractional (λ _, P).
-  Proof. intros ?? q q'. apply: bi.sep_dup. Qed.
+  Proof. intros ?? q q'. apply: bi.persistent_sep_dup. Qed.
 
   (** We do not have [AsFractional] instances for [∗] and the big operators
   because the [iDestruct] tactic already turns [P ∗ Q] into [P] and [Q],

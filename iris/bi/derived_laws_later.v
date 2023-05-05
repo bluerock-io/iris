@@ -273,7 +273,7 @@ Lemma except_0_sep P Q : ◇ (P ∗ Q) ⊣⊢ ◇ P ∗ ◇ Q.
 Proof.
   rewrite /bi_except_0. apply (anti_symm _).
   - apply or_elim; last by auto using sep_mono.
-    by rewrite -!or_intro_l -persistently_pure -later_sep -sep_dup.
+    by rewrite -!or_intro_l -persistently_pure -later_sep -persistently_sep_dup.
   - rewrite sep_or_r !sep_or_l {1}(later_intro P) {1}(later_intro Q).
     rewrite -!later_sep !left_absorb right_absorb. auto.
 Qed.
@@ -369,7 +369,7 @@ Proof.
   apply or_mono, wand_intro_l; first done.
   rewrite -{2}(löb Q); apply impl_intro_l.
   rewrite HQ /bi_except_0 !and_or_r. apply or_elim; last auto.
-  by rewrite (comm _ P) and_sep_assoc impl_elim_r wand_elim_l.
+  by rewrite (comm _ P) persistent_and_sep_assoc impl_elim_r wand_elim_l.
 Qed.
 Global Instance forall_timeless {A} (Ψ : A → PROP) :
   (∀ x, Timeless (Ψ x)) → Timeless (∀ x, Ψ x).

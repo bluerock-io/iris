@@ -396,7 +396,7 @@ Lemma of_envs'_alt Γp Γs :
   of_envs' Γp Γs ⊣⊢ ⌜envs_wf' Γp Γs⌝ ∧ □ [∧] Γp ∗ [∗] Γs.
 Proof.
   rewrite /of_envs'. f_equiv.
-  rewrite -and_affinely_sep_l. f_equiv.
+  rewrite -persistent_and_affinely_sep_l. f_equiv.
   clear. induction Γp as [|Γp IH ? Q]; simpl.
   { apply (anti_symm (⊢)); last by apply True_intro.
     by rewrite persistently_True. }
@@ -511,7 +511,7 @@ Proof.
       naive_solver eauto using env_delete_wf, env_delete_fresh).
     rewrite (env_lookup_perm Γs) //=.
     rewrite ![(P ∗ _)%I]comm.
-    rewrite and_sep_assoc. done.
+    rewrite persistent_and_sep_assoc. done.
 Qed.
 Lemma envs_lookup_sound Δ i p P :
   envs_lookup i Δ = Some (p,P) →
@@ -532,7 +532,7 @@ Proof.
   - destruct (Γs !! i) eqn:?; simplify_eq/=.
     rewrite (env_lookup_perm Γs) //=.
     rewrite [(⌜_⌝ ∧ _)%I]and_elim_r.
-    rewrite (comm _ P) -and_sep_assoc.
+    rewrite (comm _ P) -persistent_and_sep_assoc.
     apply and_mono; first done. rewrite comm //.
 Qed.
 
@@ -599,7 +599,7 @@ Proof.
   - apply and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using Esnoc_wf.
       intros j; destruct (ident_beq_reflect j i); naive_solver.
-    + rewrite (comm _ P) -and_sep_assoc.
+    + rewrite (comm _ P) -persistent_and_sep_assoc.
       apply and_mono; first done. rewrite comm //.
 Qed.
 
@@ -734,9 +734,9 @@ Lemma envs_clear_spatial_sound Δ :
   of_envs Δ ⊢ of_envs (envs_clear_spatial Δ) ∗ [∗] env_spatial Δ.
 Proof.
   rewrite !of_envs_eq /envs_clear_spatial /=. apply pure_elim_l=> Hwf.
-  rewrite -and_sep_assoc. apply and_intro.
+  rewrite -persistent_and_sep_assoc. apply and_intro.
   - apply pure_intro. destruct Hwf; constructor; simpl; auto using Enil_wf.
-  - rewrite -and_sep_assoc left_id. done.
+  - rewrite -persistent_and_sep_assoc left_id. done.
 Qed.
 
 Lemma envs_clear_intuitionistic_sound Δ :
@@ -744,7 +744,7 @@ Lemma envs_clear_intuitionistic_sound Δ :
   env_and_persistently (env_intuitionistic Δ) ∗ of_envs (envs_clear_intuitionistic Δ).
 Proof.
   rewrite !of_envs_eq /envs_clear_spatial /=. apply pure_elim_l=> Hwf.
-  rewrite and_sep_1.
+  rewrite persistent_and_sep_1.
   rewrite (pure_True); first by rewrite 2!left_id.
   destruct Hwf. constructor; simpl; auto using Enil_wf.
 Qed.
