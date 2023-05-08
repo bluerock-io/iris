@@ -59,12 +59,12 @@ Now you can add `one_shotG` as an assumption to all your module definitions and
 proofs.  We typically use a section for this:
 ```coq
 Section proof.
-Context `{!heapG Σ, !one_shotG Σ}.
+Context `{!heapGS Σ, !one_shotG Σ}.
 ```
-Notice that besides our own assumptions `one_shotG`, we also assume `heapG`,
+Notice that besides our own assumptions `one_shotG`, we also assume `heapGS`,
 which are assumptions that every HeapLang proof makes (they are related to
 defining the `↦` connective as well as the basic Iris infrastructure for
-invariants and WP).  For this purpose, `heapG` contains not only assumptions
+invariants and WP).  For this purpose, `heapGS` contains not only assumptions
 about `Σ`, it also contains some ghost names to refer to particular ghost state
 (see "global ghost state instances" below).
 
@@ -102,7 +102,7 @@ see the next section), you have to call the respective initialization or
 adequacy lemma.  [For example](tests/one_shot.v):
 ```coq
 Section client.
-  Context `{!heapG Σ, !one_shotG Σ, !spawnG Σ}.
+  Context `{!heapGS Σ, !one_shotG Σ, !spawnG Σ}.
 
   Lemma client_safe : WP client {{ _, True }}%I.
   (* ... *)
