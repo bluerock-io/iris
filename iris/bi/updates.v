@@ -183,7 +183,6 @@ Section bupd_derived.
   Context {PROP : bi} `{!BiBUpd PROP}.
   Implicit Types P Q R : PROP.
 
-  (* FIXME: Removing the `PROP:=` diverges. *)
   Global Instance bupd_proper :
     Proper ((≡) ==> (≡)) (bupd (PROP:=PROP)) := ne_proper _.
 
