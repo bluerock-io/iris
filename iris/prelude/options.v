@@ -1,4 +1,10 @@
-(** Coq configuration for Iris (not meant to leak to clients) *)
+(** Coq configuration for Iris (not meant to leak to clients).
+If you are a user of Iris, note that importing this file means
+you are implicitly opting-in to every new option we will add here
+in the future. We are *not* guaranteeing any kind of stability here.
+Instead our advice is for you to have your own options file; then
+you can re-export the Iris file there but if we ever add an option
+you disagree with you can easily overwrite it in one central location. *)
 (* Everything here should be [Export Set], which means when this
 file is *imported*, the option will only apply on the import site
 but not transitively. *)
