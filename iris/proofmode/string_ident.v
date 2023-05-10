@@ -63,36 +63,22 @@ Module StringToIdent.
   (** [coq_string_to_ident] implements the ident to string conversion in Ltac2 *)
   Ltac2 coq_string_to_ident (s : constr) := ident_from_string (coq_string_to_string s).
 
-  (** We want to wrap this in an Ltac1 API, which requires passing a string to
-      Ltac2 and then performing an intros.
-      TODO: Once we require Coq 8.14, we should be able to pass idents across
-      the Ltac/Ltac2 barrier, which can be used to avoid the revert/intros.
+  (** We want to wrap this in an Ltac1 API, but Ltac1-2 FFI does not support
+      returning values from Ltac2 to Ltac1. So we wrute this in CPS instead.
    *)
 
   Ltac2 get_opt o := match o with None => Control.throw Not_found | Some x => x end.
 
-  Ltac intros_by_string :=
-    ltac2:(s1 |- let s := get_opt (Ltac1.to_constr s1) in
-                 let ident := coq_string_to_ident s in
-                 intros $ident).
+  Ltac string_to_ident_cps :=
+    ltac2:(s1 r |- let s := get_opt (Ltac1.to_constr s1) in
+                   let ident := coq_string_to_ident s in
+                   Ltac1.apply r [Ltac1.of_ident ident] Ltac1.run).
 End StringToIdent.
 
 (** Finally we wrap everything up intro a tactic that renames a variable given
-by ident [id] into the name given by string [s].
-Only works if [id] can be reverted, i.e. if nothing else depends on it. *)
+by ident [id] into the name given by string [s]. *)
 Ltac rename_by_string id s :=
-  revert id;
-  StringToIdent.intros_by_string s.
+  StringToIdent.string_to_ident_cps s ltac:(fun x => rename id into x).
 
-(** We can also use this to write Ltac that *returns* the desired ident.
-However, this function will produce wrong results under [Set Mangle Names], so
-use with caution. *)
-Ltac string_to_ident s :=
-  let s := (eval cbv in s) in
-  let x := constr:(ltac:(clear; (* needed since s might already be in scope
-                         where this is called *)
-                         StringToIdent.intros_by_string s;
-                         exact tt) : unit -> unit) in
-  match x with
-  | (fun (name:_) => _) => name
-  end.
+(* We also directly expose the CPS primitive. *)
+Ltac string_to_ident_cps := StringToIdent.string_to_ident_cps.
