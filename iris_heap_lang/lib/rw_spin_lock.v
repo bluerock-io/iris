@@ -110,15 +110,11 @@ Section proof.
       + iFrame.
       + iRight.
         iFrame.
-        iExists _, _.
-        iFrame.
         by iApply "Hiff".
     - iIntros "(%z & ? & Hstate)". iExists z. iFrame.
       iDestruct "Hstate" as "[?|(? & % & % & ? & ? & ? & ?)]".
       + iFrame.
       + iRight.
-        iFrame.
-        iExists _, _.
         iFrame.
         by iApply "Hiff".
   Qed.

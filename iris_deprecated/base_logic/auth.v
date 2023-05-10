@@ -190,10 +190,10 @@ Section auth.
     iDestruct "Hinv" as (t) "[>Hγa Hφ]".
     iModIntro. iExists t.
     iDestruct (own_valid_2 with "Hγa Hγf") as % [? ?]%auth_both_valid_discrete.
-    iSplit; first done. iFrame. iIntros (u b) "[% Hφ]".
+    iSplit; first done. iFrame "Hφ". iIntros (u b) "[% Hφ]".
     iMod (own_update_2 with "Hγa Hγf") as "[Hγa Hγf]".
     { eapply auth_update; eassumption. }
-    iModIntro. iFrame. iExists u. iFrame.
+    by iFrame.
   Qed.
 
   Lemma auth_acc E N γ a :

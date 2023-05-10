@@ -94,14 +94,14 @@ Section proof.
     wp_load. destruct (decide (x = o)) as [->|Hneq].
     - iDestruct "Ha" as "[Hainv [[Ho HR] | Haown]]".
       + iModIntro. iSplitL "Hlo Hln Hainv Ht".
-        { iNext. iExists o, n. iFrame. }
+        { iFrame. }
         wp_pures. case_bool_decide; [|done]. wp_if.
-        iApply ("HΦ" with "[-]"). rewrite /locked. iFrame. eauto.
+        iApply ("HΦ" with "[-]"). rewrite /locked. iFrame.
       + iCombine "Ht Haown"
           gives %[_ ?%gset_disj_valid_op]%auth_frag_op_valid_1.
         set_solver.
     - iModIntro. iSplitL "Hlo Hln Ha".
-      { iNext. iExists o, n. by iFrame. }
+      { iNext. iExists o, n. iFrame. }
       wp_pures. case_bool_decide; [simplify_eq |].
       wp_if. iApply ("IH" with "Ht"). iNext. by iExact "HΦ".
   Qed.
@@ -113,7 +113,7 @@ Section proof.
     iLöb as "IH". wp_rec. wp_bind (! _)%E. simplify_eq/=. wp_proj.
     iInv N as (o n) "[Hlo [Hln Ha]]".
     wp_load. iModIntro. iSplitL "Hlo Hln Ha".
-    { iNext. iExists o, n. by iFrame. }
+    { iFrame. }
     wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as (o' n') "(>Hlo' & >Hln' & >Hauth & Haown)".
     destruct (decide (#n' = #n))%V as [[= ->%Nat2Z.inj] | Hneq].
@@ -131,7 +131,7 @@ Section proof.
       + by iNext.
     - wp_cmpxchg_fail. iModIntro.
       iSplitL "Hlo' Hln' Hauth Haown".
-      { iNext. iExists o', n'. by iFrame. }
+      { iFrame. }
       wp_pures. by iApply "IH"; auto.
   Qed.
 
@@ -146,7 +146,7 @@ Section proof.
     iCombine "Hauth Hγo" gives
       %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_both_valid_discrete.
     iModIntro. iSplitL "Hlo Hln Hauth Haown".
-    { iNext. iExists o, n. by iFrame. }
+    { iFrame. }
     wp_pures.
     iInv N as (o' n') "(>Hlo & >Hln & >Hauth & Haown)".
     iApply wp_fupd. wp_store.
