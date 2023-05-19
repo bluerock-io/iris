@@ -82,7 +82,8 @@ Section lemmas.
   (* higher cost than the Fractional instance, which is used for a1 = a2 *)
   Proof.
     rewrite /CombineSepAs /IsOp => ->. iIntros "[H1 H2]".
-    (* FIXME: in the future a single [iCombine] should suffice here. *)
+    (* This can't be a single [iCombine] since the instance providing that is
+    exactly what we are proving here. *)
     iCombine "H1 H2" gives %[_ ->].
     by iCombine "H1 H2" as "H".
   Qed.
