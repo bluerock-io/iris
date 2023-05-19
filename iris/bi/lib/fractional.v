@@ -155,11 +155,11 @@ Section fractional.
   Qed.
 
   (** Proof mode instances *)
-  Global Instance from_and_fractional_fwd P P1 P2 Φ q1 q2 :
+  Global Instance from_sep_fractional P P1 P2 Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
     FromSep P P1 P2.
   Proof. by rewrite /FromSep=>-[-> ->] [-> _] [-> _]. Qed.
-  Global Instance combine_sep_fractional_bwd P1 P2 Φ q1 q2 :
+  Global Instance combine_sep_fractional P1 P2 Φ q1 q2 :
     AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
     CombineSepAs P1 P2 (Φ (q1 + q2)%Qp) | 50.
   (* Explicit cost, to make it easier to provide instances with higher or
@@ -167,11 +167,11 @@ Section fractional.
      [l ↦{q1} v1] with [l ↦{q2} v2] where [v1] and [v2] are not unifiable. *)
   Proof. rewrite /CombineSepAs =>-[-> _] [-> <-] //. Qed.
 
-  Global Instance from_sep_fractional_half_fwd P Q Φ q :
+  Global Instance from_sep_fractional_half P Q Φ q :
     AsFractional P Φ q → AsFractional Q Φ (q/2) →
     FromSep P Q Q | 10.
   Proof. by rewrite /FromSep -{1}(Qp.div_2 q)=>-[-> ->] [-> _]. Qed.
-  Global Instance from_sep_fractional_half_bwd P Q Φ q :
+  Global Instance combine_sep_fractional_half P Q Φ q :
     AsFractional P Φ (q/2) → AsFractional Q Φ q →
     CombineSepAs P P Q | 50.
   (* Explicit cost, to make it easier to provide instances with higher or
