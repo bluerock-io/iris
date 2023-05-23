@@ -215,7 +215,7 @@ Global Instance into_embed_affinely
   IntoEmbed P Q → IntoEmbed (<affine> P) (<affine> Q).
 Proof. rewrite /IntoEmbed=> ->. by rewrite embed_affinely_2. Qed.
 
-Global Instance into_later_embed`{!BiEmbedLater PROP PROP'} n P Q :
+Global Instance into_later_embed `{!BiEmbedLater PROP PROP'} n P Q :
   IntoLaterN false n P Q → IntoLaterN false n ⎡P⎤ ⎡Q⎤.
 Proof. rewrite /IntoLaterN /MaybeIntoLaterN=> ->. by rewrite embed_laterN. Qed.
 End class_instances_embedding.
