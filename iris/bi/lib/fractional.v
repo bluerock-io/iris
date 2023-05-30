@@ -122,7 +122,7 @@ Section fractional.
 
   Global Instance as_fractional_embed `{!BiEmbed PROP PROP'} P Φ q :
     AsFractional P Φ q → AsFractional (⎡ P ⎤) (λ q, ⎡ Φ q ⎤)%I q.
-  Proof. intros H; split; [by destruct H as [-> _]|destruct H as [_ ?]; by apply _]. Qed.
+  Proof. intros [??]; split; [by f_equiv|apply _]. Qed.
 
   Global Instance fractional_big_sepL {A} (l : list A) Ψ :
     (∀ k x, Fractional (Ψ k x)) →
@@ -186,14 +186,11 @@ Section fractional.
 
   Global Instance into_sep_fractional P Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → IntoSep P (Φ q1) (Φ q2).
-  Proof. intros H.  rewrite /IntoSep [P]fractional_split //; by destruct H as [_ ?]. Qed.
+  Proof. intros [??]. rewrite /IntoSep [P]fractional_split //. Qed.
 
   Global Instance into_sep_fractional_half P Φ q :
     AsFractional P Φ q → IntoSep P (Φ (q / 2)%Qp) (Φ (q / 2)%Qp) | 100.
-  Proof.
-    intros H. rewrite /IntoSep [P]fractional_half //.
-    split; [done|destruct H as [_ ?]; apply _].
-  Qed.
+  Proof. intros [??]. rewrite /IntoSep [P]fractional_half //. Qed.
 
   (* The instance [frame_fractional] can be tried at all the nodes of
      the proof search. The proof search then fails almost always on
@@ -226,12 +223,12 @@ Section fractional.
     FrameFractionalHyps p R Φ RES r q →
     Frame p R P RES.
   Proof.
-    rewrite /Frame=>-[HR _][->?]H.
+    rewrite /Frame=> -[HR _] [-> ?] H.
     revert H HR=>-[Q q0 q0' r0|Q q0 q0' r0|Q q0].
-    - rewrite fractional /Frame /MakeSep=><-<-. by rewrite assoc.
-    - rewrite fractional /Frame /MakeSep=><-<-=>_.
+    - rewrite fractional /Frame /MakeSep=> <- <-. by rewrite assoc.
+    - rewrite fractional /Frame /MakeSep=> <- <- _.
       by rewrite (comm _ Q (Φ q0)) !assoc (comm _ (Φ _)).
-    - rewrite -[q0 in _ ⊢ Φ q0]Qp.div_2 fractional /Frame /MakeSep=>H<-=>_.
+    - rewrite -[q0 in _ ⊢ Φ q0]Qp.div_2 fractional /Frame /MakeSep=> H <- _.
       by rewrite assoc H.
   Qed.
 End fractional.
