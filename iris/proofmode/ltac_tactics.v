@@ -1589,7 +1589,7 @@ Tactic Notation "iDestructHyp" constr(H) "as" constr(pat) :=
 
 Tactic Notation "iDestructHyp" constr(H) "as" "(" simple_intropattern(x1) ")"
     constr(pat) :=
-  iExistDestruct H as x1 H; iDestructHyp H as @ pat.
+  iExistDestruct H as x1 H; iDestructHyp H as pat.
 Tactic Notation "iDestructHyp" constr(H) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) ")" constr(pat) :=
   iExistDestruct H as x1 H; iDestructHyp H as ( x2 ) pat.
