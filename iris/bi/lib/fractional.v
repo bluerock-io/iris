@@ -5,14 +5,25 @@ From iris.prelude Require Import options.
 Class Fractional {PROP : bi} (Φ : Qp → PROP) :=
   fractional p q : Φ (p + q)%Qp ⊣⊢ Φ p ∗ Φ q.
 Global Arguments Fractional {_} _%I : simpl never.
+Global Arguments fractional {_ _ _} _ _.
 
+(** The [AsFractional] typeclass eta-expands a proposition [P] into [Φ q] such
+that [Φ] is a fractional predicate. This is needed because higher-order
+unification cannot be relied upon to guess the right [Φ].
+
+[AsFractional] should generally be used in APIs that work with fractional
+predicates (instead of [Fractional]): when the user provides the original
+resource [P], have a premise [AsFractional P Φ 1] to convert that into some
+fractional predicate.
+
+The equivalence in [as_fractional] should hold definitionally; various typeclass
+instances assume that [Φ q] will un-do the eta-expansion performed by
+[AsFractional]. *)
 Class AsFractional {PROP : bi} (P : PROP) (Φ : Qp → PROP) (q : Qp) := {
   as_fractional : P ⊣⊢ Φ q;
   as_fractional_fractional : Fractional Φ
 }.
 Global Arguments AsFractional {_} _%I _%I _%Qp.
-
-Global Arguments fractional {_ _ _} _ _.
 
 Global Hint Mode AsFractional - ! - - : typeclass_instances.
 
