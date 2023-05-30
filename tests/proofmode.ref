@@ -101,6 +101,40 @@ Tactic failure: iExistDestruct: cannot destruct P.
   "HΦ" : ∃ x : nat, Φ x
   --------------------------------------∗
   ∃ x : nat, Φ x
+"test_iDestruct_nameless_exist"
+     : string
+1 goal
+  
+  PROP : bi
+  Φ : nat → PROP
+  __unknown : nat
+  ============================
+  "H" : Φ __unknown
+  --------------------------------------∗
+  ∃ x : nat, Φ x
+"test_iIntros_nameless_forall"
+     : string
+1 goal
+  
+  PROP : bi
+  Φ : nat → PROP
+  __unknown : nat
+  ============================
+  "H" : ∀ x : nat, Φ x
+  --------------------------------------∗
+  Φ __unknown
+"test_iIntros_nameless_pure_forall"
+     : string
+1 goal
+  
+  PROP : bi
+  BiPureForall0 : BiPureForall PROP
+  φ : nat → Prop
+  __unknown : nat
+  ============================
+  "H" : ∀ x : nat, ⌜φ x⌝
+  --------------------------------------∗
+  ⌜φ __unknown⌝
 "test_iIntros_forall_pure"
      : string
 1 goal
