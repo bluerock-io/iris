@@ -74,6 +74,7 @@ Coq 8.13 is no longer supported.
     particular, replace `apply` by `iApply`).
   - Add some `apply bi.entails_wand`/`apply bi.wand_entails` to 'convert'
     between the old and new way of interpreting `P -∗ Q`.
+* Add `auto` hint to introduce the BI version of `↔`.
 
 **Changes in `proofmode`:**
 
