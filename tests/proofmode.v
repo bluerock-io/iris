@@ -1405,6 +1405,11 @@ Lemma test_iFrame_not_add_emp_for_intuitionistically `{!BiAffine PROP} (P : PROP
   □ P -∗ ∃ _ : nat, □ P.
 Proof. iIntros "#H". iFrame "H". Show. by iExists 0. Qed.
 
+Lemma test_auto_iff P : ⊢ P ↔ P.
+Proof. auto. Qed.
+
+Lemma test_auto_wand_iff P : ⊢ P ∗-∗ P.
+Proof. auto. Qed.
 End tests.
 
 Section parsing_tests.
