@@ -166,7 +166,7 @@ Section fractional.
   Global Instance from_sep_fractional P Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → FromSep P (Φ q1) (Φ q2).
   Proof. rewrite /FromSep=>-[-> ->] //. Qed.
-  Global Instance combine_sep_fractional P1 P2 Φ q1 q2 :
+  Global Instance combine_sep_as_fractional P1 P2 Φ q1 q2 :
     AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
     CombineSepAs P1 P2 (Φ (q1 + q2)%Qp) | 50.
   (* Explicit cost, to make it easier to provide instances with higher or
@@ -177,7 +177,7 @@ Section fractional.
   Global Instance from_sep_fractional_half P Φ q :
     AsFractional P Φ q → FromSep P (Φ (q / 2)%Qp) (Φ (q / 2)%Qp) | 10.
   Proof. rewrite /FromSep -{1}(Qp.div_2 q). intros [-> <-]. rewrite Qp.div_2 //. Qed.
-  Global Instance combine_sep_fractional_half P Φ q :
+  Global Instance combine_sep_as_fractional_half P Φ q :
     AsFractional P Φ (q/2) → CombineSepAs P P (Φ q) | 50.
   (* Explicit cost, to make it easier to provide instances with higher or
      lower cost. Higher-cost instances exist to combine (for example)
