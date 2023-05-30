@@ -24,8 +24,14 @@ Class AsFractional {PROP : bi} (P : PROP) (Φ : Qp → PROP) (q : Qp) := {
   as_fractional_fractional : Fractional Φ
 }.
 Global Arguments AsFractional {_} _%I _%I _%Qp.
-
 Global Hint Mode AsFractional - ! - - : typeclass_instances.
+
+(** The class [FrameFractionalQp] is used for fractional framing, it substracts
+the fractional of the hypothesis from the goal: it computes [r := qP - qR].
+See [frame_fractional] for how it is used. *)
+Class FrameFractionalQp (qR qP r : Qp) :=
+  frame_fractional_qp : qP = (qR + r)%Qp.
+Global Hint Mode FrameFractionalQp ! ! - : typeclass_instances.
 
 Section fractional.
   Context {PROP : bi}.
@@ -192,43 +198,23 @@ Section fractional.
     AsFractional P Φ q → IntoSep P (Φ (q / 2)%Qp) (Φ (q / 2)%Qp) | 100.
   Proof. intros [??]. rewrite /IntoSep [P]fractional_half //. Qed.
 
-  (* The instance [frame_fractional] can be tried at all the nodes of
-     the proof search. The proof search then fails almost always on
-     [AsFractional R Φ r], but the slowdown is still noticeable.  For
-     that reason, we factorize the three instances that could have been
-     defined for that purpose into one. *)
-  Inductive FrameFractionalHyps
-      (p : bool) (R : PROP) (Φ : Qp → PROP) (RES : PROP) : Qp → Qp → Prop :=
-    | frame_fractional_hyps_l Q q q' r:
-       Frame p R (Φ q) Q →
-       MakeSep Q (Φ q') RES →
-       FrameFractionalHyps p R Φ RES r (q + q')
-    | frame_fractional_hyps_r Q q q' r:
-       Frame p R (Φ q') Q →
-       MakeSep Q (Φ q) RES →
-       FrameFractionalHyps p R Φ RES r (q + q')
-    | frame_fractional_hyps_half Q q :
-       Frame p R (Φ (q/2)%Qp) Q →
-       MakeSep Q (Φ (q/2)%Qp) RES →
-       FrameFractionalHyps p R Φ RES (q/2) q.
-  Existing Class FrameFractionalHyps.
-  Global Existing Instances frame_fractional_hyps_l frame_fractional_hyps_r
-    frame_fractional_hyps_half.
+  Global Instance frame_fractional_qp_add_l q q' : FrameFractionalQp q (q + q') q'.
+  Proof. by rewrite /FrameFractionalQp. Qed.
+  Global Instance frame_fractional_qp_add_r q q' : FrameFractionalQp q' (q + q') q.
+  Proof. by rewrite /FrameFractionalQp Qp.add_comm. Qed.
+  Global Instance frame_fractional_qp_half q : FrameFractionalQp (q/2) q (q/2).
+  Proof. by rewrite /FrameFractionalQp Qp.div_2. Qed.
 
   (* Not an instance because of performance; you can locally add it if you are
   willing to pay the cost. We have concrete instances for certain fractional
   assertions such as ↦. *)
-  Lemma frame_fractional p R r Φ P q RES:
-    AsFractional R Φ r → AsFractional P Φ q →
-    FrameFractionalHyps p R Φ RES r q →
-    Frame p R P RES.
+  Lemma frame_fractional p R P Φ qR qP r :
+    AsFractional R Φ qR →
+    AsFractional P Φ qP →
+    FrameFractionalQp qR qP r →
+    Frame p R P (Φ r).
   Proof.
-    rewrite /Frame=> -[HR _] [-> ?] H.
-    revert H HR=>-[Q q0 q0' r0|Q q0 q0' r0|Q q0].
-    - rewrite fractional /Frame /MakeSep=> <- <-. by rewrite assoc.
-    - rewrite fractional /Frame /MakeSep=> <- <- _.
-      by rewrite (comm _ Q (Φ q0)) !assoc (comm _ (Φ _)).
-    - rewrite -[q0 in _ ⊢ Φ q0]Qp.div_2 fractional /Frame /MakeSep=> H <- _.
-      by rewrite assoc H.
+    rewrite /Frame /FrameFractionalQp=> -[-> _] [-> ?] ->.
+    by rewrite bi.intuitionistically_if_elim fractional.
   Qed.
 End fractional.

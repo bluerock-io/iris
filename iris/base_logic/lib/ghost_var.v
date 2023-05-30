@@ -113,9 +113,9 @@ Section lemmas.
   Proof. iApply ghost_var_update_2. apply Qp.half_half. Qed.
 
   (** Framing support *)
-  Global Instance frame_ghost_var p γ a q1 q2 RES :
-    FrameFractionalHyps p (ghost_var γ q1 a) (λ q, ghost_var γ q a)%I RES q1 q2 →
-    Frame p (ghost_var γ q1 a) (ghost_var γ q2 a) RES | 5.
+  Global Instance frame_ghost_var p γ a q1 q2 q :
+    FrameFractionalQp q1 q2 q →
+    Frame p (ghost_var γ q1 a) (ghost_var γ q2 a) (ghost_var γ q a) | 5.
   Proof. apply: frame_fractional. Qed.
 
 End lemmas.
