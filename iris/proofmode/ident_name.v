@@ -15,14 +15,13 @@ Ltac to_ident_name id :=
     [ident_name] literals. *)
 Notation to_ident_name id := (λ id:unit, id) (only parsing).
 
-(** The idea of [AsIdentName] is to convert the binder in [f], which should be a
-    lambda, to an [ident_name] representing the name of the binder. It has only
-    one instance, a [Hint Extern] which implements that conversion to resolve
-    [name] in Ltac (see [solve_as_ident_name]).
+(** The idea of [AsIdentName] is to convert the binder in [f] to an [ident_name]
+representing the name of the binder. If [f] is not a lambda, this typeclass can
+produce the fallback identifier [__unknown]. For example, if the user writes
+[bi_exist Φ], there is no binder anywhere to extract.
 
-    This typeclass can produce the fallback identifier [__unknown] when applied
-    to an identifier rather than a lambda; for example, if the user writes
-    [bi_exist Φ], there is no binder anywhere to extract. *)
+This class has only one instance, a [Hint Extern] which implements that
+conversion to resolve [name] in Ltac (see [solve_as_ident_name]). *)
 Class AsIdentName {A B} (f : A → B) (name : ident_name) := as_ident_name {}.
 Global Arguments as_ident_name {A B f} name : assert.
 
@@ -34,7 +33,10 @@ Ltac solve_as_ident_name :=
   | |- AsIdentName (λ H, _) _ =>
     let name := to_ident_name H in
     notypeclasses refine (as_ident_name name)
-  | _ => notypeclasses refine (to_ident_name __unknown)
+  | |- AsIdentName _ _ =>
+     let name := to_ident_name ident:(__unknown) in
+     notypeclasses refine (as_ident_name name)
+  | |- _ => fail "solve_as_ident_name: goal should be `AsIdentName`"
   end.
 
 Global Hint Extern 1 (AsIdentName _ _) => solve_as_ident_name : typeclass_instances.

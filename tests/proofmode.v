@@ -266,6 +266,21 @@ Qed.
 Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → ⊢ ⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P.
 Proof. iIntros (??) "H". auto. Qed.
 
+(** The following tests check that [AsIdentName Φ ?name] works for the case
+that [Φ] is not a lambda, but a variable. It should use name [__unknown]. *)
+Check "test_iDestruct_nameless_exist".
+Lemma test_iDestruct_nameless_exist (Φ : nat → PROP) :
+  bi_exist Φ ⊢@{PROP} ∃ x, Φ x.
+Proof. iDestruct 1 as (?) "H". Show. auto. Qed.
+Check "test_iIntros_nameless_forall".
+Lemma test_iIntros_nameless_forall (Φ : nat → PROP) :
+  (∀ x, Φ x) ⊢@{PROP} bi_forall Φ.
+Proof. iIntros "H" (?). Show. done. Qed.
+Check "test_iIntros_nameless_pure_forall".
+Lemma test_iIntros_nameless_pure_forall `{!BiPureForall PROP} (φ : nat → Prop) :
+  (∀ x, ⌜ φ x ⌝) ⊢@{PROP} ⌜ ∀ x, φ x ⌝.
+Proof. iIntros "H" (?). Show. done. Qed.
+
 Check "test_iIntros_forall_pure".
 Lemma test_iIntros_forall_pure (Ψ: nat → PROP) :
   ⊢ ∀ x : nat, Ψ x → Ψ x.
