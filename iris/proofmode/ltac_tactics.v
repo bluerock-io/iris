@@ -3511,6 +3511,7 @@ Global Hint Extern 0 (envs_entails _ (∀.. _, _)) => iIntros (?) : core.
 
 Global Hint Extern 1 (envs_entails _ (_ ∧ _)) => iSplit : core.
 Global Hint Extern 1 (envs_entails _ (_ ∗ _)) => iSplit : core.
+Global Hint Extern 1 (envs_entails _ (_ ↔ _)) => iSplit : core.
 Global Hint Extern 1 (envs_entails _ (_ ∗-∗ _)) => iSplit : core.
 Global Hint Extern 1 (envs_entails _ (▷ _)) => iNext : core.
 Global Hint Extern 1 (envs_entails _ (■ _)) => iModIntro : core.
