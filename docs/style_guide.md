@@ -16,6 +16,32 @@ so we can add it.
 
 This applies to Context, Implicit Types, and definitions
 
+### Patterns
+
+#### Disjunctions & branches
+
+Always mark the disjuncts when destructuring a disjunctive pattern, even if you don't bind anything, to indicate that the proof branches
+
+**Good:**
+```coq
+Lemma foo : ∀ b : bool, b = true ∨ b = false.
+Proof.
+  intros [|].
+  ...
+```
+
+**Bad:**
+```coq
+Lemma foo : ∀ b : bool, b = true ∨ b = false.
+Proof.
+  intros [].
+  ...
+```
+
+#### Uncategorized
+
+**TODO:** Use `"[H1 H2]"` when possible otherwise do `"(H1 & H2 & H3)"`
+
 ### Unicode
 
 Always use Unicode variants of forall, exists, ->, <=, >=
@@ -146,8 +172,6 @@ Definition foo (arg1 arg2 arg3 : name_of_the_type)
 Definition foo (arg1 arg2 arg3 : name_of_the_type) :=
   the body that is very long.
 ```
-
-**TODO:** Use `"[H1 H2]"` when possible otherwise do `"(H1 & H2 & H3)"`
 
 For tests with output put `Check "theorem name in a string"` before it so that the output from different tests is separated.
 
