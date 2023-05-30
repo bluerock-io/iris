@@ -5,6 +5,7 @@ From iris.base_logic.lib Require Import invariants cancelable_invariants na_inva
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
+Set Default Proof Using "Type*".
 
 Section base_logic_tests.
   Context {M : ucmra}.
@@ -232,6 +233,41 @@ Section iris_tests.
     iIntros "H"; iInv "H" as (v1 v2 v3) "(?&?&_)".
     eauto.
   Qed.
+
+  (* Test [iInv] with accessor variables. *)
+  Section iInv_accessor_variables.
+    Context (P : iProp Σ).
+    (* This is a rather silly accessor that we just register for test purposes:
+       P ==∗ (∃ b, P ∗ (P ==∗ P)). The fact that there is a [b] is important
+       as we don't have any such accessors with a variable in the Iris repo. *)
+    Local Instance P_acc :
+      IntoAcc (X:=bool) P True True bupd bupd (λ b, P) (λ b, P) (λ b, Some P).
+    Proof.
+      rewrite /IntoAcc /accessor /=.
+      iIntros (_) "HP _". iExists true. eauto with iFrame.
+    Qed.
+
+    Check "test_iInv_accessor_variable".
+    Lemma test_iInv_accessor_variable : P ==∗ P.
+    Proof.
+      iIntros "HP".
+      (* There are 4 variants of [iInv] that we have to test *)
+      (* No selection pattern, no closing view shift *)
+      Fail iInv "HP" as "HPinner".
+      iInv "HP" as (b) "HPinner"; rename b into b_exists. Undo.
+      (* Both sel.pattern and closing view shift *)
+      (* FIXME this one is broken: no proper error message without a pattern for
+      the accessor variable, and an error when the pattern is given *)
+      Fail Fail iInv "HP" with "[//]" as "HPinner" "Hclose".
+      Fail iInv "HP" with "[//]" as (b) "HPinner" "Hclose"; rename b into b_exists.
+      (* Sel.pattern but no closing view shift *)
+      Fail iInv "HP" with "[//]" as "HPinner".
+      iInv "HP" with "[//]" as (b) "HPinner"; rename b into b_exists. Undo.
+      (* Closing view shift, no selection pattern *)
+      Fail iInv "HP" as "HPinner" "Hclose".
+      iInv "HP" as (b) "HPinner" "Hclose"; rename b into b_exists. auto.
+    Qed.
+  End iInv_accessor_variables.
 
   Theorem test_iApply_inG `{!inG Σ A} γ (x x' : A) :
     x' ≼ x →

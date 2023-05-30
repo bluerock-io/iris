@@ -547,8 +547,6 @@ Global Hint Mode IntoAcc + - ! - - - - - - - : typeclass_instances.
    based on [ElimAcc] and [IntoAcc].  However, logics like Iris 2 that support
    invariants but not mask-changing fancy updates can use this class directly to
    still benefit from [iInv].
-
-   TODO: Add support for a binder (like accessors have it).
 *)
 Class ElimInv {PROP : bi} {X : Type} (φ : Prop)
       (Pinv Pin : PROP) (Pout : X → PROP) (mPclose : option (X → PROP))
