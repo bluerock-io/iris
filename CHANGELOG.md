@@ -75,6 +75,9 @@ Coq 8.13 is no longer supported.
   - Add some `apply bi.entails_wand`/`apply bi.wand_entails` to 'convert'
     between the old and new way of interpreting `P -∗ Q`.
 * Add `auto` hint to introduce the BI version of `↔`.
+* Change `big_sepM2_alt` to use `dom m1 = dom2 m2` instead of
+  `∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)`. The old lemma is still
+  available as `big_sepM2_alt_lookup`.
 
 **Changes in `proofmode`:**
 
@@ -148,6 +151,8 @@ s/\bloc_add(_assoc|_0|_inj|)\b/Loc.add\1/g
 s/\bfresh_locs(_fresh|)\b/Loc.fresh\1/g
 # unseal
 s/\bMonPred\.unseal\b/monPred\.unseal/g
+# big op
+s/\bbig_sepM2_alt\b/big_sepM2_alt_lookup/g
 EOF
 ```
 
