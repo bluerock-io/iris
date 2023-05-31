@@ -56,8 +56,7 @@ Notation "'[∗' 'list]' x1 ; x2 ∈ l1 ; l2 , P" :=
 
 Local Definition big_sepM2_def {PROP : bi} `{Countable K} {A B}
     (Φ : K → A → B → PROP) (m1 : gmap K A) (m2 : gmap K B) : PROP :=
-  (⌜ ∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k) ⌝ ∧
-   [∗ map] k ↦ xy ∈ map_zip m1 m2, Φ k xy.1 xy.2)%I.
+  ⌜ dom m1 = dom m2 ⌝ ∧ [∗ map] k ↦ xy ∈ map_zip m1 m2, Φ k xy.1 xy.2.
 Local Definition big_sepM2_aux : seal (@big_sepM2_def). Proof. by eexists. Qed.
 Definition big_sepM2 := big_sepM2_aux.(unseal).
 Global Arguments big_sepM2 {PROP K _ _ A B} _ _ _.
@@ -1902,26 +1901,28 @@ End and_map.
 (** ** Big ops over two maps *)
 Lemma big_sepM2_alt `{Countable K} {A B} (Φ : K → A → B → PROP) m1 m2 :
   ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) ⊣⊢
-  ⌜ ∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k) ⌝ ∧
-  [∗ map] k ↦ xy ∈ map_zip m1 m2, Φ k xy.1 xy.2.
+  ⌜ dom m1 = dom m2 ⌝ ∧ [∗ map] k ↦ xy ∈ map_zip m1 m2, Φ k xy.1 xy.2.
 Proof. by rewrite big_sepM2_unseal. Qed.
 
 Section map2.
   Context `{Countable K} {A B : Type}.
   Implicit Types Φ Ψ : K → A → B → PROP.
 
+  Lemma big_sepM2_alt_lookup (Φ : K → A → B → PROP) m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) ⊣⊢
+    ⌜ ∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k) ⌝ ∧
+    [∗ map] k ↦ xy ∈ map_zip m1 m2, Φ k xy.1 xy.2.
+  Proof. rewrite big_sepM2_alt set_eq. by setoid_rewrite elem_of_dom. Qed.
+
   Lemma big_sepM2_lookup_iff Φ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) ⊢
     ⌜ ∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k) ⌝.
-  Proof. by rewrite big_sepM2_alt and_elim_l. Qed.
+  Proof. by rewrite big_sepM2_alt_lookup and_elim_l. Qed.
 
   Lemma big_sepM2_dom Φ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) ⊢
     ⌜ dom m1 = dom m2 ⌝.
-  Proof.
-    rewrite big_sepM2_lookup_iff. apply pure_mono=>Hm.
-    apply set_eq=> k. by rewrite !elem_of_dom.
-  Qed.
+  Proof. by rewrite big_sepM2_alt and_elim_l. Qed.
 
   Lemma big_sepM2_flip Φ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m2; m1, Φ k y2 y1) ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2).
@@ -1934,7 +1935,6 @@ Section map2.
   Lemma big_sepM2_empty Φ : ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2) ⊣⊢ emp.
   Proof.
     rewrite big_sepM2_alt map_zip_with_empty big_sepM_empty pure_True ?left_id //.
-    intros k. rewrite !lookup_empty; split; by inversion 1.
   Qed.
   Lemma big_sepM2_empty' P `{!Affine P} Φ : P ⊢ [∗ map] k↦y1;y2 ∈ ∅;∅, Φ k y1 y2.
   Proof. rewrite big_sepM2_empty. apply: affine. Qed.
@@ -1980,11 +1980,7 @@ Section map2.
     ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2) ⊣⊢ [∗ map] k ↦ y1;y2 ∈ m1';m2', Ψ k y1 y2.
   Proof.
     intros Hm1 Hm2 Hf. rewrite !big_sepM2_alt. f_equiv.
-    { f_equiv; split; intros Hm k.
-      - trans (is_Some (m1 !! k)); [symmetry; apply is_Some_proper; by f_equiv|].
-        rewrite Hm. apply is_Some_proper; by f_equiv.
-      - trans (is_Some (m1' !! k)); [apply is_Some_proper; by f_equiv|].
-        rewrite Hm. symmetry. apply is_Some_proper; by f_equiv. }
+    { by rewrite Hm1 Hm2. }
     apply big_opM_proper_2; [by f_equiv|].
     intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some
       (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some [??]; naive_solver.
@@ -2051,14 +2047,8 @@ Section map2.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite sep_assoc (sep_comm _ (Φ _ _ _)) -sep_assoc.
     repeat apply sep_proper=>//.
-    apply affinely_proper, pure_proper.
-    split.
-    - intros H1 k. destruct (decide (i = k)) as [->|?].
-      + rewrite Hm1 Hm2 //. by split; intros ?; exfalso; eapply is_Some_None.
-      + specialize (H1 k). revert H1. rewrite !lookup_insert_ne //.
-    - intros H1 k. destruct (decide (i = k)) as [->|?].
-      + rewrite !lookup_insert. split; by econstructor.
-      + rewrite !lookup_insert_ne //.
+    apply affinely_proper, pure_proper. rewrite !dom_insert_L.
+    apply not_elem_of_dom in Hm1. apply not_elem_of_dom in Hm2. set_solver.
   Qed.
 
   Lemma big_sepM2_delete Φ m1 m2 i x1 x2 :
@@ -2070,13 +2060,9 @@ Section map2.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite sep_assoc (sep_comm  (Φ _ _ _)) -sep_assoc.
     apply sep_proper.
-    - apply affinely_proper, pure_proper. split.
-      + intros Hm k. destruct (decide (i = k)) as [->|?].
-        { rewrite !lookup_delete. split; intros []%is_Some_None. }
-        rewrite !lookup_delete_ne //.
-      + intros Hm k. specialize (Hm k). revert Hm. destruct (decide (i = k)) as [->|?].
-        { intros _. rewrite Hx1 Hx2. split; eauto. }
-        rewrite !lookup_delete_ne //.
+    - apply affinely_proper, pure_proper. rewrite !dom_delete_L.
+      apply elem_of_dom_2 in Hx1; apply elem_of_dom_2 in Hx2. set_unfold.
+      apply base.forall_proper=> k. destruct (decide (k = i)); naive_solver.
     - rewrite -map_delete_zip_with.
       apply (big_sepM_delete (λ i xx, Φ i xx.1 xx.2) (map_zip m1 m2) i (x1,x2)).
       by rewrite map_lookup_zip_with Hx1 Hx2.
@@ -2088,11 +2074,11 @@ Section map2.
             (Φ i x1 x2 ∗ [∗ map] k↦y1;y2 ∈ delete i m1;delete i m2, Φ k y1 y2).
   Proof.
     intros Hm1. apply (anti_symm _).
-    - rewrite big_sepM2_alt. apply pure_elim_l=> Hm.
+    - rewrite big_sepM2_alt_lookup. apply pure_elim_l=> Hm.
       assert (is_Some (m2 !! i)) as [x2 Hm2].
       { apply Hm. by econstructor. }
       rewrite -(exist_intro x2).
-      rewrite big_sepM2_alt (big_sepM_delete _ _ i (x1,x2)) /=;
+      rewrite big_sepM2_alt_lookup (big_sepM_delete _ _ i (x1,x2)) /=;
         last by rewrite map_lookup_zip_with Hm1 Hm2.
       rewrite pure_True // left_id.
       f_equiv. apply and_intro.
@@ -2108,12 +2094,12 @@ Section map2.
             (Φ i x1 x2 ∗ [∗ map] k↦y1;y2 ∈ delete i m1;delete i m2, Φ k y1 y2).
   Proof.
     intros Hm2. apply (anti_symm _).
-    - rewrite big_sepM2_alt.
+    - rewrite big_sepM2_alt_lookup.
       apply pure_elim_l=> Hm.
       assert (is_Some (m1 !! i)) as [x1 Hm1].
       { apply Hm. by econstructor. }
       rewrite -(exist_intro x1).
-      rewrite big_sepM2_alt (big_sepM_delete _ _ i (x1,x2)) /=;
+      rewrite big_sepM2_alt_lookup (big_sepM_delete _ _ i (x1,x2)) /=;
         last by rewrite map_lookup_zip_with Hm1 Hm2.
       rewrite pure_True // left_id.
       f_equiv. apply and_intro.
@@ -2156,8 +2142,7 @@ Section map2.
     apply entails_wand, wand_intro_r.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite (sep_comm  (Φ _ _ _)) -sep_assoc. apply sep_mono.
-    { apply affinely_mono, pure_mono. intros Hm k.
-      rewrite !lookup_insert_is_Some. naive_solver. }
+    { apply affinely_mono, pure_mono. rewrite !dom_insert_L. set_solver. }
     rewrite (big_sepM_insert_2 (λ k xx, Φ k xx.1 xx.2) (map_zip m1 m2) i (x1, x2)).
     rewrite map_insert_zip_with. apply wand_elim_r.
   Qed.
@@ -2208,17 +2193,14 @@ Section map2.
     apply (anti_symm _).
     - apply and_elim_r.
     - rewrite <- (left_id True%I (∧)%I (Φ i x1 x2)).
-      apply and_mono=>//. apply pure_mono=>_ k.
-      rewrite !lookup_insert_is_Some' !lookup_empty -!not_eq_None_Some.
-      naive_solver.
+      apply and_mono=> //. apply pure_mono=> _. set_solver.
   Qed.
 
   Lemma big_sepM2_fst_snd Φ m :
     ([∗ map] k↦y1;y2 ∈ fst <$> m; snd <$> m, Φ k y1 y2) ⊣⊢
     [∗ map] k ↦ xy ∈ m, Φ k (xy.1) (xy.2).
   Proof.
-    rewrite big_sepM2_alt.
-    setoid_rewrite lookup_fmap. setoid_rewrite fmap_is_Some.
+    rewrite big_sepM2_alt. rewrite !dom_fmap_L.
     by rewrite pure_True // True_and map_zip_fst_snd.
   Qed.
 
@@ -2226,10 +2208,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ f <$> m1; g <$> m2, Φ k y1 y2)
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k (f y1) (g y2)).
   Proof.
-    rewrite !big_sepM2_alt. rewrite map_fmap_zip.
-    apply and_proper.
-    - setoid_rewrite lookup_fmap. by setoid_rewrite fmap_is_Some.
-    - by rewrite big_sepM_fmap.
+    rewrite !big_sepM2_alt. by rewrite map_fmap_zip !dom_fmap_L big_sepM_fmap.
   Qed.
 
   Lemma big_sepM2_fmap_l {A'} (f : A → A') (Φ : K → A' → B → PROP) m1 m2 :
@@ -2247,7 +2226,7 @@ Section map2.
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ∗ ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2).
   Proof.
     rewrite !big_sepM2_alt.
-    rewrite -{1}(idemp bi_and ⌜∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)⌝%I).
+    rewrite -{1}(idemp bi_and ⌜ dom m1 = dom m2 ⌝%I).
     rewrite -assoc.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite -assoc. apply sep_proper=>//.
@@ -2282,7 +2261,7 @@ Section map2.
       ([∗ map] k↦y1;y2 ∈ m1;m2, <affine> ⌜φ k y1 y2⌝).
   Proof.
     intros Hdom.
-    rewrite big_sepM2_alt.
+    rewrite big_sepM2_alt_lookup.
     rewrite -big_sepM_affinely_pure_2.
     rewrite affinely_and_r -pure_and. f_equiv. f_equiv=>-Hforall.
     split; first done.
@@ -2318,7 +2297,7 @@ Section map2.
     □ (∀ k x1 x2, ⌜m1 !! k = Some x1⌝ → ⌜m2 !! k = Some x2⌝ → Φ k x1 x2) ⊢
     [∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2.
   Proof.
-    intros. rewrite big_sepM2_alt.
+    intros. rewrite big_sepM2_alt_lookup.
     apply and_intro; [by apply pure_intro|].
     rewrite -big_sepM_intro. f_equiv; f_equiv=> k.
     apply forall_intro=> -[x1 x2]. rewrite (forall_elim x1) (forall_elim x2).
@@ -2337,7 +2316,7 @@ Section map2.
     { apply and_intro; [apply big_sepM2_lookup_iff|].
       apply forall_intro=> k. apply forall_intro=> x1. apply forall_intro=> x2.
       do 2 (apply impl_intro_l; apply pure_elim_l=> ?). by apply: big_sepM2_lookup. }
-    apply pure_elim_l=> Hdom. rewrite big_sepM2_alt.
+    apply pure_elim_l=> Hdom. rewrite big_sepM2_alt_lookup.
     apply and_intro; [by apply pure_intro|].
     rewrite big_sepM_forall. f_equiv=> k.
     apply forall_intro=> -[x1 x2]. rewrite (forall_elim x1) (forall_elim x2).
@@ -2420,7 +2399,8 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ1 k y1 ∗ Φ2 k y2) ⊣⊢
     ([∗ map] k↦y1 ∈ m1, Φ1 k y1) ∗ ([∗ map] k↦y2 ∈ m2, Φ2 k y2).
   Proof.
-    intros. rewrite -big_sepM_sep_zip // big_sepM2_alt pure_True // left_id //.
+    intros.
+    rewrite -big_sepM_sep_zip // big_sepM2_alt_lookup pure_True // left_id //.
   Qed.
   Lemma big_sepM2_sepM_2 (Φ1 : K → A → PROP) (Φ2 : K → B → PROP) m1 m2 :
     (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
@@ -2491,11 +2471,7 @@ Lemma big_sepM2_ne_2 `{Countable K} (A B : ofe)
   ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2)%I ≡{n}≡ ([∗ map] k ↦ y1;y2 ∈ m1';m2', Ψ k y1 y2)%I.
 Proof.
   intros Hm1 Hm2 Hf. rewrite !big_sepM2_alt. f_equiv.
-  { f_equiv; split; intros Hm k.
-    - trans (is_Some (m1 !! k)); [symmetry; apply: is_Some_ne; by f_equiv|].
-      rewrite Hm. apply: is_Some_ne; by f_equiv.
-    - trans (is_Some (m1' !! k)); [apply: is_Some_ne; by f_equiv|].
-      rewrite Hm. symmetry. apply: is_Some_ne; by f_equiv. }
+  { by rewrite Hm1 Hm2. }
   apply big_opM_ne_2; [by f_equiv|].
   intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some
     (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some [??]; naive_solver.
