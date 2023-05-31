@@ -224,6 +224,8 @@ Section list.
     by rewrite IH -!assoc (assoc _ (g _ _)) [(g _ _ `o` _)]comm -!assoc.
   Qed.
 
+  (** Shows that some property [P] is closed under [big_opL]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
   Lemma big_opL_closed (P : M → Prop) f l :
     P monoid_unit →
     (∀ x y, P x → P y → P (x `o` y)) →
@@ -468,6 +470,8 @@ Section gmap.
     rewrite big_opM_unseal /big_opM_def -big_opL_op. by apply big_opL_proper=> ? [??].
   Qed.
 
+  (** Shows that some property [P] is closed under [big_opM]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
   Lemma big_opM_closed (P : M → Prop) f m :
     Proper ((≡) ==> iff) P →
     P monoid_unit →
@@ -622,6 +626,8 @@ Section gset.
       by rewrite big_opS_singleton IHl.
   Qed.
 
+  (** Shows that some property [P] is closed under [big_opS]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
   Lemma big_opS_closed (P : M → Prop) f X :
     Proper ((≡) ==> iff) P →
     P monoid_unit →
@@ -740,6 +746,8 @@ Section gmultiset.
     ([^o mset] y ∈ X, f y `o` g y) ≡ ([^o mset] y ∈ X, f y) `o` ([^o mset] y ∈ X, g y).
   Proof. by rewrite big_opMS_unseal /big_opMS_def -big_opL_op. Qed.
 
+  (** Shows that some property [P] is closed under [big_opMS]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
   Lemma big_opMS_closed (P : M → Prop) f X :
     Proper ((≡) ==> iff) P →
     P monoid_unit →

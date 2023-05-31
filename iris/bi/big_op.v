@@ -612,6 +612,8 @@ Section sep_list2.
            (big_sepL2 (PROP:=PROP) (A:=A) (B:=B)).
   Proof. intros f g Hf l1 ? <- l2 ? <-. apply big_sepL2_proper; intros; apply Hf. Qed.
 
+  (** Shows that some property [P] is closed under [big_sepL2]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
   Lemma big_sepL2_closed (P : PROP → Prop) Φ l1 l2 :
     P emp%I → P False%I →
     (∀ Q1 Q2, P Q1 → P Q2 → P (Q1 ∗ Q2)%I) →
@@ -2085,6 +2087,8 @@ Section map2.
       ==> (=) ==> (=) ==> (⊣⊢)) (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
   Proof. intros f g Hf m1 ? <- m2 ? <-. apply big_sepM2_proper; intros; apply Hf. Qed.
 
+  (** Shows that some property [P] is closed under [big_sepM2]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
   Lemma big_sepM2_closed (P : PROP → Prop) Φ m1 m2 :
     Proper ((≡) ==> iff) P →
     P emp%I → P False%I →
