@@ -107,6 +107,7 @@ Coq 8.13 is no longer supported.
   statement involves `let`.
 * Remove `string_to_ident`; use `string_to_ident_cps` instead which is in CPS
   form and hence does not require awful hacks.
+* The `iFrame` tactic now removes some conjunctions and disjunctions with `False`.
 
 **Changes in `base_logic`:**
 
