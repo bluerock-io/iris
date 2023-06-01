@@ -62,6 +62,10 @@ Global Instance make_and_emp_l P : QuickAffine P → KnownLMakeAnd emp P P.
 Proof. apply emp_and. Qed.
 Global Instance make_and_emp_r P : QuickAffine P → KnownRMakeAnd P emp P.
 Proof. apply and_emp. Qed.
+Global Instance make_and_false_l P : KnownLMakeAnd False P False.
+Proof. apply left_absorb, _. Qed.
+Global Instance make_and_false_r P : KnownRMakeAnd P False False.
+Proof. by rewrite /KnownRMakeAnd /MakeAnd right_absorb. Qed.
 Global Instance make_and_default P Q : MakeAnd P Q (P ∧ Q) | 100.
 Proof. by rewrite /MakeAnd. Qed.
 
@@ -74,6 +78,10 @@ Global Instance make_or_emp_l P : QuickAffine P → KnownLMakeOr emp P emp.
 Proof. apply emp_or. Qed.
 Global Instance make_or_emp_r P : QuickAffine P → KnownRMakeOr P emp emp.
 Proof. apply or_emp. Qed.
+Global Instance make_or_false_l P : KnownLMakeOr False P P.
+Proof. apply left_id, _. Qed.
+Global Instance make_or_false_r P : KnownRMakeOr P False P.
+Proof. by rewrite /KnownRMakeOr /MakeOr right_id. Qed.
 Global Instance make_or_default P Q : MakeOr P Q (P ∨ Q) | 100.
 Proof. by rewrite /MakeOr. Qed.
 
