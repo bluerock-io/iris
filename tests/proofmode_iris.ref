@@ -201,6 +201,23 @@ goal 2 is:
  "Hlc2" : £ m
  --------------------------------------∗
  £ m
+"test_iCombine_mapsto_no_beta"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  ghost_varG0 : ghost_varG Σ nat
+  l : gname
+  v : nat
+  q1, q2 : Qp
+  ============================
+  "H" : ghost_var l (q1 + q2) v
+  --------------------------------------∗
+  ghost_var l (q1 + q2) v
 "test_iInv"
      : string
 1 goal

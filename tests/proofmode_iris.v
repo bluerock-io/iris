@@ -1,7 +1,7 @@
 From iris.algebra Require Import frac.
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic Require Import base_logic.
-From iris.base_logic.lib Require Import invariants cancelable_invariants na_invariants.
+From iris.base_logic.lib Require Import invariants cancelable_invariants na_invariants ghost_var.
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
@@ -263,6 +263,14 @@ Section iris_tests.
   Check "lc_iSplit_lc".
   Lemma lc_iSplit_lc n m : £ (S n) -∗ £ m -∗ £ (S n + m).
   Proof. iIntros "Hlc1 Hlc2". iSplitL "Hlc1". Show. all: done. Qed.
+
+  (** Make sure [iCombine] doesn't leave behind beta redexes. *)
+  Check "test_iCombine_mapsto_no_beta".
+  Lemma test_iCombine_ghost_var_no_beta `{!ghost_varG Σ nat} l (v : nat) q1 q2 :
+    ghost_var l q1 v -∗ ghost_var l q2 v -∗ ghost_var l (q1+q2) v.
+  Proof.
+    iIntros "H1 H2". iCombine "H1 H2" as "H". Show. done.
+  Qed.
 End iris_tests.
 
 Section monpred_tests.

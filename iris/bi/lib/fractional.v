@@ -5,20 +5,33 @@ From iris.prelude Require Import options.
 Class Fractional {PROP : bi} (Φ : Qp → PROP) :=
   fractional p q : Φ (p + q)%Qp ⊣⊢ Φ p ∗ Φ q.
 Global Arguments Fractional {_} _%I : simpl never.
-
-Class AsFractional {PROP : bi} (P : PROP) (Φ : Qp → PROP) (q : Qp) := {
-  as_fractional : P ⊣⊢ Φ q;
-  as_fractional_fractional :> Fractional Φ
-}.
-Global Arguments AsFractional {_} _%I _%I _%Qp.
-
 Global Arguments fractional {_ _ _} _ _.
 
+(** The [AsFractional] typeclass eta-expands a proposition [P] into [Φ q] such
+that [Φ] is a fractional predicate. This is needed because higher-order
+unification cannot be relied upon to guess the right [Φ].
+
+[AsFractional] should generally be used in APIs that work with fractional
+predicates (instead of [Fractional]): when the user provides the original
+resource [P], have a premise [AsFractional P Φ 1] to convert that into some
+fractional predicate.
+
+The equivalence in [as_fractional] should hold definitionally; various typeclass
+instances assume that [Φ q] will un-do the eta-expansion performed by
+[AsFractional]. *)
+Class AsFractional {PROP : bi} (P : PROP) (Φ : Qp → PROP) (q : Qp) := {
+  as_fractional : P ⊣⊢ Φ q;
+  as_fractional_fractional : Fractional Φ
+}.
+Global Arguments AsFractional {_} _%I _%I _%Qp.
 Global Hint Mode AsFractional - ! - - : typeclass_instances.
-(* To make [as_fractional_fractional] a useful instance, we have to
-allow [q] to be an evar. The head of [Φ] will always be a λ so ! is
-not a useful mode there. *)
-Global Hint Mode AsFractional - - + - : typeclass_instances.
+
+(** The class [FrameFractionalQp] is used for fractional framing, it substracts
+the fractional of the hypothesis from the goal: it computes [r := qP - qR].
+See [frame_fractional] for how it is used. *)
+Class FrameFractionalQp (qR qP r : Qp) :=
+  frame_fractional_qp : qP = (qR + r)%Qp.
+Global Hint Mode FrameFractionalQp ! ! - : typeclass_instances.
 
 Section fractional.
   Context {PROP : bi}.
@@ -33,6 +46,25 @@ Section fractional.
     intros Φ1 Φ2 Hequiv.
     by setoid_rewrite Hequiv.
   Qed.
+
+  (* Every [Fractional] predicate admits an obvious [AsFractional] instance.
+
+  Ideally, this instance would mean that a user never has to define a manual
+  [AsFractional] instance for a [Fractional] predicate (even if it's of the
+  form [λ q, Φ a1 ‥ q ‥ an] for some n-ary predicate [Φ].) However, Coq's
+  lack of guarantees for higher-order unification mean this instance wouldn't
+  guarantee to apply for every [AsFractional] goal.
+
+  Therefore, this instance is not global to avoid conflicts with existing instances
+  defined by our users, since we can't ask users to universally delete their
+  manually-defined [AsFractional] instances for their own [Fractional] predicates.
+
+  (We could just support this instance for predicates with the fractional argument
+  in the final position, but that was felt to be a bit of a foot-gun - users would
+  have to remember to *not* define an [AsFractional] some of the time.) *)
+  Local Instance fractional_as_fractional Φ q :
+    Fractional Φ → AsFractional (Φ q) Φ q.
+  Proof. done. Qed.
 
   Lemma fractional_split P P1 P2 Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
@@ -96,7 +128,7 @@ Section fractional.
 
   Global Instance as_fractional_embed `{!BiEmbed PROP PROP'} P Φ q :
     AsFractional P Φ q → AsFractional (⎡ P ⎤) (λ q, ⎡ Φ q ⎤)%I q.
-  Proof. split; [by rewrite ->!as_fractional | apply _]. Qed.
+  Proof. intros [??]; split; [by f_equiv|apply _]. Qed.
 
   Global Instance fractional_big_sepL {A} (l : list A) Ψ :
     (∀ k x, Fractional (Ψ k x)) →
@@ -123,107 +155,53 @@ Section fractional.
     Fractional (PROP:=PROP) (λ q, [∗ mset] x ∈ X, Ψ x q)%I.
   Proof. intros ? q q'. rewrite -big_sepMS_sep. by setoid_rewrite fractional. Qed.
 
-  (** Mult instances *)
-
-  Global Instance mul_fractional_l Φ Ψ p :
-    (∀ q, AsFractional (Φ q) Ψ (q * p)) → Fractional Φ.
-  Proof.
-    intros H q q'. rewrite ->!as_fractional, Qp.mul_add_distr_r. by apply H.
-  Qed.
-  Global Instance mul_fractional_r Φ Ψ p :
-    (∀ q, AsFractional (Φ q) Ψ (p * q)) → Fractional Φ.
-  Proof.
-    intros H q q'. rewrite ->!as_fractional, Qp.mul_add_distr_l. by apply H.
-  Qed.
-
-  (* REMARK: These two instances do not work in either direction of the
-     search:
-       - In the forward direction, they make the search not terminate
-       - In the backward direction, the higher order unification of Φ
-         with the goal does not work. *)
-  Local Instance mul_as_fractional_l P Φ p q :
-    AsFractional P Φ (q * p) → AsFractional P (λ q, Φ (q * p)%Qp) q.
-  Proof.
-    intros H. split; first apply H. eapply (mul_fractional_l _ Φ p).
-    split; first done. apply H.
-  Qed.
-  Local Instance mul_as_fractional_r P Φ p q :
-    AsFractional P Φ (p * q) → AsFractional P (λ q, Φ (p * q)%Qp) q.
-  Proof.
-    intros H. split; first apply H. eapply (mul_fractional_r _ Φ p).
-    split; first done. apply H.
-  Qed.
-
   (** Proof mode instances *)
-  Global Instance from_and_fractional_fwd P P1 P2 Φ q1 q2 :
-    AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
-    FromSep P P1 P2.
-  Proof. by rewrite /FromSep=>-[-> ->] [-> _] [-> _]. Qed.
-  Global Instance combine_sep_fractional_bwd P P1 P2 Φ q1 q2 :
-    AsFractional P1 Φ q1 → AsFractional P2 Φ q2 → AsFractional P Φ (q1 + q2) →
-    CombineSepAs P1 P2 P | 50.
+  Global Instance from_sep_fractional P Φ q1 q2 :
+    AsFractional P Φ (q1 + q2) → FromSep P (Φ q1) (Φ q2).
+  Proof. rewrite /FromSep=>-[-> ->] //. Qed.
+  Global Instance combine_sep_as_fractional P1 P2 Φ q1 q2 :
+    AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
+    CombineSepAs P1 P2 (Φ (q1 + q2)%Qp) | 50.
   (* Explicit cost, to make it easier to provide instances with higher or
      lower cost. Higher-cost instances exist to combine (for example)
      [l ↦{q1} v1] with [l ↦{q2} v2] where [v1] and [v2] are not unifiable. *)
-  Proof. by rewrite /CombineSepAs =>-[-> _] [-> <-] [-> _]. Qed.
+  Proof. rewrite /CombineSepAs =>-[-> _] [-> <-] //. Qed.
 
-  Global Instance from_sep_fractional_half_fwd P Q Φ q :
-    AsFractional P Φ q → AsFractional Q Φ (q/2) →
-    FromSep P Q Q | 10.
-  Proof. by rewrite /FromSep -{1}(Qp.div_2 q)=>-[-> ->] [-> _]. Qed.
-  Global Instance from_sep_fractional_half_bwd P Q Φ q :
-    AsFractional P Φ (q/2) → AsFractional Q Φ q →
-    CombineSepAs P P Q | 50.
+  Global Instance from_sep_fractional_half P Φ q :
+    AsFractional P Φ q → FromSep P (Φ (q / 2)%Qp) (Φ (q / 2)%Qp) | 10.
+  Proof. rewrite /FromSep -{1}(Qp.div_2 q). intros [-> <-]. rewrite Qp.div_2 //. Qed.
+  Global Instance combine_sep_as_fractional_half P Φ q :
+    AsFractional P Φ (q/2) → CombineSepAs P P (Φ q) | 50.
   (* Explicit cost, to make it easier to provide instances with higher or
      lower cost. Higher-cost instances exist to combine (for example)
      [l ↦{q1} v1] with [l ↦{q2} v2] where [v1] and [v2] are not unifiable. *)
-  Proof. rewrite /CombineSepAs=>-[-> <-] [-> _]. by rewrite Qp.div_2. Qed.
+  Proof. rewrite /CombineSepAs=>-[-> <-]. by rewrite Qp.div_2. Qed.
 
-  Global Instance into_sep_fractional P P1 P2 Φ q1 q2 :
-    AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
-    IntoSep P P1 P2.
-  Proof. intros. rewrite /IntoSep [P]fractional_split //. Qed.
+  Global Instance into_sep_fractional P Φ q1 q2 :
+    AsFractional P Φ (q1 + q2) → IntoSep P (Φ q1) (Φ q2).
+  Proof. intros [??]. rewrite /IntoSep [P]fractional_split //. Qed.
 
-  Global Instance into_sep_fractional_half P Q Φ q :
-    AsFractional P Φ q → AsFractional Q Φ (q/2) →
-    IntoSep P Q Q | 100.
-  Proof. intros. rewrite /IntoSep [P]fractional_half //. Qed.
+  Global Instance into_sep_fractional_half P Φ q :
+    AsFractional P Φ q → IntoSep P (Φ (q / 2)%Qp) (Φ (q / 2)%Qp) | 100.
+  Proof. intros [??]. rewrite /IntoSep [P]fractional_half //. Qed.
 
-  (* The instance [frame_fractional] can be tried at all the nodes of
-     the proof search. The proof search then fails almost always on
-     [AsFractional R Φ r], but the slowdown is still noticeable.  For
-     that reason, we factorize the three instances that could have been
-     defined for that purpose into one. *)
-  Inductive FrameFractionalHyps
-      (p : bool) (R : PROP) (Φ : Qp → PROP) (RES : PROP) : Qp → Qp → Prop :=
-    | frame_fractional_hyps_l Q q q' r:
-       Frame p R (Φ q) Q →
-       MakeSep Q (Φ q') RES →
-       FrameFractionalHyps p R Φ RES r (q + q')
-    | frame_fractional_hyps_r Q q q' r:
-       Frame p R (Φ q') Q →
-       MakeSep Q (Φ q) RES →
-       FrameFractionalHyps p R Φ RES r (q + q')
-    | frame_fractional_hyps_half q :
-       AsFractional RES Φ (q/2) →
-       FrameFractionalHyps p R Φ RES (q/2) q.
-  Existing Class FrameFractionalHyps.
-  Global Existing Instances frame_fractional_hyps_l frame_fractional_hyps_r
-    frame_fractional_hyps_half.
+  Global Instance frame_fractional_qp_add_l q q' : FrameFractionalQp q (q + q') q'.
+  Proof. by rewrite /FrameFractionalQp. Qed.
+  Global Instance frame_fractional_qp_add_r q q' : FrameFractionalQp q' (q + q') q.
+  Proof. by rewrite /FrameFractionalQp Qp.add_comm. Qed.
+  Global Instance frame_fractional_qp_half q : FrameFractionalQp (q/2) q (q/2).
+  Proof. by rewrite /FrameFractionalQp Qp.div_2. Qed.
 
   (* Not an instance because of performance; you can locally add it if you are
   willing to pay the cost. We have concrete instances for certain fractional
   assertions such as ↦. *)
-  Lemma frame_fractional p R r Φ P q RES:
-    AsFractional R Φ r → AsFractional P Φ q →
-    FrameFractionalHyps p R Φ RES r q →
-    Frame p R P RES.
+  Lemma frame_fractional p R P Φ qR qP r :
+    AsFractional R Φ qR →
+    AsFractional P Φ qP →
+    FrameFractionalQp qR qP r →
+    Frame p R P (Φ r).
   Proof.
-    rewrite /Frame=>-[HR _][->?]H.
-    revert H HR=>-[Q q0 q0' r0|Q q0 q0' r0|q0].
-    - rewrite fractional /Frame /MakeSep=><-<-. by rewrite assoc.
-    - rewrite fractional /Frame /MakeSep=><-<-=>_.
-      by rewrite (comm _ Q (Φ q0)) !assoc (comm _ (Φ _)).
-    - move=>-[-> _]->. by rewrite bi.intuitionistically_if_elim -fractional Qp.div_2.
+    rewrite /Frame /FrameFractionalQp=> -[-> _] [-> ?] ->.
+    by rewrite bi.intuitionistically_if_elim fractional.
   Qed.
 End fractional.

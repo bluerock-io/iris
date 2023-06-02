@@ -188,9 +188,9 @@ Section gen_heap.
   Proof. rewrite mapsto_unseal. apply ghost_map_elem_persist. Qed.
 
   (** Framing support *)
-  Global Instance frame_mapsto p l v q1 q2 RES :
-    FrameFractionalHyps p (l ↦{#q1} v) (λ q, l ↦{#q} v)%I RES q1 q2 →
-    Frame p (l ↦{#q1} v) (l ↦{#q2} v) RES | 5.
+  Global Instance frame_mapsto p l v q1 q2 q :
+    FrameFractionalQp q1 q2 q →
+    Frame p (l ↦{#q1} v) (l ↦{#q2} v) (l ↦{#q} v) | 5.
   Proof. apply: frame_fractional. Qed.
 
   (** General properties of [meta] and [meta_token] *)
