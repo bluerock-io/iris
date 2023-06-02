@@ -78,6 +78,14 @@ Coq 8.13 is no longer supported.
 * Change `big_sepM2_alt` to use `dom m1 = dom2 m2` instead of
   `∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)`. The old lemma is still
   available as `big_sepM2_alt_lookup`.
+* Overhaul `Fractional`/`AsFractional`:
+  - Remove `AsFractional → Fractional` instance.
+  - No longer use `AsFractional P Φ q` backwards, from `Φ` and `q` to `P` -- just
+    use `Φ q` instead.
+  - Remove multiplication instances (that also go from `AsFractional` to
+    `Fractional`, making it very hard to reason about search termination).
+  - Rewrite `frame_fractional` lemma using the new `FrameFractionalQp` typeclass
+    for `Qp` reasoning.
 
 **Changes in `proofmode`:**
 
