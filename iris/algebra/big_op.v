@@ -223,6 +223,18 @@ Section list.
     revert f g; induction l as [|x l IH]=> f g /=; first by rewrite left_id.
     by rewrite IH -!assoc (assoc _ (g _ _)) [(g _ _ `o` _)]comm -!assoc.
   Qed.
+
+  (** Shows that some property [P] is closed under [big_opL]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
+  Lemma big_opL_closed (P : M → Prop) f l :
+    P monoid_unit →
+    (∀ x y, P x → P y → P (x `o` y)) →
+    (∀ k x, l !! k = Some x → P (f k x)) →
+    P ([^o list] k↦x ∈ l, f k x).
+  Proof.
+    intros Hunit Hop. revert f. induction l as [|x l IH]=> f Hf /=; [done|].
+    apply Hop; first by auto. apply IH=> k. apply (Hf (S k)).
+  Qed.
 End list.
 
 Lemma big_opL_bind {A B} (h : A → list B) (f : B → M) l :
@@ -457,6 +469,22 @@ Section gmap.
   Proof.
     rewrite big_opM_unseal /big_opM_def -big_opL_op. by apply big_opL_proper=> ? [??].
   Qed.
+
+  (** Shows that some property [P] is closed under [big_opM]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
+  Lemma big_opM_closed (P : M → Prop) f m :
+    Proper ((≡) ==> iff) P →
+    P monoid_unit →
+    (∀ x y, P x → P y → P (x `o` y)) →
+    (∀ k x, m !! k = Some x → P (f k x)) →
+    P ([^o map] k↦x ∈ m, f k x).
+  Proof.
+    intros ?? Hop Hf. induction m as [|k x ?? IH] using map_ind.
+    { by rewrite big_opM_empty. }
+    rewrite big_opM_insert //. apply Hop.
+    { apply Hf. by rewrite lookup_insert. }
+    apply IH=> k' x' ?. apply Hf. rewrite lookup_insert_ne; naive_solver.
+  Qed.
 End gmap.
 
 Lemma big_opM_sep_zip_with `{Countable K} {A B C}
@@ -597,6 +625,22 @@ Section gset.
     - rewrite /= big_opS_union; last set_solver.
       by rewrite big_opS_singleton IHl.
   Qed.
+
+  (** Shows that some property [P] is closed under [big_opS]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
+  Lemma big_opS_closed (P : M → Prop) f X :
+    Proper ((≡) ==> iff) P →
+    P monoid_unit →
+    (∀ x y, P x → P y → P (x `o` y)) →
+    (∀ x, x ∈ X → P (f x)) →
+    P ([^o set] x ∈ X, f x).
+  Proof.
+    intros ?? Hop Hf. induction X as [|x X ? IH] using set_ind_L.
+    { by rewrite big_opS_empty. }
+    rewrite big_opS_insert //. apply Hop.
+    { apply Hf. set_solver. }
+    apply IH=> x' ?. apply Hf. set_solver.
+  Qed.
 End gset.
 
 Lemma big_opS_set_map `{Countable A, Countable B} (h : A → B) (X : gset A) (f : B → M) :
@@ -701,6 +745,22 @@ Section gmultiset.
   Lemma big_opMS_op f g X :
     ([^o mset] y ∈ X, f y `o` g y) ≡ ([^o mset] y ∈ X, f y) `o` ([^o mset] y ∈ X, g y).
   Proof. by rewrite big_opMS_unseal /big_opMS_def -big_opL_op. Qed.
+
+  (** Shows that some property [P] is closed under [big_opMS]. Examples of [P]
+  are [Persistent], [Affine], [Timeless]. *)
+  Lemma big_opMS_closed (P : M → Prop) f X :
+    Proper ((≡) ==> iff) P →
+    P monoid_unit →
+    (∀ x y, P x → P y → P (x `o` y)) →
+    (∀ x, x ∈ X → P (f x)) →
+    P ([^o mset] x ∈ X, f x).
+  Proof.
+    intros ?? Hop Hf. induction X as [|x X IH] using gmultiset_ind.
+    { by rewrite big_opMS_empty. }
+    rewrite big_opMS_insert //. apply Hop.
+    { apply Hf. set_solver. }
+    apply IH=> x' ?. apply Hf. set_solver.
+  Qed.
 End gmultiset.
 
 (** Commuting lemmas *)

@@ -448,6 +448,8 @@ everyone involved!
   propositions that want to support framing are expected to register an
   appropriate instance themselves. HeapLang and gen_heap `↦` still support
   framing, but the other fractional propositions in Iris do not.
+* Strenghten the `Persistent`/`Affine`/`Timeless` results for big ops. Add a `'`
+  to the name of the weaker results, which remain to be used as instances.
 
 **Changes in `heap_lang`:**
 
