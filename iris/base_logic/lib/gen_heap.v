@@ -49,10 +49,10 @@ building abstractions, then one can gradually assign more ghost information to a
 location instead of having to do all of this at once. We use namespaces so that
 these can be matched up with the invariant namespaces. *)
 
-(** To implement this mechanism, we use three resource algebras:
+(** To implement this mechanism, we use three pieces of ghost state:
 
-- A [gmap_view L V], which keeps track of the values of locations.
-- A [gmap_view L gname], which keeps track of the meta information of
+- A [ghost_map L V], which keeps track of the values of locations.
+- A [ghost_map L gname], which keeps track of the meta information of
   locations. More specifically, this RA introduces an indirection: it keeps
   track of a ghost name for each location.
 - The ghost names in the aforementioned authoritative RA refer to namespace maps
