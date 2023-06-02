@@ -155,19 +155,6 @@ Section fractional.
     Fractional (PROP:=PROP) (λ q, [∗ mset] x ∈ X, Ψ x q)%I.
   Proof. intros ? q q'. rewrite -big_sepMS_sep. by setoid_rewrite fractional. Qed.
 
-  (** Mult instances *)
-
-  Global Instance mul_fractional_l Φ Ψ p :
-    (∀ q, AsFractional (Φ q) Ψ (q * p)) → Fractional Φ.
-  Proof.
-    intros H q q'. rewrite ->!as_fractional, Qp.mul_add_distr_r. by apply H.
-  Qed.
-  Global Instance mul_fractional_r Φ Ψ p :
-    (∀ q, AsFractional (Φ q) Ψ (p * q)) → Fractional Φ.
-  Proof.
-    intros H q q'. rewrite ->!as_fractional, Qp.mul_add_distr_l. by apply H.
-  Qed.
-
   (** Proof mode instances *)
   Global Instance from_sep_fractional P Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → FromSep P (Φ q1) (Φ q2).
