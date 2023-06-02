@@ -1,4 +1,4 @@
-From iris.algebra Require Import cmra view auth agree csum list excl gmap.
+From iris.algebra Require Import cmra view auth agree csum list excl gmap reservation_map.
 From iris.algebra.lib Require Import excl_auth gmap_view dfrac_agree.
 From iris.base_logic Require Import bi derived.
 From iris.prelude Require Import options.
@@ -26,6 +26,14 @@ Section upred.
   Lemma frac_validI (q : Qp) : ✓ q ⊣⊢ ⌜q ≤ 1⌝%Qp.
   Proof. rewrite uPred.discrete_valid frac_valid //. Qed.
 
+  Lemma dfrac_validI (dq : dfrac) :
+    ✓ dq ⊣⊢ match dq with
+            | DfracOwn q => ⌜q ≤ 1⌝%Qp
+            | DfracBoth q => ⌜q < 1⌝%Qp
+            | _ => True
+            end.
+  Proof. destruct dq; by rewrite uPred.discrete_valid. Qed.
+
   Section gmap_ofe.
     Context `{Countable K} {A : ofe}.
     Implicit Types m : gmap K A.
@@ -51,6 +59,49 @@ Section upred.
           apply bi.True_intro.
     Qed.
   End gmap_cmra.
+
+  Section reservation_map_cmra.
+    Context {A : cmra}.
+    Implicit Types a b : A.
+    Implicit Types x y : reservation_map A.
+
+    Lemma reservation_validI x :
+      ✓ x ⊣⊢ let (m, E) := x in ✓ m ∧ ✓ E ∧
+            match E with | CoPsetBot => False | CoPset E =>
+              ⌜gset_to_coPset (dom m) ∩ E = ∅⌝ end.
+    Proof.
+      destruct x as [m [E|]]; split => n y Hy; uPred.unseal => /=;
+        repeat rewrite /uPred_holds /=; rewrite reservation_map_validN_eq /=;
+        last intuition.
+      split; move => [Hm HiE].
+      - do 2 (split; first done).
+        apply set_eq => i. split; last set_solver.
+        move => /elem_of_intersection [Hi HE].
+        apply elem_of_gset_to_coPset in Hi.
+        by destruct (HiE i) as [?%not_elem_of_dom_2 | HnE].
+      - split; first done. move => i.
+        destruct (decide (i ∈ E)) as [HE'|HE']; last eauto.
+        left. destruct (m !! i) as [a|] eqn:Hmi; last done.
+        apply elem_of_dom_2, elem_of_gset_to_coPset in Hmi.
+        set_solver.
+    Qed.
+
+    Lemma reservation_equivI x y :
+      x ≡ y ⊣⊢
+        (reservation_map_data_proj x ≡ reservation_map_data_proj y) ∧
+        (reservation_map_token_proj x ≡ reservation_map_token_proj y).
+    Proof. by uPred.unseal. Qed.
+
+    Lemma reservation_map_data_validI k b :
+      ✓ reservation_map_data k b ⊣⊢@{uPredI M} ✓ b.
+    Proof.
+      rewrite reservation_validI /= singleton_validI.
+      apply (anti_symm _); first by rewrite bi.and_elim_l.
+      apply bi.and_intro; first done. apply bi.and_intro.
+      - by uPred.unseal.
+      - apply bi.pure_intro. set_solver.
+    Qed.
+  End reservation_map_cmra.
 
   Section list_ofe.
     Context {A : ofe}.
@@ -112,6 +163,27 @@ Section upred.
 
     Lemma to_agree_uninjI x : ✓ x ⊢ ∃ a, to_agree a ≡ x.
     Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
+
+    (** If two [x y : agree O] compose to a [to_agree o], they are internally
+      equal, and also equal to the [to_agree o]. *)
+    Lemma agree_op_equiv_to_agreeI x y a :
+      x ⋅ y ≡ to_agree a ⊢ x ≡ y ∧ y ≡ to_agree a.
+    Proof.
+      assert (x ⋅ y ≡ to_agree a ⊢ x ≡ y) as Hxy_equiv.
+      - etrans; last apply agree_validI.
+        rewrite internal_eq_sym.
+        rewrite (internal_eq_rewrite _ _ (λ o, ✓ o)%I).
+        by rewrite -to_agree_validI bi.True_impl.
+      - apply bi.and_intro; first done.
+        (** This is quite painful without [iRewrite] *)
+        etrans; first (apply bi.and_intro; reflexivity).
+        rewrite {1}Hxy_equiv. apply bi.impl_elim_r'.
+        erewrite (internal_eq_rewrite (x ⋅ y) _ (λ z, y ≡ z)%I); last solve_proper.
+        apply bi.impl_mono; last done.
+        rewrite internal_eq_sym.
+        erewrite (internal_eq_rewrite y _ (λ z, y ≡ z ⋅ y)%I); last solve_proper.
+        by rewrite agree_idemp -(internal_eq_refl True) bi.True_impl.
+    Qed.
   End agree.
 
   Section csum_ofe.
@@ -224,6 +296,12 @@ Section upred.
     Lemma auth_auth_validI a : ✓ (● a) ⊣⊢ ✓ a.
     Proof.
       by rewrite auth_auth_dfrac_validI bi.pure_True // left_id.
+    Qed.
+    Lemma auth_auth_dfrac_op_validI dq1 dq2 a1 a2 :
+      ✓ (●{dq1} a1 ⋅ ●{dq2} a2) ⊣⊢ ✓ (dq1 ⋅ dq2) ∧ ✓ a1 ∧ (a1 ≡ a2).
+    Proof.
+      split => n x y. uPred.unseal. repeat rewrite /uPred_holds /=.
+      rewrite auth_auth_dfrac_op_validN; intuition.
     Qed.
 
     Lemma auth_frag_validI a : ✓ (◯ a) ⊣⊢ ✓ a.
