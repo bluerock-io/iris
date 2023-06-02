@@ -93,7 +93,7 @@ Section upred.
     Proof. by uPred.unseal. Qed.
 
     Lemma reservation_map_data_validI k b :
-      ✓ reservation_map_data k b ⊣⊢@{uPredI M} ✓ b.
+      ✓ reservation_map_data k b ⊣⊢ ✓ b.
     Proof.
       rewrite reservation_validI /= singleton_validI.
       apply (anti_symm _); first by rewrite bi.and_elim_l.
