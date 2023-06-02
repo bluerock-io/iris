@@ -44,10 +44,10 @@ Proof.
   (* To test destruct: can also be part of the intro-pattern *)
   iDestruct "foo" as "[_ meh]".
   repeat iSplit; [|by iLeft|iIntros "#[]"].
-  iFrame "H2".
+  iFrame "H2". (* also simplifies the [∧ False] and [∨ False] *)
   (* split takes a list of hypotheses just for the LHS *)
   iSplitL "H3".
-  - iFrame "H3". iRight. auto.
+  - by iFrame "H3".
   - iSplitL "HQ"; first iAssumption. by iSplitL "H1".
 Qed.
 
@@ -654,6 +654,15 @@ Proof. iIntros "HP HQ". iFrame "HP HQ". Qed.
 Lemma test_iFrame_conjunction_2 P Q :
   P -∗ Q -∗ (P ∧ P) ∗ (Q ∧ Q).
 Proof. iIntros "HP HQ". iFrame "HP HQ". Qed.
+Check "test_iFrame_conjunction_3".
+Lemma test_iFrame_conjunction_3 P Q `{!Absorbing Q} :
+  P -∗ Q -∗ ((P ∗ False) ∧ Q).
+Proof.
+  iIntros "HP HQ".
+  iFrame "HP".
+  (* [iFrame] should simplify [False ∧ Q] to just [False]. *)
+  Show.
+Abort.
 
 Lemma test_iFrame_later `{!BiAffine PROP} P Q : P -∗ Q -∗ ▷ P ∗ Q.
 Proof. iIntros "H1 H2". by iFrame "H1". Qed.
@@ -706,6 +715,16 @@ Proof.
   Since [emp ∧ ⌜x = 0⌝] is not trivially affine (i.e., not [QuickAffine]) it
   is not simplified to [emp]. *)
   iExists 0. auto.
+Qed.
+Check "test_iFrame_or_3".
+Lemma test_iFrame_or_3 P1 P2 P3 :
+  P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∗ ⌜x = 0⌝) ∨ (False ∗ P3)).
+Proof.
+  iIntros "($ & $ & $)".
+  Show. (* After framing [P3], the disjunction becomes [⌜x = 0⌝ ∨ False].
+  The simplification of disjunctions by [iFrame] will now get rid of the
+  [∨ False], to just [⌜x = 0⌝] *)
+  by iExists 0.
 Qed.
 Check "test_iFrame_or_affine_1".
 Lemma test_iFrame_or_affine_1 `{!BiAffine PROP} P1 P2 P3 :
