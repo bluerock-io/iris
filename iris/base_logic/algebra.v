@@ -30,7 +30,7 @@ Section upred.
     ✓ dq ⊣⊢ match dq with
             | DfracOwn q => ⌜q ≤ 1⌝%Qp
             | DfracBoth q => ⌜q < 1⌝%Qp
-            | _ => True
+            | DfracDiscarded => True
             end.
   Proof. destruct dq; by rewrite uPred.discrete_valid. Qed.
 
