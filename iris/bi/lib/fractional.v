@@ -198,7 +198,7 @@ Section fractional.
 
   Coq is sometimes unable to infer the [Φ], hence it might be useful to write
   [apply: (frame_fractional (λ q, ...))] when using the lemma to prove your
-  custom instance. *)
+  custom instance. See also https://github.com/coq/coq/issues/17688 *)
   Lemma frame_fractional Φ p R P qR qP r :
     AsFractional R Φ qR →
     AsFractional P Φ qP →
