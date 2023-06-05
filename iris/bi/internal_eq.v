@@ -1,5 +1,6 @@
 From iris.bi Require Import derived_laws_later big_op.
 From iris.prelude Require Import options.
+From iris.algebra Require Import excl csum.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
 
 (* We enable primitive projections in this file to improve the performance of the Iris proofmode:
@@ -155,6 +156,47 @@ Section internal_eq_derived.
                end)%I); auto.
       destruct x; auto.
     - destruct x as [a|], y as [a'|]; auto. apply f_equivI, _.
+  Qed.
+
+  Lemma csum_equivI {A B : ofe} (sx sy : csum A B) :
+    sx ≡ sy ⊣⊢
+              match sx, sy with
+               | Cinl x, Cinl y => x ≡ y
+               | Cinr x, Cinr y => x ≡ y
+               | CsumBot, CsumBot => True
+               | _, _ => False
+               end.
+  Proof.
+    apply (anti_symm _).
+    - apply (internal_eq_rewrite' sx sy (λ sy',
+               match sx, sy' with
+               | Cinl x, Cinl y => x ≡ y
+               | Cinr x, Cinr y => x ≡ y
+               | CsumBot, CsumBot => True
+               | _, _ => False
+               end)%I); [solve_proper|auto|].
+      destruct sx; eauto.
+    - destruct sx; destruct sy; eauto;
+      apply f_equivI, _.
+  Qed.
+
+  Lemma excl_equivI {O : ofe} (x y : excl O) :
+    x ≡ y ⊣⊢ match x, y with
+             | Excl a, Excl b => a ≡ b
+             | ExclBot, ExclBot => True
+             | _, _ => False
+             end.
+  Proof.
+    apply (anti_symm _).
+    - apply (internal_eq_rewrite' x y (λ y',
+               match x, y' with
+               | Excl a, Excl b => a ≡ b
+               | ExclBot, ExclBot => True
+               | _, _ => False
+               end)%I); [solve_proper|auto|].
+      destruct x; eauto.
+    - destruct x as [e1|]; destruct y as [e2|]; [|by eauto..].
+      apply f_equivI, _.
   Qed.
 
   Lemma sig_equivI {A : ofe} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊣⊢ x ≡ y.

@@ -240,9 +240,10 @@ Section cmra.
   Proof.
       by rewrite {2}/op /dyn_reservation_map_op_instance /dyn_reservation_map_data /= singleton_op left_id_L.
   Qed.
+
   Lemma dyn_reservation_map_data_mono k a b :
     a ≼ b → dyn_reservation_map_data k a ≼ dyn_reservation_map_data k b.
-  Proof. intros [c ->]. rewrite dyn_reservation_map_data_op. apply cmra_included_l. Qed.
+  Proof. intros [c ->]. rewrite dyn_reservation_map_data_op. eauto. Qed.
   Global Instance dyn_reservation_map_data_is_op k a b1 b2 :
     IsOp a b1 b2 →
     IsOp' (dyn_reservation_map_data k a) (dyn_reservation_map_data k b1) (dyn_reservation_map_data k b2).
