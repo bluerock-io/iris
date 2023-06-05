@@ -121,16 +121,16 @@ Section upred.
     Lemma to_agree_uninjI x : ✓ x ⊢ ∃ a, to_agree a ≡ x.
     Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
 
-    (** If two [x y : agree O] compose to a [to_agree o], they are internally
-      equal, and also equal to the [to_agree o]. *)
+    (** Derived lemma: If two [x y : agree O] compose to a [to_agree o],
+      they are internally equal, and also equal to the [to_agree o]. *)
     Lemma agree_op_equiv_to_agreeI x y a :
       x ⋅ y ≡ to_agree a ⊢ x ≡ y ∧ y ≡ to_agree a.
     Proof.
       assert (x ⋅ y ≡ to_agree a ⊢ x ≡ y) as Hxy_equiv.
-      - etrans; last apply agree_validI.
+      { etrans; last apply agree_validI.
         rewrite internal_eq_sym.
         rewrite (internal_eq_rewrite _ _ (λ o, ✓ o)%I).
-        by rewrite -to_agree_validI bi.True_impl.
+        by rewrite -to_agree_validI bi.True_impl. }
       - apply bi.and_intro; first done.
         (** This is quite painful without [iRewrite] *)
         etrans; first (apply bi.and_intro; reflexivity).
