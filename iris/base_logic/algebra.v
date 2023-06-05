@@ -121,8 +121,13 @@ Section upred.
     Lemma to_agree_uninjI x : ✓ x ⊢ ∃ a, to_agree a ≡ x.
     Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
 
-    (** Derived lemma: If two [x y : agree O] compose to a [to_agree o],
-      they are internally equal, and also equal to the [to_agree o]. *)
+    (** Derived lemma: If two [x y : agree O] compose to some [to_agree a],
+      they are internally equal, and also equal to the [to_agree a].
+
+      Empirically, [x ⋅ y ≡ to_agree a] appears often when agreement comes up
+      in CMRA validity terms, especially when [view]s are involved. The desired
+      simplification [x ≡ y ∧ y ≡ to_agree a] is also not straightforward to
+      derive, so we have a special lemma to handle this common case. *)
     Lemma agree_op_equiv_to_agreeI x y a :
       x ⋅ y ≡ to_agree a ⊢ x ≡ y ∧ y ≡ to_agree a.
     Proof.
