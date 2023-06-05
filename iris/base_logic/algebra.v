@@ -1,4 +1,4 @@
-From iris.algebra Require Import cmra view auth agree csum list excl gmap reservation_map.
+From iris.algebra Require Import cmra view auth agree csum list excl gmap.
 From iris.algebra.lib Require Import excl_auth gmap_view dfrac_agree.
 From iris.base_logic Require Import bi derived.
 From iris.prelude Require Import options.
@@ -30,7 +30,7 @@ Section upred.
     ✓ dq ⊣⊢ match dq with
             | DfracOwn q => ⌜q ≤ 1⌝%Qp
             | DfracBoth q => ⌜q < 1⌝%Qp
-            | DfracDiscarded => True
+            | _ => True
             end.
   Proof. destruct dq; by rewrite uPred.discrete_valid. Qed.
 
@@ -59,49 +59,6 @@ Section upred.
           apply bi.True_intro.
     Qed.
   End gmap_cmra.
-
-  Section reservation_map_cmra.
-    Context {A : cmra}.
-    Implicit Types a b : A.
-    Implicit Types x y : reservation_map A.
-
-    Lemma reservation_validI x :
-      ✓ x ⊣⊢ let (m, E) := x in ✓ m ∧ ✓ E ∧
-            match E with | CoPsetBot => False | CoPset E =>
-              ⌜gset_to_coPset (dom m) ∩ E = ∅⌝ end.
-    Proof.
-      destruct x as [m [E|]]; split => n y Hy; uPred.unseal => /=;
-        repeat rewrite /uPred_holds /=; rewrite reservation_map_validN_eq /=;
-        last intuition.
-      split; move => [Hm HiE].
-      - do 2 (split; first done).
-        apply set_eq => i. split; last set_solver.
-        move => /elem_of_intersection [Hi HE].
-        apply elem_of_gset_to_coPset in Hi.
-        by destruct (HiE i) as [?%not_elem_of_dom_2 | HnE].
-      - split; first done. move => i.
-        destruct (decide (i ∈ E)) as [HE'|HE']; last eauto.
-        left. destruct (m !! i) as [a|] eqn:Hmi; last done.
-        apply elem_of_dom_2, elem_of_gset_to_coPset in Hmi.
-        set_solver.
-    Qed.
-
-    Lemma reservation_equivI x y :
-      x ≡ y ⊣⊢
-        (reservation_map_data_proj x ≡ reservation_map_data_proj y) ∧
-        (reservation_map_token_proj x ≡ reservation_map_token_proj y).
-    Proof. by uPred.unseal. Qed.
-
-    Lemma reservation_map_data_validI k b :
-      ✓ reservation_map_data k b ⊣⊢ ✓ b.
-    Proof.
-      rewrite reservation_validI /= singleton_validI.
-      apply (anti_symm _); first by rewrite bi.and_elim_l.
-      apply bi.and_intro; first done. apply bi.and_intro.
-      - by uPred.unseal.
-      - apply bi.pure_intro. set_solver.
-    Qed.
-  End reservation_map_cmra.
 
   Section list_ofe.
     Context {A : ofe}.
