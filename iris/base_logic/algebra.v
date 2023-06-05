@@ -131,15 +131,15 @@ Section upred.
         rewrite internal_eq_sym.
         rewrite (internal_eq_rewrite _ _ (λ o, ✓ o)%I).
         by rewrite -to_agree_validI bi.True_impl. }
-      - apply bi.and_intro; first done.
-        (** This is quite painful without [iRewrite] *)
-        etrans; first (apply bi.and_intro; reflexivity).
-        rewrite {1}Hxy_equiv. apply bi.impl_elim_r'.
-        erewrite (internal_eq_rewrite (x ⋅ y) _ (λ z, y ≡ z)%I); last solve_proper.
-        apply bi.impl_mono; last done.
-        rewrite internal_eq_sym.
-        erewrite (internal_eq_rewrite y _ (λ z, y ≡ z ⋅ y)%I); last solve_proper.
-        by rewrite agree_idemp -(internal_eq_refl True) bi.True_impl.
+      apply bi.and_intro; first done.
+      (** This is quite painful without [iRewrite] *)
+      etrans; first (apply bi.and_intro; reflexivity).
+      rewrite {1}Hxy_equiv. apply bi.impl_elim_r'.
+      erewrite (internal_eq_rewrite (x ⋅ y) _ (λ z, y ≡ z)%I); last solve_proper.
+      apply bi.impl_mono; last done.
+      rewrite internal_eq_sym.
+      erewrite (internal_eq_rewrite y _ (λ z, y ≡ z ⋅ y)%I); last solve_proper.
+      by rewrite agree_idemp -(internal_eq_refl True) bi.True_impl.
     Qed.
   End agree.
 
