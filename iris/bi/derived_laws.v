@@ -223,6 +223,11 @@ Proof.
   - by apply impl_intro_l; rewrite left_id.
 Qed.
 
+Lemma impl_refl P Q : Q ⊢ P → P.
+Proof. apply impl_intro_l, and_elim_l. Qed.
+Lemma impl_trans P Q R : (P → Q) ∧ (Q → R) ⊢ (P → R).
+Proof. apply impl_intro_l. by rewrite assoc !impl_elim_r. Qed.
+
 Lemma False_impl P : (False → P) ⊣⊢ True.
 Proof.
   apply (anti_symm (⊢)); [by auto|].
@@ -336,13 +341,20 @@ Global Instance iff_proper :
   Proper ((⊣⊢) ==> (⊣⊢) ==> (⊣⊢)) (@bi_iff PROP) := ne_proper_2 _.
 
 Lemma iff_refl Q P : Q ⊢ P ↔ P.
-Proof. rewrite /bi_iff; apply and_intro; apply impl_intro_l; auto. Qed.
+Proof. rewrite /bi_iff. apply and_intro; apply impl_refl. Qed.
 Lemma iff_sym P Q : (P ↔ Q) ⊣⊢ (Q ↔ P).
 Proof.
   apply equiv_entails. split; apply and_intro;
     try apply and_elim_r; apply and_elim_l.
 Qed.
-
+Lemma iff_trans P Q R : (P ↔ Q) ∧ (Q ↔ R) ⊢ (P ↔ R).
+Proof.
+  apply and_intro.
+  - rewrite /bi_iff (and_elim_l _ (_ → _)) (and_elim_l _ (_ → _)).
+    apply impl_trans.
+  - rewrite /bi_iff (and_elim_r _ (_ → _)) (and_elim_r _ (_ → _)) comm.
+    apply impl_trans.
+Qed.
 
 (* BI Stuff *)
 Local Hint Resolve sep_mono : core.
@@ -427,6 +439,8 @@ Proof.
   apply wand_intro_l. rewrite left_absorb. auto.
 Qed.
 
+Lemma wand_refl P : ⊢ P -∗ P.
+Proof. apply wand_intro_l. by rewrite right_id. Qed.
 Lemma wand_trans P Q R : (P -∗ Q) ∗ (Q -∗ R) ⊢ (P -∗ R).
 Proof. apply wand_intro_l. by rewrite assoc !wand_elim_r. Qed.
 
@@ -476,8 +490,16 @@ Proof. solve_proper. Qed.
 Global Instance wand_iff_proper :
   Proper ((⊣⊢) ==> (⊣⊢) ==> (⊣⊢)) (@bi_wand_iff PROP) := ne_proper_2 _.
 
-Lemma wand_iff_refl P : emp ⊢ P ∗-∗ P.
+Lemma wand_iff_refl P : ⊢ P ∗-∗ P.
 Proof. apply and_intro; apply wand_intro_l; by rewrite right_id. Qed.
+Lemma wand_iff_sym P Q : (P ∗-∗ Q) ⊣⊢ (Q ∗-∗ P).
+Proof. apply equiv_entails; split; rewrite /bi_wand_iff; eauto. Qed.
+Lemma wand_iff_trans P Q R : (P ∗-∗ Q) ∗ (Q ∗-∗ R) ⊢ (P ∗-∗ R).
+Proof.
+  apply and_intro.
+  - rewrite /bi_wand_iff !and_elim_l. apply wand_trans.
+  - rewrite /bi_wand_iff !and_elim_r comm. apply wand_trans.
+Qed.
 
 Lemma wand_entails P Q : (⊢ P -∗ Q) → P ⊢ Q.
 Proof. intros. rewrite -[P]emp_sep. by apply wand_elim_l'. Qed.
@@ -495,12 +517,6 @@ Lemma wand_iff_equiv P Q : (⊢ P ∗-∗ Q) → (P ⊣⊢ Q).
 Proof.
   intros HPQ; apply (anti_symm (⊢));
     apply wand_entails; rewrite /bi_emp_valid HPQ /bi_wand_iff; auto.
-Qed.
-Lemma wand_iff_sym P Q :
-  (P ∗-∗ Q) ⊣⊢ (Q ∗-∗ P).
-Proof.
-  apply equiv_entails; split; apply and_intro;
-    try apply and_elim_r; apply and_elim_l.
 Qed.
 
 Lemma entails_impl P Q : (P ⊢ Q) → (⊢ P → Q).

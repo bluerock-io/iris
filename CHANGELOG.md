@@ -86,6 +86,8 @@ Coq 8.13 is no longer supported.
     `Fractional`, making it very hard to reason about search termination).
   - Rewrite `frame_fractional` lemma using the new `FrameFractionalQp` typeclass
     for `Qp` reasoning.
+* Add missing transitivity, symmetry and reflexivity lemmas about the `↔`, `→`,
+  `-∗` and `∗-∗` connectives. (by Ike Mulder)
 
 **Changes in `proofmode`:**
 
