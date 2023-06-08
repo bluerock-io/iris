@@ -23,9 +23,6 @@ Section upred.
     ✓ g ⊣⊢ ∀ i, ✓ g i.
   Proof. by uPred.unseal. Qed.
 
-  Lemma frac_validI (q : Qp) : ✓ q ⊣⊢ ⌜q ≤ 1⌝%Qp.
-  Proof. rewrite uPred.discrete_valid frac_valid //. Qed.
-
   Section gmap_ofe.
     Context `{Countable K} {A : ofe}.
     Implicit Types m : gmap K A.
