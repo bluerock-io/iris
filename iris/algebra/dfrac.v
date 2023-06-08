@@ -104,6 +104,14 @@ Section dfrac.
     | DfracBoth q, DfracBoth q' => DfracBoth (q + q')
     end.
 
+  Lemma dfrac_valid dq :
+    ✓ dq ↔ match dq with
+           | DfracOwn q => q ≤ 1
+           | DfracDiscarded => True
+           | DfracBoth q => q < 1
+           end%Qp.
+  Proof. done. Qed.
+
   Lemma dfrac_op_own q p : DfracOwn p ⋅ DfracOwn q = DfracOwn (p + q).
   Proof. done. Qed.
 
