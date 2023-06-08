@@ -66,17 +66,20 @@ Section fractional.
     Fractional Φ → AsFractional (Φ q) Φ q.
   Proof. done. Qed.
 
-  Lemma fractional_split P P1 P2 Φ q1 q2 :
-    AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
-    P ⊣⊢ P1 ∗ P2.
-  Proof. by move=>-[-> ->] [-> _] [-> _]. Qed.
-  Lemma fractional_split_1 P P1 P2 Φ q1 q2 :
-    AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
-    P -∗ P1 ∗ P2.
+  (** These lemmas are meant to be used when [P] is known but the split-up
+      pieces ([Φ], [q1], [q2]) are not.
+      See [fractional_merge] below for the dual situation. *)
+  Lemma fractional_split P Φ q1 q2 :
+    AsFractional P Φ (q1 + q2) →
+    P ⊣⊢ Φ q1 ∗ Φ q2.
+  Proof. by move=>-[-> ->]. Qed.
+  Lemma fractional_split_1 P Φ q1 q2 :
+    AsFractional P Φ (q1 + q2) →
+    P -∗ Φ q1 ∗ Φ q2.
   Proof. intros. apply bi.entails_wand. by rewrite -(fractional_split P). Qed.
-  Lemma fractional_split_2 P P1 P2 Φ q1 q2 :
-    AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
-    P1 -∗ P2 -∗ P.
+  Lemma fractional_split_2 P Φ q1 q2 :
+    AsFractional P Φ (q1 + q2) →
+    Φ q1 -∗ Φ q2 -∗ P.
   Proof. intros. apply bi.entails_wand, bi.wand_intro_r. by rewrite -(fractional_split P). Qed.
 
   Lemma fractional_merge P1 P2 Φ q1 q2 `{!Fractional Φ} :
