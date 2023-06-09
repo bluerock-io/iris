@@ -109,6 +109,27 @@ Section upred.
 
     Lemma to_agree_uninjI x : ✓ x ⊢ ∃ a, to_agree a ≡ x.
     Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
+
+    (** Derived lemma: If two [x y : agree O] compose to some [to_agree a],
+      they are internally equal, and also equal to the [to_agree a].
+
+      Empirically, [x ⋅ y ≡ to_agree a] appears often when agreement comes up
+      in CMRA validity terms, especially when [view]s are involved. The desired
+      simplification [x ≡ y ∧ y ≡ to_agree a] is also not straightforward to
+      derive, so we have a special lemma to handle this common case. *)
+    Lemma agree_op_equiv_to_agreeI x y a :
+      x ⋅ y ≡ to_agree a ⊢ x ≡ y ∧ y ≡ to_agree a.
+    Proof.
+      assert (x ⋅ y ≡ to_agree a ⊢ x ≡ y) as Hxy_equiv.
+      { rewrite -(agree_validI x y) internal_eq_sym.
+        apply: (internal_eq_rewrite' _ _ (λ o, ✓ o)%I); first done.
+        rewrite -to_agree_validI. apply bi.True_intro. }
+      apply bi.and_intro; first done.
+      rewrite -{1}(idemp bi_and (_ ≡ _)%I) {1}Hxy_equiv. apply bi.impl_elim_l'.
+      apply: (internal_eq_rewrite' _ _
+        (λ y', x ⋅ y' ≡ to_agree a → y' ≡ to_agree a)%I); [solve_proper|done|].
+      rewrite agree_idemp. apply bi.impl_refl.
+    Qed.
   End agree.
 
   Section csum_ofe.
@@ -222,6 +243,9 @@ Section upred.
     Proof.
       by rewrite auth_auth_dfrac_validI bi.pure_True // left_id.
     Qed.
+    Lemma auth_auth_dfrac_op_validI dq1 dq2 a1 a2 :
+      ✓ (●{dq1} a1 ⋅ ●{dq2} a2) ⊣⊢ ✓ (dq1 ⋅ dq2) ∧ (a1 ≡ a2) ∧ ✓ a1.
+    Proof. uPred.unseal; split => n x _. apply auth_auth_dfrac_op_validN. Qed.
 
     Lemma auth_frag_validI a : ✓ (◯ a) ⊣⊢ ✓ a.
     Proof.
