@@ -248,10 +248,7 @@ Section upred.
     Qed.
     Lemma auth_auth_dfrac_op_validI dq1 dq2 a1 a2 :
       ✓ (●{dq1} a1 ⋅ ●{dq2} a2) ⊣⊢ ✓ (dq1 ⋅ dq2) ∧ (a1 ≡ a2) ∧ ✓ a1.
-    Proof.
-      split => n x y. uPred.unseal. repeat rewrite /uPred_holds /=.
-      by rewrite auth_auth_dfrac_op_validN.
-    Qed.
+    Proof. uPred.unseal; split => n x _. apply auth_auth_dfrac_op_validN. Qed.
 
     Lemma auth_frag_validI a : ✓ (◯ a) ⊣⊢ ✓ a.
     Proof.
