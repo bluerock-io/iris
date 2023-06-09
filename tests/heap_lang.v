@@ -1,8 +1,6 @@
 From iris.base_logic.lib Require Import gen_inv_heap invariants.
 From iris.program_logic Require Export weakestpre total_weakestpre.
 From iris.heap_lang Require Import lang adequacy total_adequacy proofmode notation lib.lock.
-(* Import lang *again*. This used to break notation. *)
-From iris.heap_lang Require Import lang.
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
@@ -517,9 +515,6 @@ Proof.
 Qed.
 
 (** Just making sure the lock typeclass actually works. *)
-(** Sadly the [lang] import reexports the [ssreflect.lock] so we have to
-re-import the library we really want to use... *)
-Import heap_lang.lib.lock.
 Section lock.
   Context `{!heapGS Σ, !lock}.
 
