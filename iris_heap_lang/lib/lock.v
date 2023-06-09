@@ -12,11 +12,11 @@ Class lock `{!heapGS_gen hlc Σ} := Lock {
   release : val;
   (** * Predicates *)
   (** [name] is used to associate locked with [is_lock] *)
-  name : Type;
+  lock_name : Type;
   (** No namespace [N] parameter because we only expose program specs, which
   anyway have the full mask. *)
-  is_lock (γ: name) (lock: val) (R: iProp Σ) : iProp Σ;
-  locked (γ: name) : iProp Σ;
+  is_lock (γ: lock_name) (lock: val) (R: iProp Σ) : iProp Σ;
+  locked (γ: lock_name) : iProp Σ;
   (** * General properties of the predicates *)
   is_lock_ne γ lk :> Contractive (is_lock γ lk);
   is_lock_persistent γ lk R :> Persistent (is_lock γ lk R);
