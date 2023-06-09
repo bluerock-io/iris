@@ -26,14 +26,6 @@ Section upred.
   Lemma frac_validI (q : Qp) : ✓ q ⊣⊢ ⌜q ≤ 1⌝%Qp.
   Proof. rewrite uPred.discrete_valid frac_valid //. Qed.
 
-  Lemma dfrac_validI (dq : dfrac) :
-    ✓ dq ⊣⊢ match dq with
-            | DfracOwn q => ⌜q ≤ 1⌝%Qp
-            | DfracBoth q => ⌜q < 1⌝%Qp
-            | DfracDiscarded => True
-            end.
-  Proof. destruct dq; by rewrite uPred.discrete_valid. Qed.
-
   Section gmap_ofe.
     Context `{Countable K} {A : ofe}.
     Implicit Types m : gmap K A.
@@ -132,19 +124,14 @@ Section upred.
       x ⋅ y ≡ to_agree a ⊢ x ≡ y ∧ y ≡ to_agree a.
     Proof.
       assert (x ⋅ y ≡ to_agree a ⊢ x ≡ y) as Hxy_equiv.
-      { etrans; last apply agree_validI.
-        rewrite internal_eq_sym.
-        rewrite (internal_eq_rewrite _ _ (λ o, ✓ o)%I).
-        by rewrite -to_agree_validI bi.True_impl. }
+      { rewrite -(agree_validI x y) internal_eq_sym.
+        apply: (internal_eq_rewrite' _ _ (λ o, ✓ o)%I); first done.
+        rewrite -to_agree_validI. apply bi.True_intro. }
       apply bi.and_intro; first done.
-      (** This is quite painful without [iRewrite] *)
-      etrans; first (apply bi.and_intro; reflexivity).
-      rewrite {1}Hxy_equiv. apply bi.impl_elim_r'.
-      erewrite (internal_eq_rewrite (x ⋅ y) _ (λ z, y ≡ z)%I); last solve_proper.
-      apply bi.impl_mono; last done.
-      rewrite internal_eq_sym.
-      erewrite (internal_eq_rewrite y _ (λ z, y ≡ z ⋅ y)%I); last solve_proper.
-      by rewrite agree_idemp -(internal_eq_refl True) bi.True_impl.
+      rewrite -{1}(idemp bi_and (_ ≡ _)%I) {1}Hxy_equiv. apply bi.impl_elim_l'.
+      apply: (internal_eq_rewrite' _ _
+        (λ y', x ⋅ y' ≡ to_agree a → y' ≡ to_agree a)%I); [solve_proper|done|].
+      rewrite agree_idemp. apply bi.impl_refl.
     Qed.
   End agree.
 
@@ -260,10 +247,10 @@ Section upred.
       by rewrite auth_auth_dfrac_validI bi.pure_True // left_id.
     Qed.
     Lemma auth_auth_dfrac_op_validI dq1 dq2 a1 a2 :
-      ✓ (●{dq1} a1 ⋅ ●{dq2} a2) ⊣⊢ ✓ (dq1 ⋅ dq2) ∧ ✓ a1 ∧ (a1 ≡ a2).
+      ✓ (●{dq1} a1 ⋅ ●{dq2} a2) ⊣⊢ ✓ (dq1 ⋅ dq2) ∧ (a1 ≡ a2) ∧ ✓ a1.
     Proof.
       split => n x y. uPred.unseal. repeat rewrite /uPred_holds /=.
-      rewrite auth_auth_dfrac_op_validN; intuition.
+      by rewrite auth_auth_dfrac_op_validN.
     Qed.
 
     Lemma auth_frag_validI a : ✓ (◯ a) ⊣⊢ ✓ a.
