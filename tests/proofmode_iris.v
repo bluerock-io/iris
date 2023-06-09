@@ -236,36 +236,32 @@ Section iris_tests.
 
   (* Test [iInv] with accessor variables. *)
   Section iInv_accessor_variables.
-    Context (P : iProp Σ).
-    (* This is a rather silly accessor that we just register for test purposes:
-       P ==∗ (∃ b, P ∗ (P ==∗ P)). The fact that there is a [b] is important
-       as we don't have any such accessors with a variable in the Iris repo. *)
-    Local Instance P_acc :
-      IntoAcc (X:=bool) P True True bupd bupd (λ b, P) (λ b, P) (λ b, Some P).
-    Proof.
-      rewrite /IntoAcc /accessor /=.
-      iIntros (_) "HP _". iExists true. eauto with iFrame.
-    Qed.
+    (** We consider a kind of invariant that does not take a proposition, but
+    a predicate. The invariant accessor gives the predicate existentially. *)
+    Context (INV : (bool → iProp Σ) → iProp Σ).
+    Context `{!∀ Φ,
+      IntoAcc (INV Φ) True True (fupd ⊤ ∅) (fupd ∅ ⊤) Φ Φ (λ b, Some (INV Φ))}.
 
     Check "test_iInv_accessor_variable".
-    Lemma test_iInv_accessor_variable : P ==∗ P.
+    Lemma test_iInv_accessor_variable Φ : INV Φ ={⊤}=∗ INV Φ.
     Proof.
-      iIntros "HP".
+      iIntros "HINV".
       (* There are 4 variants of [iInv] that we have to test *)
       (* No selection pattern, no closing view shift *)
-      Fail iInv "HP" as "HPinner".
-      iInv "HP" as (b) "HPinner"; rename b into b_exists. Undo.
+      Fail iInv "HINV" as "HINVinner".
+      iInv "HINV" as (b) "HINVinner"; rename b into b_exists. Undo.
       (* Both sel.pattern and closing view shift *)
       (* FIXME this one is broken: no proper error message without a pattern for
       the accessor variable, and an error when the pattern is given *)
-      Fail Fail iInv "HP" with "[//]" as "HPinner" "Hclose".
-      Fail iInv "HP" with "[//]" as (b) "HPinner" "Hclose"; rename b into b_exists.
+      Fail Fail iInv "HINV" with "[//]" as "HINVinner" "Hclose".
+      Fail iInv "HINV" with "[//]" as (b) "HINVinner" "Hclose"; rename b into b_exists.
       (* Sel.pattern but no closing view shift *)
-      Fail iInv "HP" with "[//]" as "HPinner".
-      iInv "HP" with "[//]" as (b) "HPinner"; rename b into b_exists. Undo.
+      Fail iInv "HINV" with "[//]" as "HINVinner".
+      iInv "HINV" with "[//]" as (b) "HINVinner"; rename b into b_exists. Undo.
       (* Closing view shift, no selection pattern *)
-      Fail iInv "HP" as "HPinner" "Hclose".
-      iInv "HP" as (b) "HPinner" "Hclose"; rename b into b_exists. auto.
+      Fail iInv "HINV" as "HINVinner" "Hclose".
+      iInv "HINV" as (b) "HINVinner" "Hclose"; rename b into b_exists.
+      by iApply "Hclose".
     Qed.
   End iInv_accessor_variables.
 
