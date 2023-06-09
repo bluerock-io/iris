@@ -5,6 +5,7 @@ From iris.base_logic.lib Require Import invariants cancelable_invariants na_inva
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
+Set Default Proof Using "Type*".
 
 Section base_logic_tests.
   Context {M : ucmra}.
@@ -232,6 +233,37 @@ Section iris_tests.
     iIntros "H"; iInv "H" as (v1 v2 v3) "(?&?&_)".
     eauto.
   Qed.
+
+  (* Test [iInv] with accessor variables. *)
+  Section iInv_accessor_variables.
+    (** We consider a kind of invariant that does not take a proposition, but
+    a predicate. The invariant accessor gives the predicate existentially. *)
+    Context (INV : (bool → iProp Σ) → iProp Σ).
+    Context `{!∀ Φ,
+      IntoAcc (INV Φ) True True (fupd ⊤ ∅) (fupd ∅ ⊤) Φ Φ (λ b, Some (INV Φ))}.
+
+    Check "test_iInv_accessor_variable".
+    Lemma test_iInv_accessor_variable Φ : INV Φ ={⊤}=∗ INV Φ.
+    Proof.
+      iIntros "HINV".
+      (* There are 4 variants of [iInv] that we have to test *)
+      (* No selection pattern, no closing view shift *)
+      Fail iInv "HINV" as "HINVinner".
+      iInv "HINV" as (b) "HINVinner"; rename b into b_exists. Undo.
+      (* Both sel.pattern and closing view shift *)
+      (* FIXME this one is broken: no proper error message without a pattern for
+      the accessor variable, and an error when the pattern is given *)
+      Fail Fail iInv "HINV" with "[//]" as "HINVinner" "Hclose".
+      Fail iInv "HINV" with "[//]" as (b) "HINVinner" "Hclose"; rename b into b_exists.
+      (* Sel.pattern but no closing view shift *)
+      Fail iInv "HINV" with "[//]" as "HINVinner".
+      iInv "HINV" with "[//]" as (b) "HINVinner"; rename b into b_exists. Undo.
+      (* Closing view shift, no selection pattern *)
+      Fail iInv "HINV" as "HINVinner" "Hclose".
+      iInv "HINV" as (b) "HINVinner" "Hclose"; rename b into b_exists.
+      by iApply "Hclose".
+    Qed.
+  End iInv_accessor_variables.
 
   Theorem test_iApply_inG `{!inG Σ A} γ (x x' : A) :
     x' ≼ x →

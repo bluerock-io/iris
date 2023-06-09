@@ -186,6 +186,15 @@ Global Instance add_modal_fupd `{!BiFUpd PROP} E1 E2 P Q :
   AddModal (|={E1}=> P) P (|={E1,E2}=> Q).
 Proof. by rewrite /AddModal fupd_frame_r wand_elim_r fupd_trans. Qed.
 
+Global Instance elim_acc_bupd `{!BiBUpd PROP} {X} α β mγ Q :
+  ElimAcc (X:=X) True bupd bupd α β mγ
+          (|==> Q)
+          (λ x, |==> β x ∗ (mγ x -∗? |==> Q))%I.
+Proof.
+  iIntros (_) "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
+  iMod ("Hinner" with "Hα") as "[Hβ Hfin]".
+  iMod ("Hclose" with "Hβ") as "Hγ". by iApply "Hfin".
+Qed.
 Global Instance elim_acc_fupd `{!BiFUpd PROP} {X} E1 E2 E α β mγ Q :
   ElimAcc (X:=X) True (fupd E1 E2) (fupd E2 E1) α β mγ
           (|={E1,E}=> Q)

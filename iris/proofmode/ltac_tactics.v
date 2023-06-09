@@ -3136,7 +3136,7 @@ Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(H
 (* Without closing view shift *)
 Tactic Notation "iInvCore" constr(N) "with" constr(pats) "in" tactic3(tac) :=
   iInvCore N with pats as (@None string) in ltac:(tac).
-(* Without pattern *)
+(* Without selection pattern *)
 Tactic Notation "iInvCore" constr(N) "as" constr(Hclose) "in" tactic3(tac) :=
   iInvCore N with "[$]" as Hclose in ltac:(tac).
 (* Without both *)
@@ -3287,7 +3287,7 @@ Tactic Notation "iInv" constr(N) "with" constr(Hs) "as" "(" simple_intropattern(
                 | _ => revert x; intros x1; iDestructHyp H as (   x2 x3 x4 x5 x6 x7 x8 x9 x10) pat
                 end).
 
-(* Without pattern *)
+(* Without selection pattern *)
 Tactic Notation "iInv" constr(N) "as" constr(pat) constr(Hclose) :=
   iInvCore N as (Some Hclose) in
     (fun x H => lazymatch type of x with
