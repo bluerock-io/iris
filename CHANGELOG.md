@@ -38,6 +38,7 @@ Coq 8.13 is no longer supported.
     use the tactic `dist_later_intro`/`dist_later_fin_intro` to introduce it.
   (by Michael Sammler, Lennard Gäher, and Simon Spies).
 * Add `max_Z` and `mono_Z` cameras.
+* Add `dfrac_valid`.
 
 **Changes in `bi`:**
 
@@ -135,7 +136,10 @@ Coq 8.13 is no longer supported.
 * Refactor soundness lemmas: `bupd_plain_soundness` → `bupd_soundness`,
   `soundness` → `laterN_soundness` + `pure_soundness`; removed
   `consistency_modal`.
-* Strengthen `cmra_valid_elim` to `✓ a ⊢ ⌜ ✓{0} a ⌝`; make `discrete_valid` a derived law.
+* Strengthen `cmra_valid_elim` to `✓ a ⊢ ⌜ ✓{0} a ⌝`; make `discrete_valid` a
+  derived law.
+* Remove `frac_validI`. Instead, move to the pure context (with `%` in the proof
+  mode or `uPred.discrete_valid` in manual proofs) and use `frac_valid`.
 
 **Changes in `heap_lang`:**
 
