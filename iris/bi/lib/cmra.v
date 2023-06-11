@@ -71,11 +71,11 @@ Section internal_included_laws.
   Lemma prod_includedI {A B} (x y : A * B) :
     x ≼ y ⊣⊢ (x.1 ≼ y.1) ∧ (x.2 ≼ y.2).
   Proof.
-    destruct x as [x1 x2]; destruct y as [y1 y2]; simpl; apply (anti_symm _).
-    - apply bi.exist_elim => [[z1 z2]]. rewrite -pair_op prod_equivI /=.
-      apply bi.and_mono; by eapply bi.exist_intro'.
-    - iIntros "[[%z1 Hz1] [%z2 Hz2]]". iExists (z1, z2).
-      rewrite -pair_op prod_equivI /=. eauto.
+    destruct x as [x1 x2], y as [y1 y2]; simpl; iSplit.
+    - iIntros "#[%z H]". rewrite prod_equivI /=. iDestruct "H" as "[??]".
+      iSplit; by iExists _.
+    - iIntros "#[[%z1 Hz1] [%z2 Hz2]]". iExists (z1, z2).
+      rewrite prod_equivI /=; auto.
   Qed.
 
   Lemma option_includedI {A} (mx my : option A) :
@@ -85,16 +85,16 @@ Section internal_included_laws.
                | Some x, None => False
                end.
   Proof.
-    apply (anti_symm _); last first.
-    - destruct mx as [x|]; last (change None with (ε : option A); eauto).
-      destruct my as [y|]; last eauto.
-      iDestruct 1 as "[[%z H]|H]"; iRewrite "H".
-      * iApply f_homom_includedI; eauto.
-      * by iExists None.
-    - destruct mx as [x|]; last eauto.
-      iDestruct 1 as (c) "He". rewrite Some_op_opM option_equivI.
-      destruct my as [y|]; last eauto.
-      iRewrite "He". destruct c; simpl; eauto.
+    iSplit.
+    - iIntros "[%mz H]". rewrite option_equivI.
+      destruct mx as [x|], my as [y|], mz as [z|]; simpl; auto; [|].
+      + iLeft. by iExists z.
+      + iRight. by iRewrite "H".
+    - destruct mx as [x|], my as [y|]; simpl; auto; [|].
+      + iDestruct 1 as "[[%z H]|H]"; iRewrite "H".
+        * by iExists (Some z).
+        * by iExists None.
+      + iIntros "_". by iExists (Some y).
   Qed.
 
   Lemma csum_includedI {A B} (sx sy : csum A B) :
@@ -105,11 +105,12 @@ Section internal_included_laws.
                | _, _ => False
                end.
   Proof.
-    apply (anti_symm _); last first.
-    - destruct sx as [x|x|]; destruct sy as [y|y|]; eauto;
-      eapply f_homom_includedI; eauto; apply _.
-    - iDestruct 1 as (c) "Hc". rewrite csum_equivI.
-      destruct sx; destruct sy; destruct c; eauto; by iExists _.
+    iSplit.
+    - iDestruct 1 as (sz) "H". rewrite csum_equivI.
+      destruct sx, sy, sz; rewrite /internal_included /=; auto.
+    - destruct sx as [x|x|], sy as [y|y|]; eauto; [|].
+      + iIntros "#[%z H]". iExists (Cinl z). by rewrite csum_equivI.
+      + iIntros "#[%z H]". iExists (Cinr z). by rewrite csum_equivI.
   Qed.
 
   Lemma excl_includedI {O : ofe} (x y : excl O) :
@@ -118,20 +119,15 @@ Section internal_included_laws.
              |  _ => False
              end.
   Proof.
-    apply (anti_symm _).
-    - iIntros "[%z Hz]". iStopProof.
-      apply (internal_eq_rewrite' (x ⋅ z) y (λ y',
-               match y' with
-               | ExclBot => True
-               | _ => False
-               end)%I); [solve_proper|apply internal_eq_sym|].
-      destruct x; destruct z; eauto.
-    - destruct y; eauto.
+    iSplit.
+    - iIntros "[%z Hz]". rewrite excl_equivI. destruct y, x, z; auto.
+    - destruct y; [done|]. iIntros "_". by iExists ExclBot.
   Qed.
 
   Lemma agree_includedI {O : ofe} (x y : agree O) : x ≼ y ⊣⊢ y ≡ x ⋅ y.
   Proof.
-    apply (anti_symm _); last (iIntros "H"; by iExists _).
-    iIntros "[%c Hc]". iRewrite "Hc". by rewrite assoc agree_idemp.
+    iSplit.
+    + iIntros "[%z Hz]". iRewrite "Hz". by rewrite assoc agree_idemp.
+    + iIntros "H". by iExists _.
   Qed.
 End internal_included_laws.
