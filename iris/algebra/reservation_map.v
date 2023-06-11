@@ -225,7 +225,7 @@ Section cmra.
   Qed.
   Lemma reservation_map_data_mono k a b :
     a ≼ b → reservation_map_data k a ≼ reservation_map_data k b.
-  Proof. intros [c ->]. rewrite reservation_map_data_op. eauto. Qed.
+  Proof. intros [c ->]. by rewrite reservation_map_data_op. Qed.
   Global Instance reservation_map_data_is_op k a b1 b2 :
     IsOp a b1 b2 →
     IsOp' (reservation_map_data k a) (reservation_map_data k b1) (reservation_map_data k b2).

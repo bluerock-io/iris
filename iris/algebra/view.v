@@ -288,7 +288,7 @@ Section cmra.
   Lemma view_frag_op b1 b2 : ◯V (b1 ⋅ b2) = ◯V b1 ⋅ ◯V b2.
   Proof. done. Qed.
   Lemma view_frag_mono b1 b2 : b1 ≼ b2 → ◯V b1 ≼ ◯V b2.
-  Proof. intros [c ->]. rewrite view_frag_op. eauto. Qed.
+  Proof. intros [c ->]. by rewrite view_frag_op. Qed.
   Lemma view_frag_core b : core (◯V b) = ◯V (core b).
   Proof. done. Qed.
   Lemma view_both_core_discarded a b :
@@ -424,8 +424,8 @@ Section cmra.
       + apply equiv_dist=> n.
         by eapply view_auth_dfrac_includedN, cmra_included_includedN.
     - intros [[[dq ->]| ->] ->].
-      + rewrite view_auth_dfrac_op -assoc. eauto.
-      + eauto.
+      + by rewrite view_auth_dfrac_op -assoc.
+      + done.
   Qed.
   Lemma view_auth_includedN n a1 a2 b :
     ●V a1 ≼{n} ●V a2 ⋅ ◯V b ↔ a1 ≡{n}≡ a2.
@@ -448,7 +448,7 @@ Section cmra.
     split.
     - intros [xf [_ Hb]]; simpl in *.
       revert Hb; rewrite left_id. by exists (view_frag_proj xf).
-    - intros [bf ->]. rewrite comm view_frag_op -assoc. eauto.
+    - intros [bf ->]. by rewrite comm view_frag_op -assoc.
   Qed.
 
   (** The weaker [view_both_included] lemmas below are a consequence of the

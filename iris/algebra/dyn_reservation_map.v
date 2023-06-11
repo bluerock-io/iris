@@ -243,7 +243,7 @@ Section cmra.
 
   Lemma dyn_reservation_map_data_mono k a b :
     a ≼ b → dyn_reservation_map_data k a ≼ dyn_reservation_map_data k b.
-  Proof. intros [c ->]. rewrite dyn_reservation_map_data_op. eauto. Qed.
+  Proof. intros [c ->]. by rewrite dyn_reservation_map_data_op. Qed.
   Global Instance dyn_reservation_map_data_is_op k a b1 b2 :
     IsOp a b1 b2 →
     IsOp' (dyn_reservation_map_data k a) (dyn_reservation_map_data k b1) (dyn_reservation_map_data k b2).
