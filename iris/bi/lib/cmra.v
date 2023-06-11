@@ -3,18 +3,16 @@ From iris.bi Require Import internal_eq.
 From iris.algebra Require Import cmra csum excl agree.
 From iris.prelude Require Import options.
 
-
 (** Derived [≼] connective on [cmra] elements. This can be defined on
     any [bi] that has internal equality [≡]. It corresponds to the
     step-indexed [≼{n}] connective in the [uPred] model. *)
-Definition internal_included `{!BiInternalEq PROP} {A : cmra} (a b : A) : PROP
-  := ∃ c, b ≡ a ⋅ c.
+Definition internal_included `{!BiInternalEq PROP} {A : cmra} (a b : A) : PROP :=
+  ∃ c, b ≡ a ⋅ c.
 Global Arguments internal_included {_ _ _} _ _ : simpl never.
 Global Instance: Params (@internal_included) 3 := {}.
 Global Typeclasses Opaque internal_included.
 
 Infix "≼" := internal_included : bi_scope.
-
 
 Section internal_included_laws.
   Context `{!BiInternalEq PROP}.
@@ -57,6 +55,15 @@ Section internal_included_laws.
     Absorbing (PROP := PROP) (a ≼ b).
   Proof. rewrite /internal_included. apply _. Qed.
 
+  Lemma internal_included_refl `{!CmraTotal A} (x : A) : ⊢@{PROP} x ≼ x.
+  Proof. iExists (core x). by rewrite cmra_core_r. Qed.
+  Lemma internal_included_trans `{!CmraTotal A} (x y z : A) :
+    ⊢@{PROP} x ≼ y -∗ y ≼ z -∗ x ≼ z.
+  Proof.
+    iIntros "#[%x' Hx'] #[%y' Hy']". iExists (x' ⋅ y').
+    rewrite assoc. by iRewrite -"Hx'".
+  Qed.
+
   (** Simplification lemmas *)
   Lemma f_homom_includedI {A B} (x y : A) (f : A → B) `{!NonExpansive f} :
     (* This is a slightly weaker condition than being a [CmraMorphism] *)
@@ -95,6 +102,18 @@ Section internal_included_laws.
         * by iExists (Some z).
         * by iExists None.
       + iIntros "_". by iExists (Some y).
+  Qed.
+
+  Lemma option_included_totalI `{!CmraTotal A} (mx my : option A) :
+    mx ≼ my ⊣⊢ match mx, my with
+               | Some x, Some y => x ≼ y
+               | None, _ => True
+               | Some x, None => False
+               end.
+  Proof.
+    rewrite option_includedI. destruct mx as [x|], my as [y|]; [|done..].
+    iSplit; [|by auto].
+    iIntros "[Hx|Hx] //". iRewrite "Hx". iApply (internal_included_refl y).
   Qed.
 
   Lemma csum_includedI {A B} (sx sy : csum A B) :
