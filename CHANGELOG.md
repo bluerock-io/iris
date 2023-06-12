@@ -86,6 +86,11 @@ Coq 8.13 is no longer supported.
     `Fractional`, making it very hard to reason about search termination).
   - Rewrite `frame_fractional` lemma using the new `FrameFractionalQp` typeclass
     for `Qp` reasoning.
+  - Change statements of `fractional_split`, `fractional_half`, and
+    `fractional_merge` to avoid using `AsFractional` backwards, and only keep
+    the bi-directional versions (remove `fractional_split_1`,
+    `fractional_split_2`, `fractional_half_1`, `fractional_half_2`).
+    `iDestruct`/`iCombine`/`iSplitL`/`iSplitR` should be used instead.
 * Add missing transitivity, symmetry and reflexivity lemmas about the `↔`, `→`,
   `-∗` and `∗-∗` connectives. (by Ike Mulder)
 
