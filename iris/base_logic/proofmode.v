@@ -26,9 +26,10 @@ Section class_instances.
   Proof. intros. by rewrite /FromSep -ownM_op -is_op. Qed.
   (* TODO: Improve this instance with generic own simplification machinery
   once https://gitlab.mpi-sws.org/iris/iris/-/issues/460 is fixed *)
+  (* Cost > 50 to give priority to [combine_sep_as_fractional. *)
   Global Instance combine_sep_as_ownM (a b1 b2 : M) :
     IsOp a b1 b2 →
-    CombineSepAs (uPred_ownM b1) (uPred_ownM b2) (uPred_ownM a).
+    CombineSepAs (uPred_ownM b1) (uPred_ownM b2) (uPred_ownM a) | 60.
   Proof. intros. by rewrite /CombineSepAs -ownM_op -is_op. Qed.
   (* TODO: Improve this instance with generic own validity simplification
   machinery once https://gitlab.mpi-sws.org/iris/iris/-/issues/460 is fixed *)

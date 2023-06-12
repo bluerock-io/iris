@@ -273,7 +273,11 @@ Note that [FromSep] and [CombineSepAs] have nearly the same definition. However,
 they have different Hint Modes and are used for different tactics. [FromSep] is
 used to compute the two new goals obtained after applying [iSplitL]/[iSplitR],
 taking the current goal as input. [CombineSepAs] is used to combine two
-hypotheses into one. *)
+hypotheses into one.
+
+In terms of costs, note that the [AsFractional] instance for [CombineSepAs]
+has cost 50. If that instance should take priority over yours, make sure to use
+a higher cost. *)
 Class CombineSepAs {PROP : bi} (P Q R : PROP) := combine_sep_as : P ∗ Q ⊢ R.
 Global Arguments CombineSepAs {_} _%I _%I _%I : simpl never.
 Global Arguments combine_sep_as {_} _%I _%I _%I {_}.

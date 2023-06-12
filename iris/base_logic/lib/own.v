@@ -376,8 +376,9 @@ Section proofmode_instances.
   Proof. intros. by rewrite /FromSep -own_op -is_op. Qed.
   (* TODO: Improve this instance with generic own simplification machinery
   once https://gitlab.mpi-sws.org/iris/iris/-/issues/460 is fixed *)
+  (* Cost > 50 to give priority to [combine_sep_as_fractional. *)
   Global Instance combine_sep_as_own γ a b1 b2 :
-    IsOp a b1 b2 → CombineSepAs (own γ b1) (own γ b2) (own γ a).
+    IsOp a b1 b2 → CombineSepAs (own γ b1) (own γ b2) (own γ a) | 60.
   Proof. intros. by rewrite /CombineSepAs -own_op -is_op. Qed.
   (* TODO: Improve this instance with generic own validity simplification
   machinery once https://gitlab.mpi-sws.org/iris/iris/-/issues/460 is fixed *)
