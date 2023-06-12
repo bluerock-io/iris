@@ -17,6 +17,9 @@ Notation "(⋅)" := op (only parsing) : stdpp_scope.
    reflexivity.  However, if we used [option A], the following would no longer
    hold:
      x ≼ y ↔ x.1 ≼ y.1 ∧ x.2 ≼ y.2
+   If you need the reflexive closure of the inclusion relation, you can use
+   [Some a ≼ Some b]. There are various [Some_included] lemmas that help
+   deal with propositions of this shape.
 *)
 Definition included {A} `{!Equiv A, !Op A} (x y : A) := ∃ z, y ≡ x ⋅ z.
 Infix "≼" := included (at level 70) : stdpp_scope.
@@ -1414,6 +1417,8 @@ Section option.
     right. exists a, b. by rewrite {3}Hab.
   Qed.
 
+  (* See below for more [included] lemmas. *)
+
   Lemma option_cmra_mixin : CmraMixin (option A).
   Proof.
     apply cmra_total_mixin.
@@ -1499,10 +1504,25 @@ Section option.
 
   Lemma Some_includedN n a b : Some a ≼{n} Some b ↔ a ≡{n}≡ b ∨ a ≼{n} b.
   Proof. rewrite option_includedN; naive_solver. Qed.
+  Lemma Some_includedN_1 n a b : Some a ≼{n} Some b → a ≡{n}≡ b ∨ a ≼{n} b.
+  Proof. rewrite Some_includedN. auto. Qed.
+  Lemma Some_includedN_2 n a b : a ≡{n}≡ b ∨ a ≼{n} b → Some a ≼{n} Some b.
+  Proof. rewrite Some_includedN. auto. Qed.
+  Lemma Some_includedN_mono n a b : a ≼{n} b → Some a ≼{n} Some b.
+  Proof. rewrite Some_includedN. auto. Qed.
+  Lemma Some_includedN_is_Some n x mb : Some x ≼{n} mb → is_Some mb.
+  Proof. rewrite option_includedN. naive_solver. Qed.
+
   Lemma Some_included a b : Some a ≼ Some b ↔ a ≡ b ∨ a ≼ b.
   Proof. rewrite option_included; naive_solver. Qed.
-  Lemma Some_included_2 a b : a ≼ b → Some a ≼ Some b.
-  Proof. rewrite Some_included; eauto. Qed.
+  Lemma Some_included_1 a b : Some a ≼ Some b → a ≡ b ∨ a ≼ b.
+  Proof. rewrite Some_included. auto. Qed.
+  Lemma Some_included_2 a b : a ≡ b ∨ a ≼ b → Some a ≼ Some b.
+  Proof. rewrite Some_included. auto. Qed.
+  Lemma Some_included_mono a b : a ≼ b → Some a ≼ Some b.
+  Proof. rewrite Some_included. auto. Qed.
+  Lemma Some_included_is_Some x mb : Some x ≼ mb → is_Some mb.
+  Proof. rewrite option_included. naive_solver. Qed.
 
   Lemma Some_includedN_total `{!CmraTotal A} n a b : Some a ≼{n} Some b ↔ a ≼{n} b.
   Proof. rewrite Some_includedN. split; [|by eauto]. by intros [->|?]. Qed.
