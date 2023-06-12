@@ -369,7 +369,10 @@ Proof.
 Qed.
 End cmra.
 
-Global Hint Extern 4 (_ ≼ CsumBot) => apply: CsumBot_included : core.
+(* We use a [Hint Extern] with [apply:], instead of [Hint Immediate], to invoke
+  the new unification algorithm. The old unification algorithm sometimes gets
+  confused by going from [ucmra]'s to [cmra]'s and back. *)
+Global Hint Extern 0 (_ ≼ CsumBot) => apply: CsumBot_included : core.
 Global Arguments csumR : clear implicits.
 
 (* Functor *)

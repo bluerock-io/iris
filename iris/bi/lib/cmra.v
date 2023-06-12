@@ -57,7 +57,7 @@ Section internal_included_laws.
 
   Lemma internal_included_refl `{!CmraTotal A} (x : A) : ⊢@{PROP} x ≼ x.
   Proof. iExists (core x). by rewrite cmra_core_r. Qed.
-  Lemma internal_included_trans `{!CmraTotal A} (x y z : A) :
+  Lemma internal_included_trans {A} (x y z : A) :
     ⊢@{PROP} x ≼ y -∗ y ≼ z -∗ x ≼ z.
   Proof.
     iIntros "#[%x' Hx'] #[%y' Hy']". iExists (x' ⋅ y').

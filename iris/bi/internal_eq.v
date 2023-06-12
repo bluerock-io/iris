@@ -159,8 +159,7 @@ Section internal_eq_derived.
   Qed.
 
   Lemma csum_equivI {A B : ofe} (sx sy : csum A B) :
-    sx ≡ sy ⊣⊢
-              match sx, sy with
+    sx ≡ sy ⊣⊢ match sx, sy with
                | Cinl x, Cinl y => x ≡ y
                | Cinr x, Cinr y => x ≡ y
                | CsumBot, CsumBot => True

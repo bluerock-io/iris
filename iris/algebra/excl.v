@@ -116,7 +116,10 @@ Lemma ExclBot_included ea : ea ≼ ExclBot.
 Proof. by exists ExclBot. Qed.
 End excl.
 
-Global Hint Extern 4 (_ ≼ ExclBot) => apply: ExclBot_included : core.
+(* We use a [Hint Extern] with [apply:], instead of [Hint Immediate], to invoke
+  the new unification algorithm. The old unification algorithm sometimes gets
+  confused by going from [ucmra]'s to [cmra]'s and back. *)
+Global Hint Extern 0 (_ ≼ ExclBot) => apply: ExclBot_included : core.
 
 Global Arguments exclO : clear implicits.
 Global Arguments exclR : clear implicits.

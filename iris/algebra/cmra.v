@@ -637,6 +637,9 @@ Global Instance exclusive_id_free x : Exclusive x → IdFree x.
 Proof. intros ? z ? Hid. apply (exclusiveN_l 0 x z). by rewrite Hid. Qed.
 End cmra.
 
+(* We use a [Hint Extern] with [apply:], instead of [Hint Immediate], to invoke
+  the new unification algorithm. The old unification algorithm sometimes gets
+  confused by going from [ucmra]'s to [cmra]'s and back. *)
 Global Hint Extern 0 (?a ≼ ?a ⋅ _) => apply: cmra_included_l : core.
 Global Hint Extern 0 (?a ≼ _ ⋅ ?a) => apply: cmra_included_r : core.
 
