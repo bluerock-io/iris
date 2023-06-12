@@ -66,42 +66,25 @@ Section fractional.
     Fractional Φ → AsFractional (Φ q) Φ q.
   Proof. done. Qed.
 
-  (** These lemmas are meant to be used when [P] is known but the split-up
-      pieces ([Φ], [q1], [q2]) are not.
-      See [fractional_merge] below for the dual situation. *)
+  (** This lemma is meant to be used when [P] is known. But really you should be
+   using [iDestruct "H" as "[H1 H2]"], which supports splitting at fractions. *)
   Lemma fractional_split P Φ q1 q2 :
     AsFractional P Φ (q1 + q2) →
     P ⊣⊢ Φ q1 ∗ Φ q2.
   Proof. by move=>-[-> ->]. Qed.
-  Lemma fractional_split_1 P Φ q1 q2 :
-    AsFractional P Φ (q1 + q2) →
-    P -∗ Φ q1 ∗ Φ q2.
-  Proof. intros. apply bi.entails_wand. by rewrite -(fractional_split P). Qed.
-  Lemma fractional_split_2 P Φ q1 q2 :
-    AsFractional P Φ (q1 + q2) →
-    Φ q1 -∗ Φ q2 -∗ P.
-  Proof. intros. apply bi.entails_wand, bi.wand_intro_r. by rewrite -(fractional_split P). Qed.
-
+  (** This lemma is meant to be used when [P] is known. But really you should be
+   using [iDestruct "H" as "[H1 H2]"], which supports halving fractions. *)
+  Lemma fractional_half P Φ q :
+    AsFractional P Φ q →
+    P ⊣⊢ Φ (q/2)%Qp ∗ Φ (q/2)%Qp.
+  Proof. by rewrite -{1}(Qp.div_2 q)=>-[->->]. Qed.
+  (** This lemma is meant to be used when [P1], [P2] are known. But really you
+   should be using [iCombine "H1 H2" as "H"], which supports merging fractions.
+   *)
   Lemma fractional_merge P1 P2 Φ q1 q2 `{!Fractional Φ} :
     AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
-    P1 -∗ P2 -∗ Φ (q1 + q2)%Qp.
-  Proof.
-    move=>-[-> _] [-> _]. rewrite fractional.
-    apply bi.entails_wand, bi.wand_intro_r. done.
-  Qed.
-
-  Lemma fractional_half P P12 Φ q :
-    AsFractional P Φ q → AsFractional P12 Φ (q/2) →
-    P ⊣⊢ P12 ∗ P12.
-  Proof. by rewrite -{1}(Qp.div_2 q)=>-[->->][-> _]. Qed.
-  Lemma fractional_half_1 P P12 Φ q :
-    AsFractional P Φ q → AsFractional P12 Φ (q/2) →
-    P -∗ P12 ∗ P12.
-  Proof. intros. apply bi.entails_wand. by rewrite -(fractional_half P). Qed.
-  Lemma fractional_half_2 P P12 Φ q :
-    AsFractional P Φ q → AsFractional P12 Φ (q/2) →
-    P12 -∗ P12 -∗ P.
-  Proof. intros. apply bi.entails_wand, bi.wand_intro_r. by rewrite -(fractional_half P). Qed.
+    P1 ∗ P2 ⊣⊢ Φ (q1 + q2)%Qp.
+  Proof. move=>-[-> _] [-> _]. rewrite fractional //. Qed.
 
   (** Fractional and logical connectives *)
   Global Instance persistent_fractional (P : PROP) :
