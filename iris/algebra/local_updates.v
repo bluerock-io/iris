@@ -137,6 +137,19 @@ Section updates_unital.
   Proof. rewrite -{2}(right_id ε op x). by apply cancel_local_update. Qed.
 End updates_unital.
 
+(** * Unit *)
+Lemma unit_local_update (x y x' y' : unit) : (x, y) ~l~> (x', y').
+Proof. destruct x,y,x',y'; reflexivity. Qed.
+
+(** * Dependently-typed functions over a discrete domain *)
+Lemma discrete_fun_local_update {A} {B : A → ucmra} (f g f' g' : discrete_fun B) :
+  (∀ x : A, (f x, g x) ~l~> (f' x, g' x)) →
+  (f, g) ~l~> (f', g').
+Proof.
+  setoid_rewrite local_update_unital. intros Hupd n h Hf Hg.
+  split=> x; eapply Hupd, Hg; eauto.
+Qed.
+
 (** * Product *)
 Lemma prod_local_update {A B : cmra} (x y x' y' : A * B) :
   (x.1,y.1) ~l~> (x'.1,y'.1) → (x.2,y.2) ~l~> (x'.2,y'.2) →
