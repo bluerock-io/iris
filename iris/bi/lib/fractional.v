@@ -79,8 +79,9 @@ Section fractional.
     P ⊣⊢ Φ (q/2)%Qp ∗ Φ (q/2)%Qp.
   Proof. by rewrite -{1}(Qp.div_2 q)=>-[->->]. Qed.
   (** This lemma is meant to be used when [P1], [P2] are known. But really you
-   should be using [iCombine "H1 H2" as "H"], which supports merging fractions.
-   *)
+   should be using [iCombine "H1 H2" as "H"] (for forwards reasoning) or
+   [iSplitL]/[iSplitR] (for goal-oriented reasoning), which support merging
+   fractions. *)
   Lemma fractional_merge P1 P2 Φ q1 q2 `{!Fractional Φ} :
     AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
     P1 ∗ P2 ⊣⊢ Φ (q1 + q2)%Qp.
