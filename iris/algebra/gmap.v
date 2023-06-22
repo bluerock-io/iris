@@ -112,15 +112,15 @@ Global Arguments gmapO _ {_ _} _.
 
 (** Non-expansiveness of higher-order map functions and big-ops *)
 Global Instance merge_ne `{Countable K} {A B C : ofe} n :
-  Proper (((dist (A:=option A) n) ==> (dist (A:=option B) n) ==> (dist (A:=option C) n)) ==>
-   (dist n) ==> (dist n) ==> (dist n)) (merge (M:=gmap K)).
+  Proper ((dist (A:=option A) n ==> dist (A:=option B) n ==> dist (A:=option C) n) ==>
+          dist n ==> dist n ==> dist n) (merge (M:=gmap K)).
 Proof.
   intros ?? Hf ?? Hm1 ?? Hm2 i. rewrite !lookup_merge.
   destruct (Hm1 i), (Hm2 i); try apply Hf; by constructor.
 Qed.
 Global Instance union_with_proper `{Countable K} {A : ofe} n :
-  Proper (((dist n) ==> (dist n) ==> (dist n)) ==>
-          (dist n) ==> (dist n) ==>(dist n)) (union_with (M:=gmap K A)).
+  Proper ((dist n ==> dist n ==> dist n) ==>
+          dist n ==> dist n ==> dist n) (union_with (M:=gmap K A)).
 Proof.
   intros ?? Hf ?? Hm1 ?? Hm2 i; apply (merge_ne _ _); auto.
   by do 2 destruct 1; first [apply Hf | constructor].
