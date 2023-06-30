@@ -101,12 +101,21 @@ Section mono_nat.
     ⊢ |==> mono_nat_lb_own γ 0.
   Proof. unseal. iApply own_unit. Qed.
 
+  Lemma mono_nat_own_alloc_strong P n :
+    pred_infinite P →
+    ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ mono_nat_auth_own γ 1 n ∗ mono_nat_lb_own γ n.
+  Proof.
+    unseal. intros.
+    iMod (own_alloc_strong (●MN n ⋅ ◯MN n) P) as (γ) "[% [??]]"; first done.
+    { apply mono_nat_both_valid; auto. }
+    auto with iFrame.
+  Qed.
   Lemma mono_nat_own_alloc n :
     ⊢ |==> ∃ γ, mono_nat_auth_own γ 1 n ∗ mono_nat_lb_own γ n.
   Proof.
-    unseal. iMod (own_alloc (●MN n ⋅ ◯MN n)) as (γ) "[??]".
-    { apply mono_nat_both_valid; auto. }
-    auto with iFrame.
+    iMod (mono_nat_own_alloc_strong (λ _, True) n) as (γ) "[_ ?]".
+    - by apply pred_infinite_True.
+    - eauto.
   Qed.
 
   Lemma mono_nat_own_update {γ n} n' :
