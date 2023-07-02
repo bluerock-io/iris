@@ -124,13 +124,7 @@ Section cmra.
 
   Lemma principal_op_R' a b x :
     R a a → principal R a ⋅ x ≡ principal R b → R a b.
-  Proof.
-    move=> Ha /(_ a) HR.
-    Succeed set_solver.
-    destruct HR as [[z [HR1%elem_of_list_singleton HR2]] _];
-      last by subst.
-    by rewrite /op /mra_op /principal below_app below_principal; left.
-  Qed.
+  Proof. move=> Ha /(_ a) HR. set_solver. Qed.
 
   Lemma principal_op_R `{!Reflexive R} a b x :
     principal R a ⋅ x ≡ principal R b → R a b.
@@ -158,16 +152,7 @@ Section cmra.
     intros z _ Habz.
     split; first done.
     intros w. specialize (Habz w).
-    Succeed set_solver.
-    split.
-    - intros (y & ->%elem_of_list_singleton & Hy2).
-      exists b; split; first constructor; done.
-    - intros (y & [->|Hy1]%elem_of_cons & Hy2).
-      + set_solver.
-      + exists b; split; first constructor.
-        destruct Habz as [_ [c [->%elem_of_list_singleton Hc2]]].
-        { exists y; split; first (by apply elem_of_app; right); eauto. }
-        by trans a.
+    set_solver.
   Qed.
 
   Lemma mra_local_update_get_frag `{!PreOrder R} a b:
@@ -199,15 +184,7 @@ Section mra_over_rel.
 
   Lemma principal_inj_related a b :
     principal R a ≡ principal R b → R a a → R a b.
-  Proof.
-    move=> /(_ a).
-    Succeed set_solver.
-
-    intros Hab ?.
-    destruct Hab as [[? [?%elem_of_list_singleton ?]] _];
-      last by subst; auto.
-    exists a; rewrite /principal elem_of_list_singleton. done.
-  Qed.
+  Proof. move=> /(_ a). set_solver. Qed.
 
   Lemma principal_inj_general S a b :
     principal R a ≡ principal R b →
