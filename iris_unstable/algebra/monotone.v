@@ -39,28 +39,16 @@ Section ofe.
   Local Definition below (a : A) (x : mra R) := ∃ b, b ∈ x ∧ R a b.
 
   Local Lemma below_app a x y : below a (x ++ y) ↔ below a x ∨ below a y.
-  Proof.
-    split.
-    - intros (b & [|]%elem_of_app & ?); [left|right]; exists b; eauto.
-    - intros [(b & ? & ?)|(b & ? & ?)]; exists b; rewrite elem_of_app; eauto.
-  Qed.
+  Proof. set_solver. Qed.
 
   Local Lemma below_principal a b : below a (principal R b) ↔ R a b.
-  Proof.
-    split.
-    - intros (c & ->%elem_of_list_singleton & ?); done.
-    - intros Hab; exists b; split; first apply elem_of_list_singleton; done.
-  Qed.
+  Proof. set_solver. Qed.
 
   Local Instance mra_equiv : Equiv (mra R) :=
     λ x y, ∀ a, below a x ↔ below a y.
 
   Local Instance mra_equiv_equiv : Equivalence mra_equiv.
-  Proof.
-    split; [by firstorder|by firstorder|].
-    intros ??? Heq1 Heq2 ?; split; intros ?;
-      [apply Heq2; apply Heq1|apply Heq1; apply Heq2]; done.
-  Qed.
+  Proof. unfold mra_equiv; split; intros ?; naive_solver. Qed.
 
   Canonical Structure mraO := discreteO (mra R).
 End ofe.
@@ -83,12 +71,12 @@ Section cmra.
     apply discrete_cmra_mixin; first apply _.
     apply ra_total_mixin.
     - eauto.
-    - intros ??? Heq a; specialize (Heq a); rewrite !below_app; firstorder.
+    - intros ??? Heq a; by rewrite !below_app (Heq a).
     - intros ?; done.
     - done.
-    - intros ????; rewrite !below_app; firstorder.
-    - intros ???; rewrite !below_app; firstorder.
-    - rewrite /core /pcore /=; intros ??; rewrite below_app; firstorder.
+    - intros ????; rewrite !below_app; by intuition.
+    - intros ???; rewrite !below_app; by intuition.
+    - rewrite /core /pcore /=; intros ??; rewrite below_app; by intuition.
     - done.
     - intros ? ? [? ?]; eexists _; done.
     - done.
