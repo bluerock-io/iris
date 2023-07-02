@@ -26,9 +26,9 @@ Section monotone.
         `{!Reflexive R} `{!AntiSymm (≡) R} a b :
     principal R a ≡ principal R b ⊣⊢ (a ≡ b).
   Proof.
-    uPred.unseal. do 2 split; intros ?.
+    uPred.unseal. do 2 split; intros Hp.
     - exact: principal_injN.
-    - exact: principal_ne.
+    - apply: principal_rel_proper Hp.
   Qed.
 End monotone.
 End upred.

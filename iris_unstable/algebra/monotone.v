@@ -107,53 +107,47 @@ Section cmra.
     intros [z ->]; rewrite assoc mra_idemp; done.
   Qed.
 
-  Lemma principal_R_opN_base `{!Transitive R} n x y :
-    (∀ b, b ∈ y → ∃ c, c ∈ x ∧ R b c) → y ⋅ x ≡{n}≡ x.
+  Lemma principal_R_op_base `{!Transitive R} x y :
+    (∀ b, b ∈ y → ∃ c, c ∈ x ∧ R b c) → y ⋅ x ≡ x.
   Proof.
-    intros HR; split; rewrite /op /mra_op below_app; [|by firstorder].
+    intros HR. split; rewrite /op /mra_op below_app; [|by intuition].
     intros [(c & (d & Hd1 & Hd2)%HR & Hc2)|]; [|done].
     exists d; split; [|transitivity c]; done.
   Qed.
 
-  Lemma principal_R_opN `{!Transitive R} n a b :
-    R a b → principal R a ⋅ principal R b ≡{n}≡ principal R b.
-  Proof.
-    intros; apply principal_R_opN_base; intros c; rewrite /principal.
-    setoid_rewrite elem_of_list_singleton => ->; eauto.
-  Qed.
-
   Lemma principal_R_op `{!Transitive R} a b :
     R a b → principal R a ⋅ principal R b ≡ principal R b.
-  Proof. by intros ? ?; apply (principal_R_opN 0). Qed.
-
-  Lemma principal_op_RN n a b x :
-    R a a → principal R a ⋅ x ≡{n}≡ principal R b → R a b.
   Proof.
-    intros Ha HR.
-    destruct (HR a) as [[z [HR1%elem_of_list_singleton HR2]] _];
-      last by subst; eauto.
-    rewrite /op /mra_op /principal below_app below_principal; auto.
+    intros; apply principal_R_op_base; intros c; rewrite /principal.
+    set_solver.
   Qed.
 
   Lemma principal_op_R' a b x :
     R a a → principal R a ⋅ x ≡ principal R b → R a b.
-  Proof. intros ? ?; eapply (principal_op_RN 0); eauto. Qed.
+  Proof.
+    move=> Ha /(_ a) HR.
+    Succeed set_solver.
+    destruct HR as [[z [HR1%elem_of_list_singleton HR2]] _];
+      last by subst.
+    by rewrite /op /mra_op /principal below_app below_principal; left.
+  Qed.
 
   Lemma principal_op_R `{!Reflexive R} a b x :
     principal R a ⋅ x ≡ principal R b → R a b.
-  Proof. intros; eapply principal_op_R'; eauto. Qed.
-
-  Lemma principal_includedN `{!PreOrder R} n a b :
-    principal R a ≼{n} principal R b ↔ R a b.
-  Proof.
-    split.
-    - intros [z Hz]; eapply principal_op_RN; first done. by rewrite Hz.
-    - intros ?; exists (principal R b); rewrite principal_R_opN; eauto.
-  Qed.
+  Proof. by apply principal_op_R'. Qed.
 
   Lemma principal_included `{!PreOrder R} a b :
     principal R a ≼ principal R b ↔ R a b.
-  Proof. apply (principal_includedN 0). Qed.
+  Proof.
+    split.
+    - move=> [z Hz]. by eapply principal_op_R.
+    - intros ?; exists (principal R b). by rewrite principal_R_op.
+  Qed.
+
+  (* Useful? *)
+  Lemma principal_includedN `{!PreOrder R} n a b :
+    principal R a ≼{n} principal R b ↔ R a b.
+  Proof. by rewrite -principal_included -cmra_discrete_included_iff. Qed.
 
   Lemma mra_local_update_grow `{!Transitive R} a x b:
     R a b →
@@ -163,15 +157,17 @@ Section cmra.
     apply local_update_unital_discrete.
     intros z _ Habz.
     split; first done.
-    intros w; split.
+    intros w. specialize (Habz w).
+    Succeed set_solver.
+    split.
     - intros (y & ->%elem_of_list_singleton & Hy2).
       exists b; split; first constructor; done.
     - intros (y & [->|Hy1]%elem_of_cons & Hy2).
-      + exists b; split; first constructor; done.
+      + set_solver.
       + exists b; split; first constructor.
-        specialize (Habz w) as [_ [c [->%elem_of_list_singleton Hc2]]].
+        destruct Habz as [_ [c [->%elem_of_list_singleton Hc2]]].
         { exists y; split; first (by apply elem_of_app; right); eauto. }
-        etrans; eauto.
+        by trans a.
   Qed.
 
   Lemma mra_local_update_get_frag `{!PreOrder R} a b:
@@ -190,6 +186,38 @@ End cmra.
 Global Arguments mraR {_} _.
 Global Arguments mraUR {_} _.
 
+Section mra_over_rel.
+  Context {A : Type} {R : relation A}.
+  Implicit Types a b : A.
+  Implicit Types x y : mra R.
+  Implicit Type (S : relation A).
+
+  Global Instance principal_rel_proper S
+         `{!Proper (S ==> S ==> iff) R} `{!Reflexive S} :
+    Proper (S ==> (≡)) (principal R).
+  Proof. intros a1 a2 Ha; split; rewrite ->!below_principal, !Ha; done. Qed.
+
+  Lemma principal_inj_related a b :
+    principal R a ≡ principal R b → R a a → R a b.
+  Proof.
+    move=> /(_ a).
+    Succeed set_solver.
+
+    intros Hab ?.
+    destruct Hab as [[? [?%elem_of_list_singleton ?]] _];
+      last by subst; auto.
+    exists a; rewrite /principal elem_of_list_singleton. done.
+  Qed.
+
+  Lemma principal_inj_general S a b :
+    principal R a ≡ principal R b →
+    R a a → R b b → (R a b → R b a → S a b) → S a b.
+  Proof. intros ??? Has; apply Has; apply principal_inj_related; auto. Qed.
+
+  Global Instance principal_inj {S} `{!Reflexive R} `{!AntiSymm S R} :
+    Inj S (≡) (principal R).
+  Proof. intros ???. apply principal_inj_general => //. apply: anti_symm. Qed.
+End mra_over_rel.
 
 (* Might be useful if the type of elements is an OFE. *)
 Section mra_over_ofe.
@@ -197,38 +225,12 @@ Section mra_over_ofe.
   Implicit Types a b : A.
   Implicit Types x y : mra R.
 
-  Global Instance principal_ne
-         `{!∀ n, Proper ((dist n) ==> (dist n) ==> iff) R} :
-    NonExpansive (principal R).
-  Proof. intros n a1 a2 Ha; split; rewrite !below_principal !Ha; done. Qed.
-
   Global Instance principal_proper
          `{!∀ n, Proper ((dist n) ==> (dist n) ==> iff) R} :
     Proper ((≡) ==> (≡)) (principal R) := ne_proper _.
 
-  Lemma principal_inj_related a b :
-    principal R a ≡ principal R b → R a a → R a b.
-  Proof.
-    intros Hab ?.
-    destruct (Hab a) as [[? [?%elem_of_list_singleton ?]] _];
-      last by subst; auto.
-    exists a; rewrite /principal elem_of_list_singleton; done.
-  Qed.
-
-  Lemma principal_inj_general a b :
-    principal R a ≡ principal R b →
-    R a a → R b b → (R a b → R b a → a ≡ b) → a ≡ b.
-  Proof. intros ??? Has; apply Has; apply principal_inj_related; auto. Qed.
-
-  Global Instance principal_inj_instance `{!Reflexive R} `{!AntiSymm (≡) R} :
-    Inj (≡) (≡) (principal R).
-  Proof. intros ???; apply principal_inj_general; auto. Qed.
-
-  Global Instance principal_injN `{!Reflexive R} {Has : AntiSymm (≡) R} n :
-    Inj (dist n) (dist n) (principal R).
-  Proof.
-    intros x y Hxy%discrete_iff; last apply _.
-    eapply equiv_dist; revert Hxy; apply inj; apply _.
-  Qed.
-
+  (* TODO: Useful? Clients should rather call equiv_dist. *)
+  Lemma principal_injN `{!Reflexive R} {Has : AntiSymm (≡) R} n :
+    Inj (dist n) (≡) (principal R).
+  Proof. intros x y Hxy%(inj _). by apply equiv_dist. Qed.
 End mra_over_ofe.
