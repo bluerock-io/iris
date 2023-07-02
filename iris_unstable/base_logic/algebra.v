@@ -28,7 +28,7 @@ Section monotone.
   Proof.
     uPred.unseal. do 2 split; intros Hp.
     - exact: principal_injN.
-    - apply: principal_rel_proper Hp.
+    - apply: mra_over_rel.principal_rel_proper Hp.
   Qed.
 End monotone.
 End upred.

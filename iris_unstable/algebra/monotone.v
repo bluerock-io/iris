@@ -171,13 +171,21 @@ End cmra.
 Global Arguments mraR {_} _.
 Global Arguments mraUR {_} _.
 
+(**
+If [R] is a partial order, relative to a setoid [S] on the carrier [A],
+then [principal R] is proper and injective.
+
+The following theory generalizes over an arbitrary setoid [S] and necessary properties,
+but is overly general, so we encapsulate the instances in an opt-in module.
+*)
+Module mra_over_rel.
 Section mra_over_rel.
   Context {A : Type} {R : relation A}.
   Implicit Types a b : A.
   Implicit Types x y : mra R.
   Implicit Type (S : relation A).
 
-  Global Instance principal_rel_proper S
+  #[export] Instance principal_rel_proper S
          `{!Proper (S ==> S ==> iff) R} `{!Reflexive S} :
     Proper (S ==> (≡)) (principal R).
   Proof. intros a1 a2 Ha; split; rewrite ->!below_principal, !Ha; done. Qed.
@@ -191,16 +199,23 @@ Section mra_over_rel.
     R a a → R b b → (R a b → R b a → S a b) → S a b.
   Proof. intros ??? Has; apply Has; apply principal_inj_related; auto. Qed.
 
-  Global Instance principal_inj {S} `{!Reflexive R} `{!AntiSymm S R} :
+  #[export] Instance principal_inj {S} `{!Reflexive R} `{!AntiSymm S R} :
     Inj S (≡) (principal R).
   Proof. intros ???. apply principal_inj_general => //. apply: anti_symm. Qed.
 End mra_over_rel.
+End mra_over_rel.
+
+(* Specialize [mra_over_rel] to equality. Only [principal_inj] seems generally useful. *)
+Global Instance principal_inj `{R : relation A} `{!Reflexive R} `{!AntiSymm (=) R} :
+  Inj (=) (≡) (principal R) := mra_over_rel.principal_inj.
 
 (* Might be useful if the type of elements is an OFE. *)
 Section mra_over_ofe.
   Context {A : ofe} {R : relation A}.
   Implicit Types a b : A.
   Implicit Types x y : mra R.
+
+  Import mra_over_rel.
 
   Global Instance principal_proper
          `{!∀ n, Proper ((dist n) ==> (dist n) ==> iff) R} :
