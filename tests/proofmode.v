@@ -9,10 +9,14 @@ Section tests.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
-Lemma test_eauto_emp_isplit_biwand P : emp ⊢ P ∗-∗ P.
+Lemma test_eauto_iSplit_emp_wand_iff P : emp ⊢ P ∗-∗ P.
 Proof. eauto 6. Qed.
 
-Lemma test_eauto_isplit_biwand P : ⊢ P ∗-∗ P.
+Lemma test_eauto_iSplit_wand_iff P : ⊢ P ∗-∗ P.
+Proof. eauto. Qed.
+
+(** We get the [⊢] automatically from the notation in [stdpp_scope]. *)
+Lemma test_eauto_iSplit_wand_iff_std_scope P : P ∗-∗ P.
 Proof. eauto. Qed.
 
 Fixpoint test_fixpoint (n : nat) {struct n} : True → emp ⊢@{PROP} ⌜ (n + 0)%nat = n ⌝.
