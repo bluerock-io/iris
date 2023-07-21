@@ -94,6 +94,8 @@ Coq 8.13 is no longer supported.
     `iDestruct`/`iCombine`/`iSplitL`/`iSplitR` should be used instead.
 * Add missing transitivity, symmetry and reflexivity lemmas about the `↔`, `→`,
   `-∗` and `∗-∗` connectives. (by Ike Mulder)
+* Add `∗-∗` as notation in `stdpp_scope` similar to `-∗`. This means `P ∗-∗ Q`
+  can be directly used as lemma statement, and is syntactic sugar for `⊢ P ∗-∗ Q`
 
 **Changes in `proofmode`:**
 
