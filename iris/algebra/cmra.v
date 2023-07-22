@@ -1524,25 +1524,13 @@ Section option.
   Lemma Some_included_is_Some x mb : Some x ≼ mb → is_Some mb.
   Proof. rewrite option_included. naive_solver. Qed.
 
-  Lemma Some_includedN_alt n a b : Some a ≼{n} Some b ↔ ∃ mc, b ≡{n}≡ a ⋅? mc.
+  Lemma Some_includedN_opM n a b : Some a ≼{n} Some b ↔ ∃ mc, b ≡{n}≡ a ⋅? mc.
   Proof.
-    rewrite Some_includedN. split.
-    - intros [Heq|[c Heq]].
-      + exists None. auto.
-      + exists (Some c). auto.
-    - intros [[c|] Heq].
-      + right. exists c. auto.
-      + left. auto.
+    rewrite /includedN. f_equiv=> mc. by rewrite -(inj_iff Some b) Some_op_opM.
   Qed.
-  Lemma Some_included_alt a b : Some a ≼ Some b ↔ ∃ mc, b ≡ a ⋅? mc.
+  Lemma Some_included_opM a b : Some a ≼ Some b ↔ ∃ mc, b ≡ a ⋅? mc.
   Proof.
-    rewrite Some_included. split.
-    - intros [Heq|[c Heq]].
-      + exists None. auto.
-      + exists (Some c). auto.
-    - intros [[c|] Heq].
-      + right. exists c. auto.
-      + left. auto.
+    rewrite /included. f_equiv=> mc. by rewrite -(inj_iff Some b) Some_op_opM.
   Qed.
 
   Lemma Some_includedN_total `{!CmraTotal A} n a b : Some a ≼{n} Some b ↔ a ≼{n} b.

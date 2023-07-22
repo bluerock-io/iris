@@ -84,7 +84,7 @@ Section updates.
     - apply (cmra_validN_le n); last lia.
       move: Hmz; rewrite Hz. destruct mz; simpl; eauto using cmra_validN_op_l.
     - eapply (cmra_includedN_le n); last lia.
-      apply Some_includedN_alt. eauto.
+      apply Some_includedN_opM. eauto.
   Qed.
   Lemma local_update_valid `{!CmraDiscrete A} x y x' y' :
     (✓ x → ✓ y → Some y ≼ Some x → (x,y) ~l~> (x',y')) → (x,y) ~l~> (x',y').
