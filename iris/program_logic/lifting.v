@@ -177,7 +177,7 @@ Lemma wp_pure_step_later `{!Inhabited (state Λ)} s E e1 e2 φ n Φ :
   ▷^n (£ n -∗ WP e2 @ s; E {{ Φ }}) ⊢ WP e1 @ s; E {{ Φ }}.
 Proof.
   intros Hexec ?. rewrite -wp_pure_step_fupd //. clear Hexec.
-  enough (∀ P, ▷^n P ⊢ |={E}▷=>^n P) as Hwp by apply Hwp. iIntros (?).
+  enough (∀ P, ▷^n P ⊢ |={E}▷=>^n P) as Hwp by apply Hwp. intros ?.
   induction n as [|n IH]; by rewrite //= -step_fupd_intro // IH.
 Qed.
 End lifting.

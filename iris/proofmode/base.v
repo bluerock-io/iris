@@ -2,8 +2,26 @@ From Coq Require Export Ascii.
 From stdpp Require Export strings.
 From iris.prelude Require Export prelude.
 From iris.prelude Require Import options.
+From Ltac2 Require Ltac2.
 
 (** * Utility definitions used by the proofmode *)
+
+Ltac2 of_ltac1_list l := Option.get (Ltac1.to_list l).
+
+Ltac ltac1_list_iter tac l :=
+  let go := ltac2:(tac l |- List.iter (ltac1:(tac x |- tac x) tac)
+                                      (of_ltac1_list l)) in
+  go tac l.
+
+Ltac ltac1_list_rev_iter tac l :=
+  let go := ltac2:(tac l |- List.iter (ltac1:(tac x |- tac x) tac)
+                                      (List.rev (of_ltac1_list l))) in
+  go tac l.
+
+(* Sample use:
+Tactic Notation "foo" ident_list(xs) :=
+  ltac1_list_rev_iter ltac:(fun x => intros x) xs.
+*)
 
 (* Directions of rewrites *)
 Inductive direction := Left | Right.

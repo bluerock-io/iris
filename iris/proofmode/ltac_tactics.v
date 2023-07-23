@@ -390,10 +390,6 @@ Ltac iFramePure t :=
     [tc_solve || fail "iFrame: cannot frame" φ
     |iFrameFinish].
 
-Ltac2 with_ltac1_list f ls :=
-  let ls := Option.get (Ltac1.to_list ls) in
-  f ls.
-
 Ltac iFrameHyp H :=
   iStartProof;
   eapply tac_frame with H _ _ _;
@@ -426,14 +422,6 @@ Ltac iFrameAnySpatial :=
      let Hs := eval cbv in (env_dom (env_spatial Δ)) in go Hs
   end.
 
-Ltac2 iFramePures ts :=
-  with_ltac1_list (List.iter (ltac1:(t |- iFramePure t))) ts.
-
-Tactic Notation "iFrame" := iFrameAnySpatial.
-
-Tactic Notation "iFrame" "(" ne_constr_list(ts) ")" :=
-  let f := ltac2:(ts |- iFramePures ts) in f ts.
-
 Local Ltac iFrame_go Hs :=
   lazymatch Hs with
   | [] => idtac
@@ -443,14 +431,20 @@ Local Ltac iFrame_go Hs :=
   | SelIdent ?H :: ?Hs => iFrameHyp H; iFrame_go Hs
   end.
 
-Tactic Notation "iFrame" constr(Hs) :=
-  let Hs := sel_pat.parse Hs in iFrame_go Hs.
-Tactic Notation "iFrame" "(" ne_constr_list(ts) ")" constr(Hs) :=
-  let f := ltac2:(ts |- iFramePures ts) in f ts;
-  iFrame Hs.
+Ltac iFrame0_ Hs :=
+  let Hs := sel_pat.parse Hs in
+  iFrame_go Hs.
+Ltac iFrame_ ts Hs :=
+  ltac1_list_iter iFramePure ts;
+  iFrame0_ Hs.
+
+Tactic Notation "iFrame" := iFrameAnySpatial.
+Tactic Notation "iFrame" "(" ne_constr_list(ts) ")" := iFrame_ ts "".
+Tactic Notation "iFrame" constr(Hs) := iFrame0_ Hs.
+Tactic Notation "iFrame" "(" ne_constr_list(ts) ")" constr(Hs) := iFrame_ ts Hs.
 
 Tactic Notation "iFrame" "select" open_constr(pat) :=
-  iSelect pat ltac:(fun H => iFrame H).
+  iSelect pat ltac:(fun H => iFrameHyp H).
 
 (** * Basic introduction tactics *)
 Local Tactic Notation "iIntro" "(" simple_intropattern(x) ")" :=
@@ -596,7 +590,7 @@ Local Tactic Notation "iIntro" :=
   end.
 
 (** * Revert *)
-Local Tactic Notation "iForallRevert" ident(x) :=
+Ltac iForallRevert x :=
   let err x :=
     intros x;
     iMatchHyp (fun H P =>
@@ -641,34 +635,29 @@ Tactic Notation "iRevertHyp" constr(H) "with" tactic1(tac) :=
 
 Tactic Notation "iRevertHyp" constr(H) := iRevertHyp H with (fun _ => idtac).
 
-Tactic Notation "iRevert" constr(Hs) :=
-  let rec go Hs :=
-    lazymatch Hs with
-    | [] => idtac
-    | ESelPure :: ?Hs =>
-       repeat match goal with x : _ |- _ => revert x end;
-       go Hs
-    | ESelIdent _ ?H :: ?Hs => iRevertHyp H; go Hs
-    end in
+Ltac iRevert_go Hs :=
+  lazymatch Hs with
+  | [] => idtac
+  | ESelPure :: ?Hs =>
+     repeat match goal with x : _ |- _ => revert x end;
+     iRevert_go Hs
+  | ESelIdent _ ?H :: ?Hs => iRevertHyp H; iRevert_go Hs
+  end.
+
+Ltac iRevert0_ Hs :=
   iStartProof;
   let Hs := iElaborateSelPat Hs in
-  (* No need to reverse [Hs], [iElaborateSelPat] already does that. *)
-  go Hs.
+  iRevert_go Hs.
+Ltac iRevert_ xs Hs :=
+  iRevert0_ Hs;
+  ltac1_list_rev_iter iForallRevert xs.
 
-Ltac2 iForallReverts ts :=
-  with_ltac1_list
-    (fun ts => List.iter (ltac1:(t |- iForallRevert t)) (List.rev ts))
-    ts.
-
-Tactic Notation "iRevert" "(" ne_ident_list(xs) ")" :=
-  let f := ltac2:(xs |- iForallReverts xs) in f xs.
-
-Tactic Notation "iRevert" "(" ne_ident_list(xs) ")" constr(Hs) :=
-  iRevert Hs;
-  let f := ltac2:(xs |- iForallReverts xs) in f xs.
+Tactic Notation "iRevert" constr(Hs) := iRevert0_ Hs.
+Tactic Notation "iRevert" "(" ne_ident_list(xs) ")" := iRevert_ xs "".
+Tactic Notation "iRevert" "(" ne_ident_list(xs) ")" constr(Hs) := iRevert_ xs Hs.
 
 Tactic Notation "iRevert" "select" open_constr(pat) :=
-  iSelect pat ltac:(fun H => iRevert H).
+  iSelect pat ltac:(fun H => iRevertHyp H).
 
 (** * The specialize and pose proof tactics *)
 Record iTrm {X As S} :=
@@ -1268,20 +1257,17 @@ Local Tactic Notation "iAndDestructChoice" constr(H) "as" constr(d) constr(H') :
 
 (** * Existential *)
 
-Ltac iExists_ x1 :=
+Ltac iExists_ x :=
   iStartProof;
   eapply tac_exist;
     [tc_solve ||
      let P := match goal with |- FromExist ?P _ => P end in
      fail "iExists:" P "not an existential"
-    |pm_prettify; eexists x1
+    |pm_prettify; eexists x
      (* subgoal *) ].
 
-Ltac2 iExistss xs :=
-  with_ltac1_list (List.iter ltac1:(x1 |- iExists_ x1)) xs.
-
 Tactic Notation "iExists" ne_uconstr_list_sep(xs,",") :=
-  let f := ltac2:(xs |- iExistss xs) in f xs.
+  ltac1_list_iter iExists_ xs.
 
 Local Tactic Notation "iExistDestruct" constr(H)
     "as" simple_intropattern(x) constr(Hx) :=
@@ -1471,33 +1457,18 @@ Local Ltac iDestructHypFindPat Hgo pat found pats :=
      | true => fail "iDestruct:" pat "should contain exactly one proper introduction pattern"
      end
   end.
-Tactic Notation "iDestructHyp" constr(H) "as" constr(pat) :=
+
+Ltac iDestructHyp0_ H pat :=
   let pats := intro_pat.parse pat in
   iDestructHypFindPat H pat false pats.
-
-Ltac2 iExistDestructs h xs :=
-  with_ltac1_list (List.iter (ltac1:(H x |- iExistDestruct H as x H) h)) xs.
-
 Ltac iDestructHyp_ H xs pat :=
-  let f := ltac2:(h xs |- iExistDestructs h xs) in f H xs;
-  iDestructHyp H as @ pat.
+  ltac1_list_iter ltac:(fun x => iExistDestruct H as x H) xs;
+  iDestructHyp0_ H pat.
 
-Ltac iDestructHyp_intros_hd_ H xs pat :=
-  let f :=
-    ltac2:(h xs |-
-      with_ltac1_list
-        (fun xs =>
-           ltac1:(x1 |- intros x1) (List.hd xs);
-           List.iter (ltac1:(H x |- iExistDestruct H as x H) h) (List.tl xs)
-        )
-        xs
-    ) in
-  f H xs;
-  iDestructHyp H as @ pat.
-
-Tactic Notation "iDestructHyp" constr(H) "as" "(" ne_simple_intropattern_list(xs) ")"
-    constr(pat) :=
-  iDestructHyp_ H xs pat.
+Tactic Notation "iDestructHyp" constr(H) "as" constr(pat) :=
+  iDestructHyp0_ H pat.
+Tactic Notation "iDestructHyp" constr(H) "as"
+  "(" ne_simple_intropattern_list(xs) ")" constr(pat) := iDestructHyp_ H xs pat.
 
 (** * Combinining hypotheses *)
 Tactic Notation "iCombine" constr(Hs) "as" constr(pat) :=
@@ -1622,54 +1593,49 @@ Ltac iIntros_go pats startproof :=
   | ?pat :: ?pats =>
      let H := iFresh in iIntro H; iDestructHyp H as pat; iIntros_go pats false
   end.
-Tactic Notation "iIntros" constr(pat) :=
-  let pats := intro_pat.parse pat in iIntros_go pats true.
-Tactic Notation "iIntros" := iIntros [IAll].
 
-Ltac2 iIntross xs :=
-  with_ltac1_list (List.iter ltac1:(x |- iIntro (x))) xs.
-Ltac iIntros_ xs :=
-  let f := ltac2:(xs |- iIntross xs) in f xs.
+Ltac iIntros0_ pat :=
+  let pats := intro_pat.parse pat in
+  iIntros_go pats true.
+Ltac iIntros_ xs pat :=
+  ltac1_list_iter ltac:(fun x => iIntro (x)) xs;
+  iIntros0_ pat.
 
+Tactic Notation "iIntros" := iIntros0_ [IAll].
+Tactic Notation "iIntros" constr(pat) := iIntros0_ pat.
 Tactic Notation "iIntros" "(" ne_simple_intropattern_list(xs) ")" :=
-  iIntros_ xs.
+  iIntros_ xs "".
+Tactic Notation "iIntros" "(" ne_simple_intropattern_list(xs) ")" constr(pat) :=
+  iIntros_ xs pat.
+Tactic Notation "iIntros" constr(pat) "(" ne_simple_intropattern_list(xs) ")" :=
+  iIntros0_ pat; iIntros_ xs "".
+Tactic Notation "iIntros" constr(pat1)
+    "(" ne_simple_intropattern_list(xs) ")" constr(pat2) :=
+  iIntros0_ pat1; iIntros_ xs pat2.
 
-Tactic Notation "iIntros" "(" ne_simple_intropattern_list(xs) ")" constr(p) :=
-  iIntros_ xs;
-  iIntros p.
-
-Tactic Notation "iIntros" constr(p) "(" ne_simple_intropattern_list(xs) ")" :=
-  iIntros p;
-  iIntros_ xs.
-
-Tactic Notation "iIntros" constr(p1) "(" ne_simple_intropattern_list(xs) ")" constr(p2) :=
-  iIntros p1;
-  iIntros_ xs;
-  iIntros p2.
-
-(* Used for generalization in iInduction and iLöb *)
+(* Used for generalization in [iInduction] and [iLöb] *)
 Ltac iRevertIntros_go Hs tac :=
   lazymatch Hs with
-  | [] => tac
+  | [] => tac ()
   | ESelPure :: ?Hs => fail "iRevertIntros: % not supported"
   | ESelIdent ?p ?H :: ?Hs => iRevertHyp H; iRevertIntros_go Hs tac; iIntro H as p
   end.
 
+Ltac iRevertIntros0_ Hs tac :=
+  try iStartProof;
+  let Hs := iElaborateSelPat Hs in
+  iRevertIntros_go Hs tac.
+Ltac iRevertIntros_ xs Hs tac :=
+  iRevertIntros0_ Hs ltac:(fun _ => iRevert_ xs ""; tac (); iIntros_ xs "").
+
 Tactic Notation "iRevertIntros" constr(Hs) "with" tactic3(tac) :=
-  try iStartProof; let Hs := iElaborateSelPat Hs in iRevertIntros_go Hs tac.
-
-Ltac iRevertIntros_ Hs xs tac :=
-  let f := ltac2:(xs |- iForallReverts xs) in
-  iRevertIntros Hs with (f xs; tac; iIntros_ xs).
-
+  iRevertIntros0_ Hs tac.
 Tactic Notation "iRevertIntros" "(" ne_ident_list(xs) ")" constr(Hs) "with" tactic3(tac):=
-  iRevertIntros_ Hs xs tac.
-
+  iRevertIntros_ xs Hs tac.
 Tactic Notation "iRevertIntros" "with" tactic3(tac) :=
-  iRevertIntros "" with tac.
+  iRevertIntros0_ "" tac.  
 Tactic Notation "iRevertIntros" "(" ne_ident_list(xs) ")" "with" tactic3(tac):=
-  let f := ltac2:(xs |- iForallReverts xs) in
-  iRevertIntros "" with (f xs; tac; iIntros (x1)).
+  iRevertIntros_ xs "" tac.
 
 (** * Destruct and PoseProof tactics *)
 (** The tactics [iDestruct] and [iPoseProof] are similar, but there are some
@@ -1778,7 +1744,8 @@ Tactic Notation "iInductionCore" tactic3(tac) "as" constr(IH) :=
          rev_tac j)
     | _ => rev_tac 0%N
     end in
-  tac; fix_ihs ltac:(fun _ => idtac).
+  tac ();
+  fix_ihs ltac:(fun _ => idtac).
 
 Ltac iHypsContaining x :=
   let rec go Γ x Hs :=
@@ -1794,45 +1761,53 @@ Ltac iHypsContaining x :=
   let Γs := lazymatch goal with |- envs_entails (Envs _ ?Γs _) _ => Γs end in
   let Hs := go Γp x (@nil ident) in go Γs x Hs.
 
-Tactic Notation "iInductionRevert" constr(x) constr(Hs) "with" tactic3(tac) :=
-  iRevertIntros Hs with (
-    iRevertIntros "∗" with (
-      idtac;
+Ltac iInduction0_ x Hs tac IH :=
+  iRevertIntros0_ Hs ltac:(fun _ =>
+    iRevertIntros0_ "∗" ltac:(fun _ =>
       let Hsx := iHypsContaining x in
-      iRevertIntros Hsx with tac
+      iRevertIntros0_ Hsx ltac:(fun _ =>
+        iInductionCore tac as IH
+      )
+    )
+  ).
+Ltac iInduction_ x xs Hs tac IH :=
+  iRevertIntros0_ Hs ltac:(fun _ =>
+    iRevertIntros_ xs "∗" ltac:(fun _ =>
+      let Hsx := iHypsContaining x in
+      iRevertIntros0_ Hsx ltac:(fun _ =>
+        iInductionCore tac as IH
+      )
     )
   ).
 
+(* Without induction scheme *)
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH) :=
-  iInductionRevert x "" with (iInductionCore (induction x as pat) as IH).
+  iInduction0_ x "" ltac:(fun _ => induction x as pat) IH.
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH)
     "forall" "(" ne_ident_list(xs) ")" :=
-  iInductionRevert x "" with (
-    iRevertIntros_ "" xs ltac:(idtac; iInductionCore (induction x as pat) as IH)).
+  iInduction_ x xs "" ltac:(fun _ => induction x as pat) IH.
 
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH)
     "forall" constr(Hs) :=
-  iInductionRevert x Hs with (iInductionCore (induction x as pat) as IH).
+  iInduction0_ x Hs ltac:(fun _ => induction x as pat) IH.
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH)
     "forall" "(" ne_ident_list(xs) ")" constr(Hs) :=
-  iInductionRevert x Hs with
-    (iRevertIntros_ "" xs ltac:(idtac; iInductionCore (induction x as pat) as IH)).
+  iInduction_ x xs Hs ltac:(fun _ => induction x as pat) IH.
 
+(* With induction scheme *)
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH)
     "using" uconstr(u) :=
-  iInductionRevert x "" with (iInductionCore (induction x as pat using u) as IH).
+  iInduction0_ x "" ltac:(fun _ => induction x as pat using u) IH.
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH)
     "using" uconstr(u) "forall" "(" ne_ident_list(xs) ")" :=
-  iInductionRevert x "" with (
-    iRevertIntros_ "" xs ltac:(idtac; iInductionCore (induction x as pat using u) as IH)).
+  iInduction_ x xs "" ltac:(fun _ => induction x as pat using u) IH.
 
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH)
     "using" uconstr(u) "forall" constr(Hs) :=
-  iInductionRevert x Hs with (iInductionCore (induction x as pat using u) as IH).
+  iInduction0_ x Hs ltac:(fun _ => induction x as pat using u) IH.
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH)
     "using" uconstr(u) "forall" "(" ne_ident_list(xs) ")" constr(Hs) :=
-  iInductionRevert x Hs with
-    (iRevertIntros_ "" xs ltac:(idtac; iInductionCore (induction x as pat using u) as IH)).
+  iInduction_ x xs Hs ltac:(fun _ => induction x as pat using u) IH.
 
 (** * Löb Induction *)
 Tactic Notation "iLöbCore" "as" constr (IH) :=
@@ -1851,20 +1826,27 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
      | _ => idtac
      end].
 
-Tactic Notation "iLöbRevert" constr(Hs) "with" tactic3(tac) :=
-  iRevertIntros Hs with (
-    iRevertIntros "∗" with tac
+Ltac iLöb0_ Hs IH :=
+  iRevertIntros0_ Hs ltac:(fun _ =>
+    iRevertIntros0_ "∗" ltac:(fun _ =>
+      iLöbCore as IH
+    )
+  ).
+Ltac iLöb_ xs Hs IH :=
+  iRevertIntros0_ Hs ltac:(fun _ =>
+    iRevertIntros_ xs "∗" ltac:(fun _ =>
+      iLöbCore as IH
+    )
   ).
 
 Tactic Notation "iLöb" "as" constr (IH) :=
-  iLöbRevert "" with (iLöbCore as IH).
+  iLöb0_ "" IH.
 Tactic Notation "iLöb" "as" constr (IH) "forall" "(" ne_ident_list(xs) ")" :=
-  iLöbRevert "" with (iRevertIntros_ "" xs ltac:(idtac; iLöbCore as IH)).
-
+  iLöb_ xs "" IH.
 Tactic Notation "iLöb" "as" constr (IH) "forall" constr(Hs) :=
-  iLöbRevert Hs with (iLöbCore as IH).
+  iLöb0_ Hs IH.
 Tactic Notation "iLöb" "as" constr (IH) "forall" "(" ne_ident_list(xs) ")" constr(Hs) :=
-  iLöbRevert Hs with (iRevertIntros_ "" xs ltac:(idtac; iLöbCore as IH)).
+  iLöb0_ xs Hs IH.
 
 (** * Assert *)
 (* The argument [p] denotes whether [Q] is persistent. It can either be a
@@ -2056,65 +2038,61 @@ Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(H
 
 (* Without closing view shift *)
 Tactic Notation "iInvCore" constr(N) "with" constr(pats) "in" tactic3(tac) :=
-  iInvCore N with pats as (@None string) in ltac:(tac).
+  iInvCore N with pats as (@None string) in tac.
 (* Without selection pattern *)
 Tactic Notation "iInvCore" constr(N) "as" constr(Hclose) "in" tactic3(tac) :=
-  iInvCore N with "[$]" as Hclose in ltac:(tac).
+  iInvCore N with "[$]" as Hclose in tac.
 (* Without both *)
 Tactic Notation "iInvCore" constr(N) "in" tactic3(tac) :=
-  iInvCore N with "[$]" as (@None string) in ltac:(tac).
+  iInvCore N with "[$]" as (@None string) in tac.
 
 (* With everything *)
 Tactic Notation "iInv" constr(N) "with" constr(Hs) "as" constr(pat) constr(Hclose) :=
-  iInvCore N with Hs as (Some Hclose) in (fun x H => iDestructHyp H as pat).
-Tactic Notation "iInv" constr(N) "with" constr(Hs) "as" "(" ne_simple_intropattern_list(xs) ")"
-    constr(pat) constr(Hclose) :=
+  iInvCore N with Hs as (Some Hclose) in (fun x H => iDestructHyp0_ H pat).
+Tactic Notation "iInv" constr(N) "with" constr(Hs) "as"
+    "(" ne_simple_intropattern_list(xs) ")" constr(pat) constr(Hclose) :=
   iInvCore N with Hs as (Some Hclose) in (fun x H => iDestructHyp_ H xs pat).
 
 (* Without closing view shift *)
+Ltac iDestructAccAndHyp0 pat x H :=
+  lazymatch type of x with
+  | unit => destruct x as []; iDestructHyp0_ H pat
+  | _ => fail "Missing intro pattern for accessor variable"
+  end.
+
+Ltac iDestructAccAndHyp xs pat x H :=
+  let go := ltac2:(tac xs |-
+    match of_ltac1_list xs with
+    | [] =>
+      Control.throw_invalid_argument "iDestructAccAndHyp: List should be non-empty"
+    | x1 :: xs' =>
+      ltac1:(x1 |- intros x1) x1;
+      ltac1:(tac xs' |- tac xs') tac (Ltac1.of_list xs')
+    end) in
+  lazymatch type of x with
+  | unit => destruct x as []; iDestructHyp_ H xs pat
+  | _ => revert x; go ltac:(fun xs' => iDestructHyp_ H xs' pat) xs
+  end.
+
 Tactic Notation "iInv" constr(N) "with" constr(Hs) "as" constr(pat) :=
-  iInvCore N with Hs in
-    (fun x H => lazymatch type of x with
-                | unit => destruct x as []; iDestructHyp H as pat
-                | _ => fail "Missing intro pattern for accessor variable"
-                end).
-Tactic Notation "iInv" constr(N) "with" constr(Hs) "as" "(" ne_simple_intropattern_list(xs) ")"
-    constr(pat) :=
-  iInvCore N with Hs in
-    (fun x H => lazymatch type of x with
-                | unit => destruct x as []; iDestructHyp_ H xs pat
-                | _ => revert x; iDestructHyp_intros_hd_ H xs pat
-                end).
+  iInvCore N with Hs in iDestructAccAndHyp0 pat.
+Tactic Notation "iInv" constr(N) "with" constr(Hs) "as"
+    "(" ne_simple_intropattern_list(xs) ")" constr(pat) :=
+  iInvCore N with Hs in iDestructAccAndHyp xs pat.
 
 (* Without selection pattern *)
 Tactic Notation "iInv" constr(N) "as" constr(pat) constr(Hclose) :=
-  iInvCore N as (Some Hclose) in
-    (fun x H => lazymatch type of x with
-                | unit => destruct x as []; iDestructHyp H as pat
-                | _ => fail "Missing intro pattern for accessor variable"
-                end).
+  iInvCore N as (Some Hclose) in iDestructAccAndHyp0 pat.
 Tactic Notation "iInv" constr(N) "as" "(" ne_simple_intropattern_list(xs) ")"
     constr(pat) constr(Hclose) :=
-  iInvCore N as (Some Hclose) in
-    (fun x H => lazymatch type of x with
-                | unit => destruct x as []; iDestructHyp_ H xs pat
-                | _ => revert x; iDestructHyp_intros_hd_ H xs pat
-                end).
+  iInvCore N as (Some Hclose) in iDestructAccAndHyp xs pat.
 
 (* Without both *)
 Tactic Notation "iInv" constr(N) "as" constr(pat) :=
-  iInvCore N in
-    (fun x H => lazymatch type of x with
-                | unit => destruct x as []; iDestructHyp H as pat
-                | _ => fail "Missing intro pattern for accessor variable"
-                end).
+  iInvCore N in iDestructAccAndHyp0 pat.
 Tactic Notation "iInv" constr(N) "as" "(" ne_simple_intropattern_list(xs) ")"
     constr(pat) :=
-  iInvCore N in
-    (fun x H => lazymatch type of x with
-                | unit => destruct x as []; iDestructHyp_ H xs pat
-                | _ => revert x; iDestructHyp_intros_hd_ H xs pat
-                end).
+  iInvCore N in iDestructAccAndHyp xs pat.
 
 (** Miscellaneous *)
 Tactic Notation "iAccu" :=
