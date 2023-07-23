@@ -200,3 +200,10 @@ Proof.
   move: Hy. rewrite Heq /= -Some_op=>Hy. eapply Hex.
   eapply cmra_validN_le; [|lia]. eapply Hy.
 Qed.
+
+Lemma delete_option_local_update_cancelable {A : cmra} (mx : option A) :
+  Cancelable mx → (mx, mx) ~l~> (None, None).
+Proof.
+  intros ?. apply local_update_unital=>n mf /= Hmx Heq. split; first done.
+  rewrite left_id. eapply (cancelableN mx); by rewrite right_id_L.
+Qed.
