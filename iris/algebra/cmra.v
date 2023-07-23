@@ -1479,6 +1479,8 @@ Section option.
   Lemma cmra_opM_opM_swap_L `{!LeibnizEquiv A} a mb mc :
     a ⋅? mb ⋅? mc = a ⋅? mc ⋅? mb.
   Proof. by rewrite !cmra_opM_opM_assoc_L (comm_L _ mb). Qed.
+  Lemma cmra_opM_fmap_Some ma1 ma2 : ma1 ⋅? (Some <$> ma2) = ma1 ⋅ ma2.
+  Proof. by destruct ma1, ma2. Qed.
 
   Global Instance Some_core_id a : CoreId a → CoreId (Some a).
   Proof. by constructor. Qed.
