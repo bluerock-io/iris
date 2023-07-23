@@ -523,16 +523,21 @@ Proof.
     eauto using alloc_unit_singleton_updateP with subst.
 Qed.
 
+Lemma gmap_local_update m1 m2 m1' m2' :
+  (∀ i, (m1 !! i, m2 !! i) ~l~> (m1' !! i, m2' !! i)) →
+  (m1, m2) ~l~> (m1', m2').
+Proof.
+  intros Hupd. apply local_update_unital=> n mf Hmv Hm.
+  apply forall_and_distr=> i. rewrite lookup_op -cmra_opM_fmap_Some.
+  apply Hupd; simpl; first done. by rewrite Hm lookup_op cmra_opM_fmap_Some.
+Qed.
+
 Lemma alloc_local_update m1 m2 i x :
   m1 !! i = None → ✓ x → (m1,m2) ~l~> (<[i:=x]>m1, <[i:=x]>m2).
 Proof.
-  rewrite cmra_valid_validN=> Hi ?.
-  apply local_update_unital=> n mf Hmv Hm; simpl in *.
-  split; auto using insert_validN.
-  intros j; destruct (decide (i = j)) as [->|].
-  - move: (Hm j); rewrite Hi symmetry_iff dist_None lookup_op op_None=>-[_ Hj].
-    by rewrite lookup_op !lookup_insert Hj.
-  - rewrite Hm lookup_insert_ne // !lookup_op lookup_insert_ne //.
+  intros Hi ?. apply gmap_local_update=> j.
+  destruct (decide (i = j)) as [->|]; last by rewrite !lookup_insert_ne.
+  rewrite !lookup_insert Hi. by apply alloc_option_local_update.
 Qed.
 
 Lemma alloc_singleton_local_update m i x :
@@ -544,24 +549,20 @@ Lemma insert_local_update m1 m2 i x y x' y' :
   (x, y) ~l~> (x', y') →
   (m1, m2) ~l~> (<[i:=x']>m1, <[i:=y']>m2).
 Proof.
-  intros Hi1 Hi2 Hup; apply local_update_unital=> n mf Hmv Hm; simpl in *.
-  destruct (Hup n (mf !! i)) as [? Hx']; simpl in *.
-  { move: (Hmv i). by rewrite Hi1. }
-  { move: (Hm i). by rewrite lookup_op Hi1 Hi2 Some_op_opM (inj_iff Some). }
-  split; auto using insert_validN.
-  rewrite Hm Hx'=> j; destruct (decide (i = j)) as [->|].
-  - by rewrite lookup_insert lookup_op lookup_insert Some_op_opM.
-  - by rewrite lookup_insert_ne // !lookup_op lookup_insert_ne.
+  intros Hi1 Hi2 Hup. apply gmap_local_update=> j.
+  destruct (decide (i = j)) as [->|]; last by rewrite !lookup_insert_ne.
+  rewrite !lookup_insert Hi1 Hi2. by apply option_local_update.
 Qed.
 
 Lemma singleton_local_update_any m i y x' y' :
   (∀ x, m !! i = Some x → (x, y) ~l~> (x', y')) →
   (m, {[ i := y ]}) ~l~> (<[i:=x']>m, {[ i := y' ]}).
 Proof.
-  intros. rewrite /singletonM /map_singleton -(insert_insert ∅ i y' y).
-  apply local_update_total_valid0=>_ _ /singleton_includedN_l [x0 [/dist_Some_inv_r Hlk0 _]].
-  edestruct Hlk0 as [x [Hlk _]]; [done..|].
-  eapply insert_local_update; [|eapply lookup_insert|]; eauto.
+  intros. apply gmap_local_update=> j.
+  destruct (decide (i = j)) as [->|]; last by rewrite !lookup_insert_ne.
+  rewrite !lookup_singleton lookup_insert.
+  destruct (m !! j); first by eauto using option_local_update.
+  apply local_update_total_valid0=> _ _ /option_includedN; naive_solver.
 Qed.
 
 Lemma singleton_local_update m i x y x' y' :
@@ -576,13 +577,9 @@ Qed.
 Lemma delete_local_update m1 m2 i x `{!Exclusive x} :
   m2 !! i = Some x → (m1, m2) ~l~> (delete i m1, delete i m2).
 Proof.
-  intros Hi. apply local_update_unital=> n mf Hmv Hm; simpl in *.
-  split; auto using delete_validN.
-  rewrite Hm=> j; destruct (decide (i = j)) as [<-|].
-  - rewrite lookup_op !lookup_delete left_id symmetry_iff dist_None.
-    apply eq_None_not_Some=> -[y Hi'].
-    move: (Hmv i). rewrite Hm lookup_op Hi Hi' -Some_op. by apply exclusiveN_l.
-  - by rewrite lookup_op !lookup_delete_ne // lookup_op.
+  intros Hi. apply gmap_local_update=> j.
+  destruct (decide (i = j)) as [->|]; last by rewrite !lookup_delete_ne.
+  rewrite !lookup_delete Hi. by apply delete_option_local_update.
 Qed.
 
 Lemma delete_singleton_local_update m i x `{!Exclusive x} :
@@ -596,12 +593,9 @@ Lemma delete_local_update_cancelable m1 m2 i mx `{!Cancelable mx} :
   m1 !! i ≡ mx → m2 !! i ≡ mx →
   (m1, m2) ~l~> (delete i m1, delete i m2).
 Proof.
-  intros Hm1i Hm2i. apply local_update_unital=> n mf Hmv Hm; simpl in *.
-  split; [eauto using delete_validN|].
-  intros j. destruct (decide (i = j)) as [->|].
-  - move: (Hm j). rewrite !lookup_op Hm1i Hm2i !lookup_delete. intros Hmx.
-    rewrite (cancelableN mx n (mf !! j) None) ?right_id // -Hmx -Hm1i. apply Hmv.
-  - by rewrite lookup_op !lookup_delete_ne // Hm lookup_op.
+  intros Hi1 Hi2. apply gmap_local_update=> j.
+  destruct (decide (i = j)) as [->|]; last by rewrite !lookup_delete_ne.
+  rewrite !lookup_delete Hi1 Hi2. by apply delete_option_local_update_cancelable.
 Qed.
 
 Lemma delete_singleton_local_update_cancelable m i x `{!Cancelable (Some x)} :

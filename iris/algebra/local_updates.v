@@ -160,8 +160,6 @@ Lemma prod_local_update_2 {A B : cmra} (x1 y1 : A) (x2 y2 x2' y2' : B) :
 Proof. intros. by apply prod_local_update. Qed.
 
 (** * Option *)
-(* TODO: Investigate whether we can use these in proving the very similar local
-   updates on finmaps. *)
 Lemma option_local_update {A : cmra} (x y x' y' : A) :
   (x, y) ~l~> (x',y') →
   (Some x, Some y) ~l~> (Some x', Some y').
