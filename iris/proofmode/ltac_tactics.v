@@ -1873,38 +1873,16 @@ Tactic Notation "iAssertCore" open_constr(Q) "as" constr(p) tactic3(tac) :=
   end.
 
 Tactic Notation "iAssert" open_constr(Q) "with" constr(Hs) "as" constr(pat) :=
-  iAssertCore Q with Hs as pat (fun H => iDestructHyp H as pat).
+  iAssertCore Q with Hs as pat (fun H => iDestructHyp0_ H pat).
 Tactic Notation "iAssert" open_constr(Q) "with" constr(Hs) "as"
-    "(" simple_intropattern(x1) ")" constr(pat) :=
-  iAssertCore Q with Hs as pat (fun H => iDestructHyp H as (x1) pat).
-Tactic Notation "iAssert" open_constr(Q) "with" constr(Hs) "as"
-    "(" simple_intropattern(x1) simple_intropattern(x2) ")" constr(pat) :=
-  iAssertCore Q with Hs as pat (fun H => iDestructHyp H as (x1 x2) pat).
-Tactic Notation "iAssert" open_constr(Q) "with" constr(Hs) "as"
-    "(" simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
-    ")" constr(pat) :=
-  iAssertCore Q with Hs as pat (fun H => iDestructHyp H as (x1 x2 x3) pat).
-Tactic Notation "iAssert" open_constr(Q) "with" constr(Hs) "as"
-    "(" simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
-    simple_intropattern(x4) ")" constr(pat) :=
-  iAssertCore Q with Hs as pat (fun H => iDestructHyp H as (x1 x2 x3 x4) pat).
+    "(" ne_simple_intropattern_list(xs) ")" constr(pat) :=
+  iAssertCore Q with Hs as pat (fun H => iDestructHyp_ H xs pat).
 
 Tactic Notation "iAssert" open_constr(Q) "as" constr(pat) :=
-  iAssertCore Q as pat (fun H => iDestructHyp H as pat).
+  iAssertCore Q as pat (fun H => iDestructHyp0_ H pat).
 Tactic Notation "iAssert" open_constr(Q) "as"
-    "(" simple_intropattern(x1) ")" constr(pat) :=
-  iAssertCore Q as pat (fun H => iDestructHyp H as (x1) pat).
-Tactic Notation "iAssert" open_constr(Q) "as"
-    "(" simple_intropattern(x1) simple_intropattern(x2) ")" constr(pat) :=
-  iAssertCore Q as pat (fun H => iDestructHyp H as (x1 x2) pat).
-Tactic Notation "iAssert" open_constr(Q) "as"
-    "(" simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
-    ")" constr(pat) :=
-  iAssertCore Q as pat (fun H => iDestructHyp H as (x1 x2 x3) pat).
-Tactic Notation "iAssert" open_constr(Q) "as"
-    "(" simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
-    simple_intropattern(x4) ")" constr(pat) :=
-  iAssertCore Q as pat (fun H => iDestructHyp H as (x1 x2 x3 x4) pat).
+    "(" ne_simple_intropattern_list(xs) ")" constr(pat) :=
+  iAssertCore Q as pat (fun H => iDestructHyp_ H xs pat).
 
 Tactic Notation "iAssert" open_constr(Q) "with" constr(Hs)
     "as" "%" simple_intropattern(pat) :=
