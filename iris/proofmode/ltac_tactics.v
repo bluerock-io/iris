@@ -644,6 +644,7 @@ Local Tactic Notation "iForallRevert" ident(x) :=
   | _ =>
     revert x; first
       [apply tac_forall_revert;
+       (* Ensure the name [x] is preserved, see [test_iRevert_order_and_names]. *)
        lazymatch goal with
        | |- envs_entails ?Δ (∀ y, @?P y) =>
          change (envs_entails Δ (∀ x, P x)); lazy beta
@@ -676,7 +677,10 @@ Tactic Notation "iRevert" constr(Hs) :=
        go Hs
     | ESelIdent _ ?H :: ?Hs => iRevertHyp H; go Hs
     end in
-  iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
+  iStartProof;
+  let Hs := iElaborateSelPat Hs in
+  (* No need to reverse [Hs], [iElaborateSelPat] already does that. *)
+  go Hs.
 
 Tactic Notation "iRevert" "(" ident(x1) ")" :=
   iForallRevert x1.
