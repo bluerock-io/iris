@@ -637,9 +637,18 @@ Local Tactic Notation "iForallRevert" ident(x) :=
   lazymatch type of A with
   | Prop =>
      revert x; first
-       [eapply tac_pure_revert; [tc_solve (* [FromAffinely], should never fail *)|]
+       [eapply tac_pure_revert;
+         [tc_solve (* [FromAffinely], should never fail *)
+         |]
        |err x]
-  | _ => revert x; first [apply tac_forall_revert|err x]
+  | _ =>
+    revert x; first
+      [apply tac_forall_revert;
+       lazymatch goal with
+       | |- envs_entails ?Δ (∀ y, @?P y) =>
+         change (envs_entails Δ (∀ x, P x)); lazy beta
+       end
+      |err x]
   end.
 
 (** The tactic [iRevertHyp H with tac] reverts the hypothesis [H] and calls
