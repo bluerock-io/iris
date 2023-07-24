@@ -646,7 +646,7 @@ Local Tactic Notation "iForallRevert" ident(x) :=
       [apply tac_forall_revert;
        (* Ensure the name [x] is preserved, see [test_iRevert_order_and_names]. *)
        lazymatch goal with
-       | |- envs_entails ?Δ (∀ y, @?P y) =>
+       | |- envs_entails ?Δ (bi_forall ?P) =>
          change (envs_entails Δ (∀ x, P x)); lazy beta
        end
       |err x]
