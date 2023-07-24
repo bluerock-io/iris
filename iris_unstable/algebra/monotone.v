@@ -23,7 +23,7 @@ following paper for more details:
 *)
 
 Record mra {A} (R : relation A) := { mra_car : list A }.
-Definition principal {A} (R : relation A) (a : A) : mra R :=
+Definition principal {A} {R : relation A} (a : A) : mra R :=
   {| mra_car := [a] |}.
 Global Arguments mra_car {_ _} _.
 
@@ -34,7 +34,7 @@ Section mra.
 
   Local Definition below (a : A) (x : mra R) := ∃ b, b ∈ mra_car x ∧ R a b.
 
-  Local Lemma below_principal a b : below a (principal R b) ↔ R a b.
+  Local Lemma below_principal a b : below a (principal b) ↔ R a b.
   Proof. set_solver. Qed.
 
   (* OFE *)
@@ -92,20 +92,20 @@ Section mra.
 
   Lemma principal_R_op `{!Transitive R} a b :
     R a b →
-    principal R a ⋅ principal R b ≡ principal R b.
+    principal a ⋅ principal b ≡ principal b.
   Proof. intros Hab c. set_solver. Qed.
 
   Lemma principal_included `{!PreOrder R} a b :
-    principal R a ≼ principal R b ↔ R a b.
+    principal a ≼ principal b ↔ R a b.
   Proof.
     split.
     - move=> [z Hz]. specialize (Hz a). set_solver.
-    - intros ?; exists (principal R b). by rewrite principal_R_op.
+    - intros ?; exists (principal b). by rewrite principal_R_op.
   Qed.
 
   Lemma mra_local_update_grow `{!Transitive R} a x b:
     R a b →
-    (principal R a, x) ~l~> (principal R b, principal R b).
+    (principal a, x) ~l~> (principal b, principal b).
   Proof.
     intros Hana. apply local_update_unital_discrete=> z _ Habz.
     split; first done. intros c. specialize (Habz c). set_solver.
@@ -113,7 +113,7 @@ Section mra.
 
   Lemma mra_local_update_get_frag `{!PreOrder R} a b:
     R b a →
-    (principal R a, ε) ~l~> (principal R a, principal R b).
+    (principal a, ε) ~l~> (principal a, principal b).
   Proof.
     intros Hana. apply local_update_unital_discrete=> z _.
     rewrite left_id. intros <-. split; first done.
@@ -126,7 +126,7 @@ Global Arguments mraR {_} _.
 Global Arguments mraUR {_} _.
 
 (** If [R] is a partial order, relative to a reflexive relation [S] on the
-carrier [A], then [principal R] is proper and injective. The theory for
+carrier [A], then [principal] is proper and injective. The theory for
 arbitrary relations [S] is overly general, so we do not declare the results
 as instances. Below we provide instances for [S] being [=] and [≡]. *)
 Section mra_over_rel.
@@ -137,13 +137,13 @@ Section mra_over_rel.
   Lemma principal_rel_proper :
     Reflexive S →
     Proper (S ==> S ==> iff) R →
-    Proper (S ==> (≡)) (principal R).
+    Proper (S ==> (≡@{mra R})) (principal).
   Proof. intros ? HR a1 a2 Ha b. rewrite !below_principal. by apply HR. Qed.
 
   Lemma principal_rel_inj :
     Reflexive R →
     AntiSymm S R →
-    Inj S (≡) (principal R).
+    Inj S (≡@{mra R}) (principal).
   Proof.
     intros ?? a b Hab. move: (Hab a) (Hab b). rewrite !below_principal.
     intros. apply (anti_symm R); naive_solver.
@@ -153,17 +153,17 @@ End mra_over_rel.
 Global Instance principal_inj {A} {R : relation A} :
   Reflexive R →
   AntiSymm (=) R →
-  Inj (=) (≡) (principal R) | 0. (* Lower cost than [principal_inj] *)
+  Inj (=) (≡@{mra R}) (principal) | 0. (* Lower cost than [principal_inj] *)
 Proof. intros. by apply (principal_rel_inj (=)). Qed.
 
 Global Instance principal_proper `{Equiv A} {R : relation A} :
   Reflexive (≡@{A}) →
   Proper ((≡) ==> (≡) ==> iff) R →
-  Proper ((≡) ==> (≡)) (principal R).
+  Proper ((≡) ==> (≡@{mra R})) (principal).
 Proof. intros. by apply (principal_rel_proper (≡)). Qed.
 
 Global Instance principal_equiv_inj `{Equiv A} {R : relation A} :
   Reflexive R →
   AntiSymm (≡) R →
-  Inj (≡) (≡) (principal R) | 1.
+  Inj (≡) (≡@{mra R}) (principal) | 1.
 Proof. intros. by apply (principal_rel_inj (≡)). Qed.
