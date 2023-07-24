@@ -1420,6 +1420,11 @@ Proof.
   iIntros (?) "HP HQ". iModIntro. Show. by iFrame.
 Qed.
 
+Lemma test_iExfalso_start_proof P : 0 = 1 → ⊢ P.
+Proof.
+  intros. iExFalso. done.
+Qed.
+
 Check "test_iRevert_pure".
 Lemma test_iRevert_pure (φ : Prop) P :
   φ → (<affine> ⌜ φ ⌝ -∗ P) -∗ P.
