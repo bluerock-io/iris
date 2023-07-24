@@ -63,9 +63,9 @@ Module StringToIdent.
   (** [coq_string_to_ident] implements the ident to string conversion in Ltac2 *)
   Ltac2 coq_string_to_ident (s : constr) := ident_from_string (coq_string_to_string s).
 
-  (** We want to wrap this in an Ltac1 API, but Ltac1-2 FFI does not support
-      returning values from Ltac2 to Ltac1. So we wrute this in CPS instead.
-   *)
+  (** We want to wrap [coq_string_to_ident] in an Ltac1 API, but Ltac1-2 FFI
+  does not support returning values from Ltac2 to Ltac1. So we provide
+  [string_to_ident_cps] in CPS instead. *)
 
   Ltac2 get_opt o := match o with None => Control.throw Not_found | Some x => x end.
 
