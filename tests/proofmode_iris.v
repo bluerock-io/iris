@@ -251,10 +251,9 @@ Section iris_tests.
       Fail iInv "HINV" as "HINVinner".
       iInv "HINV" as (b) "HINVinner"; rename b into b_exists. Undo.
       (* Both sel.pattern and closing view shift *)
-      (* FIXME this one is broken: no proper error message without a pattern for
-      the accessor variable, and an error when the pattern is given *)
-      Fail Fail iInv "HINV" with "[//]" as "HINVinner" "Hclose".
-      Fail iInv "HINV" with "[//]" as (b) "HINVinner" "Hclose"; rename b into b_exists.
+      Fail iInv "HINV" with "[//]" as "HINVinner" "Hclose".
+      iInv "HINV" with "[//]" as (b) "HINVinner" "Hclose";
+        rename b into b_exists. Undo.
       (* Sel.pattern but no closing view shift *)
       Fail iInv "HINV" with "[//]" as "HINVinner".
       iInv "HINV" with "[//]" as (b) "HINVinner"; rename b into b_exists. Undo.

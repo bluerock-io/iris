@@ -2046,14 +2046,6 @@ Tactic Notation "iInvCore" constr(N) "as" constr(Hclose) "in" tactic3(tac) :=
 Tactic Notation "iInvCore" constr(N) "in" tactic3(tac) :=
   iInvCore N with "[$]" as (@None string) in tac.
 
-(* With everything *)
-Tactic Notation "iInv" constr(N) "with" constr(Hs) "as" constr(pat) constr(Hclose) :=
-  iInvCore N with Hs as (Some Hclose) in (fun x H => iDestructHyp0_ H pat).
-Tactic Notation "iInv" constr(N) "with" constr(Hs) "as"
-    "(" ne_simple_intropattern_list(xs) ")" constr(pat) constr(Hclose) :=
-  iInvCore N with Hs as (Some Hclose) in (fun x H => iDestructHyp_ H xs pat).
-
-(* Without closing view shift *)
 Ltac iDestructAccAndHyp0 pat x H :=
   lazymatch type of x with
   | unit => destruct x as []; iDestructHyp0_ H pat
@@ -2074,6 +2066,14 @@ Ltac iDestructAccAndHyp xs pat x H :=
   | _ => revert x; go ltac:(fun xs' => iDestructHyp_ H xs' pat) xs
   end.
 
+(* With everything *)
+Tactic Notation "iInv" constr(N) "with" constr(Hs) "as" constr(pat) constr(Hclose) :=
+  iInvCore N with Hs as (Some Hclose) in iDestructAccAndHyp0 pat.
+Tactic Notation "iInv" constr(N) "with" constr(Hs) "as"
+    "(" ne_simple_intropattern_list(xs) ")" constr(pat) constr(Hclose) :=
+  iInvCore N with Hs as (Some Hclose) in iDestructAccAndHyp xs pat.
+
+(* Without closing view shift *)
 Tactic Notation "iInv" constr(N) "with" constr(Hs) "as" constr(pat) :=
   iInvCore N with Hs in iDestructAccAndHyp0 pat.
 Tactic Notation "iInv" constr(N) "with" constr(Hs) "as"
