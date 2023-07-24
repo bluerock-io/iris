@@ -1428,6 +1428,16 @@ Proof.
   iIntros (Hφ) "H". iRevert (Hφ). Show. done.
 Qed.
 
+Check "test_iRevert_order_and_names".
+Lemma test_iRevert_order_and_names P1 P2 : P1 -∗ P2 -∗ P1 ∗ P2.
+Proof.
+  iIntros "H1 H2". iRevert (P1 P2) "H1 H2".
+  (* Check that the reverts are performed in the right order (i.e., reverse),
+  and that the names [P1] and [P2] are used in the goal. *)
+  Show.
+  auto with iFrame.
+Qed.
+
 Check "test_iRevert_pure_affine".
 Lemma test_iRevert_pure_affine `{!BiAffine PROP} (φ : Prop) P :
   φ → (⌜ φ ⌝ -∗ P) -∗ P.
