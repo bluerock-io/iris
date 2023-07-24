@@ -77,6 +77,7 @@ iris/bi/monpred.v
 iris/bi/embedding.v
 iris/bi/weakestpre.v
 iris/bi/telescopes.v
+iris/bi/lib/cmra.v
 iris/bi/lib/counterexamples.v
 iris/bi/lib/fixpoint.v
 iris/bi/lib/fractional.v

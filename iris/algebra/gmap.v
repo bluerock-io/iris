@@ -346,8 +346,7 @@ Lemma singleton_included_l m i x :
 Proof.
   split.
   - move=> [m' /(_ i)]; rewrite lookup_op lookup_singleton.
-    exists (x ⋅? m' !! i). rewrite -Some_op_opM.
-    split; first done. apply cmra_included_l.
+    exists (x ⋅? m' !! i). by rewrite -Some_op_opM.
   - intros (y&Hi&[mz Hy]). exists (partial_alter (λ _, mz) i m).
     intros j; destruct (decide (i = j)) as [->|].
     + by rewrite lookup_op lookup_singleton lookup_partial_alter Hi.

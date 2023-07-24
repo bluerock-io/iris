@@ -637,6 +637,12 @@ Global Instance exclusive_id_free x : Exclusive x → IdFree x.
 Proof. intros ? z ? Hid. apply (exclusiveN_l 0 x z). by rewrite Hid. Qed.
 End cmra.
 
+(* We use a [Hint Extern] with [apply:], instead of [Hint Immediate], to invoke
+  the new unification algorithm. The old unification algorithm sometimes gets
+  confused by going from [ucmra]'s to [cmra]'s and back. *)
+Global Hint Extern 0 (?a ≼ ?a ⋅ _) => apply: cmra_included_l : core.
+Global Hint Extern 0 (?a ≼ _ ⋅ ?a) => apply: cmra_included_r : core.
+
 (** * Properties about CMRAs with a unit element **)
 Section ucmra.
   Context {A : ucmra}.
@@ -667,6 +673,7 @@ Section ucmra.
 End ucmra.
 
 Global Hint Immediate cmra_unit_cmra_total : core.
+Global Hint Extern 0 (ε ≼ _) => apply: ucmra_unit_least : core.
 
 (** * Properties about CMRAs with Leibniz equality *)
 Section cmra_leibniz.
@@ -1380,7 +1387,7 @@ Section option.
       destruct ma as [a|]; [right|by left].
       destruct mb as [b|]; [exists a, b|destruct mc; inversion_clear Hmc].
       destruct mc as [c|]; inversion_clear Hmc; split_and?; auto;
-        setoid_subst; eauto using cmra_included_l.
+        setoid_subst; eauto.
     - intros [->|(a&b&->&->&[Hc|[c Hc]])].
       + exists mb. by destruct mb.
       + exists None; by constructor.

@@ -44,6 +44,9 @@ Coq 8.13 is no longer supported.
   `x ≼ y`. This changes the statements of some lemmas: `singleton_included`,
   `local_update_valid0`, `local_update_valid`. Also add various new
   `Some_included` lemmas to help deal with these assertions.
+* Add hints for `a ≼ a ⋅ _` / `a ≼ _ ⋅ a` / `ε ≼ _` / `_ ≼ CsumBot` /
+  `_ ≼ ExclBot` with cost 0, which means they are used by `done` to finish
+  proofs. (by Ike Mulder)
 
 **Changes in `bi`:**
 
@@ -100,7 +103,8 @@ Coq 8.13 is no longer supported.
 * Add missing transitivity, symmetry and reflexivity lemmas about the `↔`, `→`,
   `-∗` and `∗-∗` connectives. (by Ike Mulder)
 * Add `∗-∗` as notation in `stdpp_scope` similar to `-∗`. This means `P ∗-∗ Q`
-  can be directly used as lemma statement, and is syntactic sugar for `⊢ P ∗-∗ Q`
+  can be directly used as lemma statement, and is syntactic sugar for `⊢ P ∗-∗ Q`.
+* Add `≼` connective (`internal_included`) on the BI level. (by Ike Mulder)
 
 **Changes in `proofmode`:**
 

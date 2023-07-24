@@ -112,7 +112,14 @@ Lemma Excl_included a b : Excl' a ≼ Excl' b ↔ a ≡ b.
 Proof.
   split; [|by intros ->]. by intros [[c|] Hb%(inj Some)]; inversion_clear Hb.
 Qed.
+Lemma ExclBot_included ea : ea ≼ ExclBot.
+Proof. by exists ExclBot. Qed.
 End excl.
+
+(* We use a [Hint Extern] with [apply:], instead of [Hint Immediate], to invoke
+  the new unification algorithm. The old unification algorithm sometimes gets
+  confused by going from [ucmra]'s to [cmra]'s and back. *)
+Global Hint Extern 0 (_ ≼ ExclBot) => apply: ExclBot_included : core.
 
 Global Arguments exclO : clear implicits.
 Global Arguments exclR : clear implicits.

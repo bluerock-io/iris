@@ -104,7 +104,7 @@ Section max_prefix_list.
     split.
     - intros. eexists. apply equiv_dist=> n.
       apply to_max_prefix_list_includedN_aux. by apply: cmra_included_includedN.
-    - intros [l ->]. rewrite to_max_prefix_list_app. apply: cmra_included_l.
+    - intros [l ->]. rewrite to_max_prefix_list_app. eauto.
   Qed.
   Lemma to_max_prefix_list_included_L `{!LeibnizEquiv A} l1 l2 :
     to_max_prefix_list l1 ≼ to_max_prefix_list l2 ↔ l1 `prefix_of` l2.

@@ -59,20 +59,8 @@ Section upred.
 
   Section excl.
     Context {A : ofe}.
-    Implicit Types a b : A.
-    Implicit Types x y : excl A.
+    Implicit Types x : excl A.
 
-    Lemma excl_equivI x y :
-      x ≡ y ⊣⊢ match x, y with
-                          | Excl a, Excl b => a ≡ b
-                          | ExclBot, ExclBot => True
-                          | _, _ => False
-                          end.
-    Proof.
-      uPred.unseal. do 2 split.
-      - by destruct 1.
-      - by destruct x, y; try constructor.
-    Qed.
     Lemma excl_validI x :
       ✓ x ⊣⊢ if x is ExclBot then False else True.
     Proof. uPred.unseal. by destruct x. Qed.
@@ -131,24 +119,6 @@ Section upred.
       rewrite agree_idemp. apply bi.impl_refl.
     Qed.
   End agree.
-
-  Section csum_ofe.
-    Context {A B : ofe}.
-    Implicit Types a : A.
-    Implicit Types b : B.
-
-    Lemma csum_equivI (x y : csum A B) :
-      x ≡ y ⊣⊢ match x, y with
-                          | Cinl a, Cinl a' => a ≡ a'
-                          | Cinr b, Cinr b' => b ≡ b'
-                          | CsumBot, CsumBot => True
-                          | _, _ => False
-                          end.
-    Proof.
-      uPred.unseal; do 2 split; first by destruct 1.
-        by destruct x, y; try destruct 1; try constructor.
-    Qed.
-  End csum_ofe.
 
   Section csum_cmra.
     Context {A B : cmra}.
