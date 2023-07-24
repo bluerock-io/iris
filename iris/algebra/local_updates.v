@@ -173,8 +173,6 @@ Lemma prod_local_update_2 {A B : cmra} (x1 y1 : A) (x2 y2 x2' y2' : B) :
 Proof. intros. by apply prod_local_update. Qed.
 
 (** * Option *)
-(* TODO: Investigate whether we can use these in proving the very similar local
-   updates on finmaps. *)
 Lemma option_local_update {A : cmra} (x y x' y' : A) :
   (x, y) ~l~> (x',y') →
   (Some x, Some y) ~l~> (Some x', Some y').
@@ -212,4 +210,11 @@ Proof.
   destruct z as [z|]; last done. exfalso.
   move: Hy. rewrite Heq /= -Some_op=>Hy. eapply Hex.
   eapply cmra_validN_le; [|lia]. eapply Hy.
+Qed.
+
+Lemma delete_option_local_update_cancelable {A : cmra} (mx : option A) :
+  Cancelable mx → (mx, mx) ~l~> (None, None).
+Proof.
+  intros ?. apply local_update_unital=>n mf /= Hmx Heq. split; first done.
+  rewrite left_id. eapply (cancelableN mx); by rewrite right_id_L.
 Qed.
