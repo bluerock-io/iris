@@ -14,10 +14,10 @@ that in Ltac2. For most proofmode tactics we only need to iterate over a list
 and [ltac1_list_rev_iter] allow us to do that while encapsulating the Ltac2
 code. These tactics can be used as:
 
-  Ltac iTactic_ xs :=
+  Ltac _iTactic xs :=
     ltac1_list_rev_iter ltac:(fun x => /* stuff */) xs.
   Tactic Notation "iTactic" "(" ne_ident_list(xs) ")" :=
-    iTactic_ xs.
+    _iTactic xs.
 
 It is important to note that given one n-ary [Tactic Notation] we cannot call
 another n-ary [Tactic Notation]. For example, the following does NOT work:
@@ -27,12 +27,12 @@ another n-ary [Tactic Notation]. For example, the following does NOT work:
     iTactic (xs).
 
 Because of this reason, as already shown above, we typically provide an [Ltac]
-called [iTactic_] (note the underscore), and define the [Tactic Notation] as a
-wrapper, allowing us to write:
+called [_iTactic] (note the underscore to mark it is "private"), and define the
+[Tactic Notation] as a wrapper, allowing us to write:
 
   Tactic Notation "iAnotherTactic" "(" ne_ident_list(xs) ")" :=
     /* stuff */
-    iTactic_ xs.
+    _iTactic xs.
 *)
 
 Ltac2 of_ltac1_list l := Option.get (Ltac1.to_list l).
@@ -48,11 +48,11 @@ Ltac ltac1_list_rev_iter tac l :=
   go tac l.
 
 (** Since the Ltac1-Ltac2 API only supports unit-returning functions, there is
-no nice way to call [Ltac]s such as [iTactic_] above with the empty list. We
-therefore often define a special version [iTactic0_] for the empty list. This
+no nice way to call [Ltac]s such as [_iTactic] above with the empty list. We
+therefore often define a special version [_iTactic0] for the empty list. This
 version can be created using [with_ltac1_nil]:
 
-  Ltac iTactic0_ := with_ltac1_nil ltac:(fun xs => iTactic_ xs)
+  Ltac _iTactic0 := with_ltac1_nil ltac:(fun xs => _iTactic xs)
 *)
 Ltac with_ltac1_nil tac :=
   let go := ltac2:(tac |- ltac1:(tac l |- tac l) tac (Ltac1.of_list [])) in
