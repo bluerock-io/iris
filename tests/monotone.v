@@ -1,42 +1,16 @@
-Require Import iris.unstable.algebra.monotone.
+From stdpp Require Import propset gmap strings.
+From iris.unstable.algebra Require Import monotone.
 
-Section test_mra_over_eq.
-  Context {A : Type} {R : relation A}.
-  Context `{!Reflexive R} {Has : AntiSymm (=) R}.
+Unset Mangle Names.
 
-  Implicit Types a b : A.
-  Implicit Types x y : mra R.
+Notation gset_mra K:= (mra (⊆@{gset K})).
 
-  Lemma test1 a b : principal R a ≡ principal R b → a = b.
-  Proof.
-    by intros ?%(inj _).
-  Qed.
+(* Check if we indeed get [=], i.e., the right [Inj] instance is used. *)
+Check "mra_test_eq".
+Lemma mra_test_eq X Y : principal _ X ≡@{gset_mra nat} principal _ Y → X = Y.
+Proof. intros ?%(inj _). Show. done. Qed.
 
-End test_mra_over_eq.
+Notation propset_mra K := (mra (⊆@{propset K})).
 
-Section test_mra_over_ofe.
-  Context {A : ofe} {R : relation A}.
-  Implicit Types a b : A.
-  Implicit Types x y : mra R.
-
-  Import mra_over_rel.
-  Context `{!Reflexive R} {Has : AntiSymm (≡) R}.
-  Lemma test a b : principal R a ≡ principal R b → a ≡ b.
-  Proof.
-    by intros ?%(inj _).
-  Qed.
-
-  Lemma principal_ne
-         `{!∀ n, Proper ((dist n) ==> (dist n) ==> iff) R} :
-    NonExpansive (principal R).
-  Proof. apply _. Abort.
-
-  Lemma principal_inj_instance :
-    Inj (≡) (≡) (principal R).
-  Proof. apply _. Abort.
-
-  (* Also questionable. *)
-  Instance principal_injN' n :
-    Inj (dist n) (dist n) (principal R).
-  Proof. apply principal_injN. Abort.
-End test_mra_over_ofe.
+Lemma mra_test_equiv X Y : principal _ X ≡@{propset_mra nat} principal _ Y → X ≡ Y.
+Proof. intros ?%(inj _). done. Qed.
