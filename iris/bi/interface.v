@@ -94,6 +94,29 @@ Section bi_mixin.
     bi_mixin_wand_elim_l' P Q R : (P ⊢ Q -∗ R) → P ∗ Q ⊢ R;
   }.
 
+  (** We equip any BI with a persistence modality that carves out the
+  intuitionistically fragment of the separation logic. For logics such as Iris,
+  the persistence modality has a non-trivial definition (involving the [core] of
+  the camera). However, for some simpler discrete BIs the persistence modality
+  can be defined as:
+
+    <pers> P := ⌜ emp ⊢ P ⌝
+
+  That is, [P] holds persistently if it holds without resources.
+
+  The nesting of the entailment below the pure embedding ⌜ ⌝ only works for
+  discrete BIs: Non-expansiveness of [<pers>] relies on [dist] ignoring the
+  step-index.
+
+  To prove the rule [<pers> (∃ a, Ψ a) ⊢ ∃ a, <pers> Ψ a] the BI furthermore
+  needs to satisfy the "existential property": [emp ⊢ ∃ x, Φ x] implies
+  [∃ x, emp ⊢ Φ x].
+
+  This construction is formalized by the smart constructor
+  [bi_persistently_mixin_discrete] for [BiPersistentlyMixin]. See
+  [tests/heapprop] and [tests/heapprop_affine] for examples of how to use this
+  smart constructor. *)
+
   Context (bi_persistently : PROP → PROP).
   Local Notation "'<pers>' P" := (bi_persistently P) : bi_scope.
 
@@ -128,30 +151,39 @@ Section bi_mixin.
     (∀ n (P Q : PROP), P ≡{n}≡ Q → P ≡ Q) →
     (∀ {A} (Φ : A → PROP), (emp ⊢ ∃ x, Φ x) → ∃ x, emp ⊢ Φ x) →
     (∀ P : PROP, (<pers> P)%I = ⌜ emp ⊢ P ⌝%I) →
-    BiMixin → BiPersistentlyMixin.
+    BiMixin →
+    BiPersistentlyMixin.
   Proof.
     intros Hdiscrete Hex Hpers Hbi. pose proof (bi_mixin_entails_po Hbi).
     split.
-    - intros n P Q [HPQ HQP]%Hdiscrete%(bi_mixin_equiv_entails Hbi).
+    - (* [NonExpansive bi_persistently] *)
+      intros n P Q [HPQ HQP]%Hdiscrete%(bi_mixin_equiv_entails Hbi).
       rewrite !Hpers. apply (bi_mixin_pure_ne Hbi). split=> ?; by etrans.
-    - intros P Q HPQ. rewrite !Hpers. apply (bi_mixin_pure_elim' Hbi)=> ?.
+    - (*[(P ⊢ Q) → <pers> P ⊢ <pers> Q] *)
+      intros P Q HPQ. rewrite !Hpers. apply (bi_mixin_pure_elim' Hbi)=> ?.
       apply (bi_mixin_pure_intro Hbi). by trans P.
-    - intros P. rewrite !Hpers. apply (bi_mixin_pure_elim' Hbi)=> ?.
+    - (* [<pers> P ⊢ <pers> <pers> P] *)
+      intros P. rewrite !Hpers. apply (bi_mixin_pure_elim' Hbi)=> ?.
       by do 2 apply (bi_mixin_pure_intro Hbi).
-    - rewrite Hpers. by apply (bi_mixin_pure_intro Hbi).
-    - intros P Q. rewrite !Hpers.
+    - (* [emp ⊢ <pers> emp] *)
+      rewrite Hpers. by apply (bi_mixin_pure_intro Hbi).
+    - (* [<pers> P ∧ <pers> Q ⊢ <pers> (P ∧ Q)] *)
+      intros P Q. rewrite !Hpers.
       apply (bi_mixin_impl_elim_l' Hbi). apply (bi_mixin_pure_elim' Hbi)=> ?.
       apply (bi_mixin_impl_intro_r Hbi).
       etrans; [apply (bi_mixin_and_elim_r Hbi)|].
       apply (bi_mixin_pure_elim' Hbi)=> ?.
       apply (bi_mixin_pure_intro Hbi). by apply (bi_mixin_and_intro Hbi).
-    - intros A Φ. rewrite !Hpers. apply (bi_mixin_pure_elim' Hbi)=> /Hex [x ?].
+    - (* [<pers> (∃ a, Ψ a) ⊢ ∃ a, <pers> Ψ a] *)
+      intros A Φ. rewrite !Hpers. apply (bi_mixin_pure_elim' Hbi)=> /Hex [x ?].
       etrans; [|apply (bi_mixin_exist_intro Hbi x)]; simpl.
       rewrite Hpers. by apply (bi_mixin_pure_intro Hbi).
-    - intros P Q. rewrite !Hpers.
+    - (* [<pers> P ∗ Q ⊢ <pers> P] *)
+      intros P Q. rewrite !Hpers.
       apply (bi_mixin_wand_elim_l' Hbi). apply (bi_mixin_pure_elim' Hbi)=> ?.
       apply (bi_mixin_wand_intro_r Hbi). by apply (bi_mixin_pure_intro Hbi).
-    - intros P Q. rewrite !Hpers.
+    - (* [<pers> P ∧ Q ⊢ P ∗ Q] *)
+      intros P Q. rewrite !Hpers.
       apply (bi_mixin_impl_elim_l' Hbi). apply (bi_mixin_pure_elim' Hbi)=> ?.
       apply (bi_mixin_impl_intro_r Hbi).
       etrans; [apply (bi_mixin_and_elim_r Hbi)|].

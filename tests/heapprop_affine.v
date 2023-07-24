@@ -220,7 +220,9 @@ Section mixins.
       (@heapProp_exist) heapProp_sep heapProp_persistently.
   Proof.
     eapply bi_persistently_mixin_discrete, heapProp_bi_mixin; [done|..].
-    - (* [(emp ⊢ ∃ x, Φ x) → ∃ x, emp ⊢ Φ x] *)
+    - (* The "existential property" [(emp ⊢ ∃ x, Φ x) → ∃ x, emp ⊢ Φ x]. For an
+      affine BI the proof relies on there being a smallest resource/the unit
+      (here the empty heap [∅]). *)
       unfold heapProp_emp. unseal. intros A Φ [H].
       destruct (H ∅) as [x ?]; [done|]. exists x. split=> σ _.
       eapply heapProp_closed; [done|]. by apply map_empty_subseteq.
@@ -248,7 +250,7 @@ Global Instance heapProp_affine : BiAffine heapPropI.
 Proof. exact: bi.True_intro. Qed.
 
 Lemma heapProp_proofmode_test {A} (P Q Q' R : heapProp) (Φ Ψ : A → heapProp) :
-  P ∗ Q ∗ Q' -∗ (* [Q'] is not used *)
+  P ∗ Q ∗ Q' -∗ (* [Q'] is not used, to demonstrate affinity *)
   □ R -∗
   □ (R -∗ ∃ x, Φ x) -∗
   ∃ x, Φ x ∗ Φ x ∗ P ∗ Q.
