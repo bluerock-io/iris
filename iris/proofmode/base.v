@@ -47,6 +47,17 @@ Ltac ltac1_list_rev_iter tac l :=
                                       (List.rev (of_ltac1_list l))) in
   go tac l.
 
+(** Since the Ltac1-Ltac2 API only supports unit-returning functions, there is
+no nice way to call [Ltac]s such as [iTactic_] above with the empty list. We
+therefore often define a special version [iTactic0_] for the empty list. This
+version can be created using [with_ltac1_nil]:
+
+  Ltac iTactic0_ := with_ltac1_nil ltac:(fun xs => iTactic_ xs)
+*)
+Ltac with_ltac1_nil tac :=
+  let go := ltac2:(tac |- ltac1:(tac l |- tac l) tac (Ltac1.of_list [])) in
+  go tac.
+
 (* Directions of rewrites *)
 Inductive direction := Left | Right.
 

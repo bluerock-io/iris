@@ -1761,16 +1761,9 @@ Ltac iHypsContaining x :=
   let Γs := lazymatch goal with |- envs_entails (Envs _ ?Γs _) _ => Γs end in
   let Hs := go Γp x (@nil ident) in go Γs x Hs.
 
-Ltac iInduction0_ x Hs tac IH :=
-  iRevertIntros0_ Hs ltac:(fun _ =>
-    iRevertIntros0_ "∗" ltac:(fun _ =>
-      let Hsx := iHypsContaining x in
-      iRevertIntros0_ Hsx ltac:(fun _ =>
-        iInductionCore tac as IH
-      )
-    )
-  ).
 Ltac iInduction_ x xs Hs tac IH :=
+  (* FIXME: We should be able to do this in a more sane way, by concatenating
+  the spec patterns instead of calling [iRevertIntros] multiple times. *)
   iRevertIntros0_ Hs ltac:(fun _ =>
     iRevertIntros_ xs "∗" ltac:(fun _ =>
       let Hsx := iHypsContaining x in
@@ -1779,6 +1772,8 @@ Ltac iInduction_ x xs Hs tac IH :=
       )
     )
   ).
+Ltac iInduction0_ x Hs tac IH :=
+  with_ltac1_nil ltac:(fun xs => iInduction_ x xs Hs tac IH).
 
 (* Without induction scheme *)
 Tactic Notation "iInduction" constr(x) "as" simple_intropattern(pat) constr(IH) :=
@@ -1826,18 +1821,16 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
      | _ => idtac
      end].
 
-Ltac iLöb0_ Hs IH :=
-  iRevertIntros0_ Hs ltac:(fun _ =>
-    iRevertIntros0_ "∗" ltac:(fun _ =>
-      iLöbCore as IH
-    )
-  ).
 Ltac iLöb_ xs Hs IH :=
+  (* FIXME: We should be able to do this in a more sane way, by concatenating
+  the spec patterns instead of calling [iRevertIntros] multiple times. *)
   iRevertIntros0_ Hs ltac:(fun _ =>
     iRevertIntros_ xs "∗" ltac:(fun _ =>
       iLöbCore as IH
     )
   ).
+Ltac iLöb0_ Hs IH :=
+  with_ltac1_nil ltac:(fun xs => iLöb_ xs Hs IH).
 
 Tactic Notation "iLöb" "as" constr (IH) :=
   iLöb0_ "" IH.
