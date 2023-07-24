@@ -267,8 +267,8 @@ Section properties.
     - rewrite list_lookup_singletonM_lt //.
       destruct (lookup_lt_is_Some_2 l j) as [z Hz].
       { trans i; eauto using lookup_lt_Some. }
-      rewrite Hz. by apply Some_included_2, ucmra_unit_least.
-    - rewrite list_lookup_singletonM Hi. by apply Some_included_2.
+      rewrite Hz. by apply Some_included_mono, ucmra_unit_least.
+    - rewrite list_lookup_singletonM Hi. by apply Some_included_mono.
     - rewrite list_lookup_singletonM_gt //. apply: ucmra_unit_least.
   Qed.
 

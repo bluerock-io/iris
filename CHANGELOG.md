@@ -39,6 +39,11 @@ Coq 8.13 is no longer supported.
   (by Michael Sammler, Lennard Gäher, and Simon Spies).
 * Add `max_Z` and `mono_Z` cameras.
 * Add `dfrac_valid`.
+* Rename `Some_included_2` to `Some_included_mono`.
+* Consistently use `Some x ≼ Some y` to express the reflexive closure of
+  `x ≼ y`. This changes the statements of some lemmas: `singleton_included`,
+  `local_update_valid0`, `local_update_valid`. Also add various new
+  `Some_included` lemmas to help deal with these assertions.
 
 **Changes in `bi`:**
 

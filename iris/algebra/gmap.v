@@ -361,16 +361,18 @@ Proof.
   intros (y&?&->%(Some_included_exclusive _)); eauto using lookup_valid_Some.
 Qed.
 Lemma singleton_included i x y :
-  {[ i := x ]} ≼ ({[ i := y ]} : gmap K A) ↔ x ≡ y ∨ x ≼ y.
+  {[ i := x ]} ≼ ({[ i := y ]} : gmap K A) ↔ Some x ≼ Some y.
 Proof.
   rewrite singleton_included_l. split.
-  - intros (y'&Hi&?). rewrite lookup_insert in Hi.
-    apply Some_included. by rewrite Hi.
-  - intros ?. exists y. by rewrite lookup_insert Some_included.
+  - intros (y'&Hi&?). rewrite lookup_insert in Hi. by rewrite Hi.
+  - intros ?. exists y. by rewrite lookup_insert.
 Qed.
+Lemma singleton_included_total `{!CmraTotal A}  i x y :
+  {[ i := x ]} ≼ ({[ i := y ]} : gmap K A) ↔ x ≼ y.
+Proof. rewrite singleton_included Some_included_total. done. Qed.
 Lemma singleton_mono i x y :
   x ≼ y → {[ i := x ]} ≼ ({[ i := y ]} : gmap K A).
-Proof. intros Hincl. apply singleton_included. right. done. Qed.
+Proof. intros Hincl. apply singleton_included, Some_included_mono. done. Qed.
 
 Global Instance singleton_cancelable i x :
   Cancelable (Some x) → Cancelable {[ i := x ]}.

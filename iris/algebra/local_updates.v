@@ -76,30 +76,28 @@ Section updates.
   Qed.
 
   Lemma local_update_valid0 x y x' y' :
-    (✓{0} x → ✓{0} y → x ≡{0}≡ y ∨ y ≼{0} x → (x,y) ~l~> (x',y')) →
+    (✓{0} x → ✓{0} y → Some y ≼{0} Some x → (x,y) ~l~> (x',y')) →
     (x,y) ~l~> (x',y').
   Proof.
     intros Hup n mz Hmz Hz; simpl in *. apply Hup; auto.
     - by apply (cmra_validN_le n); last lia.
     - apply (cmra_validN_le n); last lia.
       move: Hmz; rewrite Hz. destruct mz; simpl; eauto using cmra_validN_op_l.
-    - destruct mz as [z|].
-      + right. exists z. apply dist_le with n; auto with lia.
-      + left. apply dist_le with n; auto with lia.
+    - eapply (cmra_includedN_le n); last lia.
+      apply Some_includedN_opM. eauto.
   Qed.
   Lemma local_update_valid `{!CmraDiscrete A} x y x' y' :
-    (✓ x → ✓ y → x ≡ y ∨ y ≼ x → (x,y) ~l~> (x',y')) → (x,y) ~l~> (x',y').
+    (✓ x → ✓ y → Some y ≼ Some x → (x,y) ~l~> (x',y')) → (x,y) ~l~> (x',y').
   Proof.
-    rewrite !(cmra_discrete_valid_iff 0)
-      (cmra_discrete_included_iff 0) (discrete_iff 0).
+    rewrite !(cmra_discrete_valid_iff 0) (cmra_discrete_included_iff 0).
     apply local_update_valid0.
   Qed.
 
   Lemma local_update_total_valid0 `{!CmraTotal A} x y x' y' :
     (✓{0} x → ✓{0} y → y ≼{0} x → (x,y) ~l~> (x',y')) → (x,y) ~l~> (x',y').
   Proof.
-    intros Hup. apply local_update_valid0=> ?? [Hx|?]; apply Hup; auto.
-    by rewrite Hx.
+    intros Hup. apply local_update_valid0=> ?? Hincl. apply Hup; auto.
+    by apply Some_includedN_total.
   Qed.
   Lemma local_update_total_valid `{!CmraTotal A, !CmraDiscrete A} x y x' y' :
     (✓ x → ✓ y → y ≼ x → (x,y) ~l~> (x',y')) → (x,y) ~l~> (x',y').
