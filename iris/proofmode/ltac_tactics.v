@@ -306,7 +306,9 @@ Tactic Notation "iAssumption" :=
   end.
 
 (** * False *)
-Tactic Notation "iExFalso" := apply tac_ex_falso.
+Tactic Notation "iExFalso" :=
+  iStartProof;
+  apply tac_ex_falso.
 
 (** * Making hypotheses intuitionistic or pure *)
 Local Tactic Notation "iIntuitionistic" constr(H) "as" constr(H') :=
