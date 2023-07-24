@@ -639,9 +639,19 @@ Local Tactic Notation "iForallRevert" ident(x) :=
   lazymatch type of A with
   | Prop =>
      revert x; first
-       [eapply tac_pure_revert; [tc_solve (* [FromAffinely], should never fail *)|]
+       [eapply tac_pure_revert;
+         [tc_solve (* [FromAffinely], should never fail *)
+         |]
        |err x]
-  | _ => revert x; first [apply tac_forall_revert|err x]
+  | _ =>
+    revert x; first
+      [apply tac_forall_revert;
+       (* Ensure the name [x] is preserved, see [test_iRevert_order_and_names]. *)
+       lazymatch goal with
+       | |- envs_entails ?Δ (bi_forall ?P) =>
+         change (envs_entails Δ (∀ x, P x)); lazy beta
+       end
+      |err x]
   end.
 
 (** The tactic [iRevertHyp H with tac] reverts the hypothesis [H] and calls
@@ -669,7 +679,10 @@ Tactic Notation "iRevert" constr(Hs) :=
        go Hs
     | ESelIdent _ ?H :: ?Hs => iRevertHyp H; go Hs
     end in
-  iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
+  iStartProof;
+  let Hs := iElaborateSelPat Hs in
+  (* No need to reverse [Hs], [iElaborateSelPat] already does that. *)
+  go Hs.
 
 Tactic Notation "iRevert" "(" ident(x1) ")" :=
   iForallRevert x1.

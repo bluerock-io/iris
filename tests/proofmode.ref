@@ -628,6 +628,14 @@ No applicable tactic.
   "H" : <affine> ⌜φ⌝ -∗ P
   --------------------------------------∗
   <affine> ⌜φ⌝ -∗ P
+"test_iRevert_order_and_names"
+     : string
+1 goal
+  
+  PROP : bi
+  ============================
+  --------------------------------------∗
+  ∀ P1 P2, P1 -∗ P2 -∗ P1 ∗ P2
 "test_iRevert_pure_affine"
      : string
 1 goal
