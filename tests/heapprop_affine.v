@@ -3,7 +3,7 @@ From iris.bi Require Import interface.
 From iris.proofmode Require Import tactics.
 From iris.prelude Require Import options.
 
-(** This file constructs a simple non step-indexed linear separation logic as
+(** This file constructs a simple non step-indexed affine separation logic as
 predicates over heaps (modeled as maps from integer locations to integer values).
 It shows that Iris's [bi] canonical structure can be inhabited, and the Iris
 proof mode can be used to prove lemmas in this separation logic. *)
@@ -12,6 +12,7 @@ Definition val := Z.
 
 Record heapProp := HeapProp {
   heapProp_holds :> gmap loc val → Prop;
+  heapProp_closed σ1 σ2 : heapProp_holds σ1 → σ1 ⊆ σ2 → heapProp_holds σ2;
 }.
 Global Arguments heapProp_holds : simpl never.
 Add Printing Constructor heapProp.
@@ -30,64 +31,81 @@ Inductive heapProp_entails (P Q : heapProp) : Prop :=
   { heapProp_in_entails : ∀ σ, P σ → Q σ }.
 
 (** logical connectives *)
-Local Definition heapProp_emp_def : heapProp :=
-  {| heapProp_holds σ := σ = ∅ |}.
-Local Definition heapProp_emp_aux : seal (@heapProp_emp_def). Proof. by eexists. Qed.
-Definition heapProp_emp := unseal heapProp_emp_aux.
-Local Definition heapProp_emp_unseal :
-  @heapProp_emp = @heapProp_emp_def := seal_eq heapProp_emp_aux.
-
-Local Definition heapProp_pure_def (φ : Prop) : heapProp :=
+Local Program Definition heapProp_pure_def (φ : Prop) : heapProp :=
   {| heapProp_holds _ := φ |}.
+Solve Obligations with done.
 Local Definition heapProp_pure_aux : seal (@heapProp_pure_def). Proof. by eexists. Qed.
 Definition heapProp_pure := unseal heapProp_pure_aux.
 Local Definition heapProp_pure_unseal :
   @heapProp_pure = @heapProp_pure_def := seal_eq heapProp_pure_aux.
 
-Local Definition heapProp_and_def (P Q : heapProp) : heapProp :=
+Definition heapProp_emp : heapProp := heapProp_pure True.
+
+Local Program Definition heapProp_and_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := P σ ∧ Q σ |}.
+Solve Obligations with naive_solver eauto using heapProp_closed.
 Local Definition heapProp_and_aux : seal (@heapProp_and_def). Proof. by eexists. Qed.
 Definition heapProp_and := unseal heapProp_and_aux.
 Local Definition heapProp_and_unseal:
   @heapProp_and = @heapProp_and_def := seal_eq heapProp_and_aux.
 
-Local Definition heapProp_or_def (P Q : heapProp) : heapProp :=
+Local Program Definition heapProp_or_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := P σ ∨ Q σ |}.
+Solve Obligations with naive_solver eauto using heapProp_closed.
 Local Definition heapProp_or_aux : seal (@heapProp_or_def). Proof. by eexists. Qed.
 Definition heapProp_or := unseal heapProp_or_aux.
 Local Definition heapProp_or_unseal:
   @heapProp_or = @heapProp_or_def := seal_eq heapProp_or_aux.
 
-Local Definition heapProp_impl_def (P Q : heapProp) : heapProp :=
-  {| heapProp_holds σ := P σ → Q σ |}.
+Local Program Definition heapProp_impl_def (P Q : heapProp) : heapProp :=
+  {| heapProp_holds σ := ∀ σ', σ ⊆ σ' → P σ' → Q σ' |}.
+Next Obligation. intros P Q σ1 σ2 HPQ ? σ' ?; simpl in *. apply HPQ. by etrans. Qed.
 Local Definition heapProp_impl_aux : seal (@heapProp_impl_def). Proof. by eexists. Qed.
 Definition heapProp_impl := unseal heapProp_impl_aux.
 Local Definition heapProp_impl_unseal :
   @heapProp_impl = @heapProp_impl_def := seal_eq heapProp_impl_aux.
 
-Local Definition heapProp_forall_def {A} (Ψ : A → heapProp) : heapProp :=
+Local Program Definition heapProp_forall_def {A} (Ψ : A → heapProp) : heapProp :=
   {| heapProp_holds σ := ∀ a, Ψ a σ |}.
+Solve Obligations with naive_solver eauto using heapProp_closed.
 Local Definition heapProp_forall_aux : seal (@heapProp_forall_def). Proof. by eexists. Qed.
 Definition heapProp_forall {A} := unseal heapProp_forall_aux A.
 Local Definition heapProp_forall_unseal :
   @heapProp_forall = @heapProp_forall_def := seal_eq heapProp_forall_aux.
 
-Local Definition heapProp_exist_def {A} (Ψ : A → heapProp) : heapProp :=
+Local Program Definition heapProp_exist_def {A} (Ψ : A → heapProp) : heapProp :=
   {| heapProp_holds σ := ∃ a, Ψ a σ |}.
+Solve Obligations with naive_solver eauto using heapProp_closed.
 Local Definition heapProp_exist_aux : seal (@heapProp_exist_def). Proof. by eexists. Qed.
 Definition heapProp_exist {A} := unseal heapProp_exist_aux A.
 Local Definition heapProp_exist_unseal :
   @heapProp_exist = @heapProp_exist_def := seal_eq heapProp_exist_aux.
 
-Local Definition heapProp_sep_def (P Q : heapProp) : heapProp :=
+Local Program Definition heapProp_sep_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := ∃ σ1 σ2, σ = σ1 ∪ σ2 ∧ σ1 ##ₘ σ2 ∧ P σ1 ∧ Q σ2 |}.
+Next Obligation.
+  intros P Q σ1 σ2 (σ11 & σ12 & -> & ? & ? & ?) ?.
+  assert (σ11 ⊆ σ2) by (by etrans; [apply map_union_subseteq_l|]).
+  exists σ11, (σ2 ∖ σ11). split_and!; [| |done|].
+  - by rewrite map_difference_union.
+  - by apply map_disjoint_difference_r.
+  - eapply heapProp_closed; [done|].
+    apply map_union_reflecting_l with σ11; [done|..].
+    + by apply map_disjoint_difference_r.
+    + by rewrite map_difference_union.
+Qed.
 Local Definition heapProp_sep_aux : seal (@heapProp_sep_def). Proof. by eexists. Qed.
 Definition heapProp_sep := unseal heapProp_sep_aux.
 Local Definition heapProp_sep_unseal:
   @heapProp_sep = @heapProp_sep_def := seal_eq heapProp_sep_aux.
 
-Local Definition heapProp_wand_def (P Q : heapProp) : heapProp :=
+Local Program Definition heapProp_wand_def (P Q : heapProp) : heapProp :=
   {| heapProp_holds σ := ∀ σ', σ ##ₘ σ' → P σ' → Q (σ ∪ σ') |}.
+Next Obligation.
+  intros P Q σ1 σ2 HPQ ? σ' ??; simpl in *.
+  apply heapProp_closed with (σ1 ∪ σ'); [by eauto using map_disjoint_weaken_l|].
+  by apply map_union_mono_r.
+Qed.
 Local Definition heapProp_wand_aux : seal (@heapProp_wand_def). Proof. by eexists. Qed.
 Definition heapProp_wand := unseal heapProp_wand_aux.
 Local Definition heapProp_wand_unseal:
@@ -106,7 +124,7 @@ step-indexed logics, it can be defined as the identity. *)
 Definition heapProp_later (P : heapProp) : heapProp := P.
 
 Local Definition heapProp_unseal :=
-  (heapProp_emp_unseal, heapProp_pure_unseal, heapProp_and_unseal,
+  (heapProp_pure_unseal, heapProp_and_unseal,
    heapProp_or_unseal, heapProp_impl_unseal, heapProp_forall_unseal,
    heapProp_exist_unseal, heapProp_sep_unseal, heapProp_wand_unseal,
    heapProp_persistently_unseal).
@@ -162,9 +180,10 @@ Section mixins.
     - (* [(P ⊢ R) → (Q ⊢ R) → P ∨ Q ⊢ R] *)
       unseal=> P Q R [HPQ] [HQR]; split=> σ [?|?]; auto.
     - (* [(P ∧ Q ⊢ R) → P ⊢ Q → R] *)
-      unseal=> P Q R HPQR; split=> σ ??. by apply HPQR.
+      unseal=> P Q R HPQR; split=> σ ? σ' ??. apply HPQR.
+      split; eauto using heapProp_closed.
     - (* [(P ⊢ Q → R) → P ∧ Q ⊢ R] *)
-      unseal=> P Q R HPQR; split=> σ [??]. by apply HPQR.
+      unseal=> P Q R HPQR; split=> σ [??]. by eapply HPQR.
     - (* [(∀ a, P ⊢ Ψ a) → P ⊢ ∀ a, Ψ a] *)
       unseal=> A P Ψ HPΨ; split=> σ ? a. by apply HPΨ.
     - (* [(∀ a, Ψ a) ⊢ Ψ a] *)
@@ -176,10 +195,12 @@ Section mixins.
     - (* [(P ⊢ Q) → (P' ⊢ Q') → P ∗ P' ⊢ Q ∗ Q'] *)
       unseal=> P P' Q Q' [HPQ] [HP'Q']; split; naive_solver.
     - (* [P ⊢ emp ∗ P] *)
-      unseal=> P; split=> σ ? /=. eexists ∅, σ. rewrite left_id_L.
+      unfold heapProp_emp; unseal=> P; split=> σ ? /=.
+      eexists ∅, σ. rewrite left_id_L.
       split_and!; done || apply map_disjoint_empty_l.
     - (* [emp ∗ P ⊢ P] *)
-      unseal=> P; split; intros ? (?&σ&->&?&->&?). by rewrite left_id_L.
+      unfold heapProp_emp; unseal=> P; split; intros ? (?&σ&->&?&_&?).
+      eapply heapProp_closed; [done|]. by apply map_union_subseteq_r.
     - (* [P ∗ Q ⊢ Q ∗ P] *)
       unseal=> P Q; split; intros ? (σ1&σ2&->&?&?&?).
       exists σ2, σ1. by rewrite map_union_comm.
@@ -199,9 +220,12 @@ Section mixins.
       (@heapProp_exist) heapProp_sep heapProp_persistently.
   Proof.
     eapply bi_persistently_mixin_discrete, heapProp_bi_mixin; [done|..].
-    - (* [(emp ⊢ ∃ x, Φ x) → ∃ x, emp ⊢ Φ x] *)
-      unseal. intros A Φ [H]. destruct (H ∅) as [x ?]; [done|].
-      exists x. by split=> σ ->.
+    - (* The "existential property" [(emp ⊢ ∃ x, Φ x) → ∃ x, emp ⊢ Φ x]. For an
+      affine BI the proof relies on there being a smallest resource/the unit
+      (here the empty heap [∅]). *)
+      unfold heapProp_emp. unseal. intros A Φ [H].
+      destruct (H ∅) as [x ?]; [done|]. exists x. split=> σ _.
+      eapply heapProp_closed; [done|]. by apply map_empty_subseteq.
     - by rewrite heapProp_persistently_unseal.
   Qed.
 
@@ -222,13 +246,16 @@ Canonical Structure heapPropI : bi :=
 Global Instance heapProp_pure_forall : BiPureForall heapPropI.
 Proof. intros A φ. rewrite /bi_forall /bi_pure /=. unseal. by split. Qed.
 
-Lemma heapProp_proofmode_test {A} (P Q R : heapProp) (Φ Ψ : A → heapProp) :
-  P ∗ Q -∗
+Global Instance heapProp_affine : BiAffine heapPropI.
+Proof. exact: bi.True_intro. Qed.
+
+Lemma heapProp_proofmode_test {A} (P Q Q' R : heapProp) (Φ Ψ : A → heapProp) :
+  P ∗ Q ∗ Q' -∗ (* [Q'] is not used, to demonstrate affinity *)
   □ R -∗
   □ (R -∗ ∃ x, Φ x) -∗
   ∃ x, Φ x ∗ Φ x ∗ P ∗ Q.
 Proof.
-  iIntros "[HP HQ] #HR #HRΦ".
+  iIntros "(HP & HQ & HQ') #HR #HRΦ".
   iDestruct ("HRΦ" with "HR") as (x) "#HΦ".
   iExists x. iFrame. by iSplitL.
 Qed.

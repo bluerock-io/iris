@@ -105,6 +105,10 @@ Coq 8.13 is no longer supported.
 * Add `∗-∗` as notation in `stdpp_scope` similar to `-∗`. This means `P ∗-∗ Q`
   can be directly used as lemma statement, and is syntactic sugar for `⊢ P ∗-∗ Q`.
 * Add `≼` connective (`internal_included`) on the BI level. (by Ike Mulder)
+* Move laws of persistence modality out of `BiMixin` into `BiPersistentlyMixin`.
+* Provide smart constructor `bi_persistently_mixin_discrete` for
+  `BiPersistentlyMixin`: Given a discrete BI that enjoys the existential
+  property, a trivial definition of the persistence modality can be given.
 
 **Changes in `proofmode`:**
 
