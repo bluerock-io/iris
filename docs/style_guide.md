@@ -210,10 +210,6 @@ theories/base_logic/lib is for constructions in the base logic (using own)
 * `list_lookup_insert` is named by context (the type involved), then the two functions outside-in on the left-hand-side, so it has the type `lookup (insert …) = …` where the `insert` is on a list. Notations mean it doesn’t actually look like this and the insert is textually first.
 * Injectivity theorems are instances of `Inj` and then are used with `inj`
 * Suffixes `_l` and `_r` when we have binary `op x y` and a theorem related to the left or right. For example, `sep_mono_l` says bi_sep is monotonic in its left argument (holding the right constant).
-* Entailments at the top level are typically written `P -* Q`, which is notation
-  for `P ⊢ Q`. If you have a theorem which has no premises you have to write ⊢ P
-  explicitly (for example, it is common to have `⊢ |==> ∃ γ, …` for an allocation
-  theorem)
 * Suffix `'` (prime) is used when `foo'` is a corollary of `foo`. Try to avoid
   these since the name doesn't convey how `foo'` is related to `foo`.
 * Given a polymorphic function/relation `f` (e.g., `eq`, `equiv`, `subseteq`), the instance of type `A` is called `A_f_instance`, and we add a lemma `A_f` that characterizes the instance. In case of many instances, this lemma is proved by unfolding the definition of the instance, e.g., `frac_op`, `frac_valid`. However, in some cases, e.g., `list_eq`, `map_eq`, `set_eq` this lemma might require non-trivial proof work.
@@ -224,6 +220,7 @@ theories/base_logic/lib is for constructions in the base logic (using own)
     M1_elim_M2: M1 (M2 P) ⊣⊢ M2 P
     M1_M2: M1 (M2 P) ⊣⊢ M2 (M1 P)
     ```
+* Monotonicity lemmas where the relation can be ambiguous are called `<f>_<relation>_mono`, e.g. `Some_included_mono`.
 
 ### Naming algebra libraries
 

@@ -369,7 +369,7 @@ Qed.
 Lemma singleton_included_total `{!CmraTotal A}  i x y :
   {[ i := x ]} ≼ ({[ i := y ]} : gmap K A) ↔ x ≼ y.
 Proof. rewrite singleton_included Some_included_total. done. Qed.
-Lemma singleton_mono i x y :
+Lemma singleton_included_mono i x y :
   x ≼ y → {[ i := x ]} ≼ ({[ i := y ]} : gmap K A).
 Proof. intros Hincl. apply singleton_included, Some_included_mono. done. Qed.
 
