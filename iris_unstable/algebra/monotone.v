@@ -7,12 +7,12 @@ From iris.algebra Require Import updates local_updates.
 From iris.prelude Require Import options.
 
 (** Given a preorder [R] on a type [A] we construct the "monotone" resource
-algebra [mra R] and an injection [principal : A → mra R] such that:
+algebra [mra R] and an injection [to_mra : A → mra R] such that:
 
-   [R x y] iff [principal x ≼ principal y]
+   [R x y] iff [to_mra x ≼ to_mra y]
 
 Here, [≼] is the extension order of the [mra R] resource algebra. This is
-exactly what the lemma [principal_included] shows.
+exactly what the lemma [to_mra_included] shows.
 
 This resource algebra is useful for reasoning about monotonicity. See the
 following paper for more details:
@@ -23,7 +23,7 @@ following paper for more details:
 *)
 
 Record mra {A} (R : relation A) := { mra_car : list A }.
-Definition principal {A} {R : relation A} (a : A) : mra R :=
+Definition to_mra {A} {R : relation A} (a : A) : mra R :=
   {| mra_car := [a] |}.
 Global Arguments mra_car {_ _} _.
 
@@ -32,14 +32,14 @@ Section mra.
   Implicit Types a b : A.
   Implicit Types x y : mra R.
 
-  Local Definition below (a : A) (x : mra R) := ∃ b, b ∈ mra_car x ∧ R a b.
+  Local Definition mra_below (a : A) (x : mra R) := ∃ b, b ∈ mra_car x ∧ R a b.
 
-  Local Lemma below_principal a b : below a (principal b) ↔ R a b.
+  Local Lemma mra_below_to_mra a b : mra_below a (to_mra b) ↔ R a b.
   Proof. set_solver. Qed.
 
   (* OFE *)
   Local Instance mra_equiv : Equiv (mra R) := λ x y,
-    ∀ a, below a x ↔ below a y.
+    ∀ a, mra_below a x ↔ mra_below a y.
 
   Local Instance mra_equiv_equiv : Equivalence mra_equiv.
   Proof. unfold mra_equiv; split; intros ?; naive_solver. Qed.
@@ -90,22 +90,22 @@ Section mra.
     intros [z ->]; rewrite assoc mra_idemp; done.
   Qed.
 
-  Lemma principal_R_op `{!Transitive R} a b :
+  Lemma to_mra_R_op `{!Transitive R} a b :
     R a b →
-    principal a ⋅ principal b ≡ principal b.
+    to_mra a ⋅ to_mra b ≡ to_mra b.
   Proof. intros Hab c. set_solver. Qed.
 
-  Lemma principal_included `{!PreOrder R} a b :
-    principal a ≼ principal b ↔ R a b.
+  Lemma to_mra_included `{!PreOrder R} a b :
+    to_mra a ≼ to_mra b ↔ R a b.
   Proof.
     split.
     - move=> [z Hz]. specialize (Hz a). set_solver.
-    - intros ?; exists (principal b). by rewrite principal_R_op.
+    - intros ?; exists (to_mra b). by rewrite to_mra_R_op.
   Qed.
 
   Lemma mra_local_update_grow `{!Transitive R} a x b:
     R a b →
-    (principal a, x) ~l~> (principal b, principal b).
+    (to_mra a, x) ~l~> (to_mra b, to_mra b).
   Proof.
     intros Hana. apply local_update_unital_discrete=> z _ Habz.
     split; first done. intros c. specialize (Habz c). set_solver.
@@ -113,11 +113,11 @@ Section mra.
 
   Lemma mra_local_update_get_frag `{!PreOrder R} a b:
     R b a →
-    (principal a, ε) ~l~> (principal a, principal b).
+    (to_mra a, ε) ~l~> (to_mra a, to_mra b).
   Proof.
     intros Hana. apply local_update_unital_discrete=> z _.
     rewrite left_id. intros <-. split; first done.
-    apply mra_included; by apply principal_included.
+    apply mra_included; by apply to_mra_included.
   Qed.
 End mra.
 
@@ -126,7 +126,7 @@ Global Arguments mraR {_} _.
 Global Arguments mraUR {_} _.
 
 (** If [R] is a partial order, relative to a reflexive relation [S] on the
-carrier [A], then [principal] is proper and injective. The theory for
+carrier [A], then [to_mra] is proper and injective. The theory for
 arbitrary relations [S] is overly general, so we do not declare the results
 as instances. Below we provide instances for [S] being [=] and [≡]. *)
 Section mra_over_rel.
@@ -134,36 +134,36 @@ Section mra_over_rel.
   Implicit Types a b : A.
   Implicit Types x y : mra R.
 
-  Lemma principal_rel_proper :
+  Lemma to_mra_rel_proper :
     Reflexive S →
     Proper (S ==> S ==> iff) R →
-    Proper (S ==> (≡@{mra R})) (principal).
-  Proof. intros ? HR a1 a2 Ha b. rewrite !below_principal. by apply HR. Qed.
+    Proper (S ==> (≡@{mra R})) (to_mra).
+  Proof. intros ? HR a1 a2 Ha b. rewrite !mra_below_to_mra. by apply HR. Qed.
 
-  Lemma principal_rel_inj :
+  Lemma to_mra_rel_inj :
     Reflexive R →
     AntiSymm S R →
-    Inj S (≡@{mra R}) (principal).
+    Inj S (≡@{mra R}) (to_mra).
   Proof.
-    intros ?? a b Hab. move: (Hab a) (Hab b). rewrite !below_principal.
+    intros ?? a b Hab. move: (Hab a) (Hab b). rewrite !mra_below_to_mra.
     intros. apply (anti_symm R); naive_solver.
   Qed.
 End mra_over_rel.
 
-Global Instance principal_inj {A} {R : relation A} :
+Global Instance to_mra_inj {A} {R : relation A} :
   Reflexive R →
   AntiSymm (=) R →
-  Inj (=) (≡@{mra R}) (principal) | 0. (* Lower cost than [principal_inj] *)
-Proof. intros. by apply (principal_rel_inj (=)). Qed.
+  Inj (=) (≡@{mra R}) (to_mra) | 0. (* Lower cost than [to_mra_inj] *)
+Proof. intros. by apply (to_mra_rel_inj (=)). Qed.
 
-Global Instance principal_proper `{Equiv A} {R : relation A} :
+Global Instance to_mra_proper `{Equiv A} {R : relation A} :
   Reflexive (≡@{A}) →
   Proper ((≡) ==> (≡) ==> iff) R →
-  Proper ((≡) ==> (≡@{mra R})) (principal).
-Proof. intros. by apply (principal_rel_proper (≡)). Qed.
+  Proper ((≡) ==> (≡@{mra R})) (to_mra).
+Proof. intros. by apply (to_mra_rel_proper (≡)). Qed.
 
-Global Instance principal_equiv_inj `{Equiv A} {R : relation A} :
+Global Instance to_mra_equiv_inj `{Equiv A} {R : relation A} :
   Reflexive R →
   AntiSymm (≡) R →
-  Inj (≡) (≡@{mra R}) (principal) | 1.
-Proof. intros. by apply (principal_rel_inj (≡)). Qed.
+  Inj (≡) (≡@{mra R}) (to_mra) | 1.
+Proof. intros. by apply (to_mra_rel_inj (≡)). Qed.
