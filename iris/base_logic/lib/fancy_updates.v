@@ -132,20 +132,42 @@ Qed.
 
 (** * [fupd] soundness lemmas *)
 
+(** "Unfolding" soundness stamement for no-LC fupd:
+This exposes that when initializing the [invGS_gen], we can provide
+a general lemma that lets one unfold a [|={E1, E2}=> P] into a basic update
+while also carrying around some frame [ω E] that tracks the current mask.
+We also provide a bunch of later credits for consistency,
+but there is no way to use them since this is a [HasNoLc] lemma. *)
+Lemma fupd_soundness_no_lc_unfold `{!invGpreS Σ} m E :
+  ⊢ |==> ∃ `(Hws: invGS_gen HasNoLc Σ) (ω : coPset → iProp Σ),
+    £ m ∗ ω E ∗ □ (∀ E1 E2 P, (|={E1, E2}=> P) -∗ ω E1 ==∗ ◇ (ω E2 ∗ P)).
+Proof.
+  iMod wsat_alloc as (Hw) "[Hw HE]".
+  (* We don't actually want any credits, but we need the [lcGS]. *)
+  iMod (later_credits.le_upd.lc_alloc m) as (Hc) "[_ Hlc]".
+  set (Hi := InvG HasNoLc _ Hw Hc).
+  iExists Hi, (λ E, wsat ∗ ownE E)%I.
+  rewrite (union_difference_L E ⊤); [|set_solver].
+  rewrite ownE_op; [|set_solver].
+  iDestruct "HE" as "[HE _]". iFrame.
+  iIntros "!>!>" (E1 E2 P) "HP HwE".
+  rewrite fancy_updates.uPred_fupd_unseal
+          /fancy_updates.uPred_fupd_def -assoc /=.
+  by iApply ("HP" with "HwE").
+Qed.
+
 (** Note: the [_no_lc] soundness lemmas also allow generating later credits, but
   these cannot be used for anything. They are merely provided to enable making
   the adequacy proof generic in whether later credits are used. *)
 Lemma fupd_soundness_no_lc `{!invGpreS Σ} E1 E2 (P : iProp Σ) `{!Plain P} m :
   (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ={E1,E2}=∗ P) → ⊢ P.
 Proof.
-  iIntros (Hfupd). apply later_soundness. iMod wsat_alloc as (Hw) "[Hw HE]".
-  (* We don't actually want any credits, but we need the [lcGS]. *)
-  iMod (later_credits.le_upd.lc_alloc m) as (Hc) "[_ Hc]".
-  set (Hi := InvG HasNoLc _ Hw Hc).
-  iAssert (|={⊤,E2}=> P)%I with "[Hc]" as "H".
-  { iMod (fupd_mask_subseteq E1) as "_"; first done. iApply Hfupd; last done. }
-  rewrite uPred_fupd_unseal /uPred_fupd_def.
-  iMod ("H" with "[$]") as "[Hw [HE >H']]"; iFrame.
+  iIntros (Hfupd).
+  apply later_soundness, bupd_soundness; [by apply later_plain|].
+  iMod fupd_soundness_no_lc_unfold as (hws ω) "(Hlc & Hω & #H)".
+  iMod ("H" with "[Hlc] Hω") as "H'".
+  { iMod (Hfupd with "Hlc") as "H'". iModIntro. iApply "H'". }
+  iDestruct "H'" as "[>H1 >H2]". by iFrame.
 Qed.
 
 Lemma fupd_soundness_lc `{!invGpreS Σ} n E1 E2 (P : iProp Σ) `{!Plain P} :
