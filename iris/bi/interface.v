@@ -94,10 +94,13 @@ Section bi_mixin.
     bi_mixin_wand_elim_l' P Q R : (P ⊢ Q -∗ R) → P ∗ Q ⊢ R;
   }.
 
-  (** We equip any BI with a persistence modality that carves out the
-  intuitionistically fragment of the separation logic. For logics such as Iris,
+  (** We require any BI to have a persistence modality that carves out the
+  intuitionistic fragment of the separation logic. For logics such as Iris,
   the persistence modality has a non-trivial definition (involving the [core] of
-  the camera). However, for some simpler discrete BIs the persistence modality
+  the camera). It is not clear whether a trivial definition exists: while
+  [<pers> P := False] comes close, it does not satisfy [later_persistently_1].
+  
+  However, for some simpler discrete BIs the persistence modality
   can be defined as:
 
     <pers> P := ⌜ emp ⊢ P ⌝
