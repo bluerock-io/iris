@@ -31,42 +31,16 @@ It is not clear what axioms to impose on [R] for the "extension axiom" to hold:
     x ≡{n}≡ y1 ⋅ y2 →
     ∃ z1 z2, x ≡ z1 ⋅ z2 ∧ y1 ≡{n}≡ z1 ∧ y2 ≡{n}≡ z2
 
-To prove this, assume
+To prove this, assume ([⋅] is defined as [++], see [mra_op]):
 
   x ≡{n}≡ y1 ++ y2
 
-That means:
+When defining [dist] as the step-indexed version of [mra_equiv], this means:
 
   ∀ n' a, n' ≤ n →
-          mra_below a x n' ↔ mra_below a y1 n' ∨ mra_below a y2 n')
+          mra_below a x n' ↔ mra_below a y1 n' ∨ mra_below a y2 n'
 
-From this assumption we cannot construct a [z1] and [z2].
-
-Here is a counterexample that shows the extension axiom is false without
-imposing any restrictions on the preorder [R]:
-
-  R a b := (a ≡ b) ∨ (▷ False ∧ a ≡ a1 ∧ b ≡ a2) ∨ (▷ False ∧ a ≡ a1 ∧ b ≡ a3)
-
-Visually:
-
-    R @ 0                         R @ n for n > 0
-
-      a1                            a1
-    /   \
-   /     \
-  a2     a3                      a2     a3
-
-We have:
-
-  [a1] ≡{0}≡ [a2] ++ [a3]
-
-Any [a] is below [a1] iff it is below [a2;a3]. The only [a] for which that is
-possible is [a1]. We do not have:
-
-  [a1] ≡{1}≡ [a2] ++ [a3]
-
-We have that [a1] is below [a1], but [a1] is not below [a2;a3]. *)
-
+From this assumption it is not clear how to obtain witnesses [z1] and [z2]. *)
 Record mra {A} (R : relation A) := { mra_car : list A }.
 Definition to_mra {A} {R : relation A} (a : A) : mra R :=
   {| mra_car := [a] |}.
@@ -77,6 +51,7 @@ Section mra.
   Implicit Types a b : A.
   Implicit Types x y : mra R.
 
+  (** Pronounced [a] is below [x]. *)
   Local Definition mra_below (a : A) (x : mra R) := ∃ b, b ∈ mra_car x ∧ R a b.
 
   Local Lemma mra_below_to_mra a b : mra_below a (to_mra b) ↔ R a b.
@@ -198,7 +173,7 @@ End mra_over_rel.
 Global Instance to_mra_inj {A} {R : relation A} :
   Reflexive R →
   AntiSymm (=) R →
-  Inj (=) (≡@{mra R}) (to_mra) | 0. (* Lower cost than [to_mra_inj] *)
+  Inj (=) (≡@{mra R}) (to_mra) | 0. (* Lower cost than [to_mra_equiv_inj] *)
 Proof. intros. by apply (to_mra_rel_inj (=)). Qed.
 
 Global Instance to_mra_proper `{Equiv A} {R : relation A} :
