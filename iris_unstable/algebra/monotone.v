@@ -20,7 +20,52 @@ following paper for more details:
   Reasoning About Monotonicity in Separation Logic
   Amin Timany and Lars Birkedal
   in Certified Programs and Proofs (CPP) 2021
-*)
+
+Note that [mra A] works on [A : Type], not on [A : ofe]. (There are some results
+below if [A] has an [Equiv A], i.e., is a setoid.)
+
+Generalizing [mra A] to [A : ofe] and [R : A -n> A -n> siProp] is not obvious.
+It is not clear what axioms to impose on [R] for the "extension axiom" to hold:
+
+  cmra_extend :
+    x ≡{n}≡ y1 ⋅ y2 →
+    ∃ z1 z2, x ≡ z1 ⋅ z2 ∧ y1 ≡{n}≡ z1 ∧ y2 ≡{n}≡ z2
+
+To prove this, assume
+
+  x ≡{n}≡ y1 ++ y2
+
+That means:
+
+  ∀ n' a, n' ≤ n →
+          mra_below a x n' ↔ mra_below a y1 n' ∨ mra_below a y2 n')
+
+From this assumption we cannot construct a [z1] and [z2].
+
+Here is a counterexample that shows the extension axiom is false without
+imposing any restrictions on the preorder [R]:
+
+  R a b := (a ≡ b) ∨ (▷ False ∧ a ≡ a1 ∧ b ≡ a2) ∨ (▷ False ∧ a ≡ a1 ∧ b ≡ a3)
+
+Visually:
+
+    R @ 0                         R @ n for n > 0
+
+      a1                            a1
+    /   \
+   /     \
+  a2     a3                      a2     a3
+
+We have:
+
+  [a1] ≡{0}≡ [a2] ++ [a3]
+
+Any [a] is below [a1] iff it is below [a2;a3]. The only [a] for which that is
+possible is [a1]. We do not have:
+
+  [a1] ≡{1}≡ [a2] ++ [a3]
+
+We have that [a1] is below [a1], but [a1] is not below [a2;a3]. *)
 
 Record mra {A} (R : relation A) := { mra_car : list A }.
 Definition to_mra {A} {R : relation A} (a : A) : mra R :=
