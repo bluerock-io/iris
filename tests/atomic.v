@@ -25,7 +25,15 @@ Section tests.
   Context `{!atomic_heap, !heapGS Σ, !atomic_heapGS Σ}.
   Import atomic_heap.notation.
 
-  (* FIXME: removing the `val` type annotation breaks printing. *)
+  Check "test_awp_apply".
+  Lemma test_awp_apply (Q : iProp Σ) (l : loc) v :
+    Q -∗ l ↦ v -∗ WP !#l {{ _, Q }}.
+  Proof.
+    iIntros "HQ Hl". awp_apply load_spec. Show.
+    iAaccIntro with "Hl"; eauto with iFrame.
+  Qed.
+
+  Check "test_awp_apply_without".
   Lemma test_awp_apply_without (Q : iProp Σ) (l : loc) v :
     Q -∗ l ↦ v -∗ WP !#l {{ _, Q }}.
   Proof.

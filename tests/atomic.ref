@@ -1,3 +1,22 @@
+"test_awp_apply"
+     : string
+1 goal
+  
+  Σ : gFunctors
+  heapGS0 : heapGS Σ
+  aheap : atomic_heap
+  Q : iProp Σ
+  l : loc
+  v : val
+  ============================
+  "HQ" : Q
+  "Hl" : l ↦ v
+  --------------------------------------∗
+  AACC << ∃∃ (v0 : val) (q : dfrac), l ↦{q} v0, ABORT Q ∗ l ↦ v >>
+       @ ⊤ ∖ ∅, ∅
+       << l ↦{q} v0, COMM Q >>
+"test_awp_apply_without"
+     : string
 1 goal
   
   H : atomic_heap
@@ -10,9 +29,9 @@
   ============================
   "Hl" : l ↦ v
   --------------------------------------∗
-  atomic_acc (⊤ ∖ ∅) ∅ (tele_app (λ (v0 : val) (q : dfrac), l ↦{q} v0))
-    (l ↦ v) (tele_app (λ (v0 : val) (q : dfrac), tele_app (l ↦{q} v0)))
-    (λ.. (_ : [tele (_ : val) (_ : dfrac)]) (_ : [tele]), Q -∗ Q)
+  AACC << ∃∃ (v0 : val) (q : dfrac), l ↦{q} v0, ABORT l ↦ v >>
+       @ ⊤ ∖ ∅, ∅
+       << l ↦{q} v0, COMM Q -∗ Q >>
 "printing"
      : string
 1 goal
