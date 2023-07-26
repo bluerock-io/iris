@@ -40,7 +40,7 @@
   heapGS0 : heapGS Σ
   P : val → iProp Σ
   ============================
-  ⊢ <<< ∀∀ x : val, P x >>> code @ ∅ <<< ∃∃ y : val, P y, RET #() >>>
+  ⊢ <<< ∀∀ x : val, P x >>> code @ ∅ <<< ∃∃ y : val, P y >>> {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -72,7 +72,7 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< ∀∀ x : val, l ↦ x >>> code @ ∅ <<< l ↦ x, RET #() >>>
+  ⊢ <<< ∀∀ x : val, l ↦ x >>> code @ ∅ <<< l ↦ x >>> {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -104,7 +104,7 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< l ↦ #() >>> code @ ∅ <<< ∃∃ y : val, l ↦ y, RET #() >>>
+  ⊢ <<< l ↦ #() >>> code @ ∅ <<< ∃∃ y : val, l ↦ y >>> {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -136,7 +136,7 @@
   heapGS0 : heapGS Σ
   l : loc
   ============================
-  ⊢ <<< l ↦ #() >>> code @ ∅ <<< l ↦ #(), RET #() >>>
+  ⊢ <<< l ↦ #() >>> code @ ∅ <<< l ↦ #() >>> {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -170,7 +170,8 @@
   ============================
   ⊢ <<< ∀∀ x : val, l ↦ x ∗ l ↦ x >>>
       code @ ∅
-    <<< ∃ y : val, l ↦ y, RET #() >>>
+    <<< ∃ y : val, l ↦ y >>>
+    {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -191,7 +192,8 @@
   ============================
   ⊢ <<< ∀∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ∅
-    <<< ∃∃ y : val, l ↦ y, RET #() >>>
+    <<< ∃∃ y : val, l ↦ y >>>
+    {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -212,8 +214,9 @@
   ============================
   ⊢ <<< ∀∀ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
       code @ ∅
-    <<< ∃∃ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
-        RET #() >>>
+    <<< ∃∃ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗
+        l ↦ xx ∗ l ↦ xx >>>
+    {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -224,7 +227,7 @@
   _ : AU << ∃∃ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>
          @ ⊤ ∖ ∅, ∅
          << ∀∀ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗
-            l ↦ xx, COMM Φ #() >>
+            l ↦ xx ∗ l ↦ xx, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
 1 goal
@@ -235,7 +238,8 @@
   ============================
   ⊢ <<< ∀∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ∅
-    <<< l ↦ x, RET #() >>>
+    <<< l ↦ x >>>
+    {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -257,7 +261,8 @@
   ============================
   ⊢ <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ∅
-    <<< ∃∃ y : val, l ↦ y, RET #() >>>
+    <<< ∃∃ y : val, l ↦ y >>>
+    {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -280,7 +285,8 @@
   ============================
   ⊢ <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ∅
-    <<< l ↦ #(), RET #() >>>
+    <<< l ↦ #() >>>
+    {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -303,7 +309,8 @@
   ============================
   ⊢ <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
       code @ ∅
-    <<< l ↦ yyyy, RET #() >>>
+    <<< l ↦ yyyy >>>
+    {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors
@@ -326,8 +333,8 @@
   ============================
   ⊢ <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
       code @ ∅
-    <<< l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
-        RET #() >>>
+    <<< l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
+    {{{ RET #() }}}
 1 goal
   
   Σ : gFunctors

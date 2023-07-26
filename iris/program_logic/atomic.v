@@ -1,3 +1,47 @@
+(** This file declares notation for logically atomic Hoare triples, and some
+generic lemmas about them. To enable the definition of a shared theory applying
+to triples with any number of binders, the triples themselves are defined via telescopes, but as a user
+you need not be concerned with that. You can just use the following notation:
+
+  <<< ∀∀ x, atomic_precondition >>>
+    code @ E
+  <<< ∃∃ y, atomic_postcondition >>>
+  {{{ z, RET return_value; private_postcondition }}}
+
+Here, [x] (which can be any number of binders, including 0) is bound in all of
+the atomic pre- and postcondition and the private (non-atomic) postcondition and
+the return value, [y] (which can be any number of binders, including 0) is bound
+in both postconditions and the return value, and [z] (which can be any number of
+binders, including 0) is bound in the return value and the private
+postcondition.
+
+Note that atomic triples are *not* implicitly persistent, unlike Texan triples.
+If you need a private (non-atomic) precondition, you can use a magic wand:
+
+  private_precondition -∗
+  <<< ∀∀ x, atomic_precondition >>>
+    code @ E
+  <<< ∃∃ y, atomic_postcondition >>>
+  {{{ z, RET return_value; private_postcondition }}}
+
+If you don't need a private postcondition, you can leave it away, e.g.:
+
+  <<< ∀∀ x, atomic_precondition >>>
+    code @ E
+  <<< ∃∃ y, atomic_postcondition >>>
+  {{{ RET return_value }}}
+
+Note that due to combinatorial explosion and because Coq does not have a
+facility to declare such notation in a compositional way, not *all* variants of
+this notation exist: if you have binders before the [RET] (which is very
+uncommon), you must have a private postcondition (it can be [True]), and you
+must have [∀∀] and [∃∃] binders (they can be [_unused: ()]).
+
+For an example for how to prove and use logically atomic specifications, see
+[iris_heap_lang/lib/increment.v].
+
+*)
+
 From stdpp Require Import namespaces.
 From iris.bi Require Import telescopes.
 From iris.bi.lib Require Export atomic.
@@ -11,7 +55,6 @@ example where we want it to be anything else. *)
 Definition atomic_wp `{!irisGS_gen hlc Λ Σ} {TA TB TP : tele}
   (e: expr Λ) (* expression *)
   (E : coPset) (* *implementation* mask *)
-  (* no non-atomic preconditiopn, just use [PRE -∗ atomic_wp] for that *)
   (α: TA → iProp Σ) (* atomic pre-condition *)
   (β: TA → TB → iProp Σ) (* atomic post-condition *)
   (POST: TA → TB → TP → option (iProp Σ)) (* non-atomic post-condition *)
@@ -56,13 +99,9 @@ Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β '>>>
 - with and without RET binders
 - with and without POST
 
-The variants with RET binders but without POST are unlikely to be useful (no
-predicate can constrain the values that are bound in RET then). But that still
-leaves 12 variants. To keep our sanity we don't have them all here. Please ping
-us if you need another variant.
-
-Also, for historic reasons the no-POST notations have the RET inside the private
-postcondition angle brackets, rather than a separate set of curly braces. *)
+However we don't support the case where RET binders are present but anything
+else is missing. Below we declare the 8 notations that involve no RET binders.
+*)
 
 (* No RET binders *)
 Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β '>>>' '{{{' 'RET' v ; POST } } }" :=
@@ -139,7 +178,7 @@ Notation "'<<<' α '>>>' e @ E '<<<' β '>>>' '{{{' 'RET' v ; POST } } }" :=
   : bi_scope.
 
 (* No RET binders, no POST *)
-Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β , 'RET' v '>>>'" :=
+Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β '>>>' '{{{' 'RET' v } } }" :=
   (atomic_wp (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
              (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
              (TP:=TeleO)
@@ -157,11 +196,11 @@ Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β , 'R
                         ) .. )
   )
   (at level 20, E, α, β, v at level 200, x1 binder, xn binder, y1 binder, yn binder,
-   format "'[hv' '<<<'  '[' ∀∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
+   format "'[hv' '<<<'  '[' ∀∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃∃  y1  ..  yn ,  '/' β  ']' '>>>'  '/' {{{  '[' RET  v  ']' } } } ']'")
   : bi_scope.
 
 (* No ∃∃ binders, no RET binders, no POST *)
-Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
+Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' β '>>>' '{{{' 'RET' v } } }" :=
   (atomic_wp (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
              (TB:=TeleO)
              (TP:=TeleO)
@@ -173,11 +212,11 @@ Notation "'<<<' ∀∀ x1 .. xn , α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
              (tele_app $ λ x1, .. (λ xn, tele_app $ tele_app v%V) .. )
   )
   (at level 20, E, α, β, v at level 200, x1 binder, xn binder,
-   format "'[hv' '<<<'  '[' ∀∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β ,  '/' 'RET'  v  ']' '>>>' ']'")
+   format "'[hv' '<<<'  '[' ∀∀  x1  ..  xn ,  '/' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β  ']' '>>>'  '/' {{{  '[' RET  v  ']' } } } ']'")
   : bi_scope.
 
 (* No ∀∀ binders, no RET binders, no POST *)
-Notation "'<<<' α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β , 'RET' v '>>>'" :=
+Notation "'<<<' α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β '>>>' '{{{' 'RET' v } } }" :=
   (atomic_wp (TA:=TeleO)
              (TB:=TeleS (λ y1, .. (TeleS (λ yn, TeleO)) .. ))
              (TP:=TeleO)
@@ -189,11 +228,11 @@ Notation "'<<<' α '>>>' e @ E '<<<' ∃∃ y1 .. yn , β , 'RET' v '>>>'" :=
              (tele_app $ tele_app $ λ y1, .. (λ yn, tele_app v%V) .. )
   )
   (at level 20, E, α, β, v at level 200, y1 binder, yn binder,
-   format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃∃  y1  ..  yn ,  '/' β ,  '/' 'RET'  v  ']' '>>>' ']'")
+   format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' ∃∃  y1  ..  yn ,  '/' β  ']' '>>>'  '/' {{{  '[' RET  v  ']' } } } ']'")
   : bi_scope.
 
 (* No ∀∀ binders, no ∃∃ binders, no RET binders, no POST *)
-Notation "'<<<' α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
+Notation "'<<<' α '>>>' e @ E '<<<' β '>>>' '{{{' 'RET' v } } }" :=
   (atomic_wp (TA:=TeleO)
              (TB:=TeleO)
              (TP:=TeleO)
@@ -205,7 +244,7 @@ Notation "'<<<' α '>>>' e @ E '<<<' β , 'RET' v '>>>'" :=
              (tele_app $ tele_app $ tele_app v%V)
   )
   (at level 20, E, α, β, v at level 200,
-   format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β ,  '/' 'RET'  v  ']' '>>>' ']'")
+   format "'[hv' '<<<'  '[' α  ']' '>>>'  '/  ' e  @  E  '/' '<<<'  '[' β  ']' '>>>'  '/' {{{  '[' RET  v  ']' } } } ']'")
   : bi_scope.
 
 (** Theory *)
