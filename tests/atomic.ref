@@ -342,6 +342,47 @@
                l ↦ xx, COMM Φ #() >>
   --------------------------------------∗
   WP code {{ v, Φ v }}
+1 goal
+  
+  Σ : gFunctors
+  heapGS0 : heapGS Σ
+  P : val → iProp Σ
+  ============================
+  ⊢ <<< ∀∀ x : val, P x >>>
+      code @ ∅
+    <<< ∃∃ y : val, P y >>>
+    {{{ z : val, RET z; P z }}}
+1 goal
+  
+  Σ : gFunctors
+  heapGS0 : heapGS Σ
+  P : val → iProp Σ
+  ============================
+  ⊢ <<< ∀∀ x : val, P x >>>
+      code @ ∅
+    <<< ∃∃ y : val, P y >>>
+    {{{ RET y; P y }}}
+1 goal
+  
+  Σ : gFunctors
+  heapGS0 : heapGS Σ
+  P : val → iProp Σ
+  ============================
+  ⊢ <<< ∀∀ x : val, P x >>> code @ ∅ <<< P x >>> {{{ RET x; P x }}}
+1 goal
+  
+  Σ : gFunctors
+  heapGS0 : heapGS Σ
+  P : val → iProp Σ
+  ============================
+  ⊢ <<< P #() >>> code @ ∅ <<< ∃∃ y : val, P y >>> {{{ RET y; P y }}}
+1 goal
+  
+  Σ : gFunctors
+  heapGS0 : heapGS Σ
+  P : iProp Σ
+  ============================
+  ⊢ <<< P >>> code @ ∅ <<< P >>> {{{ RET #42; P }}}
 "Prettification"
      : string
 1 goal
