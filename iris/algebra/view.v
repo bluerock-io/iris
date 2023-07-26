@@ -484,6 +484,12 @@ Section cmra.
 
   (** Updates *)
 
+  (** Note that we quantify over a frame [bf], and since conceptually [rel n a b]
+      means "[b] is a valid fragment to be part of [a]", there is another implicit
+      frame quantification inside [rel] (usually because [rel] is defined via [≼]
+      which contains an existential quantifier). The difference between the two
+      frames is that the frame quantified inside [rel] may change but [bf] has
+      to be preserved. It is not clear if it is possible to avoid this. *)
   Lemma view_updateP a b Pab :
     (∀ n bf, rel n a (b ⋅ bf) → ∃ a' b', Pab a' b' ∧ rel n a' (b' ⋅ bf)) →
     ●V a ⋅ ◯V b ~~>: λ k, ∃ a' b', k = ●V a' ⋅ ◯V b' ∧ Pab a' b'.

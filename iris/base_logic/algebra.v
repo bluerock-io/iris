@@ -1,5 +1,6 @@
 From iris.algebra Require Import cmra view auth agree csum list excl gmap.
 From iris.algebra.lib Require Import excl_auth gmap_view dfrac_agree.
+From iris.bi Require Import lib.cmra.
 From iris.base_logic Require Import bi derived.
 From iris.prelude Require Import options.
 
@@ -298,24 +299,24 @@ Section upred.
   End dfrac_agree.
 
   Section gmap_view.
-    Context {K : Type} `{Countable K} {V : ofe}.
+    Context {K : Type} `{Countable K} {V : cmra}.
     Implicit Types (m : gmap K V) (k : K) (dq : dfrac) (v : V).
 
-    Lemma gmap_view_both_validI m k dq v :
-      ✓ (gmap_view_auth (DfracOwn 1) m ⋅ gmap_view_frag k dq v) ⊢
-      ✓ dq ∧ m !! k ≡ Some v.
+    Lemma gmap_view_both_validI dp m k dq v :
+      ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) ⊣⊢
+      ⌜✓ dp⌝ ∧ ∃ v' dq', ⌜m !! k = Some v'⌝ ∧ ✓ (dq', v') ∧ Some (dq, v) ≼ Some (dq', v').
     Proof.
-      rewrite /gmap_view_auth /gmap_view_frag. apply view_both_validI_1.
-      intros n a. uPred.unseal. apply gmap_view.gmap_view_rel_lookup.
+      rewrite /gmap_view_auth /gmap_view_frag. apply: view_both_dfrac_validI.
+      intros n a. rewrite /internal_included. uPred.unseal. apply gmap_view.gmap_view_rel_lookup.
     Qed.
 
     Lemma gmap_view_frag_op_validI k dq1 dq2 v1 v2 :
       ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ⊣⊢
-      ✓ (dq1 ⋅ dq2) ∧ v1 ≡ v2.
+      ⌜✓ (dq1 ⋅ dq2)⌝ ∧ ✓ (v1 ⋅ v2).
     Proof.
       rewrite /gmap_view_frag -view_frag_op. apply view_frag_validI=> n x.
       rewrite gmap_view.gmap_view_rel_exists singleton_op singleton_validN.
-      rewrite -pair_op pair_validN to_agree_op_validN. by uPred.unseal.
+      rewrite -pair_op pair_validN. by uPred.unseal.
     Qed.
 
   End gmap_view.
