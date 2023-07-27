@@ -12,12 +12,12 @@ From iris.prelude Require Import options.
 FIXME: This is intentionally discrete-only, but
 should we support setoids via [Equiv]? *)
 Class ghost_mapG Σ (K V : Type) `{Countable K} := GhostMapG {
-  ghost_map_inG : inG Σ (gmap_viewR K (leibnizO V));
+  ghost_map_inG : inG Σ (gmap_viewR K (agreeR (leibnizO V)));
 }.
 Local Existing Instance ghost_map_inG.
 
 Definition ghost_mapΣ (K V : Type) `{Countable K} : gFunctors :=
-  #[ GFunctor (gmap_viewR K (leibnizO V)) ].
+  #[ GFunctor (gmap_viewR K (agreeR (leibnizO V))) ].
 
 Global Instance subG_ghost_mapΣ Σ (K V : Type) `{Countable K} :
   subG (ghost_mapΣ K V) Σ → ghost_mapG Σ K V.
@@ -28,7 +28,7 @@ Section definitions.
 
   Local Definition ghost_map_auth_def
       (γ : gname) (q : Qp) (m : gmap K V) : iProp Σ :=
-    own γ (gmap_view_auth (V:=leibnizO V) (DfracOwn q) m).
+    own γ (gmap_view_auth (V:=agreeR $ leibnizO V) (DfracOwn q) (to_agree <$> m)).
   Local Definition ghost_map_auth_aux : seal (@ghost_map_auth_def).
   Proof. by eexists. Qed.
   Definition ghost_map_auth := ghost_map_auth_aux.(unseal).
@@ -37,7 +37,7 @@ Section definitions.
 
   Local Definition ghost_map_elem_def
       (γ : gname) (k : K) (dq : dfrac) (v : V) : iProp Σ :=
-    own γ (gmap_view_frag (V:=leibnizO V) k dq v).
+    own γ (gmap_view_frag (V:=agreeR $ leibnizO V) k dq (to_agree v)).
   Local Definition ghost_map_elem_aux : seal (@ghost_map_elem_def).
   Proof. by eexists. Qed.
   Definition ghost_map_elem := ghost_map_elem_aux.(unseal).
@@ -63,32 +63,40 @@ Section lemmas.
   Global Instance ghost_map_elem_persistent k γ v : Persistent (k ↪[γ]□ v).
   Proof. unseal. apply _. Qed.
   Global Instance ghost_map_elem_fractional k γ v : Fractional (λ q, k ↪[γ]{#q} v)%I.
-  Proof. unseal. intros p q. rewrite -own_op gmap_view_frag_add //. Qed.
+  Proof. unseal. intros p q. rewrite -own_op -gmap_view_frag_add agree_idemp //. Qed.
   Global Instance ghost_map_elem_as_fractional k γ q v :
     AsFractional (k ↪[γ]{#q} v) (λ q, k ↪[γ]{#q} v)%I q.
   Proof. split; first done. apply _. Qed.
 
   Local Lemma ghost_map_elems_unseal γ m dq :
     ([∗ map] k ↦ v ∈ m, k ↪[γ]{dq} v) ==∗
-    own γ ([^op map] k↦v ∈ m, gmap_view_frag (V:=leibnizO V) k dq v).
+    own γ ([^op map] k↦v ∈ m, gmap_view_frag (V:=agreeR (leibnizO V)) k dq (to_agree v)).
   Proof.
     unseal. destruct (decide (m = ∅)) as [->|Hne].
     - rewrite !big_opM_empty. iIntros "_". iApply own_unit.
     - rewrite big_opM_own //. iIntros "?". done.
   Qed.
 
+  Local Lemma to_agree_map_valid m : map_Forall (λ _ (v : agreeR (leibnizO V)), ✓ v) (to_agree <$> m).
+  Proof.
+    (* FIXME use map_Forall_fmap *)
+    intros i v. rewrite lookup_fmap.
+    destruct (m !! i) as [y|] eqn:EQ; last done. simpl.
+    intros [= <-]. done.
+  Qed.
+
   Lemma ghost_map_elem_valid k γ dq v : k ↪[γ]{dq} v -∗ ⌜✓ dq⌝.
   Proof.
     unseal. iIntros "Helem".
     iDestruct (own_valid with "Helem") as %?%gmap_view_frag_valid.
-    done.
+    naive_solver.
   Qed.
   Lemma ghost_map_elem_valid_2 k γ dq1 dq2 v1 v2 :
     k ↪[γ]{dq1} v1 -∗ k ↪[γ]{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    iCombine "H1 H2" gives %?%gmap_view_frag_op_valid_L.
-    done.
+    iCombine "H1 H2" gives %[? Hag]%gmap_view_frag_op_valid.
+    iPureIntro. split; first done. rewrite to_agree_op_valid_L in Hag. done.
   Qed.
   Lemma ghost_map_elem_agree k γ dq1 dq2 v1 v2 :
     k ↪[γ]{dq1} v1 -∗ k ↪[γ]{dq2} v2 -∗ ⌜v1 = v2⌝.
@@ -110,7 +118,7 @@ Section lemmas.
     k ↪[γ]{dq1} v1 -∗ k ↪[γ]{dq2} v2 -∗ k ↪[γ]{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
   Proof.
     iIntros "Hl1 Hl2". iDestruct (ghost_map_elem_agree with "Hl1 Hl2") as %->.
-    unseal. iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
+    unseal. iCombine "Hl1 Hl2" as "Hl". rewrite agree_idemp. eauto with iFrame.
   Qed.
 
   Global Instance ghost_map_elem_combine_as k γ dq1 dq2 v1 v2 :
@@ -154,15 +162,16 @@ Section lemmas.
     ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ ghost_map_auth γ 1 m ∗ [∗ map] k ↦ v ∈ m, k ↪[γ] v.
   Proof.
     unseal. intros.
-    iMod (own_alloc_strong (gmap_view_auth (V:=leibnizO V) (DfracOwn 1) ∅) P)
+    iMod (own_alloc_strong (gmap_view_auth (V:=agreeR (leibnizO V)) (DfracOwn 1) ∅) P)
       as (γ) "[% Hauth]"; first done.
     { apply gmap_view_auth_valid. }
     iExists γ. iSplitR; first done.
     rewrite -big_opM_own_1 -own_op. iApply (own_update with "Hauth").
-    etrans; first apply: (gmap_view_alloc_big (V:=leibnizO V) _ m (DfracOwn 1)).
+    etrans; first apply: (gmap_view_alloc_big (V:=agreeR (leibnizO V)) _ (to_agree <$> m) (DfracOwn 1)).
     - apply map_disjoint_empty_r.
     - done.
-    - rewrite right_id. done.
+    - apply to_agree_map_valid.
+    - rewrite right_id big_opM_fmap. done.
   Qed.
   Lemma ghost_map_alloc_strong_empty P :
     pred_infinite P →
@@ -201,8 +210,8 @@ Section lemmas.
     ghost_map_auth γ q1 m1 -∗ ghost_map_auth γ q2 m2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ m1 = m2⌝.
   Proof.
     unseal. iIntros "H1 H2".
-    iCombine "H1 H2" gives %[??]%gmap_view_auth_dfrac_op_valid_L.
-    done.
+    iCombine "H1 H2" gives %[? ?%(inj _)]%gmap_view_auth_dfrac_op_valid.
+    iPureIntro. split; first done. by fold_leibniz.
   Qed.
   Lemma ghost_map_auth_agree γ q1 q2 m1 m2 :
     ghost_map_auth γ q1 m1 -∗ ghost_map_auth γ q2 m2 -∗ ⌜m1 = m2⌝.
@@ -217,8 +226,10 @@ Section lemmas.
     ghost_map_auth γ q m -∗ k ↪[γ]{dq} v -∗ ⌜m !! k = Some v⌝.
   Proof.
     unseal. iIntros "Hauth Hel".
-    iCombine "Hauth Hel" gives %[?[??]]%gmap_view_both_dfrac_valid_L.
-    eauto.
+    iCombine "Hauth Hel" gives %(_ & _ & (av' & Hav' & _ & Hincl))%gmap_view_both_dfrac_valid_discrete_total.
+    iPureIntro.
+    apply lookup_fmap_Some in Hav' as [v' [<- Hv']].
+    apply to_agree_included_L in Hincl. by rewrite Hincl.
   Qed.
 
   Global Instance ghost_map_lookup_combine_gives_1 {γ q m k dq v} :
@@ -238,8 +249,9 @@ Section lemmas.
     m !! k = None →
     ghost_map_auth γ 1 m ==∗ ghost_map_auth γ 1 (<[k := v]> m) ∗ k ↪[γ] v.
   Proof.
-    unseal. intros ?. rewrite -own_op.
-    iApply own_update. apply: gmap_view_alloc; done.
+    unseal. intros Hm. rewrite -own_op.
+    iApply own_update. rewrite fmap_insert. apply: gmap_view_alloc; [|done..].
+    rewrite lookup_fmap Hm //.
   Qed.
   Lemma ghost_map_insert_persist {γ m} k v :
     m !! k = None →
@@ -254,14 +266,14 @@ Section lemmas.
     ghost_map_auth γ 1 m -∗ k ↪[γ] v ==∗ ghost_map_auth γ 1 (delete k m).
   Proof.
     unseal. iApply bi.wand_intro_r. rewrite -own_op.
-    iApply own_update. apply: gmap_view_delete.
+    iApply own_update. rewrite fmap_delete. apply: gmap_view_delete.
   Qed.
 
   Lemma ghost_map_update {γ m k v} w :
     ghost_map_auth γ 1 m -∗ k ↪[γ] v ==∗ ghost_map_auth γ 1 (<[k := w]> m) ∗ k ↪[γ] w.
   Proof.
     unseal. iApply bi.wand_intro_r. rewrite -!own_op.
-    iApply own_update. apply: gmap_view_update.
+    iApply own_update. rewrite fmap_insert. apply: gmap_view_replace; done.
   Qed.
 
   (** Big-op versions of above lemmas *)
@@ -282,7 +294,11 @@ Section lemmas.
     ghost_map_auth γ 1 (m' ∪ m) ∗ ([∗ map] k ↦ v ∈ m', k ↪[γ] v).
   Proof.
     unseal. intros ?. rewrite -big_opM_own_1 -own_op. iApply own_update.
-    apply: gmap_view_alloc_big; done.
+    etrans; first apply: (gmap_view_alloc_big _ (to_agree <$> m') (DfracOwn 1)).
+    - apply map_disjoint_fmap. done.
+    - done.
+    - apply to_agree_map_valid.
+    - rewrite map_fmap_union big_opM_fmap. done.
   Qed.
   Lemma ghost_map_insert_persist_big {γ m} m' :
     m' ##ₘ m →
@@ -302,7 +318,14 @@ Section lemmas.
   Proof.
     iIntros "Hauth Hfrag". iMod (ghost_map_elems_unseal with "Hfrag") as "Hfrag".
     unseal. iApply (own_update_2 with "Hauth Hfrag").
-    apply: gmap_view_delete_big.
+    replace (to_agree <$> m ∖ m0) with ((to_agree <$> m) ∖ (to_agree <$> m0)).
+    2:{ (* FIXME use map_difference_fmap *)
+      apply map_eq. intros i.
+      unfold difference, map_difference; rewrite lookup_difference_with.
+      rewrite !lookup_fmap !lookup_difference_with.
+      destruct (m !! i), (m0 !! i); done. }
+    etrans; last apply: gmap_view_delete_big.
+    rewrite big_opM_fmap. done.
   Qed.
 
   Theorem ghost_map_update_big {γ m} m0 m1 :
@@ -315,7 +338,12 @@ Section lemmas.
     iIntros (?) "Hauth Hfrag". iMod (ghost_map_elems_unseal with "Hfrag") as "Hfrag".
     unseal. rewrite -big_opM_own_1 -own_op.
     iApply (own_update_2 with "Hauth Hfrag").
-    apply: gmap_view_update_big. done.
+    rewrite map_fmap_union.
+    etrans; last etrans; [|apply: (gmap_view_replace_big _ (to_agree <$> m0) (to_agree <$> m1))|].
+    - rewrite big_opM_fmap. done.
+    - rewrite !dom_fmap_L. done.
+    - apply to_agree_map_valid.
+    - rewrite big_opM_fmap. done.
   Qed.
 
 End lemmas.

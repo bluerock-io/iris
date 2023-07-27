@@ -15,6 +15,10 @@ Section upred.
   Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
   Notation "⊢ Q" := (bi_emp_valid (PROP:=uPredI M) Q).
 
+  Lemma cmra_includedI {A : cmra} n (a b : A) x :
+    internal_included (PROP:=uPredI M) a b n x ↔ a ≼{n} b.
+  Proof. rewrite /internal_included. uPred.unseal. done. Qed.
+
   Lemma prod_validI {A B : cmra} (x : A * B) : ✓ x ⊣⊢ ✓ x.1 ∧ ✓ x.2.
   Proof. by uPred.unseal. Qed.
   Lemma option_validI {A : cmra} (mx : option A) :
@@ -140,6 +144,15 @@ Section upred.
         (λ y', x ⋅ y' ≡ to_agree a → y' ≡ to_agree a)%I); [solve_proper|done|].
       rewrite agree_idemp. apply bi.impl_refl.
     Qed.
+
+    Lemma to_agree_includedI a b :
+      to_agree a ≼ to_agree b ⊢ a ≡ b.
+    Proof.
+      apply bi.exist_elim=>c. rewrite internal_eq_sym.
+      rewrite agree_op_equiv_to_agreeI -agree_equivI.
+      apply internal_eq_trans.
+    Qed.
+
   End agree.
 
   Section csum_cmra.
@@ -308,6 +321,21 @@ Section upred.
     Proof.
       rewrite /gmap_view_auth /gmap_view_frag. apply: view_both_dfrac_validI.
       intros n a. rewrite /internal_included. uPred.unseal. apply gmap_view.gmap_view_rel_lookup.
+    Qed.
+    Lemma gmap_view_both_validI_total `{!CmraTotal V} dp m k dq v :
+      ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) ⊢
+      ⌜✓ dp ∧ ✓ dq⌝ ∧ ∃ v', ⌜m !! k = Some v'⌝ ∧ ✓ v' ∧ v ≼ v'.
+    Proof.
+      rewrite gmap_view_both_validI. uPred.unseal.
+      split. intros n x Hx.
+      intros [Hdp (v' & dq' & Hlookup & Hvalid & Hincl%cmra_includedI)].
+      split; first split; first done.
+      - eapply cmra_discrete_valid_iff.
+        eapply (cmra_validN_Some_includedN _ dq'); first by apply Hvalid.
+        eapply Some_pair_includedN_l. apply Hincl.
+      - exists v'. split; first done. split; first apply Hvalid.
+        move:Hincl=> /Some_pair_includedN_r /Some_includedN_total.
+        rewrite cmra_includedI. done.
     Qed.
 
     Lemma gmap_view_frag_op_validI k dq1 dq2 v1 v2 :

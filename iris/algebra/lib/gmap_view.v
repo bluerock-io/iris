@@ -294,6 +294,18 @@ Section lemmas.
       split; first by apply cmra_valid_validN.
       by apply: cmra_included_includedN.
   Qed.
+  Lemma gmap_view_both_dfrac_valid_discrete_total `{!CmraDiscrete V, !CmraTotal V} dp m k dq v :
+    ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) →
+    ✓ dp ∧ ✓ dq ∧ ∃ v', m !! k = Some v' ∧ ✓ v' ∧ v ≼ v'.
+  Proof.
+    rewrite gmap_view_both_dfrac_valid_discrete.
+    intros [Hdp (v' & dq' & Hlookup & Hvalid & Hincl)].
+    split; first done. split.
+    - eapply (cmra_valid_Some_included dq'); first by apply Hvalid.
+      eapply Some_pair_included_l. done.
+    - exists v'. split; first done. split; first apply Hvalid.
+      move:Hincl=> /Some_pair_included_r /Some_included_total. done.
+  Qed.
   (** On the other hand, this one holds for all CMRAs, not just discrete ones. *)
   Lemma gmap_view_both_valid m dp k v :
     ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k (DfracOwn 1) v) ↔
