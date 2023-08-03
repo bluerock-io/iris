@@ -15,32 +15,16 @@ Here, [≼] is the extension order of the [mra R] resource algebra. This is
 exactly what the lemma [to_mra_included] shows.
 
 This resource algebra is useful for reasoning about monotonicity. See the
-following paper for more details:
+following paper for more details ([to_mra] is called "principal"):
 
   Reasoning About Monotonicity in Separation Logic
   Amin Timany and Lars Birkedal
   in Certified Programs and Proofs (CPP) 2021
 
-Note that [mra A] works on [A : Type], not on [A : ofe]. (There are some results
-below if [A] has an [Equiv A], i.e., is a setoid.)
-
-Generalizing [mra A] to [A : ofe] and [R : A -n> A -n> siProp] is not obvious.
-It is not clear what axioms to impose on [R] for the "extension axiom" to hold:
-
-  cmra_extend :
-    x ≡{n}≡ y1 ⋅ y2 →
-    ∃ z1 z2, x ≡ z1 ⋅ z2 ∧ y1 ≡{n}≡ z1 ∧ y2 ≡{n}≡ z2
-
-To prove this, assume ([⋅] is defined as [++], see [mra_op]):
-
-  x ≡{n}≡ y1 ++ y2
-
-When defining [dist] as the step-indexed version of [mra_equiv], this means:
-
-  ∀ n' a, n' ≤ n →
-          mra_below a x n' ↔ mra_below a y1 n' ∨ mra_below a y2 n'
-
-From this assumption it is not clear how to obtain witnesses [z1] and [z2]. *)
+Note that unlike most Iris algebra constructions [mra A] works on [A : Type],
+not on [A : ofe]. See the comment at [mraO] below for more information. If [A]
+has an [Equiv A] (i.e., is a setoid), there are some results at the bottom of
+this file. *)
 Record mra {A} (R : relation A) := { mra_car : list A }.
 Definition to_mra {A} {R : relation A} (a : A) : mra R :=
   {| mra_car := [a] |}.
@@ -64,6 +48,24 @@ Section mra.
   Local Instance mra_equiv_equiv : Equivalence mra_equiv.
   Proof. unfold mra_equiv; split; intros ?; naive_solver. Qed.
 
+  (** Generalizing [mra A] to [A : ofe] and [R : A -n> A -n> siProp] is not
+  obvious. It is not clear what axioms to impose on [R] for the "extension
+  axiom" to hold:
+
+    cmra_extend :
+      x ≡{n}≡ y1 ⋅ y2 →
+      ∃ z1 z2, x ≡ z1 ⋅ z2 ∧ y1 ≡{n}≡ z1 ∧ y2 ≡{n}≡ z2
+
+  To prove this, assume ([⋅] is defined as [++], see [mra_op]):
+
+    x ≡{n}≡ y1 ++ y2
+
+  When defining [dist] as the step-indexed version of [mra_equiv], this means:
+
+    ∀ n' a, n' ≤ n →
+            mra_below a x n' ↔ mra_below a y1 n' ∨ mra_below a y2 n'
+
+  From this assumption it is not clear how to obtain witnesses [z1] and [z2]. *)
   Canonical Structure mraO := discreteO (mra R).
 
   (* CMRA *)
