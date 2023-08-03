@@ -860,6 +860,10 @@ Section product.
   Global Instance prod_ofe_discrete :
     OfeDiscrete A → OfeDiscrete B → OfeDiscrete prodO.
   Proof. intros ?? [??]; apply _. Qed.
+
+  Lemma pair_dist n (a1 a2 : A) (b1 b2 : B) :
+    (a1, b1) ≡{n}≡ (a2, b2) ↔ a1 ≡{n}≡ a2 ∧ b1 ≡{n}≡ b2.
+  Proof. reflexivity. Qed.
 End product.
 
 Global Arguments prodO : clear implicits.
