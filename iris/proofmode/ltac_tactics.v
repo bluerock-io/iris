@@ -2023,6 +2023,14 @@ Ltac _iDestructAccAndHyp0 pat x H :=
   | _ => fail "Missing intro pattern for accessor variable"
   end.
 
+(** [_iDestructAccAndHyp xs pat x H] expects [x] to be a variable in the context.
+Then it behaves as follows:
+- If [x] has type [unit], it destructs [x] and continues as
+  [_iDestructHyp H xs pat]. That is, it is basically as if [x] did not exist.
+- Otherwise, [xs] must be a non-empty list of patterns, and the first pattern is
+  applied to [x]. Then we continue as [_iDestructHyp H (tail xs) pat].
+  Basically it is as if "H" (the hypothesis being destructed) actually was
+  [∃ x, H], so that the first pattern in the [xs] destructs this existential. *)
 Ltac _iDestructAccAndHyp xs pat x H :=
   let go := ltac2:(tac xs |-
     match of_ltac1_list xs with

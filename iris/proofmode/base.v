@@ -8,14 +8,14 @@ From Ltac2 Require Ltac2.
 
 (** ** N-ary tactics *)
 (** Ltac1 does not provide primitives to manipulate lists (e.g., [ident_list],
-[simple_intropattern_list], needed for [iIntros], [iDestruct], etc. We can do
+[simple_intropattern_list]), needed for [iIntros], [iDestruct], etc. We can do
 that in Ltac2. For most proofmode tactics we only need to iterate over a list
 (either in forward or backward direction). The Ltac1 tactics [ltac1_list_iter]
 and [ltac1_list_rev_iter] allow us to do that while encapsulating the Ltac2
 code. These tactics can be used as:
 
   Ltac _iTactic xs :=
-    ltac1_list_rev_iter ltac:(fun x => /* stuff */) xs.
+    ltac1_list_iter ltac:(fun x => /* stuff */) xs.
   Tactic Notation "iTactic" "(" ne_ident_list(xs) ")" :=
     _iTactic xs.
 
@@ -48,9 +48,9 @@ Ltac ltac1_list_rev_iter tac l :=
   go tac l.
 
 (** Since the Ltac1-Ltac2 API only supports unit-returning functions, there is
-no nice way to call [Ltac]s such as [_iTactic] above with the empty list. We
-therefore often define a special version [_iTactic0] for the empty list. This
-version can be created using [with_ltac1_nil]:
+no nice way to produce an empty list in ltac1. We therefore often define a
+special version [_iTactic0] for the empty list. This version can be created
+using [with_ltac1_nil]:
 
   Ltac _iTactic0 := with_ltac1_nil ltac:(fun xs => _iTactic xs)
 *)
