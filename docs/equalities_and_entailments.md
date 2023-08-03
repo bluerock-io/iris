@@ -1,6 +1,6 @@
 # Equalities in Iris
 
-Using Iris involves dealing with a few subtly different equivalence and equality
+Using std++ and Iris involves dealing with a few subtly different equivalence and equality
 relations, especially among propositions.
 This document summarizes these relations and the subtle distinctions among them.
 This is not a general introduction to Iris: instead, we discuss the different
@@ -8,7 +8,7 @@ Iris equalities and the interface to their Coq implementation. In particular, we
 discuss:
 - Equality ("=") in the *on-paper* Iris metatheory
 - Coq's Leibniz equality (`=`) and std++'s setoid equivalence (`≡`);
-- N-equivalence on OFEs (`≡{n}≡`);
+- Iris `n`-equivalence on OFEs (`≡{n}≡`);
 - Iris internal equality (`≡` in `bi_scope`);
 - Iris entailment and bi-entailment (`⊢`, `⊣⊢`).
 
@@ -44,6 +44,52 @@ Here, stdpp adds the following facilities:
   registered with Coq's generalized rewriting). It will for instance turn the
   goal `f a ≡ f b` into `a ≡ b` given an appropriate `Proper` instance (here,
   `Proper ((≡) ==> (≡)) f`).
+
+## Defining Proper instances
+
+- For each function `f` that could be used in generalized rewriting (e.g., has
+  setoid, ofe, ordered arguments), there should be a `Params f n` instance. This
+  instance forces Coq's setoid rewriting mechanism not to rewrite in the first
+  `n` arguments of the function `f`. This significantly reduces backtracking
+  during `Proper` search and thus improves performance/avoids failing instance
+  searches that diverge. These first arguments typically include type variables
+  (`A : Type` or `B : A → Type`), type class parameters (`C A`), and Leibniz
+  arguments (`i : nat` or `i : Z`), so they cannot be rewritten or do not need
+  setoid rewriting.
+  Examples:
+  + For `cons : ∀ A, A → list A → list A` we have `Params (@cons) 1`,
+    indicating that the type argument named `A` is not up to rewriting.
+  + For `replicate : ∀ A, nat → A → list A` we have `Params (@replicate) 2`
+    indicating that the type argument `A` is not up to rewriting and that the
+    `nat`-typed argument also does not show up as rewriteable in the `Proper`
+    instance (because rewriting with `=` doesn't need such an instance).
+  + For `lookup : ∀ {Lookup K A M}, K → M → option A` we have
+    `Params (@lookup) 5`: there are 3 Type parameters, 1 type class, and a key
+    (which is Leibniz for all instances).
+- Consequenently, `Proper .. f` instances are always written in such a way
+  that `f` is partially applied with the first `n` arguments from `Params f n`.
+  Note that implicit arguments count here.
+  Further note that `Proper` instances never start with `(=) ==>`.
+  Examples:
+  + `Proper ((≡@{A}) ==> (≡@{list A}) ==> (≡@{list A})) cons`,
+    where `cons` is `@cons A`, matching the 1 in `Params`.
+  + `Proper ((≡@{A}) ==> (≡@{list A})) (replicate n)`,
+    where `replicate n` is `@replicate A n`.
+  + `Proper ((≡@{M}) ==> (≡@{option A})) (lookup k)`,
+    where `lookup k` is `@lookup K A M _ k`, so 5 parameters are fixed, matching
+    the `Params` instance.
+- Lemmas about higher-order functions often need `Params` premises.
+  These are also written using the convention above. Example:
+  ```coq
+  Lemma set_fold_ind `{FinSet A C} {B} (P : B → C → Prop) (f : A → B → B) (b : B) :
+    (∀ x, Proper ((≡) ==> impl) (P x)) → ...
+  ```
+- For premises involving predicates (such as `P` in `set_fold_ind` above), we
+  always write the weakest `Proper`: that is, use `impl` instead of `iff` (and
+  in Iris, write `(⊢)` instead of `(⊣⊢)`). For "simple" `P`s, there should be
+  instances to solve both `impl` and `iff` using `solve_proper`, and for more
+  complicated cases where `solve_proper` fails, an `impl` is much easier to
+  prove by hand than an `iff`.
 
 ## Equivalences on OFEs
 
