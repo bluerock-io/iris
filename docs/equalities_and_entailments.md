@@ -53,24 +53,32 @@ Here, stdpp adds the following facilities:
   `n` arguments of the function `f`. This significantly reduces backtracking
   during `Proper` search and thus improves performance/avoids diverging failing
   instance searches. These first arguments typically include type variables
-  (`A : Type` or `B : A → Type`); type class parameters (`C A`); Leibniz
-  arguments (`i : nat` or `i : Z`).
+  (`A : Type` or `B : A → Type`), type class parameters (`C A`), and Leibniz
+  arguments (`i : nat` or `i : Z`), so they cannot be rewritten or don't need
+  setoid rewriting.
   Examples:
-  + For `cons : ∀ A, A → list A → list A` we have `Params (@cons) 1`.
-  + For `replicate : ∀ A, nat → A → list A` we have `Params (@replicate) 2`.
+  + For `cons : ∀ A, A → list A → list A` we have `Params (@cons) 1`,
+    indicating that the type argument named `A` is not up to rewriting.
+  + For `replicate : ∀ A, nat → A → list A` we have `Params (@replicate) 2`
+    indicating that the type argument `A` is not up to rewriting and that the
+    `nat`-typed argument also doesn't show up as rewriteable in the `Proper`
+    instance (because rewriting with `=` doesn't need such an instance).
   + For `lookup : ∀ {Lookup K A M}, K → M → option A` we have
     `Params (@lookup) 5`: there are 3 Type parameters, 1 type class, and a key
     (which is Leibniz for all instances).
 - Consequenently, `Proper .. f` instances are always written in such a way
   that `f` is partially applied with the first `n` arguments from `Params f n`.
+  Note that implicit arguments count here.
   This means that `Proper` instances never start with `(=) ==>`.
   Examples:
   + `Proper ((≡@{A}) ==> (≡@{list A}) ==> (≡@{list A})) cons`
+    (where `cons` is `@cons A`, matching the 1 in `Params`)
   + `Proper ((≡@{A}) ==> (≡@{list A})) (replicate n)`
+    (where `replicate n` is `@replicate A n`)
   + `Proper ((≡@{M}) ==> (≡@{option A})) (lookup k)`
-- If the function `f` is not a definition, but a parameter (of a higher order
-  function), then there is no `Params` instance. However, `Proper` premises
-  are still written using the convention above. Example:
+    (where `lookup k` is `@lookup K A M _ k`, so 5 parameters are fixed, matching the `Param`)
+- Lemmas about higher-order functions often need `Params` premises.
+  These are also written using the convention above. Example:
 
 ```
 Lemma set_fold_ind `{Set A C} {B} (P : B → C → Prop) (f : A → B → B) (b : B) :
@@ -78,10 +86,10 @@ Lemma set_fold_ind `{Set A C} {B} (P : B → C → Prop) (f : A → B → B) (b 
 ```
 
 - For premises involving predicates (such as `P` in `set_fold_ind` above), we
-  always write the weakest proper: that is, use `impl` instead of `iff` (and
+  always write the weakest `Proper`: that is, use `impl` instead of `iff` (and
   in Iris, write `(⊢)` instead of `(⊣⊢)`). For "simple" `P`s, there should be
   instances to solve both `impl` and `iff` using `solve_proper`, and for more
-  complicated cases where `solve_proper` fails, a `impl` is much easier to
+  complicated cases where `solve_proper` fails, an `impl` is much easier to
   prove by hand than an `iff`.
 
 ## Equivalences on OFEs
