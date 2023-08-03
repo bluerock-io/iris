@@ -162,8 +162,7 @@ Qed.
 Lemma fupd_soundness_no_lc `{!invGpreS Σ} E1 E2 (P : iProp Σ) `{!Plain P} m :
   (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ={E1,E2}=∗ P) → ⊢ P.
 Proof.
-  iIntros (Hfupd).
-  apply later_soundness, bupd_soundness; [by apply later_plain|].
+  intros Hfupd. apply later_soundness, bupd_soundness; [by apply later_plain|].
   iMod fupd_soundness_no_lc_unfold as (hws ω) "(Hlc & Hω & #H)".
   iMod ("H" with "[Hlc] Hω") as "H'".
   { iMod (Hfupd with "Hlc") as "H'". iModIntro. iApply "H'". }
@@ -173,7 +172,7 @@ Qed.
 Lemma fupd_soundness_lc `{!invGpreS Σ} n E1 E2 (P : iProp Σ) `{!Plain P} :
   (∀ `{Hinv: !invGS_gen HasLc Σ}, £ n ={E1,E2}=∗ P) → ⊢ P.
 Proof.
-  iIntros (Hfupd). eapply (lc_soundness (S n)); first done.
+  intros Hfupd. eapply (lc_soundness (S n)); first done.
   intros Hc. rewrite lc_succ.
   iIntros "[Hone Hn]". rewrite -le_upd_trans. iApply bupd_le_upd.
   iMod wsat_alloc as (Hw) "[Hw HE]".
@@ -220,7 +219,7 @@ Lemma step_fupdN_soundness_no_lc' `{!invGpreS Σ} (P : iProp Σ) `{!Plain P} n m
   (∀ `{Hinv: !invGS_gen HasNoLc Σ}, £ m ={⊤}[∅]▷=∗^n P) →
   ⊢ P.
 Proof.
-  iIntros (Hiter). eapply (step_fupdN_soundness_no_lc _ n m)=>Hinv.
+  intros Hiter. eapply (step_fupdN_soundness_no_lc _ n m)=>Hinv.
   iIntros "Hcred". destruct n as [|n].
   { by iApply fupd_mask_intro_discard; [|iApply (Hiter Hinv)]. }
    simpl in Hiter |- *. iMod (Hiter with "Hcred") as "H". iIntros "!>!>!>".

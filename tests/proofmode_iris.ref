@@ -139,9 +139,7 @@ Tactic failure: iInv: invariant "H2" not found.
 The command has indeed failed with message:
 Tactic failure: Missing intro pattern for accessor variable.
 The command has indeed failed with message:
-The command has not failed!
-The command has indeed failed with message:
-Tactic failure: iExistDestruct: cannot destruct (Φ H1).
+Tactic failure: Missing intro pattern for accessor variable.
 The command has indeed failed with message:
 Tactic failure: Missing intro pattern for accessor variable.
 The command has indeed failed with message:

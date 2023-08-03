@@ -142,6 +142,17 @@ Coq 8.13 is no longer supported.
 * The `iFrame` tactic now removes some conjunctions and disjunctions with `False`,
   since additional `MakeOr` and `MakeAnd` instances were provided. If you use these
   classes, their results may have become more concise.
+* Support n-ary versions of `iIntros`, `iRevert`, `iExists`, `iDestruct`, `iMod`,
+  `iFrame`, `iRevertIntros`, `iPoseProof`, `iInduction`, `iLöb`, `iInv`, and
+  `iAssert`. (by Jan-Oliver Kaiser and Rodolphe Lepigre)
+* Add tactics `ltac1_list_iter` and `ltac1_list_rev_iter` to iterate over
+  lists of `ident`s/`simple intropatterns`/`constr`/etc using Ltac1. See
+  [iris/proofmode/base.v](proofmode/base.v) for documentation on how
+  to use these tactics to convert your own fixed arity tactics to an n-ary
+  variant.
+* The tactic `iIntros` will always call `iStartProof`, even when there is no Iris
+  pattern such as in `iIntros (x)`. If you do not want to start the proof mode,
+  use ordinary `intros`.
 
 **Changes in `base_logic`:**
 

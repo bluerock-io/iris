@@ -2,8 +2,61 @@ From Coq Require Export Ascii.
 From stdpp Require Export strings.
 From iris.prelude Require Export prelude.
 From iris.prelude Require Import options.
+From Ltac2 Require Ltac2.
 
 (** * Utility definitions used by the proofmode *)
+
+(** ** N-ary tactics *)
+(** Ltac1 does not provide primitives to manipulate lists (e.g., [ident_list],
+[simple_intropattern_list]), needed for [iIntros], [iDestruct], etc. We can do
+that in Ltac2. For most proofmode tactics we only need to iterate over a list
+(either in forward or backward direction). The Ltac1 tactics [ltac1_list_iter]
+and [ltac1_list_rev_iter] allow us to do that while encapsulating the Ltac2
+code. These tactics can be used as:
+
+  Ltac _iTactic xs :=
+    ltac1_list_iter ltac:(fun x => /* stuff */) xs.
+  Tactic Notation "iTactic" "(" ne_ident_list(xs) ")" :=
+    _iTactic xs.
+
+It is important to note that given one n-ary [Tactic Notation] we cannot call
+another n-ary [Tactic Notation]. For example, the following does NOT work:
+
+  Tactic Notation "iAnotherTactic" "(" ne_ident_list(xs) ")" :=
+    /* stuff */
+    iTactic (xs).
+
+Because of this reason, as already shown above, we typically provide an [Ltac]
+called [_iTactic] (note the underscore to mark it is "private"), and define the
+[Tactic Notation] as a wrapper, allowing us to write:
+
+  Tactic Notation "iAnotherTactic" "(" ne_ident_list(xs) ")" :=
+    /* stuff */
+    _iTactic xs.
+*)
+
+Ltac2 of_ltac1_list l := Option.get (Ltac1.to_list l).
+
+Ltac ltac1_list_iter tac l :=
+  let go := ltac2:(tac l |- List.iter (ltac1:(tac x |- tac x) tac)
+                                      (of_ltac1_list l)) in
+  go tac l.
+
+Ltac ltac1_list_rev_iter tac l :=
+  let go := ltac2:(tac l |- List.iter (ltac1:(tac x |- tac x) tac)
+                                      (List.rev (of_ltac1_list l))) in
+  go tac l.
+
+(** Since the Ltac1-Ltac2 API only supports unit-returning functions, there is
+no nice way to produce an empty list in ltac1. We therefore often define a
+special version [_iTactic0] for the empty list. This version can be created
+using [with_ltac1_nil]:
+
+  Ltac _iTactic0 := with_ltac1_nil ltac:(fun xs => _iTactic xs)
+*)
+Ltac with_ltac1_nil tac :=
+  let go := ltac2:(tac |- ltac1:(tac l |- tac l) tac (Ltac1.of_list [])) in
+  go tac.
 
 (* Directions of rewrites *)
 Inductive direction := Left | Right.
