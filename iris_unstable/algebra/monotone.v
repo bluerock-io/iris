@@ -6,241 +6,186 @@ From iris.algebra Require Export cmra.
 From iris.algebra Require Import updates local_updates.
 From iris.prelude Require Import options.
 
-Local Arguments pcore _ _ !_ /.
-Local Arguments cmra_pcore _ !_ /.
-Local Arguments validN _ _ _ !_ /.
-Local Arguments valid _ _  !_ /.
-Local Arguments cmra_validN _ _ !_ /.
-Local Arguments cmra_valid _  !_ /.
+(** Given a preorder [R] on a type [A] we construct the "monotone" resource
+algebra [mra R] and an injection [to_mra : A → mra R] such that:
 
-(* Given a preorder relation R on a type A we construct a resource algebra mra R
-   and an injection principal : A -> mra R such that:
-   [R x y] iff [principal x ≼ principal y]
-   where ≼ is the extension order of mra R resource algebra. This is exactly
-   what the lemma [principal_included] shows.
+   [R x y] iff [to_mra x ≼ to_mra y]
 
-   This resource algebra is useful for reasoning about monotonicity.
-   See the following paper for more details:
+Here, [≼] is the extension order of the [mra R] resource algebra. This is
+exactly what the lemma [to_mra_included] shows.
 
-   Reasoning About Monotonicity in Separation Logic
-   Amin Timany and Lars Birkedal
-   in Certified Programs and Proofs (CPP) 2021
-*)
+This resource algebra is useful for reasoning about monotonicity. See the
+following paper for more details ([to_mra] is called "principal"):
 
-Definition mra {A : Type} (R : relation A) : Type := list A.
-Definition principal {A : Type} (R : relation A) (a : A) : mra R := [a].
+  Reasoning About Monotonicity in Separation Logic
+  Amin Timany and Lars Birkedal
+  in Certified Programs and Proofs (CPP) 2021
 
-(* OFE *)
-Section ofe.
-  Context {A : Type} {R : relation A}.
+Note that unlike most Iris algebra constructions [mra A] works on [A : Type],
+not on [A : ofe]. See the comment at [mraO] below for more information. If [A]
+has an [Equiv A] (i.e., is a setoid), there are some results at the bottom of
+this file. *)
+Record mra {A} (R : relation A) := { mra_car : list A }.
+Definition to_mra {A} {R : relation A} (a : A) : mra R :=
+  {| mra_car := [a] |}.
+Global Arguments mra_car {_ _} _.
+
+Section mra.
+  Context {A} {R : relation A}.
   Implicit Types a b : A.
   Implicit Types x y : mra R.
 
-  Local Definition below (a : A) (x : mra R) := ∃ b, b ∈ x ∧ R a b.
+  (** Pronounced [a] is below [x]. *)
+  Local Definition mra_below (a : A) (x : mra R) := ∃ b, b ∈ mra_car x ∧ R a b.
 
-  Local Lemma below_app a x y : below a (x ++ y) ↔ below a x ∨ below a y.
-  Proof.
-    split.
-    - intros (b & [|]%elem_of_app & ?); [left|right]; exists b; eauto.
-    - intros [(b & ? & ?)|(b & ? & ?)]; exists b; rewrite elem_of_app; eauto.
-  Qed.
+  Local Lemma mra_below_to_mra a b : mra_below a (to_mra b) ↔ R a b.
+  Proof. set_solver. Qed.
 
-  Local Lemma below_principal a b : below a (principal R b) ↔ R a b.
-  Proof.
-    split.
-    - intros (c & ->%elem_of_list_singleton & ?); done.
-    - intros Hab; exists b; split; first apply elem_of_list_singleton; done.
-  Qed.
-
-  Local Instance mra_equiv : Equiv (mra R) :=
-    λ x y, ∀ a, below a x ↔ below a y.
+  (* OFE *)
+  Local Instance mra_equiv : Equiv (mra R) := λ x y,
+    ∀ a, mra_below a x ↔ mra_below a y.
 
   Local Instance mra_equiv_equiv : Equivalence mra_equiv.
-  Proof.
-    split; [by firstorder|by firstorder|].
-    intros ??? Heq1 Heq2 ?; split; intros ?;
-      [apply Heq2; apply Heq1|apply Heq1; apply Heq2]; done.
-  Qed.
+  Proof. unfold mra_equiv; split; intros ?; naive_solver. Qed.
 
+  (** Generalizing [mra A] to [A : ofe] and [R : A -n> A -n> siProp] is not
+  obvious. It is not clear what axioms to impose on [R] for the "extension
+  axiom" to hold:
+
+    cmra_extend :
+      x ≡{n}≡ y1 ⋅ y2 →
+      ∃ z1 z2, x ≡ z1 ⋅ z2 ∧ y1 ≡{n}≡ z1 ∧ y2 ≡{n}≡ z2
+
+  To prove this, assume ([⋅] is defined as [++], see [mra_op]):
+
+    x ≡{n}≡ y1 ++ y2
+
+  When defining [dist] as the step-indexed version of [mra_equiv], this means:
+
+    ∀ n' a, n' ≤ n →
+            mra_below a x n' ↔ mra_below a y1 n' ∨ mra_below a y2 n'
+
+  From this assumption it is not clear how to obtain witnesses [z1] and [z2]. *)
   Canonical Structure mraO := discreteO (mra R).
-End ofe.
 
-Global Arguments mraO [_] _.
-
-(* CMRA *)
-Section cmra.
-  Context {A : Type} {R : relation A}.
-  Implicit Types a b : A.
-  Implicit Types x y : mra R.
-
+  (* CMRA *)
   Local Instance mra_valid : Valid (mra R) := λ x, True.
   Local Instance mra_validN : ValidN (mra R) := λ n x, True.
-  Local Program Instance mra_op : Op (mra R) := λ x y, x ++ y.
+  Local Program Instance mra_op : Op (mra R) := λ x y,
+    {| mra_car := mra_car x ++ mra_car y |}.
   Local Instance mra_pcore : PCore (mra R) := Some.
 
   Lemma mra_cmra_mixin : CmraMixin (mra R).
   Proof.
     apply discrete_cmra_mixin; first apply _.
-    apply ra_total_mixin.
-    - eauto.
-    - intros ??? Heq a; specialize (Heq a); rewrite !below_app; firstorder.
-    - intros ?; done.
-    - done.
-    - intros ????; rewrite !below_app; firstorder.
-    - intros ???; rewrite !below_app; firstorder.
-    - rewrite /core /pcore /=; intros ??; rewrite below_app; firstorder.
-    - done.
-    - intros ? ? [? ?]; eexists _; done.
-    - done.
+    apply ra_total_mixin; try done.
+    - (* [Proper] of [op] *) intros x y z Hyz a. specialize (Hyz a). set_solver.
+    - (* [Proper] of [core] *) apply _.
+    - (* [Assoc] *) intros x y z a. set_solver.
+    - (* [Comm] *) intros x y a. set_solver.
+    - (* [core x ⋅ x ≡ x] *) intros x a. set_solver.
   Qed.
 
   Canonical Structure mraR : cmra := Cmra (mra R) mra_cmra_mixin.
 
   Global Instance mra_cmra_total : CmraTotal mraR.
   Proof. rewrite /CmraTotal; eauto. Qed.
-  Global Instance mra_core_id (x : mra R) : CoreId x.
+  Global Instance mra_core_id x : CoreId x.
   Proof. by constructor. Qed.
 
   Global Instance mra_cmra_discrete : CmraDiscrete mraR.
   Proof. split; last done. intros ? ?; done. Qed.
 
-  Local Instance mra_unit : Unit (mra R) := @nil A.
+  Local Instance mra_unit : Unit (mra R) := {| mra_car := [] |}.
   Lemma auth_ucmra_mixin : UcmraMixin (mra R).
   Proof. split; done. Qed.
 
   Canonical Structure mraUR := Ucmra (mra R) auth_ucmra_mixin.
 
-  Lemma mra_idemp (x : mra R) : x ⋅ x ≡ x.
-  Proof. intros a; rewrite below_app; naive_solver. Qed.
+  (* Laws *)
+  Lemma mra_idemp x : x ⋅ x ≡ x.
+  Proof. intros a. set_solver. Qed.
 
-  Lemma mra_included (x y : mra R) : x ≼ y ↔ y ≡ x ⋅ y.
+  Lemma mra_included x y : x ≼ y ↔ y ≡ x ⋅ y.
   Proof.
     split; [|by intros ?; exists y].
     intros [z ->]; rewrite assoc mra_idemp; done.
   Qed.
 
-  Lemma principal_R_opN_base `{!Transitive R} n x y :
-    (∀ b, b ∈ y → ∃ c, c ∈ x ∧ R b c) → y ⋅ x ≡{n}≡ x.
-  Proof.
-    intros HR; split; rewrite /op /mra_op below_app; [|by firstorder].
-    intros [(c & (d & Hd1 & Hd2)%HR & Hc2)|]; [|done].
-    exists d; split; [|transitivity c]; done.
-  Qed.
+  Lemma to_mra_R_op `{!Transitive R} a b :
+    R a b →
+    to_mra a ⋅ to_mra b ≡ to_mra b.
+  Proof. intros Hab c. set_solver. Qed.
 
-  Lemma principal_R_opN `{!Transitive R} n a b :
-    R a b → principal R a ⋅ principal R b ≡{n}≡ principal R b.
-  Proof.
-    intros; apply principal_R_opN_base; intros c; rewrite /principal.
-    setoid_rewrite elem_of_list_singleton => ->; eauto.
-  Qed.
-
-  Lemma principal_R_op `{!Transitive R} a b :
-    R a b → principal R a ⋅ principal R b ≡ principal R b.
-  Proof. by intros ? ?; apply (principal_R_opN 0). Qed.
-
-  Lemma principal_op_RN n a b x :
-    R a a → principal R a ⋅ x ≡{n}≡ principal R b → R a b.
-  Proof.
-    intros Ha HR.
-    destruct (HR a) as [[z [HR1%elem_of_list_singleton HR2]] _];
-      last by subst; eauto.
-    rewrite /op /mra_op /principal below_app below_principal; auto.
-  Qed.
-
-  Lemma principal_op_R' a b x :
-    R a a → principal R a ⋅ x ≡ principal R b → R a b.
-  Proof. intros ? ?; eapply (principal_op_RN 0); eauto. Qed.
-
-  Lemma principal_op_R `{!Reflexive R} a b x :
-    principal R a ⋅ x ≡ principal R b → R a b.
-  Proof. intros; eapply principal_op_R'; eauto. Qed.
-
-  Lemma principal_includedN `{!PreOrder R} n a b :
-    principal R a ≼{n} principal R b ↔ R a b.
+  Lemma to_mra_included `{!PreOrder R} a b :
+    to_mra a ≼ to_mra b ↔ R a b.
   Proof.
     split.
-    - intros [z Hz]; eapply principal_op_RN; first done. by rewrite Hz.
-    - intros ?; exists (principal R b); rewrite principal_R_opN; eauto.
+    - move=> [z Hz]. specialize (Hz a). set_solver.
+    - intros ?; exists (to_mra b). by rewrite to_mra_R_op.
   Qed.
-
-  Lemma principal_included `{!PreOrder R} a b :
-    principal R a ≼ principal R b ↔ R a b.
-  Proof. apply (principal_includedN 0). Qed.
 
   Lemma mra_local_update_grow `{!Transitive R} a x b:
     R a b →
-    (principal R a, x) ~l~> (principal R b, principal R b).
+    (to_mra a, x) ~l~> (to_mra b, to_mra b).
   Proof.
-    intros Hana Hanb.
-    apply local_update_unital_discrete.
-    intros z _ Habz.
-    split; first done.
-    intros w; split.
-    - intros (y & ->%elem_of_list_singleton & Hy2).
-      exists b; split; first constructor; done.
-    - intros (y & [->|Hy1]%elem_of_cons & Hy2).
-      + exists b; split; first constructor; done.
-      + exists b; split; first constructor.
-        specialize (Habz w) as [_ [c [->%elem_of_list_singleton Hc2]]].
-        { exists y; split; first (by apply elem_of_app; right); eauto. }
-        etrans; eauto.
+    intros Hana. apply local_update_unital_discrete=> z _ Habz.
+    split; first done. intros c. specialize (Habz c). set_solver.
   Qed.
 
   Lemma mra_local_update_get_frag `{!PreOrder R} a b:
     R b a →
-    (principal R a, ε) ~l~> (principal R a, principal R b).
+    (to_mra a, ε) ~l~> (to_mra a, to_mra b).
   Proof.
-    intros Hana.
-    apply local_update_unital_discrete.
-    intros z _; rewrite left_id; intros <-.
-    split; first done.
-    apply mra_included; by apply principal_included.
+    intros Hana. apply local_update_unital_discrete=> z _.
+    rewrite left_id. intros <-. split; first done.
+    apply mra_included; by apply to_mra_included.
   Qed.
+End mra.
 
-End cmra.
-
+Global Arguments mraO {_} _.
 Global Arguments mraR {_} _.
 Global Arguments mraUR {_} _.
 
-
-(* Might be useful if the type of elements is an OFE. *)
-Section mra_over_ofe.
-  Context {A : ofe} {R : relation A}.
+(** If [R] is a partial order, relative to a reflexive relation [S] on the
+carrier [A], then [to_mra] is proper and injective. The theory for
+arbitrary relations [S] is overly general, so we do not declare the results
+as instances. Below we provide instances for [S] being [=] and [≡]. *)
+Section mra_over_rel.
+  Context {A} {R : relation A} (S : relation A).
   Implicit Types a b : A.
   Implicit Types x y : mra R.
 
-  Global Instance principal_ne
-         `{!∀ n, Proper ((dist n) ==> (dist n) ==> iff) R} :
-    NonExpansive (principal R).
-  Proof. intros n a1 a2 Ha; split; rewrite !below_principal !Ha; done. Qed.
+  Lemma to_mra_rel_proper :
+    Reflexive S →
+    Proper (S ==> S ==> iff) R →
+    Proper (S ==> (≡@{mra R})) (to_mra).
+  Proof. intros ? HR a1 a2 Ha b. rewrite !mra_below_to_mra. by apply HR. Qed.
 
-  Global Instance principal_proper
-         `{!∀ n, Proper ((dist n) ==> (dist n) ==> iff) R} :
-    Proper ((≡) ==> (≡)) (principal R) := ne_proper _.
-
-  Lemma principal_inj_related a b :
-    principal R a ≡ principal R b → R a a → R a b.
+  Lemma to_mra_rel_inj :
+    Reflexive R →
+    AntiSymm S R →
+    Inj S (≡@{mra R}) (to_mra).
   Proof.
-    intros Hab ?.
-    destruct (Hab a) as [[? [?%elem_of_list_singleton ?]] _];
-      last by subst; auto.
-    exists a; rewrite /principal elem_of_list_singleton; done.
+    intros ?? a b Hab. move: (Hab a) (Hab b). rewrite !mra_below_to_mra.
+    intros. apply (anti_symm R); naive_solver.
   Qed.
+End mra_over_rel.
 
-  Lemma principal_inj_general a b :
-    principal R a ≡ principal R b →
-    R a a → R b b → (R a b → R b a → a ≡ b) → a ≡ b.
-  Proof. intros ??? Has; apply Has; apply principal_inj_related; auto. Qed.
+Global Instance to_mra_inj {A} {R : relation A} :
+  Reflexive R →
+  AntiSymm (=) R →
+  Inj (=) (≡@{mra R}) (to_mra) | 0. (* Lower cost than [to_mra_equiv_inj] *)
+Proof. intros. by apply (to_mra_rel_inj (=)). Qed.
 
-  Global Instance principal_inj_instance `{!Reflexive R} `{!AntiSymm (≡) R} :
-    Inj (≡) (≡) (principal R).
-  Proof. intros ???; apply principal_inj_general; auto. Qed.
+Global Instance to_mra_proper `{Equiv A} {R : relation A} :
+  Reflexive (≡@{A}) →
+  Proper ((≡) ==> (≡) ==> iff) R →
+  Proper ((≡) ==> (≡@{mra R})) (to_mra).
+Proof. intros. by apply (to_mra_rel_proper (≡)). Qed.
 
-  Global Instance principal_injN `{!Reflexive R} {Has : AntiSymm (≡) R} n :
-    Inj (dist n) (dist n) (principal R).
-  Proof.
-    intros x y Hxy%discrete_iff; last apply _.
-    eapply equiv_dist; revert Hxy; apply inj; apply _.
-  Qed.
-
-End mra_over_ofe.
+Global Instance to_mra_equiv_inj `{Equiv A} {R : relation A} :
+  Reflexive R →
+  AntiSymm (≡) R →
+  Inj (≡) (≡@{mra R}) (to_mra) | 1.
+Proof. intros. by apply (to_mra_rel_inj (≡)). Qed.
