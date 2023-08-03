@@ -1546,9 +1546,9 @@ Section option.
     rewrite /included. f_equiv=> mc. by rewrite -(inj_iff Some b) Some_op_opM.
   Qed.
 
-  Lemma Some_validN_includedN n a b : ✓{n} a → Some b ≼{n} Some a → ✓{n} b.
+  Lemma cmra_validN_Some_includedN n a b : ✓{n} a → Some b ≼{n} Some a → ✓{n} b.
   Proof. apply: (cmra_validN_includedN _ (Some _) (Some _)). Qed.
-  Lemma Some_valid_included a b : ✓ a → Some b ≼ Some a → ✓ b.
+  Lemma cmra_valid_Some_included a b : ✓ a → Some b ≼ Some a → ✓ b.
   Proof. apply: (cmra_valid_included (Some _) (Some _)). Qed.
 
   Lemma Some_includedN_total `{!CmraTotal A} n a b : Some a ≼{n} Some b ↔ a ≼{n} b.
