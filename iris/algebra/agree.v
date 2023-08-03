@@ -180,7 +180,7 @@ Qed.
 
 Lemma agree_op_inv x y : ✓ (x ⋅ y) → x ≡ y.
 Proof.
-  intros ?. apply equiv_dist=>n. by apply agree_op_invN, cmra_valid_validN.
+  intros ?. apply equiv_dist=> n. by apply agree_op_invN, cmra_valid_validN.
 Qed.
 
 Global Instance to_agree_injN n : Inj (dist n) (dist n) (to_agree).
@@ -216,14 +216,13 @@ Qed.
 
 Lemma to_agree_includedN n a b : to_agree a ≼{n} to_agree b ↔ a ≡{n}≡ b.
 Proof.
-  split; last by intros ->. intros [x [_ Hincl]].
-  by destruct (Hincl a) as (? & ->%elem_of_list_singleton & ?); first set_solver+.
+  split; last by intros ->.
+  intros. by apply (inj to_agree), agree_valid_includedN.
 Qed.
 Lemma to_agree_included a b : to_agree a ≼ to_agree b ↔ a ≡ b.
 Proof.
   split; last by intros ->.
-  intros (x & Heq). apply equiv_dist=>n. destruct (Heq n) as [_ Hincl].
-  by destruct (Hincl a) as (? & ->%elem_of_list_singleton & ?); first set_solver+.
+  intros. by apply (inj to_agree), agree_valid_included.
 Qed.
 
 Global Instance agree_cancelable x : Cancelable x.
