@@ -178,6 +178,11 @@ Proof.
     exists a. by rewrite elem_of_list_singleton -discrete_iff_0.
 Qed.
 
+Lemma agree_op_inv x y : ✓ (x ⋅ y) → x ≡ y.
+Proof.
+  intros ?. apply equiv_dist=> n. by apply agree_op_invN, cmra_valid_validN.
+Qed.
+
 Global Instance to_agree_injN n : Inj (dist n) (dist n) (to_agree).
 Proof.
   move=> a b [_] /=. setoid_rewrite elem_of_list_singleton. naive_solver.
@@ -191,7 +196,6 @@ Proof.
   destruct (elem_of_agree x) as [a ?].
   exists a; split=> b /=; setoid_rewrite elem_of_list_singleton; naive_solver.
 Qed.
-
 Lemma to_agree_uninj x : ✓ x → ∃ a, to_agree a ≡ x.
 Proof.
   rewrite /valid /agree_valid_instance; setoid_rewrite agree_validN_def.
@@ -204,18 +208,21 @@ Proof.
   move=> Hval [z Hy]; move: Hval; rewrite Hy.
   by move=> /agree_op_invN->; rewrite agree_idemp.
 Qed.
+Lemma agree_valid_included x y : ✓ y → x ≼ y → x ≡ y.
+Proof.
+  move=> Hval [z Hy]; move: Hval; rewrite Hy.
+  by move=> /agree_op_inv->; rewrite agree_idemp.
+Qed.
 
 Lemma to_agree_includedN n a b : to_agree a ≼{n} to_agree b ↔ a ≡{n}≡ b.
 Proof.
-  split; last by intros ->. intros [x [_ Hincl]].
-  by destruct (Hincl a) as (? & ->%elem_of_list_singleton & ?); first set_solver+.
+  split; last by intros ->.
+  intros. by apply (inj to_agree), agree_valid_includedN.
 Qed.
-
 Lemma to_agree_included a b : to_agree a ≼ to_agree b ↔ a ≡ b.
 Proof.
   split; last by intros ->.
-  intros (x & Heq). apply equiv_dist=>n. destruct (Heq n) as [_ Hincl].
-  by destruct (Hincl a) as (? & ->%elem_of_list_singleton & ?); first set_solver+.
+  intros. by apply (inj to_agree), agree_valid_included.
 Qed.
 
 Global Instance agree_cancelable x : Cancelable x.
@@ -232,10 +239,6 @@ Proof.
   by rewrite -EQy -EQz -Hx'y' -Hx'z'.
 Qed.
 
-Lemma agree_op_inv x y : ✓ (x ⋅ y) → x ≡ y.
-Proof.
-  intros ?. apply equiv_dist=>n. by apply agree_op_invN, cmra_valid_validN.
-Qed.
 Lemma to_agree_op_invN a b n : ✓{n} (to_agree a ⋅ to_agree b) → a ≡{n}≡ b.
 Proof. by intros ?%agree_op_invN%(inj to_agree). Qed.
 Lemma to_agree_op_inv a b : ✓ (to_agree a ⋅ to_agree b) → a ≡ b.
