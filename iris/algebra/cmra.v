@@ -1519,6 +1519,8 @@ Section option.
   Proof. rewrite Some_includedN. auto. Qed.
   Lemma Some_includedN_mono n a b : a ≼{n} b → Some a ≼{n} Some b.
   Proof. rewrite Some_includedN. auto. Qed.
+  Lemma Some_includedN_refl n a b : a ≡{n}≡ b → Some a ≼{n} Some b.
+  Proof. rewrite Some_includedN. auto. Qed.
   Lemma Some_includedN_is_Some n x mb : Some x ≼{n} mb → is_Some mb.
   Proof. rewrite option_includedN. naive_solver. Qed.
 
@@ -1529,6 +1531,8 @@ Section option.
   Lemma Some_included_2 a b : a ≡ b ∨ a ≼ b → Some a ≼ Some b.
   Proof. rewrite Some_included. auto. Qed.
   Lemma Some_included_mono a b : a ≼ b → Some a ≼ Some b.
+  Proof. rewrite Some_included. auto. Qed.
+  Lemma Some_included_refl a b : a ≡ b → Some a ≼ Some b.
   Proof. rewrite Some_included. auto. Qed.
   Lemma Some_included_is_Some x mb : Some x ≼ mb → is_Some mb.
   Proof. rewrite option_included. naive_solver. Qed.
@@ -1541,6 +1545,11 @@ Section option.
   Proof.
     rewrite /included. f_equiv=> mc. by rewrite -(inj_iff Some b) Some_op_opM.
   Qed.
+
+  Lemma cmra_validN_Some_includedN n a b : ✓{n} a → Some b ≼{n} Some a → ✓{n} b.
+  Proof. apply: (cmra_validN_includedN _ (Some _) (Some _)). Qed.
+  Lemma cmra_valid_Some_included a b : ✓ a → Some b ≼ Some a → ✓ b.
+  Proof. apply: (cmra_valid_included (Some _) (Some _)). Qed.
 
   Lemma Some_includedN_total `{!CmraTotal A} n a b : Some a ≼{n} Some b ↔ a ≼{n} b.
   Proof. rewrite Some_includedN. split; [|by eauto]. by intros [->|?]. Qed.
@@ -1587,6 +1596,12 @@ Section option_prod.
   Lemma Some_pair_includedN n a1 a2 b1 b2 :
     Some (a1,b1) ≼{n} Some (a2,b2) → Some a1 ≼{n} Some a2 ∧ Some b1 ≼{n} Some b2.
   Proof. rewrite !Some_includedN. intros [[??]|[??]%prod_includedN]; eauto. Qed.
+  Lemma Some_pair_includedN_l n a1 a2 b1 b2 :
+    Some (a1,b1) ≼{n} Some (a2,b2) → Some a1 ≼{n} Some a2.
+  Proof. intros. eapply Some_pair_includedN. done. Qed.
+  Lemma Some_pair_includedN_r n a1 a2 b1 b2 :
+    Some (a1,b1) ≼{n} Some (a2,b2) → Some b1 ≼{n} Some b2.
+  Proof. intros. eapply Some_pair_includedN. done. Qed.
   Lemma Some_pair_includedN_total_1 `{CmraTotal A} n a1 a2 b1 b2 :
     Some (a1,b1) ≼{n} Some (a2,b2) → a1 ≼{n} a2 ∧ Some b1 ≼{n} Some b2.
   Proof. intros ?%Some_pair_includedN. by rewrite -(Some_includedN_total _ a1). Qed.
@@ -1597,6 +1612,12 @@ Section option_prod.
   Lemma Some_pair_included a1 a2 b1 b2 :
     Some (a1,b1) ≼ Some (a2,b2) → Some a1 ≼ Some a2 ∧ Some b1 ≼ Some b2.
   Proof. rewrite !Some_included. intros [[??]|[??]%prod_included]; eauto. Qed.
+  Lemma Some_pair_included_l a1 a2 b1 b2 :
+    Some (a1,b1) ≼ Some (a2,b2) → Some a1 ≼ Some a2.
+  Proof. intros. eapply Some_pair_included. done. Qed.
+  Lemma Some_pair_included_r a1 a2 b1 b2 :
+    Some (a1,b1) ≼ Some (a2,b2) → Some b1 ≼ Some b2.
+  Proof. intros. eapply Some_pair_included. done. Qed.
   Lemma Some_pair_included_total_1 `{CmraTotal A} a1 a2 b1 b2 :
     Some (a1,b1) ≼ Some (a2,b2) → a1 ≼ a2 ∧ Some b1 ≼ Some b2.
   Proof. intros ?%Some_pair_included. by rewrite -(Some_included_total a1). Qed.
