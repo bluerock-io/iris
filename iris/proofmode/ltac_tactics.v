@@ -1765,9 +1765,9 @@ Ltac _iInduction x xs Hs tac IH :=
   (* FIXME: We should be able to do this in a more sane way, by concatenating
   the spec patterns instead of calling [iRevertIntros] multiple times. *)
   _iRevertIntros0 Hs ltac:(fun _ =>
-    _iRevertIntros xs "∗" ltac:(fun _ =>
+    _iRevertIntros0 "∗" ltac:(fun _ =>
       let Hsx := iHypsContaining x in
-      _iRevertIntros0 Hsx ltac:(fun _ =>
+      _iRevertIntros xs Hsx ltac:(fun _ =>
         iInductionCore tac as IH
       )
     )
