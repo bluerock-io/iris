@@ -1486,6 +1486,7 @@ Proof. auto. Qed.
 Lemma test_auto_wand_iff P : ⊢ P ∗-∗ P.
 Proof. auto. Qed.
 
+Check "test_iIntros_auto_name_used_later".
 Lemma test_iIntros_auto_name_used_later (Φ: nat → PROP) :
   ⊢ ∀ x y, Φ (x+y).
 Proof.
