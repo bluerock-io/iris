@@ -3,8 +3,18 @@ From iris.heap_lang Require Import primitive_laws notation.
 From iris.prelude Require Import options.
 
 (** A general interface for a lock.
+
 All parameters are implicit, since it is expected that there is only one
-[heapGS_gen] in scope that could possibly apply. *)
+[heapGS_gen] in scope that could possibly apply.
+
+Only one instance of this class should ever be in scope. To write a library that
+is generic over the lock, just add a [`{lock}] implicit parameter. To use a
+particular lock instance, use [Local Existing Instance <lock instance>].
+
+When writing an instance of this class, please take care not to shadow the class
+projections (e.g., either use [Local Definition newlock] or avoid the name
+[newlock] altogether), and do not register an instance -- just make it a
+[Definition] that others can register later. *)
 Class lock `{!heapGS_gen hlc Σ} := Lock {
   (** * Operations *)
   newlock : val;

@@ -6,24 +6,24 @@ From iris.heap_lang Require Import proofmode notation.
 From iris.heap_lang.lib Require Export lock.
 From iris.prelude Require Import options.
 
-Definition wait_loop: val :=
+Local Definition wait_loop: val :=
   rec: "wait_loop" "x" "lk" :=
     let: "o" := !(Fst "lk") in
     if: "x" = "o"
       then #() (* my turn *)
       else "wait_loop" "x" "lk".
 
-Definition newlock : val :=
+Local Definition newlock : val :=
   λ: <>, ((* owner *) ref #0, (* next *) ref #0).
 
-Definition acquire : val :=
+Local Definition acquire : val :=
   rec: "acquire" "lk" :=
     let: "n" := !(Snd "lk") in
     if: CAS (Snd "lk") "n" ("n" + #1)
       then wait_loop "n" "lk"
       else "acquire" "lk".
 
-Definition release : val :=
+Local Definition release : val :=
   λ: "lk", (Fst "lk") <- !(Fst "lk") + #1.
 
 (** The CMRAs we need. *)
@@ -41,37 +41,28 @@ Section proof.
   Context `{!heapGS_gen hlc Σ, !tlockG Σ}.
   Let N := nroot .@ "ticket_lock".
 
-  Definition lock_inv (γ : gname) (lo ln : loc) (R : iProp Σ) : iProp Σ :=
+  Local Definition lock_inv (γ : gname) (lo ln : loc) (R : iProp Σ) : iProp Σ :=
     ∃ o n : nat,
       lo ↦ #o ∗ ln ↦ #n ∗
       own γ (● (Excl' o, GSet (set_seq 0 n))) ∗
       ((own γ (◯ (Excl' o, GSet ∅)) ∗ R) ∨ own γ (◯ (ε, GSet {[ o ]}))).
 
-  Definition is_lock (γ : gname) (lk : val) (R : iProp Σ) : iProp Σ :=
+  Local Definition is_lock (γ : gname) (lk : val) (R : iProp Σ) : iProp Σ :=
     ∃ lo ln : loc,
       ⌜lk = (#lo, #ln)%V⌝ ∗ inv N (lock_inv γ lo ln R).
 
-  Definition issued (γ : gname) (x : nat) : iProp Σ :=
+  Local Definition issued (γ : gname) (x : nat) : iProp Σ :=
     own γ (◯ (ε, GSet {[ x ]})).
 
-  Definition locked (γ : gname) : iProp Σ := ∃ o, own γ (◯ (Excl' o, GSet ∅)).
+  Local Definition locked (γ : gname) : iProp Σ := ∃ o, own γ (◯ (Excl' o, GSet ∅)).
 
-  Global Instance lock_inv_ne γ lo ln : NonExpansive (lock_inv γ lo ln).
-  Proof. solve_proper. Qed.
-  Global Instance is_lock_contractive γ lk : Contractive (is_lock γ lk).
-  Proof. solve_contractive. Qed.
-  Global Instance is_lock_persistent γ lk R : Persistent (is_lock γ lk R).
-  Proof. apply _. Qed.
-  Global Instance locked_timeless γ : Timeless (locked γ).
-  Proof. apply _. Qed.
-
-  Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
+  Local Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
   Proof.
     iIntros "[%σ1 H1] [%σ2 H2]".
     iCombine "H1 H2" gives %[[] _]%auth_frag_op_valid_1.
   Qed.
 
-  Lemma is_lock_iff γ lk R1 R2 :
+  Local Lemma is_lock_iff γ lk R1 R2 :
     is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2.
   Proof.
     iDestruct 1 as (lo ln ->) "#Hinv"; iIntros "#HR".
@@ -81,7 +72,7 @@ Section proof.
       (iDestruct "H" as "[[H◯ H]|H◯]"; [iLeft; iFrame "H◯"; by iApply "HR"|by iRight]).
   Qed.
 
-  Lemma newlock_spec (R : iProp Σ) :
+  Local Lemma newlock_spec (R : iProp Σ) :
     {{{ R }}} newlock #() {{{ lk γ, RET lk; is_lock γ lk R }}}.
   Proof.
     iIntros (Φ) "HR HΦ". wp_lam.
@@ -94,7 +85,7 @@ Section proof.
     wp_pures. iModIntro. iApply ("HΦ" $! (#lo, #ln)%V γ). iExists lo, ln. eauto.
   Qed.
 
-  Lemma wait_loop_spec γ lk x R :
+  Local Lemma wait_loop_spec γ lk x R :
     {{{ is_lock γ lk R ∗ issued γ x }}} wait_loop #x lk {{{ RET #(); locked γ ∗ R }}}.
   Proof.
     iIntros (Φ) "[Hl Ht] HΦ". iDestruct "Hl" as (lo ln ->) "#Hinv".
@@ -115,7 +106,7 @@ Section proof.
       wp_if. iApply ("IH" with "Ht"). iNext. by iExact "HΦ".
   Qed.
 
-  Lemma acquire_spec γ lk R :
+  Local Lemma acquire_spec γ lk R :
     {{{ is_lock γ lk R }}} acquire lk {{{ RET #(); locked γ ∗ R }}}.
   Proof.
     iIntros (ϕ) "Hl HΦ". iDestruct "Hl" as (lo ln ->) "#Hinv".
@@ -144,7 +135,7 @@ Section proof.
       wp_pures. by iApply "IH"; auto.
   Qed.
 
-  Lemma release_spec γ lk R :
+  Local Lemma release_spec γ lk R :
     {{{ is_lock γ lk R ∗ locked γ ∗ R }}} release lk {{{ RET #(); True }}}.
   Proof.
     iIntros (Φ) "(Hl & Hγ & HR) HΦ". iDestruct "Hl" as (lo ln ->) "#Hinv".
@@ -172,9 +163,8 @@ Section proof.
   Qed.
 End proof.
 
-Global Typeclasses Opaque is_lock issued locked.
-
-Canonical Structure ticket_lock `{!heapGS_gen hlc Σ, !tlockG Σ} : lock :=
+Program Definition ticket_lock `{!heapGS_gen hlc Σ, !tlockG Σ} : lock :=
   {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
      lock.newlock_spec := newlock_spec;
      lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.
+Next Obligation. intros. rewrite /is_lock /lock_inv. solve_contractive. Qed.
