@@ -1596,7 +1596,11 @@ Ltac _iIntros_go pats startproof :=
 
 Ltac _iIntros0 pat :=
   let pats := intro_pat.parse pat in
-  _iIntros_go pats true.
+  (* HACK to avoid calling [iStartProof] on side-conditions opened by [iIntros (?%lemma)]. *)
+  lazymatch pats with
+  | [] => idtac
+  | _ => _iIntros_go pats true
+  end.
 Ltac _iIntros xs pat :=
   ltac1_list_iter ltac:(fun x => iIntro (x)) xs;
   _iIntros0 pat.

@@ -150,9 +150,6 @@ Coq 8.13 is no longer supported.
   [iris/proofmode/base.v](proofmode/base.v) for documentation on how
   to use these tactics to convert your own fixed arity tactics to an n-ary
   variant.
-* The tactic `iIntros` will always call `iStartProof`, even when there is no Iris
-  pattern such as in `iIntros (x)`. If you do not want to start the proof mode,
-  use ordinary `intros`.
 
 **Changes in `base_logic`:**
 
