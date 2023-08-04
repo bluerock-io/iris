@@ -878,7 +878,7 @@ The term "true" has type "bool" while it is expected to have type "nat".
 "iStartProof_fail"
      : string
 The command has indeed failed with message:
-Tactic failure: iStartProof: not a BI assertion.
+Tactic failure: iStartProof: not a BI assertion: (0 = 0).
 "iPoseProof_fail"
      : string
 The command has indeed failed with message:

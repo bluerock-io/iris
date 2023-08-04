@@ -70,7 +70,7 @@ Tactic Notation "iStartProof" :=
                                  "`intros x`, `iIntros (x)`, or `iIntros ""%x"""
   | |- envs_entails _ _ => idtac
   | |- ?φ => notypeclasses refine (as_emp_valid_2 φ _ _);
-               [tc_solve || fail "iStartProof: not a BI assertion"
+               [tc_solve || fail "iStartProof: not a BI assertion:" φ
                |notypeclasses refine (tac_start _ _)]
   end.
 
