@@ -6,8 +6,7 @@
   heapGS0 : heapGS Σ
   E : coPset
   ============================
-  --------------------------------------∗
-  WP let: "x" := ref #1 in "x" <- ! "x" + #1;; ! "x" @ E {{ v, ⌜v = #2⌝ }}
+  ⊢ WP let: "x" := ref #1 in "x" <- ! "x" + #1;; ! "x" @ E {{ v, ⌜v = #2⌝ }}
 1 goal
   
   Σ : gFunctors
@@ -249,8 +248,7 @@ Tactic failure: wp_pure: "Hcred" is not fresh.
   I : val → Prop
   Heq : ∀ v : val, I v ↔ I #true
   ============================
-  --------------------------------------∗
-  l ↦_(λ _ : val, I #true) □
+  ⊢ l ↦_(λ _ : val, I #true) □
 "wp_iMod_fupd_atomic"
      : string
 2 goals

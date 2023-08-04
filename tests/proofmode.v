@@ -2055,6 +2055,10 @@ Proof.
   iIntros "H H'". Fail iDestruct "H'" as "-#H".
 Abort.
 
+Lemma test_iIntros_subgoals (m : gmap nat nat) i x :
+  ⊢@{PROP} ⌜kmap (M2 :=gmap nat) id m !! i = Some x⌝ → True.
+Proof. iStartProof. iIntros (?%lookup_kmap_Some). Abort.
+
 End tactic_tests.
 
 Section mutual_induction.
