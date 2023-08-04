@@ -903,6 +903,17 @@ Proof.
     by iApply "IH".
 Qed.
 
+(* From https://gitlab.mpi-sws.org/iris/iris/-/issues/534 *)
+Lemma test_iInduction_big_sepL_impl' {A} (Φ Ψ : nat → A → PROP) (l1 l2 : list A) :
+  length l1 = length l2 →
+  ([∗ list] k↦x ∈ l1, Φ k x) -∗
+  □ (∀ k x1 x2, ⌜l1 !! k = Some x1⌝ -∗ ⌜l2 !! k = Some x2⌝ -∗ Φ k x1 -∗ Ψ k x2) -∗
+  [∗ list] k↦x ∈ l2, Ψ k x.
+Proof.
+  iIntros (Hlen) "Hl #Himpl".
+  iInduction l1 as [|x1 l1] "IH" forall (Φ Ψ l2 Hlen).
+Abort.
+
 Inductive tree := leaf | node (l r: tree).
 
 Check "test_iInduction_multiple_IHs".
