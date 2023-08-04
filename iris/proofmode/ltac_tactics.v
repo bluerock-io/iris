@@ -1839,7 +1839,7 @@ Tactic Notation "iLöb" "as" constr (IH) "forall" "(" ne_ident_list(xs) ")" :=
 Tactic Notation "iLöb" "as" constr (IH) "forall" constr(Hs) :=
   _iLöb0 Hs IH.
 Tactic Notation "iLöb" "as" constr (IH) "forall" "(" ne_ident_list(xs) ")" constr(Hs) :=
-  _iLöb0 xs Hs IH.
+  _iLöb xs Hs IH.
 
 (** * Assert *)
 (* The argument [p] denotes whether [Q] is persistent. It can either be a

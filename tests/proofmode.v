@@ -875,6 +875,17 @@ Proof.
   by iExists (S n).
 Qed.
 
+Lemma test_iLöb_forall `{!BiLöb PROP} P (n : nat) : P ⊢ ⌜ n = n ⌝.
+Proof.
+  iIntros "HP". iLöb as "IH" forall (n) "HP".
+Restart.
+  iIntros "HP". iLöb as "IH" forall "HP".
+Restart.
+  iIntros "HP". iLöb as "IH" forall (n).
+Restart.
+  iIntros "HP". iLöb as "IH".
+Abort.
+
 Lemma test_iInduction_wf (x : nat) P Q :
   □ P -∗ Q -∗ ⌜ (x + 0 = x)%nat ⌝.
 Proof.
