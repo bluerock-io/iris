@@ -254,7 +254,7 @@ Canonical Structure ucmra_cmraR.
   except for the coercion to type (in this case, [ucmra_car]), since that causes
   problem with canonical structure inference.  Additionally, we make Coq 
   eagerly expand the coercions that go from one structure to another, like
-  [ucmra_cmraR] and [ucmra_ofeO] in this case. *) *)
+  [ucmra_cmraR] and [ucmra_ofeO] in this case. *)
 Global Strategy expand [ucmra_cmraR ucmra_ofeO ucmra_equiv ucmra_dist ucmra_pcore
                         ucmra_op ucmra_valid ucmra_validN ucmra_unit
                         ucmra_ofe_mixin ucmra_cmra_mixin].
