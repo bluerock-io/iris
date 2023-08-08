@@ -312,7 +312,7 @@ Section greatest_coind.
   Qed.
   Local Existing Instance paco_mono.
 
-  Lemma greatest_fixpoint_paco `{!NonExpansive Φ} :
+  Lemma greatest_fixpoint_paco (Φ : A → PROP) `{!NonExpansive Φ} :
     □ (∀ y, Φ y -∗ F (bi_greatest_fixpoint (λ Ψ a, Φ a ∨ F Ψ a)) y) -∗
     ∀ x, Φ x -∗ bi_greatest_fixpoint F x.
   Proof using Type*.
