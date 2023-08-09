@@ -1,5 +1,5 @@
 From iris.bi Require Export bi.
-From iris.proofmode Require Import classes classes_make.
+From iris.proofmode Require Import classes classes_make proofmode.
 From iris.prelude Require Import options.
 
 Class Fractional {PROP : bi} (Φ : Qp → PROP) :=
@@ -196,3 +196,39 @@ Section fractional.
     by rewrite bi.intuitionistically_if_elim fractional.
   Qed.
 End fractional.
+
+Section internal_fractional.
+  Context {PROP : bi}.
+  Implicit Types Φ Ψ : Qp → PROP.
+  Implicit Types q : Qp.
+
+  Global Definition internal_fractional Φ
+    := (□ (∀ p q, Φ (p + q)%Qp ∗-∗ Φ p ∗ Φ q))%I.
+  Global Instance internal_fractional_persistent Φ :
+    Persistent (internal_fractional Φ) := _.
+
+  Global Lemma fractional_internal_fractional Φ :
+    Fractional Φ → ⊢ internal_fractional Φ.
+  Proof.
+    intros frac.
+    iIntros "!>" (q1 q2).
+    rewrite [Φ (q1 + q2)%Qp]frac //=;  auto.
+  Qed.
+
+  Global Lemma internal_fractional_iff `{!BiAffine PROP} Φ Ψ:
+    □ (∀ q, Φ q ↔ Ψ q) ⊢ internal_fractional Φ -∗ internal_fractional Ψ.
+  Proof.
+    iIntros "#Hiff #HΦdup !>" (p q).
+    iSplit.
+    - iIntros "H".
+      iDestruct ("Hiff" with "H") as "HΦ".
+      iDestruct ("HΦdup" with "HΦ") as "[H1 ?]".
+      iSplitL "H1"; iApply "Hiff"; iFrame.
+    - iIntros "[H1 H2]".
+      iDestruct ("Hiff" with "H1") as "HΦ1".
+      iDestruct ("Hiff" with "H2") as "HΦ2".
+      iApply "Hiff".
+      iApply "HΦdup".
+      iFrame.
+  Qed.
+End internal_fractional.

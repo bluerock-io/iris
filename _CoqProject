@@ -168,8 +168,10 @@ iris_heap_lang/lib/spawn.v
 iris_heap_lang/lib/par.v
 iris_heap_lang/lib/assert.v
 iris_heap_lang/lib/lock.v
+iris_heap_lang/lib/rw_lock.v
 iris_heap_lang/lib/spin_lock.v
 iris_heap_lang/lib/ticket_lock.v
+iris_heap_lang/lib/rw_spin_lock.v
 iris_heap_lang/lib/nondet_bool.v
 iris_heap_lang/lib/lazy_coin.v
 iris_heap_lang/lib/clairvoyant_coin.v
