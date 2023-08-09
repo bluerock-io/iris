@@ -48,6 +48,8 @@ Coq 8.13 is no longer supported.
   `_ ≼ ExclBot` with cost 0, which means they are used by `done` to finish
   proofs. (by Ike Mulder)
 * Rename `singleton_mono` to `singleton_included_mono`.
+* Use `Strategy expand` for CMRA/UCMRA coercions and most projections to improve
+  performance of type-checking some large CMRA/OFE types. (by Ike Mulder)
 
 **Changes in `bi`:**
 
