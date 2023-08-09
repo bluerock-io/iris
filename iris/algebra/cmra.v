@@ -106,7 +106,7 @@ Global Hint Extern 0 (ValidN _) => refine (cmra_validN _); shelve : typeclass_in
 Coercion cmra_ofeO (A : cmra) : ofe := Ofe A (cmra_ofe_mixin A).
 Canonical Structure cmra_ofeO.
 
-(* As explained more thoroughly in iris#539, Coq can run into trouble when
+(** As explained more thoroughly in iris#539, Coq can run into trouble when
   [cmra] combinators (such as [optionUR]) are stacked and combined with
   coercions like [cmra_ofeO]. To partially address this, we give Coq's
   type-checker some directions for unfolding, with the Strategy command.
@@ -245,12 +245,7 @@ Coercion ucmra_cmraR (A : ucmra) : cmra :=
   Cmra' A (ucmra_ofe_mixin A) (ucmra_cmra_mixin A).
 Canonical Structure ucmra_cmraR.
 
-(* As explained more thoroughly in iris#539, Coq can run into trouble when
-  [cmra] combinators (such as [optionUR]) are stacked and combined with
-  coercions like [ucmra_cmraR]. To partially address this, we give Coq's
-  type-checker some directions for unfolding, with the  command.
-
-  For these structures, we instruct Coq to eagerly _expand_ all projections,
+(** As for CMRAs above, we instruct Coq to eagerly _expand_ all projections,
   except for the coercion to type (in this case, [ucmra_car]), since that causes
   problem with canonical structure inference.  Additionally, we make Coq 
   eagerly expand the coercions that go from one structure to another, like
