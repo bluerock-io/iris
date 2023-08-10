@@ -171,7 +171,7 @@ Section cmra.
 
   Lemma dyn_reservation_map_cmra_mixin : CmraMixin (dyn_reservation_map A).
   Proof.
-    apply (iso_cmra_mixin_restrict from_reservation_map to_reservation_map); try done.
+    apply (iso_cmra_mixin_restrict_validity from_reservation_map to_reservation_map); try done.
     - intros n [m [E|]];
         rewrite dyn_reservation_map_validN_eq reservation_map_validN_eq /=;
         naive_solver.
