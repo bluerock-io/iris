@@ -60,6 +60,19 @@ Use `Lemma`, not `Theorem` (or the other variants: `Fact`, `Corollary`,
 
 **TODO:** Always add `Global` or `Local` to `Hint`, `Arguments`, and `Instance`.
 
+### `Require`
+
+Never put `Require` in the middle of a file. All `Require` must be at the top.
+If you only want to *import* a certain module in some specific place, you can do something like
+
+```coq
+From lib Require component.
+
+(* ... *)
+
+Import component.
+```
+
 ### Ltac
 
 We prefer `first [ t1 | fail 1 "..." ]` to `t1 || fail "..."` because the latter will fail if `t1` doesn't make progress. See https://gitlab.mpi-sws.org/iris/iris/-/issues/216. Note that `first [ t1 | fail "..."]` is simply incorrect; the failure message will never show up and will be replaced with a generic failure.
