@@ -112,6 +112,7 @@ Coq 8.13 is no longer supported.
 * Provide smart constructor `bi_persistently_mixin_discrete` for
   `BiPersistentlyMixin`: Given a discrete BI that enjoys the existential
   property, a trivial definition of the persistence modality can be given.
+* Fix `greatest_fixpoint_ne'` accidentally being about the least fixpoint.
 
 **Changes in `proofmode`:**
 

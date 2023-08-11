@@ -27,7 +27,7 @@ Global Arguments bi_greatest_fixpoint : simpl never.
 
 (* Both non-expansiveness lemmas do not seem to be interderivable.
   FIXME: is there some lemma that subsumes both? *)
-Lemma least_fixpoint_ne' {PROP : bi} {A : ofe} (F: (A → PROP) → (A → PROP)):
+Lemma least_fixpoint_ne' {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)):
   (∀ Φ, NonExpansive Φ → NonExpansive (F Φ)) → NonExpansive (bi_least_fixpoint F).
 Proof. solve_proper. Qed.
 Global Instance least_fixpoint_ne {PROP : bi} {A : ofe} n :
@@ -193,8 +193,8 @@ Qed.
 
 (* Both non-expansiveness lemmas do not seem to be interderivable.
   FIXME: is there some lemma that subsumes both? *)
-Lemma greatest_fixpoint_ne' {PROP : bi} {A : ofe} (F: (A → PROP) → (A → PROP)):
-  (∀ Φ, NonExpansive Φ → NonExpansive (F Φ)) → NonExpansive (bi_least_fixpoint F).
+Lemma greatest_fixpoint_ne' {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)):
+  (∀ Φ, NonExpansive Φ → NonExpansive (F Φ)) → NonExpansive (bi_greatest_fixpoint F).
 Proof. solve_proper. Qed.
 Global Instance greatest_fixpoint_ne {PROP : bi} {A : ofe} n :
   Proper (pointwise_relation (A → PROP) (pointwise_relation A (dist n)) ==>
