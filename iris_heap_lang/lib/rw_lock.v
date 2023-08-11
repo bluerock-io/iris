@@ -39,6 +39,7 @@ Class rwlock `{!heapGS_gen hlc Σ} := RwLock {
   reader_locked_timeless γ q :> Timeless (reader_locked γ q);
   writer_locked_timeless γ :> Timeless (writer_locked γ);
   writer_locked_exclusive γ : writer_locked γ -∗ writer_locked γ -∗ False;
+  writer_locked_not_reader_locked γ q : writer_locked γ -∗ reader_locked γ q -∗ False;
   (** * Program specs *)
   newlock_spec (Φ : Qp → iProp Σ) `{!AsFractional P Φ 1} :
     {{{ P }}}

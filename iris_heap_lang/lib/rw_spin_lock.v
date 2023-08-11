@@ -78,8 +78,7 @@ Section proof.
   Local Definition writer_locked (γ : gname) : iProp Σ := own γ (● {# 3/4} ∅).
   Local Lemma writer_locked_exclusive γ : writer_locked γ -∗ writer_locked γ -∗ False.
   Proof.
-    iIntros "H1 H2".
-    iCombine "H1 H2" gives "%Hvalid".
+    iIntros "H1 H2". iCombine "H1 H2" gives "%Hvalid". exfalso.
     rewrite
       auth_auth_dfrac_op_valid
       dfrac_op_own
@@ -87,6 +86,13 @@ Section proof.
     destruct Hvalid as [Htoomuch _].
     contradict Htoomuch.
     auto.
+  Qed.
+  Local Lemma writer_locked_not_reader_locked γ q : writer_locked γ -∗ reader_locked γ q -∗ False.
+  Proof.
+    iIntros "H1 H2". iCombine "H1 H2" gives "%Hvalid". exfalso.
+    apply auth_both_dfrac_valid in Hvalid as (_ & Hvalid & _).
+    generalize (Hvalid 0)=> /cmra_discrete_included_r /gmultiset_included /(_ q).
+    rewrite multiplicity_empty multiplicity_singleton. by lia.
   Qed.
 
   Lemma is_rw_lock_iff γ lk Φ Ψ :
@@ -389,6 +395,7 @@ End proof.
 
 Program Definition rw_spin_lock `{!heapGS_gen hlc Σ, !rwlockG Σ} : rwlock :=
   {| rw_lock.writer_locked_exclusive := writer_locked_exclusive;
+     rw_lock.writer_locked_not_reader_locked := writer_locked_not_reader_locked;
      rw_lock.is_rw_lock_iff := is_rw_lock_iff;
      rw_lock.newlock_spec := newlock_spec;
      rw_lock.acquire_reader_spec := acquire_reader_spec;
