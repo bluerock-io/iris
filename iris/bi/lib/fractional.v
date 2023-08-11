@@ -202,12 +202,12 @@ Section internal_fractional.
   Implicit Types Φ Ψ : Qp → PROP.
   Implicit Types q : Qp.
 
-  Global Definition internal_fractional Φ
+  Definition internal_fractional Φ
     := (□ (∀ p q, Φ (p + q)%Qp ∗-∗ Φ p ∗ Φ q))%I.
   Global Instance internal_fractional_persistent Φ :
     Persistent (internal_fractional Φ) := _.
 
-  Global Lemma fractional_internal_fractional Φ :
+  Lemma fractional_internal_fractional Φ :
     Fractional Φ → ⊢ internal_fractional Φ.
   Proof.
     intros frac.
@@ -215,7 +215,7 @@ Section internal_fractional.
     rewrite [Φ (q1 + q2)%Qp]frac //=;  auto.
   Qed.
 
-  Global Lemma internal_fractional_iff `{!BiAffine PROP} Φ Ψ:
+  Lemma internal_fractional_iff `{!BiAffine PROP} Φ Ψ:
     □ (∀ q, Φ q ↔ Ψ q) ⊢ internal_fractional Φ -∗ internal_fractional Ψ.
   Proof.
     iIntros "#Hiff #HΦdup !>" (p q).
