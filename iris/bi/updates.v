@@ -253,7 +253,7 @@ Section bupd_derived.
   Section bupd_plainly.
     Context `{!BiPlainly PROP, !BiBUpdPlainly PROP}.
 
-    Lemma bupd_plain P `{!Plain P} : (|==> P) ⊢ P.
+    Lemma bupd_elim P `{!Plain P} : (|==> P) ⊢ P.
     Proof. by rewrite {1}(plain P) bupd_plainly. Qed.
 
     Lemma bupd_plain_forall {A} (Φ : A → PROP) `{∀ x, Plain (Φ x)} :
@@ -262,8 +262,15 @@ Section bupd_derived.
       apply (anti_symm _).
       - apply bupd_forall.
       - rewrite -bupd_intro. apply forall_intro=> x.
-        by rewrite (forall_elim x) bupd_plain.
+        by rewrite (forall_elim x) bupd_elim.
     Qed.
+
+    Global Instance bupd_plain P `{!Plain P} : Plain (|==> P).
+    Proof.
+      rewrite /Plain. rewrite {1}(plain P) {1}bupd_elim.
+      apply plainly_mono, bupd_intro.
+    Qed.
+
   End bupd_plainly.
 End bupd_derived.
 

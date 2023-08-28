@@ -125,7 +125,7 @@ Section derived.
   the empty context also without the modalities.
   For basic updates, soundness only holds for plain propositions. *)
   Lemma bupd_soundness P `{!Plain P} : (⊢ |==> P) → ⊢ P.
-  Proof. rewrite bupd_plain. done. Qed.
+  Proof. rewrite bupd_elim. done. Qed.
 
   Lemma laterN_soundness P n : (⊢ ▷^n P) → ⊢ P.
   Proof. induction n; eauto using later_soundness. Qed.
@@ -153,7 +153,7 @@ Section derived.
     move: H. apply bi_emp_valid_mono.
     induction ms as [|m ms IH]; first done; simpl.
     destruct m; simpl; rewrite IH.
-    - rewrite -later_intro. apply bupd_plain. apply _.
+    - rewrite -later_intro. apply bupd_elim. apply _.
     - done.
     - rewrite -later_intro persistently_elim. done.
     - rewrite -later_intro plainly_elim. done.
