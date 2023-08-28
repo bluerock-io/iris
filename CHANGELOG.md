@@ -36,7 +36,7 @@ Coq 8.13 is no longer supported.
     now called `dist_later_fin`.
   - If you need to deal with a `dist_later`/`dist_later_fin` in a manual proof,
     use the tactic `dist_later_intro`/`dist_later_fin_intro` to introduce it.
-  (by Michael Sammler, Lennard Gäher, and Simon Spies).
+  (by Michael Sammler, Lennard Gäher, and Simon Spies)
 * Add `max_Z` and `mono_Z` cameras.
 * Add `dfrac_valid`.
 * Rename `Some_included_2` to `Some_included_mono`.
@@ -56,7 +56,7 @@ Coq 8.13 is no longer supported.
 * Use `binder` in notations for big ops. This means one can write things such
   as `[∗ map] '(k,_) ↦ '(_,y) ∈ m, ⌜ k = y ⌝`.
 * Add constructions `bi_tc`/`bi_nsteps` to create the transitive/`n`-step
-  closure of a PROP-level binary relation. (by Simcha van Collem).
+  closure of a PROP-level binary relation. (by Simcha van Collem)
 * Make the `unseal` tactic of `monPred` more consistent with `uPred`:
   + Rename `MonPred.unseal` → `monPred.unseal`
   + No longer unfold derived BI connectives `<affine>`, `<absorb>` and `◇`.
@@ -65,7 +65,7 @@ Coq 8.13 is no longer supported.
 * Add `unseal` tactic for `siProp`.
 * Add compatibility lemmas for `big_sepL <-> big_sepL2`, `big_sepM <-> big_sepM2`
   with list/maps of pairs; and `big_sepM <-> big_sepL` via `list_to_map` and
-  `map_to_list`. (by Dorian Lesbre).
+  `map_to_list`. (by Dorian Lesbre)
 * Make `persistently_True` a bi-entailment; this changes the default `rewrite`
   direction.
 * Make `BiLaterContractive` a class instead of a notation.
@@ -180,7 +180,7 @@ Coq 8.13 is no longer supported.
 * Move operations and lemmas about locations into a module `Loc`.
 * Extend `wp_apply` and `wp_smart_apply` to support immediately introducing the
   postcondition into the context via `as (x1 ... xn) "ipat1 ... ipatn"`.
-* Add comparison `≤` and `<` for locations. (by Arthur Azevedo de Amorim).
+* Add comparison `≤` and `<` for locations. (by Arthur Azevedo de Amorim)
 
 **LaTeX changes:**
 
