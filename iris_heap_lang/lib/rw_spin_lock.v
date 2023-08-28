@@ -96,7 +96,7 @@ Section proof.
   Qed.
 
   Lemma is_rw_lock_iff γ lk Φ Ψ :
-    is_rw_lock γ lk Φ -∗ ▷ □ (∀ q, Φ q ↔ Ψ q) -∗ is_rw_lock γ lk Ψ.
+    is_rw_lock γ lk Φ -∗ ▷ □ (∀ q, Φ q ∗-∗ Ψ q) -∗ is_rw_lock γ lk Ψ.
   Proof.
     iIntros "[#HΦdup [%l [-> #Hlockinv]]] #Hiff".
     unfold is_rw_lock.
@@ -393,7 +393,7 @@ Section proof.
   Qed.
 End proof.
 
-Program Definition rw_spin_lock `{!heapGS_gen hlc Σ, !rwlockG Σ} : rwlock :=
+Definition rw_spin_lock `{!heapGS_gen hlc Σ, !rwlockG Σ} : rwlock :=
   {| rw_lock.writer_locked_exclusive := writer_locked_exclusive;
      rw_lock.writer_locked_not_reader_locked := writer_locked_not_reader_locked;
      rw_lock.is_rw_lock_iff := is_rw_lock_iff;
