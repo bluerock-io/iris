@@ -6,9 +6,9 @@ From iris.heap_lang Require Import proofmode notation.
 From iris.heap_lang.lib Require Import lock.
 From iris.prelude Require Import options.
 
-Definition newlock : val := λ: <>, ref #false.
-Definition try_acquire : val := λ: "l", CAS "l" #false #true.
-Definition acquire : val :=
+Local Definition newlock : val := λ: <>, ref #false.
+Local Definition try_acquire : val := λ: "l", CAS "l" #false #true.
+Local Definition acquire : val :=
   rec: "acquire" "l" := if: try_acquire "l" then #() else "acquire" "l".
 Definition release : val := λ: "l", "l" <- #false.
 
@@ -26,30 +26,20 @@ Section proof.
   Context `{!heapGS_gen hlc Σ, !lockG Σ}.
   Let N := nroot .@ "spin_lock".
 
-  Definition lock_inv (γ : gname) (l : loc) (R : iProp Σ) : iProp Σ :=
+  Local Definition lock_inv (γ : gname) (l : loc) (R : iProp Σ) : iProp Σ :=
     ∃ b : bool, l ↦ #b ∗ if b then True else own γ (Excl ()) ∗ R.
 
-  Definition is_lock (γ : gname) (lk : val) (R : iProp Σ) : iProp Σ :=
+  Local Definition is_lock (γ : gname) (lk : val) (R : iProp Σ) : iProp Σ :=
     ∃ l: loc, ⌜lk = #l⌝ ∧ inv N (lock_inv γ l R).
 
-  Definition locked (γ : gname) : iProp Σ := own γ (Excl ()).
+  Local Definition locked (γ : gname) : iProp Σ := own γ (Excl ()).
 
-  Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
+  Local Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
   Proof. iIntros "H1 H2". by iCombine "H1 H2" gives %?. Qed.
 
-  Global Instance lock_inv_ne γ l : NonExpansive (lock_inv γ l).
-  Proof. solve_proper. Qed.
-  Global Instance is_lock_contractive γ l : Contractive (is_lock γ l).
-  Proof. solve_contractive. Qed.
-
   (** The main proofs. *)
-  Global Instance is_lock_persistent γ l R : Persistent (is_lock γ l R).
-  Proof. apply _. Qed.
-  Global Instance locked_timeless γ : Timeless (locked γ).
-  Proof. apply _. Qed.
-
-  Lemma is_lock_iff γ lk R1 R2 :
-    is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2.
+  Local Lemma is_lock_iff γ lk R1 R2 :
+    is_lock γ lk R1 -∗ ▷ □ (R1 ∗-∗ R2) -∗ is_lock γ lk R2.
   Proof.
     iDestruct 1 as (l ->) "#Hinv"; iIntros "#HR".
     iExists l; iSplit; [done|]. iApply (inv_iff with "Hinv").
@@ -58,7 +48,7 @@ Section proof.
       first [done|iDestruct "H" as "[$ ?]"; by iApply "HR"].
   Qed.
 
-  Lemma newlock_spec (R : iProp Σ):
+  Local Lemma newlock_spec (R : iProp Σ):
     {{{ R }}} newlock #() {{{ lk γ, RET lk; is_lock γ lk R }}}.
   Proof.
     iIntros (Φ) "HR HΦ". rewrite /newlock /=.
@@ -69,7 +59,7 @@ Section proof.
     iModIntro. iApply "HΦ". iExists l. eauto.
   Qed.
 
-  Lemma try_acquire_spec γ lk R :
+  Local Lemma try_acquire_spec γ lk R :
     {{{ is_lock γ lk R }}} try_acquire lk
     {{{ b, RET #b; if b is true then locked γ ∗ R else True }}}.
   Proof.
@@ -82,7 +72,7 @@ Section proof.
       rewrite /locked. wp_pures. by iApply ("HΦ" $! true with "[$Hγ $HR]").
   Qed.
 
-  Lemma acquire_spec γ lk R :
+  Local Lemma acquire_spec γ lk R :
     {{{ is_lock γ lk R }}} acquire lk {{{ RET #(); locked γ ∗ R }}}.
   Proof.
     iIntros (Φ) "#Hl HΦ". iLöb as "IH". wp_rec.
@@ -91,7 +81,7 @@ Section proof.
     - iIntros "_". wp_if. iApply ("IH" with "[HΦ]"). auto.
   Qed.
 
-  Lemma release_spec γ lk R :
+  Local Lemma release_spec γ lk R :
     {{{ is_lock γ lk R ∗ locked γ ∗ R }}} release lk {{{ RET #(); True }}}.
   Proof.
     iIntros (Φ) "(Hlock & Hlocked & HR) HΦ".
@@ -102,9 +92,7 @@ Section proof.
   Qed.
 End proof.
 
-Global Typeclasses Opaque is_lock locked.
-
-Canonical Structure spin_lock `{!heapGS_gen hlc Σ, !lockG Σ} : lock :=
+Definition spin_lock `{!heapGS_gen hlc Σ, !lockG Σ} : lock :=
   {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
      lock.newlock_spec := newlock_spec;
      lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.

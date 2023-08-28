@@ -1,8 +1,6 @@
 From iris.base_logic.lib Require Import gen_inv_heap invariants.
 From iris.program_logic Require Export weakestpre total_weakestpre.
-From iris.heap_lang Require Import lang adequacy total_adequacy proofmode notation.
-(* Import lang *again*. This used to break notation. *)
-From iris.heap_lang Require Import lang.
+From iris.heap_lang Require Import lang adequacy total_adequacy proofmode notation lib.lock.
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
@@ -515,3 +513,28 @@ Proof.
   iIntros (?) "_". rewrite /heap_e /=.
   wp_alloc l. wp_load. wp_store. wp_load. auto.
 Qed.
+
+(** Just making sure the lock typeclass actually works. *)
+Section lock.
+  Context `{!heapGS Σ, !lock}.
+
+  Definition lock_client : val :=
+    λ: "loc" "lock",
+      acquire "lock";;
+      "loc" <- #42;;
+      release "lock".
+
+  Lemma wp_lock_client loc lock γ :
+    is_lock γ lock (∃ v, loc ↦ v) -∗
+    WP lock_client #loc lock {{ _, True }}.
+  Proof.
+    iIntros "#Hislock".
+    wp_lam. wp_smart_apply (acquire_spec with "Hislock") as "[Hlocked [%v Hloc]]".
+    wp_store.
+    wp_smart_apply (release_spec with "[$Hlocked Hloc]").
+    { iFrame "Hislock". eauto. }
+    eauto.
+  Qed.
+
+End lock.
+
