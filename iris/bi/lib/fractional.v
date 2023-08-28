@@ -197,26 +197,40 @@ Section fractional.
   Qed.
 End fractional.
 
+(** Marked [tc_opaque] instead [Typeclasses Opaque] so that you can use
+[iDestruct] to eliminate and [iModIntro] to introduce [internal_fractional],
+while still preventing [iFrame] and [iNext] from unfolding. *)
+Definition internal_fractional {PROP : bi} (Φ : Qp → PROP) : PROP :=
+  tc_opaque (□ ∀ p q, Φ (p + q)%Qp ∗-∗ Φ p ∗ Φ q)%I.
+Global Instance: Params (@internal_fractional) 1 := {}.
+
 Section internal_fractional.
   Context {PROP : bi}.
   Implicit Types Φ Ψ : Qp → PROP.
   Implicit Types q : Qp.
 
-  Definition internal_fractional Φ
-    := (□ (∀ p q, Φ (p + q)%Qp ∗-∗ Φ p ∗ Φ q))%I.
+  Global Instance internal_fractional_ne n :
+    Proper (pointwise_relation _ (dist n) ==> dist n) (@internal_fractional PROP).
+  Proof. solve_proper. Qed.
+  Global Instance internal_fractional_proper :
+    Proper (pointwise_relation _ (≡) ==> (≡)) (@internal_fractional PROP).
+  Proof. solve_proper. Qed.
+
+  Global Instance internal_fractional_affine Φ : Affine (internal_fractional Φ).
+  Proof. rewrite /internal_fractional /=. apply _. Qed.
   Global Instance internal_fractional_persistent Φ :
-    Persistent (internal_fractional Φ) := _.
+    Persistent (internal_fractional Φ).
+  Proof. rewrite /internal_fractional /=. apply _. Qed.
 
   Lemma fractional_internal_fractional Φ :
     Fractional Φ → ⊢ internal_fractional Φ.
   Proof.
-    intros frac.
-    iIntros "!>" (q1 q2).
-    rewrite [Φ (q1 + q2)%Qp]frac //=;  auto.
+    intros. iIntros "!>" (q1 q2).
+    rewrite [Φ (q1 + q2)%Qp]fractional //=; auto.
   Qed.
 
-  Lemma internal_fractional_iff `{!BiAffine PROP} Φ Ψ:
-    □ (∀ q, Φ q ↔ Ψ q) ⊢ internal_fractional Φ -∗ internal_fractional Ψ.
+  Lemma internal_fractional_iff Φ Ψ:
+    □ (∀ q, Φ q ∗-∗ Ψ q) ⊢ internal_fractional Φ -∗ internal_fractional Ψ.
   Proof.
     iIntros "#Hiff #HΦdup !>" (p q).
     iSplit.

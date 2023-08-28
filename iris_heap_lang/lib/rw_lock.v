@@ -35,7 +35,7 @@ Class rwlock `{!heapGS_gen hlc Σ} := RwLock {
   (** * General properties of the predicates *)
   is_rw_lock_persistent γ lk Φ :> Persistent (is_rw_lock γ lk Φ);
   is_rw_lock_iff γ lk Φ Ψ :
-    is_rw_lock γ lk Φ -∗ ▷ □ (∀ q,  Φ q ↔ Ψ q) -∗ is_rw_lock γ lk Ψ;
+    is_rw_lock γ lk Φ -∗ ▷ □ (∀ q,  Φ q ∗-∗ Ψ q) -∗ is_rw_lock γ lk Ψ;
   reader_locked_timeless γ q :> Timeless (reader_locked γ q);
   writer_locked_timeless γ :> Timeless (writer_locked γ);
   writer_locked_exclusive γ : writer_locked γ -∗ writer_locked γ -∗ False;
@@ -63,4 +63,3 @@ Class rwlock `{!heapGS_gen hlc Σ} := RwLock {
     {{{ RET #(); True }}};
 }.
 Global Hint Mode rwlock + + + : typeclass_instances.
-
