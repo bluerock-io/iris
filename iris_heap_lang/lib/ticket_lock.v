@@ -63,7 +63,7 @@ Section proof.
   Qed.
 
   Local Lemma is_lock_iff γ lk R1 R2 :
-    is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2.
+    is_lock γ lk R1 -∗ ▷ □ (R1 ∗-∗ R2) -∗ is_lock γ lk R2.
   Proof.
     iDestruct 1 as (lo ln ->) "#Hinv"; iIntros "#HR".
     iExists lo, ln; iSplit; [done|]. iApply (inv_iff with "Hinv").

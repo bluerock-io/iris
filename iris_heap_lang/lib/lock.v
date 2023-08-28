@@ -30,7 +30,7 @@ Class lock `{!heapGS_gen hlc Σ} := Lock {
   (** * General properties of the predicates *)
   is_lock_persistent γ lk R :> Persistent (is_lock γ lk R);
   is_lock_iff γ lk R1 R2 :
-    is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2;
+    is_lock γ lk R1 -∗ ▷ □ (R1 ∗-∗ R2) -∗ is_lock γ lk R2;
   locked_timeless γ :> Timeless (locked γ);
   locked_exclusive γ : locked γ -∗ locked γ -∗ False;
   (** * Program specs *)

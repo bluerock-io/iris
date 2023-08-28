@@ -39,7 +39,7 @@ Section proof.
 
   (** The main proofs. *)
   Local Lemma is_lock_iff γ lk R1 R2 :
-    is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2.
+    is_lock γ lk R1 -∗ ▷ □ (R1 ∗-∗ R2) -∗ is_lock γ lk R2.
   Proof.
     iDestruct 1 as (l ->) "#Hinv"; iIntros "#HR".
     iExists l; iSplit; [done|]. iApply (inv_iff with "Hinv").
