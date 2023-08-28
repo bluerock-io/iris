@@ -63,7 +63,7 @@ Use `Lemma`, not `Theorem` (or the other variants: `Fact`, `Corollary`,
 ### `Require`
 
 Never put `Require` in the middle of a file. All `Require` must be at the top.
-If you only want to *import* a certain module in some specific place, you can do something like
+If you only want to *import* a certain module in some specific place (for instance, in a `Section` or other `Module`), you can do something like:
 
 ```coq
 From lib Require component.
