@@ -113,6 +113,8 @@ Coq 8.13 is no longer supported.
   `BiPersistentlyMixin`: Given a discrete BI that enjoys the existential
   property, a trivial definition of the persistence modality can be given.
 * Fix `greatest_fixpoint_ne'` accidentally being about the least fixpoint.
+* Add `Plain` instance for `|==> P` when `P` is plain.
+* Rename `bupd_plain` → `bupd_elim`.
 
 **Changes in `proofmode`:**
 
@@ -202,6 +204,7 @@ s/\bfresh_locs(_fresh|)\b/Loc.fresh\1/g
 s/\bMonPred\.unseal\b/monPred\.unseal/g
 # big op
 s/\bbig_sepM2_alt\b/big_sepM2_alt_lookup/g
+s/\bbupd_plain\b/bupd_elim/g
 EOF
 ```
 

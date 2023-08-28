@@ -152,12 +152,12 @@ Global Instance elim_modal_bupd_plain_goal
   Plain Q → ElimModal True p false (|==> P) P Q Q.
 Proof.
   intros. by rewrite /ElimModal intuitionistically_if_elim
-    bupd_frame_r wand_elim_r bupd_plain.
+    bupd_frame_r wand_elim_r bupd_elim.
 Qed.
 Global Instance elim_modal_bupd_plain
     `{!BiBUpd PROP, !BiPlainly PROP, !BiBUpdPlainly PROP} p P Q :
   Plain P → ElimModal True p p (|==> P) P Q Q.
-Proof. intros. by rewrite /ElimModal bupd_plain wand_elim_r. Qed.
+Proof. intros. by rewrite /ElimModal bupd_elim wand_elim_r. Qed.
 Global Instance elim_modal_bupd_fupd
     `{!BiBUpd PROP, !BiFUpd PROP, !BiBUpdFUpd PROP} p E1 E2 P Q :
   ElimModal True p false (|==> P) P (|={E1,E2}=> Q) (|={E1,E2}=> Q) | 10.
