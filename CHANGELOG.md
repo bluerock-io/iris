@@ -114,7 +114,7 @@ Coq 8.13 is no longer supported.
   property, a trivial definition of the persistence modality can be given.
 * Fix `greatest_fixpoint_ne'` accidentally being about the least fixpoint.
 * Add `Plain` instance for `|==> P` when `P` is plain.
-  + Rename `bupd_plain` → `bupd_elim`
+* Rename `bupd_plain` → `bupd_elim`.
 
 **Changes in `proofmode`:**
 

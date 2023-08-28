@@ -265,10 +265,10 @@ Section bupd_derived.
         by rewrite (forall_elim x) bupd_elim.
     Qed.
 
-    Global Instance bupd_plain P `{!Plain P} : Plain (|==> P).
+    Global Instance bupd_plain P : Plain P → Plain (|==> P).
     Proof.
-      rewrite /Plain. rewrite {1}(plain P) {1}bupd_elim.
-      apply plainly_mono, bupd_intro.
+      intros. rewrite /Plain. rewrite {1}(plain P) {1}bupd_elim.
+      by rewrite -bupd_intro.
     Qed.
 
   End bupd_plainly.
