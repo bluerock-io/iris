@@ -9,7 +9,9 @@ Section fixpoint.
   Definition L := bi_least_fixpoint F.
   Definition G := bi_greatest_fixpoint F.
 
-  (* Make sure the lemmas apply without having to repeat the induction predicate [Φ]. *)
+  (* Make sure the lemmas [iApply] without having to repeat the induction
+  predicate [Φ]. See https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/967
+  for details. *)
   Lemma ind_test (a : A) :
     ∀ x, L x -∗ x ≡ a.
   Proof.
