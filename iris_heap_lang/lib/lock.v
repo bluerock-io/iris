@@ -1,5 +1,5 @@
 From iris.base_logic.lib Require Export invariants.
-From iris.heap_lang Require Import primitive_laws notation.
+From iris.heap_lang Require Import proofmode notation.
 From iris.prelude Require Import options.
 
 (** A general interface for a lock.
@@ -28,7 +28,6 @@ Class lock `{!heapGS_gen hlc Σ} := Lock {
   is_lock (γ: lock_name) (lock: val) (R: iProp Σ) : iProp Σ;
   locked (γ: lock_name) : iProp Σ;
   (** * General properties of the predicates *)
-  is_lock_ne γ lk :> Contractive (is_lock γ lk);
   is_lock_persistent γ lk R :> Persistent (is_lock γ lk R);
   is_lock_iff γ lk R1 R2 :
     is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2;
@@ -44,5 +43,14 @@ Class lock `{!heapGS_gen hlc Σ} := Lock {
 }.
 Global Hint Mode lock + + + : typeclass_instances.
 
-Global Instance is_lock_proper hlc Σ `{!heapGS_gen hlc Σ} (L : lock) γ lk :
-  Proper ((≡) ==> (≡)) (L.(is_lock) γ lk) := ne_proper _.
+Global Instance is_lock_contractive `{!heapGS_gen hlc Σ, !lock} γ lk :
+  Contractive (is_lock γ lk).
+Proof.
+  apply (uPred.contractive_internal_eq (M:=iResUR Σ)).
+  iIntros (P Q) "#HPQ". iApply prop_ext. iIntros "!>".
+  iSplit; iIntros "H"; iApply (is_lock_iff with "H");
+    iNext; iRewrite "HPQ"; auto.
+Qed.
+
+Global Instance is_lock_proper `{!heapGS_gen hlc Σ, !lock} γ lk :
+  Proper ((≡) ==> (≡)) (is_lock γ lk) := ne_proper _.

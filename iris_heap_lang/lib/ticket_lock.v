@@ -163,8 +163,7 @@ Section proof.
   Qed.
 End proof.
 
-Program Definition ticket_lock `{!heapGS_gen hlc Σ, !tlockG Σ} : lock :=
+Definition ticket_lock `{!heapGS_gen hlc Σ, !tlockG Σ} : lock :=
   {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
      lock.newlock_spec := newlock_spec;
      lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.
-Next Obligation. intros. rewrite /is_lock /lock_inv. solve_contractive. Qed.
