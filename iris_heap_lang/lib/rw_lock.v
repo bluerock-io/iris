@@ -1,6 +1,6 @@
 From iris.base_logic.lib Require Export invariants.
 From iris.bi.lib Require Export fractional.
-From iris.heap_lang Require Import primitive_laws notation.
+From iris.heap_lang Require Import proofmode notation.
 From iris.prelude Require Import options.
 
 (** A general interface for a reader-writer lock.
@@ -63,3 +63,22 @@ Class rwlock `{!heapGS_gen hlc Σ} := RwLock {
     {{{ RET #(); True }}};
 }.
 Global Hint Mode rwlock + + + : typeclass_instances.
+
+Global Instance is_rw_lock_contractive `{!heapGS_gen hlc Σ, !rwlock} γ lk n :
+  Proper (pointwise_relation _ (dist_later n) ==> dist n) (is_rw_lock γ lk).
+Proof.
+  assert (Contractive (is_rw_lock γ lk : (Qp -d> iPropO Σ) → _)) as Hcontr.
+  { apply (uPred.contractive_internal_eq (M:=iResUR Σ)); iIntros (Φ1 Φ2) "#HΦ".
+    rewrite discrete_fun_equivI.
+    iApply plainly.prop_ext_2; iIntros "!>"; iSplit; iIntros "H";
+      iApply (is_rw_lock_iff with "H");
+      iIntros "!> !>" (q); iRewrite ("HΦ" $! q); auto. }
+  intros Φ1 Φ2 HΦ. apply Hcontr. dist_later_intro. apply HΦ.
+Qed.
+
+Global Instance is_rw_lock_proper `{!heapGS_gen hlc Σ, !rwlock} γ lk :
+  Proper (pointwise_relation _ (≡) ==> (≡)) (is_rw_lock γ lk).
+Proof.
+  intros Φ1 Φ2 HΦ. apply equiv_dist=> n. apply is_rw_lock_contractive=> q.
+  dist_later_intro. apply equiv_dist, HΦ.
+Qed.
