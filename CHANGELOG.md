@@ -185,10 +185,15 @@ Coq 8.13 is no longer supported.
 * Extend `wp_apply` and `wp_smart_apply` to support immediately introducing the
   postcondition into the context via `as (x1 ... xn) "ipat1 ... ipatn"`.
 * Add comparison `≤` and `<` for locations. (by Arthur Azevedo de Amorim)
-* Make the generic `lock` specification a typeclass. Code that is generic about
-  lock implementations, or that instantiates that specification, needs
-  adjustment. See [iris_heap_lang/lib/lock.v](iris_heap_lang/lib/lock.v) for
-  documentation on how to work with this specification.
+* Make the generic `lock` interface a typeclass and make sure the lock code
+  does not depend on `Σ`. Code that is generic about lock implementations, or
+  that instantiates that specification, needs adjustment. See
+  [iris_heap_lang/lib/lock.v](iris_heap_lang/lib/lock.v) for documentation on
+  how to work with this specification.
+* Adjust the generic `atomic_heap` interface to follow the same pattern as
+  `lock`.
+* Add a generic `rwlock` interface and a spinning implementation.
+  (by Isaac van Bakel)
 
 **LaTeX changes:**
 
