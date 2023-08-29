@@ -550,12 +550,13 @@ Section spin_lock.
   (* Making sure that using [spin_lockG] here works, not just [lockG]. *)
   Context `{!heapGS Σ, !spin_lockG Σ}.
 
+  Check "wp_spin_lock_client".
   Lemma wp_spin_lock_client loc lock γ :
     is_lock γ lock (∃ v, loc ↦ v) -∗
     WP spin_lock_client #loc lock {{ _, True }}.
   Proof.
-    iIntros "#Hislock".
-    wp_lam. wp_smart_apply (acquire_spec with "Hislock") as "[Hlocked [%v Hloc]]".
+    iIntros "#Hislock". wp_lam. simpl. Show.
+    wp_smart_apply (acquire_spec with "Hislock") as "[Hlocked [%v Hloc]]".
     wp_store.
     wp_smart_apply (release_spec with "[$Hlocked Hloc]").
     { iFrame "Hislock". eauto. }

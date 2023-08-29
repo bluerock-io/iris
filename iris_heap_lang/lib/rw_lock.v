@@ -72,6 +72,15 @@ Class rwlock := RwLock {
     {{{ RET #(); True }}};
 }.
 
+Global Arguments newlock : simpl never.
+Global Arguments acquire_reader : simpl never.
+Global Arguments release_reader : simpl never.
+Global Arguments acquire_writer : simpl never.
+Global Arguments release_writer : simpl never.
+Global Arguments is_rw_lock : simpl never.
+Global Arguments reader_locked : simpl never.
+Global Arguments writer_locked : simpl never.
+
 Existing Class rwlockG.
 Global Hint Mode rwlockG + + : typeclass_instances.
 Global Hint Extern 0 (rwlockG _) => progress simpl : typeclass_instances.

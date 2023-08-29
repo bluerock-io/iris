@@ -49,6 +49,12 @@ Class lock := Lock {
     {{{ is_lock (L:=L) γ lk R ∗ locked (L:=L) γ ∗ R }}} release lk {{{ RET #(); True }}}
 }.
 
+Global Arguments newlock : simpl never.
+Global Arguments acquire : simpl never.
+Global Arguments release : simpl never.
+Global Arguments is_lock : simpl never.
+Global Arguments locked : simpl never.
+
 Existing Class lockG.
 Global Hint Mode lockG + + : typeclass_instances.
 Global Hint Extern 0 (lockG _) => progress simpl : typeclass_instances.

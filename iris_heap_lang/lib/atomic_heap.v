@@ -74,6 +74,13 @@ Class atomic_heap := AtomicHeap {
         RET (v, #if decide (v = w1) then true else false) >>>;
 }.
 
+Global Arguments alloc : simpl never.
+Global Arguments free : simpl never.
+Global Arguments load : simpl never.
+Global Arguments store : simpl never.
+Global Arguments cmpxchg : simpl never.
+Global Arguments mapsto : simpl never.
+
 Existing Class atomic_heapGS.
 Global Hint Mode atomic_heapGS + + : typeclass_instances.
 Global Hint Extern 0 (atomic_heapGS _) => progress simpl : typeclass_instances.
