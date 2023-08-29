@@ -3,7 +3,7 @@ From iris.proofmode Require Import proofmode.
 From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import proofmode notation.
-From iris.heap_lang.lib Require Import lock.
+From iris.heap_lang.lib Require Export lock.
 From iris.prelude Require Import options.
 
 Local Definition newlock : val := λ: <>, ref #false.
