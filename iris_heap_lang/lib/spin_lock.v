@@ -14,16 +14,16 @@ Local Definition release : val := λ: "l", "l" <- #false.
 
 (** The CMRA we need. *)
 (* Not bundling heapGS, as it may be shared with other users. *)
-Class lockG Σ := LockG { lock_tokG : inG Σ (exclR unitO) }.
+Class spin_lockG Σ := LockG { lock_tokG : inG Σ (exclR unitO) }.
 Local Existing Instance lock_tokG.
 
-Definition lockΣ : gFunctors := #[GFunctor (exclR unitO)].
+Definition spin_lockΣ : gFunctors := #[GFunctor (exclR unitO)].
 
-Global Instance subG_lockΣ {Σ} : subG lockΣ Σ → lockG Σ.
+Global Instance subG_spin_lockΣ {Σ} : subG spin_lockΣ Σ → spin_lockG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.
-  Context `{!heapGS_gen hlc Σ, !lockG Σ}.
+  Context `{!heapGS_gen hlc Σ, !spin_lockG Σ}.
   Let N := nroot .@ "spin_lock".
 
   Local Definition lock_inv (γ : gname) (l : loc) (R : iProp Σ) : iProp Σ :=
@@ -92,7 +92,12 @@ Section proof.
   Qed.
 End proof.
 
-Definition spin_lock `{!heapGS_gen hlc Σ, !lockG Σ} : lock :=
-  {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
-     lock.newlock_spec := newlock_spec;
-     lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.
+(* NOT an instance because users should choose explicitly to use it
+     (using [Explicit Instance]). *)
+Definition spin_lock : lock :=
+  {| lock.lockG := spin_lockG;
+     lock.locked_exclusive _ _ _ _ := locked_exclusive;
+     lock.is_lock_iff _ _ _ _ := is_lock_iff;
+     lock.newlock_spec _ _ _ _ := newlock_spec;
+     lock.acquire_spec _ _ _ _ := acquire_spec;
+     lock.release_spec _ _ _ _ := release_spec |}.

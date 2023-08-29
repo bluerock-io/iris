@@ -8,42 +8,52 @@ All parameters are implicit, since it is expected that there is only one
 [heapGS_gen] in scope that could possibly apply.
 
 Only one instance of this class should ever be in scope. To write a library that
-is generic over the lock, just add a [`{lock}] implicit parameter. To use a
-particular lock instance, use [Local Existing Instance <lock instance>].
+is generic over the lock, just add a [`{!lock}] implicit parameter around the
+code and [`{!lockG Σ}] around the proofs. To use a particular lock instance, use
+[Local Existing Instance <lock instance>].
 
 When writing an instance of this class, please take care not to shadow the class
 projections (e.g., either use [Local Definition newlock] or avoid the name
 [newlock] altogether), and do not register an instance -- just make it a
 [Definition] that others can register later. *)
-Class lock `{!heapGS_gen hlc Σ} := Lock {
+Class lock := Lock {
   (** * Operations *)
   newlock : val;
   acquire : val;
   release : val;
-  (** * Predicates *)
-  (** [name] is used to associate locked with [is_lock] *)
+  (** * Ghost state *)
+  (** The assumptions about [Σ] *)
+  lockG : gFunctors → Type;
+  (** [name] is used to associate [locked] with [is_lock] *)
   lock_name : Type;
+  (** * Predicates *)
   (** No namespace [N] parameter because we only expose program specs, which
   anyway have the full mask. *)
-  is_lock (γ: lock_name) (lock: val) (R: iProp Σ) : iProp Σ;
-  locked (γ: lock_name) : iProp Σ;
+  is_lock `{!heapGS_gen hlc Σ} {L : lockG Σ} (γ: lock_name) (lock: val) (R: iProp Σ) : iProp Σ;
+  locked `{!heapGS_gen hlc Σ} {L : lockG Σ} (γ: lock_name) : iProp Σ;
   (** * General properties of the predicates *)
-  is_lock_persistent γ lk R :> Persistent (is_lock γ lk R);
-  is_lock_iff γ lk R1 R2 :
-    is_lock γ lk R1 -∗ ▷ □ (R1 ∗-∗ R2) -∗ is_lock γ lk R2;
-  locked_timeless γ :> Timeless (locked γ);
-  locked_exclusive γ : locked γ -∗ locked γ -∗ False;
+  is_lock_persistent `{!heapGS_gen hlc Σ} {L : lockG Σ} γ lk R :>
+    Persistent (is_lock (L:=L) γ lk R);
+  is_lock_iff `{!heapGS_gen hlc Σ} {L : lockG Σ} γ lk R1 R2 :
+    is_lock (L:=L) γ lk R1 -∗ ▷ □ (R1 ∗-∗ R2) -∗ is_lock (L:=L) γ lk R2;
+  locked_timeless `{!heapGS_gen hlc Σ} {L : lockG Σ} γ :>
+    Timeless (locked (L:=L) γ);
+  locked_exclusive `{!heapGS_gen hlc Σ} {L : lockG Σ} γ :
+    locked (L:=L) γ -∗ locked (L:=L) γ -∗ False;
   (** * Program specs *)
-  newlock_spec (R : iProp Σ) :
-    {{{ R }}} newlock #() {{{ lk γ, RET lk; is_lock γ lk R }}};
-  acquire_spec γ lk R :
-    {{{ is_lock γ lk R }}} acquire lk {{{ RET #(); locked γ ∗ R }}};
-  release_spec γ lk R :
-    {{{ is_lock γ lk R ∗ locked γ ∗ R }}} release lk {{{ RET #(); True }}}
+  newlock_spec `{!heapGS_gen hlc Σ} {L : lockG Σ} (R : iProp Σ) :
+    {{{ R }}} newlock #() {{{ lk γ, RET lk; is_lock (L:=L) γ lk R }}};
+  acquire_spec `{!heapGS_gen hlc Σ} {L : lockG Σ} γ lk R :
+    {{{ is_lock (L:=L) γ lk R }}} acquire lk {{{ RET #(); locked (L:=L) γ ∗ R }}};
+  release_spec `{!heapGS_gen hlc Σ} {L : lockG Σ} γ lk R :
+    {{{ is_lock (L:=L) γ lk R ∗ locked (L:=L) γ ∗ R }}} release lk {{{ RET #(); True }}}
 }.
-Global Hint Mode lock + + + : typeclass_instances.
 
-Global Instance is_lock_contractive `{!heapGS_gen hlc Σ, !lock} γ lk :
+Existing Class lockG.
+Global Hint Mode lockG + + : typeclass_instances.
+Global Hint Extern 0 (lockG _) => progress simpl : typeclass_instances.
+
+Global Instance is_lock_contractive `{!heapGS_gen hlc Σ, !lock, !lockG Σ} γ lk :
   Contractive (is_lock γ lk).
 Proof.
   apply (uPred.contractive_internal_eq (M:=iResUR Σ)).
@@ -52,5 +62,5 @@ Proof.
     iNext; iRewrite "HPQ"; auto.
 Qed.
 
-Global Instance is_lock_proper `{!heapGS_gen hlc Σ, !lock} γ lk :
+Global Instance is_lock_proper `{!heapGS_gen hlc Σ, !lock, !lockG Σ} γ lk :
   Proper ((≡) ==> (≡)) (is_lock γ lk) := ne_proper _.
