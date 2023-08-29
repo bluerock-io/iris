@@ -5,9 +5,9 @@ From iris.heap_lang Require Export derived_laws.
 From iris.heap_lang Require Import notation proofmode.
 From iris.prelude Require Import options.
 
-(** A general logically atomic interface for a heap.
-All parameters are implicit, since it is expected that there is only one
-[heapGS_gen] in scope that could possibly apply. For example:
+(** A general logically atomic interface for a heap. All parameters are
+implicit, since it is expected that there is only one [heapGS_gen] in scope that
+could possibly apply. For example:
   
   Context `{!heapGS_gen hlc Σ, !atomic_heap}.
 
@@ -15,52 +15,72 @@ Or, for libraries that require later credits:
 
   Context `{!heapGS Σ, !atomic_heap}.
 
+Only one instance of this class should ever be in scope. To write a library that
+is generic over the lock, just add a [`{!atomic_heap}] implicit parameter around
+the code and [`{!atomic_heapGS Σ}] around the proofs. To use a particular atomic
+heap instance, use [Local Existing Instance <atomic_heap instance>].
+
+When writing an instance of this class, please take care not to shadow the class
+projections (e.g., either use [Local Definition alloc] or avoid the name [alloc]
+altogether), and do not register an instance -- just make it a [Definition] that
+others can register later.
 *)
-Class atomic_heap `{!heapGS_gen hlc Σ} := AtomicHeap {
+Class atomic_heap := AtomicHeap {
   (* -- operations -- *)
   alloc : val;
   free : val;
   load : val;
   store : val;
   cmpxchg : val;
+  (** * Ghost state *)
+  (** The assumptions about [Σ], and the singleton [gname]s (if needed) *)
+  atomic_heapGS : gFunctors → Type;
   (* -- predicates -- *)
-  mapsto (l : loc) (dq: dfrac) (v : val) : iProp Σ;
+  mapsto `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (dq: dfrac) (v : val) : iProp Σ;
   (* -- mapsto properties -- *)
-  mapsto_timeless l q v :> Timeless (mapsto l q v);
-  mapsto_fractional l v :> Fractional (λ (q : Qp), mapsto l (DfracOwn q) v);
-  mapsto_persistent l v :> Persistent (mapsto l DfracDiscarded v);
-  mapsto_as_fractional l q v :>
-    AsFractional (mapsto l (DfracOwn q) v) (λ q, mapsto l (DfracOwn q) v) q;
-  mapsto_agree l dq1 dq2 v1 v2 : mapsto l dq1 v1 -∗ mapsto l dq2 v2 -∗ ⌜v1 = v2⌝;
-  mapsto_persist l dq v : mapsto l dq v ==∗ mapsto l DfracDiscarded v;
+  mapsto_timeless `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v :>
+    Timeless (mapsto (H:=H) l q v);
+  mapsto_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v :>
+    Fractional (λ (q : Qp), mapsto (H:=H) l (DfracOwn q) v);
+  mapsto_persistent `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v :>
+    Persistent (mapsto (H:=H) l DfracDiscarded v);
+  mapsto_as_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v :>
+    AsFractional (mapsto (H:=H) l (DfracOwn q) v) (λ q, mapsto (H:=H) l (DfracOwn q) v) q;
+  mapsto_agree `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l dq1 dq2 v1 v2 :
+    mapsto (H:=H) l dq1 v1 -∗ mapsto (H:=H) l dq2 v2 -∗ ⌜v1 = v2⌝;
+  mapsto_persist `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l dq v :
+    mapsto (H:=H) l dq v ==∗ mapsto (H:=H) l DfracDiscarded v;
   (* -- operation specs -- *)
-  alloc_spec (v : val) :
-    {{{ True }}} alloc v {{{ l, RET #l; mapsto l (DfracOwn 1) v }}};
-  free_spec (l : loc) (v : val) :
-    {{{ mapsto l (DfracOwn 1) v }}} free #l {{{ l, RET #l; True }}};
-  load_spec (l : loc) :
-    ⊢ <<< ∀∀ (v : val) q, mapsto l q v >>> load #l @ ∅ <<< mapsto l q v, RET v >>>;
-  store_spec (l : loc) (w : val) :
-    ⊢ <<< ∀∀ v, mapsto l (DfracOwn 1) v >>> store #l w @ ∅
-      <<< mapsto l (DfracOwn 1) w, RET #() >>>;
+  alloc_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (v : val) :
+    {{{ True }}} alloc v {{{ l, RET #l; mapsto (H:=H) l (DfracOwn 1) v }}};
+  free_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (v : val) :
+    {{{ mapsto (H:=H) l (DfracOwn 1) v }}} free #l {{{ l, RET #l; True }}};
+  load_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) :
+    ⊢ <<< ∀∀ (v : val) q, mapsto (H:=H) l q v >>> load #l @ ∅ <<< mapsto (H:=H) l q v, RET v >>>;
+  store_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (w : val) :
+    ⊢ <<< ∀∀ v, mapsto (H:=H) l (DfracOwn 1) v >>> store #l w @ ∅
+      <<< mapsto (H:=H) l (DfracOwn 1) w, RET #() >>>;
   (* This spec is slightly weaker than it could be: It is sufficient for [w1]
   *or* [v] to be unboxed.  However, by writing it this way the [val_is_unboxed]
   is outside the atomic triple, which makes it much easier to use -- and the
   spec is still good enough for all our applications.
   The postcondition deliberately does not use [bool_decide] so that users can
   [destruct (decide (a = b))] and it will simplify in both places. *)
-  cmpxchg_spec (l : loc) (w1 w2 : val) :
+  cmpxchg_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<< ∀∀ v, mapsto l (DfracOwn 1) v >>> cmpxchg #l w1 w2 @ ∅
+    ⊢ <<< ∀∀ v, mapsto (H:=H) l (DfracOwn 1) v >>> cmpxchg #l w1 w2 @ ∅
       <<< if decide (v = w1)
-          then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
+          then mapsto (H:=H) l (DfracOwn 1) w2 else mapsto (H:=H) l (DfracOwn 1) v,
         RET (v, #if decide (v = w1) then true else false) >>>;
 }.
-Global Hint Mode atomic_heap + + + : typeclass_instances.
+
+Existing Class atomic_heapGS.
+Global Hint Mode atomic_heapGS + + : typeclass_instances.
+Global Hint Extern 0 (atomic_heapGS _) => progress simpl : typeclass_instances.
 
 Local Notation CAS e1 e2 e3 := (Snd (cmpxchg e1 e2 e3)).
 
-Definition faa_atomic {Σ} `{!heapGS_gen hlc Σ, !atomic_heap} : val :=
+Definition faa_atomic `{!atomic_heap} : val :=
   rec: "faa" "l" "n" :=
     let: "m" := load "l" in
     if: CAS "l" "m" ("m" + "n") then "m" else "faa" "l" "n".
@@ -76,11 +96,10 @@ Module notation.
 
   Notation CAS e1 e2 e3 := (Snd (cmpxchg e1 e2 e3)).
   Notation FAA e1 e2 := (faa_atomic e1 e2).
-
 End notation.
 
 Section derived.
-  Context `{!heapGS_gen hlc Σ, !atomic_heap}.
+  Context `{!heapGS_gen hlc Σ, !atomic_heap, !atomic_heapGS Σ}.
 
   Import notation.
 
@@ -182,11 +201,12 @@ End proof.
 
 (* NOT an instance because users should choose explicitly to use it
      (using [Explicit Instance]). *)
-Definition primitive_atomic_heap `{!heapGS_gen hlc Σ} : atomic_heap :=
-  {| alloc_spec := primitive_alloc_spec;
-     free_spec := primitive_free_spec;
-     load_spec := primitive_load_spec;
-     store_spec := primitive_store_spec;
-     cmpxchg_spec := primitive_cmpxchg_spec;
-     mapsto_persist := primitive_laws.mapsto_persist;
-     mapsto_agree := primitive_laws.mapsto_agree |}.
+Definition primitive_atomic_heap : atomic_heap :=
+  {| atomic_heapGS _ := TCTrue;
+     alloc_spec _ _ _ _ := primitive_alloc_spec;
+     free_spec _ _ _ _ := primitive_free_spec;
+     load_spec _ _ _ _ := primitive_load_spec;
+     store_spec _ _ _ _ := primitive_store_spec;
+     cmpxchg_spec _ _ _ _ := primitive_cmpxchg_spec;
+     mapsto_persist _ _ _ _ := primitive_laws.mapsto_persist;
+     mapsto_agree _ _ _ _ := primitive_laws.mapsto_agree |}.

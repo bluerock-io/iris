@@ -31,15 +31,15 @@ Local Definition acquire_writer : val :=
 Local Definition release_writer : val :=
   λ: "l", "l" <- #0.
 
-Class rwlockG Σ := RwLockG { rwlock_tokG : inG Σ (authR (gmultisetUR Qp)) }.
+Class rw_spin_lockG Σ := RwLockG { rwlock_tokG : inG Σ (authR (gmultisetUR Qp)) }.
 Local Existing Instance rwlock_tokG.
 
-Local Definition rwlockΣ : gFunctors := #[GFunctor (authR (gmultisetUR Qp)) ].
-Global Instance subG_rwlockΣ {Σ} : subG rwlockΣ Σ → rwlockG Σ.
+Definition rw_spin_lockΣ : gFunctors := #[GFunctor (authR (gmultisetUR Qp)) ].
+Global Instance subG_rw_spin_lockΣ {Σ} : subG rw_spin_lockΣ Σ → rw_spin_lockG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.
-  Context `{!heapGS_gen hlc Σ, !rwlockG Σ}.
+  Context `{!heapGS_gen hlc Σ, !rw_spin_lockG Σ}.
   Let N := nroot .@ "rw_lock".
 
   Local Definition rw_state_inv (γ : gname) (l : loc) (Φ : Qp → iProp Σ) : iProp Σ :=
@@ -374,12 +374,13 @@ Section proof.
   Qed.
 End proof.
 
-Definition rw_spin_lock `{!heapGS_gen hlc Σ, !rwlockG Σ} : rwlock :=
-  {| rw_lock.writer_locked_exclusive := writer_locked_exclusive;
-     rw_lock.writer_locked_not_reader_locked := writer_locked_not_reader_locked;
-     rw_lock.is_rw_lock_iff := is_rw_lock_iff;
-     rw_lock.newlock_spec := newlock_spec;
-     rw_lock.acquire_reader_spec := acquire_reader_spec;
-     rw_lock.release_reader_spec := release_reader_spec;
-     rw_lock.acquire_writer_spec := acquire_writer_spec;
-     rw_lock.release_writer_spec := release_writer_spec |}.
+Definition rw_spin_lock : rwlock :=
+  {| rw_lock.rwlockG := rw_spin_lockG;
+     rw_lock.writer_locked_exclusive _ _ _ _ := writer_locked_exclusive;
+     rw_lock.writer_locked_not_reader_locked _ _ _ _ := writer_locked_not_reader_locked;
+     rw_lock.is_rw_lock_iff _ _ _ _ := is_rw_lock_iff;
+     rw_lock.newlock_spec _ _ _ _ := newlock_spec;
+     rw_lock.acquire_reader_spec _ _ _ _ := acquire_reader_spec;
+     rw_lock.release_reader_spec _ _ _ _ := release_reader_spec;
+     rw_lock.acquire_writer_spec _ _ _ _ := acquire_writer_spec;
+     rw_lock.release_writer_spec _ _ _ _ := release_writer_spec |}.

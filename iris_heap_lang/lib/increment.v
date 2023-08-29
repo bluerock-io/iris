@@ -38,7 +38,7 @@ End increment_physical.
 (** Next: logically atomic increment on top of an arbitrary logically atomic heap *)
 
 Section increment.
-  Context `{!heapGS Σ, !atomic_heap}.
+  Context `{!atomic_heap}.
 
   Import atomic_heap.notation.
 
@@ -48,6 +48,8 @@ Section increment.
        if: CAS "l" "oldv" ("oldv" + #1)
          then "oldv" (* return old value if success *)
          else "incr" "l".
+
+  Context `{!heapGS Σ, !atomic_heapGS Σ}.
 
   (** A proof of the incr specification that unfolds the definition of atomic
       accessors.  This is the style that most logically atomic proofs take. *)

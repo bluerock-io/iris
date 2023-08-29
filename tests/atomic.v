@@ -22,7 +22,7 @@ Section general_bi_tests.
 End general_bi_tests.
 
 Section tests.
-  Context `{!heapGS Σ} {aheap: atomic_heap}.
+  Context `{!atomic_heap, !heapGS Σ, !atomic_heapGS Σ}.
   Import atomic_heap.notation.
 
   (* FIXME: removing the `val` type annotation breaks printing. *)
