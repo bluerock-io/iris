@@ -1003,6 +1003,36 @@ Lemma test_iIntros_rewrite P (x1 x2 x3 x4 : nat) :
   x1 = x2 → (⌜ x2 = x3 ⌝ ∗ ⌜ x3 ≡ x4 ⌝ ∗ P) -∗ ⌜ x1 = x4 ⌝ ∗ P.
 Proof. iIntros (?) "(-> & -> & $)"; auto. Qed.
 
+Lemma test_iIntros_leibniz_equiv `{!BiInternalEq PROP} {A : ofe} (x y : A) :
+  Discrete x → LeibnizEquiv A →
+  x ≡ y ⊢@{PROP} ⌜x = y⌝.
+Proof.
+  intros ??.
+  iIntros (->). (* test that the [IntoPure] instance converts [≡] into [=] *)
+  done.
+Qed.
+
+Lemma test_iIntros_leibniz_equiv_prod `{!BiInternalEq PROP}
+    {A B : ofe} (a1 a2 : A) (b1 b2 : B) :
+  Discrete a1 → Discrete b1 → LeibnizEquiv A → LeibnizEquiv B →
+  (a1, b1) ≡ (a2, b2) ⊢@{PROP} ⌜a1 = a2⌝.
+Proof.
+  intros ????.
+  iIntros ([-> _]%pair_eq).
+  (* another test that the [IntoPure] instance converts [≡] into [=], also under
+  combinators *)
+  done.
+Qed.
+
+Lemma test_iPureIntro_leibniz_equiv `{!BiInternalEq PROP}
+    {A : ofe} `{!LeibnizEquiv A} (x y : A) :
+  (x ≡ y) → ⊢@{PROP} x ≡ y.
+Proof.
+  intros Heq. iPureIntro.
+  (* test that the [FromPure] instance does _not_ convert [≡] into [=] *)
+  exact Heq.
+Qed.
+
 Lemma test_iDestruct_rewrite_not_consume P (x1 x2 : nat) :
   (P -∗ ⌜ x1 = x2 ⌝) →
   P -∗ ⌜ x1 = x2 ⌝ ∗ P.

@@ -7,13 +7,32 @@ Section class_instances_internal_eq.
 Context `{!BiInternalEq PROP}.
 Implicit Types P Q R : PROP.
 
+(* When a user calls [iPureIntro] on [⊢ a ≡ b], the following instance turns
+  turns this into the pure goal [a ≡ b : Prop].
+  If [a, b : A] with [LeibnizEquiv A], another candidate would be [a = b]. While
+  this does not lead to information loss, [=] is harder to prove than [≡]. We thus
+  leave such simplifications to the user (e.g. they can call [fold_leibniz]). *)
 Global Instance from_pure_internal_eq {A : ofe} (a b : A) :
   @FromPure PROP false (a ≡ b) (a ≡ b).
 Proof. by rewrite /FromPure pure_internal_eq. Qed.
 
-Global Instance into_pure_eq {A : ofe} (a b : A) :
-  Discrete a → @IntoPure PROP (a ≡ b) (a ≡ b).
-Proof. intros. by rewrite /IntoPure discrete_eq. Qed.
+(* On the other hand, when a user calls [iIntros "%H"] on [⊢ (a ≡ b) -∗ P],
+  it is most convenient if [H] is as strong as possible---meaning, the user would
+  rather get [H : a = b] than [H : a ≡ b]. This is only possible if the
+  equivalence on [A] implies Leibniz equality (i.e., we have [LeibnizEquiv A]).
+  If the equivalence on [A] does not imply Leibniz equality, we cannot simplify
+  [a ≡ b] any further.
+  The following instance implements above logic, while avoiding a double search
+  for [Discrete a]. *)
+Global Instance into_pure_eq {A : ofe} (a b : A) (P : Prop) :
+  Discrete a →
+  TCOr (TCAnd (LeibnizEquiv A) (TCEq P (a = b)))
+       (TCEq P (a ≡ b)) →
+  @IntoPure PROP (a ≡ b) P.
+Proof.
+  move=> ? [[? ->]|->]; rewrite /IntoPure discrete_eq; last done.
+  by rewrite leibniz_equiv_iff.
+Qed.
 
 Global Instance from_modal_Next {A : ofe} (x y : A) :
   FromModal (PROP1:=PROP) (PROP2:=PROP) True (modality_laterN 1)

@@ -155,6 +155,10 @@ Coq 8.13 is no longer supported.
   [proofmode/base.v](iris/proofmode/base.v) for documentation on how
   to use these tactics to convert your own fixed arity tactics to an n-ary
   variant.
+* Improve the `IntoPure` instance for internal equality. Whenever possible,
+  `a ≡ b` will now be simplified to `a = b` upon introduction into the pure 
+  context. This will break but simplify some existing proofs: 
+  `iIntros (H%leibniz_equiv)` should be replaced by `iIntros (H)`. (by Ike Mulder)
 
 **Changes in `base_logic`:**
 
