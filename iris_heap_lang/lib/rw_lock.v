@@ -64,26 +64,21 @@ Class rwlock `{!heapGS_gen hlc Σ} := RwLock {
 }.
 Global Hint Mode rwlock + + + : typeclass_instances.
 
-Global Instance is_rw_lock_contractive `{!heapGS_gen hlc Σ, !rwlock} γ lk :
-  ∀ n, Proper (pointwise_relation _ (dist_later n) ==> dist n) (is_rw_lock γ lk).
+Global Instance is_rw_lock_contractive `{!heapGS_gen hlc Σ, !rwlock} γ lk n :
+  Proper (pointwise_relation _ (dist_later n) ==> dist n) (is_rw_lock γ lk).
 Proof.
-  intros n Φ1 Φ2 HΦ.
-  set (Φ1' := λne (q : leibnizO Qp), Φ1 q).
-  set (Φ2' := λne (q : leibnizO Qp), Φ2 q).
-  assert (Next Φ1' ≡{n}≡ Next Φ2') as HΦ'.
-  { constructor => m ? q /=. specialize (HΦ q). by eapply dist_later_dist_lt. }
-  clear HΦ. revert n HΦ'. eapply (uPred.internal_eq_entails (M:=iResUR Σ)).
-  rewrite later_equivI. iIntros "#HΦ". iApply prop_ext. iModIntro.
-  iSplit; iIntros "H"; iApply (is_rw_lock_iff with "H"); iIntros "!> !> %q".
-  all: rewrite ofe_morO_equivI; iSpecialize ("HΦ" $! q).
-  all: change (Φ1 q) with (Φ1' q); change (Φ2 q) with (Φ2' q).
-  all: iRewrite "HΦ"; auto.
+  assert (Contractive (is_rw_lock γ lk : (Qp -d> iPropO Σ) → _)) as Hcontr.
+  { apply (uPred.contractive_internal_eq (M:=iResUR Σ)); iIntros (Φ1 Φ2) "#HΦ".
+    rewrite discrete_fun_equivI.
+    iApply plainly.prop_ext_2; iIntros "!>"; iSplit; iIntros "H";
+      iApply (is_rw_lock_iff with "H");
+      iIntros "!> !>" (q); iRewrite ("HΦ" $! q); auto. }
+  intros Φ1 Φ2 HΦ. apply Hcontr. dist_later_intro. apply HΦ.
 Qed.
 
 Global Instance is_rw_lock_proper `{!heapGS_gen hlc Σ, !rwlock} γ lk :
   Proper (pointwise_relation _ (≡) ==> (≡)) (is_rw_lock γ lk).
 Proof.
-  intros Φ1 Φ2 HΦ.
-  apply equiv_dist=>n. apply is_rw_lock_contractive=>q.
-  constructor=>m _. move: (HΦ q) => /equiv_dist. auto.
+  intros Φ1 Φ2 HΦ. apply equiv_dist=> n. apply is_rw_lock_contractive=> q.
+  dist_later_intro. apply equiv_dist, HΦ.
 Qed.
