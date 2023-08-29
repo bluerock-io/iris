@@ -163,7 +163,10 @@ Section proof.
   Qed.
 End proof.
 
-Definition ticket_lock `{!heapGS_gen hlc Σ, !tlockG Σ} : lock :=
-  {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
-     lock.newlock_spec := newlock_spec;
-     lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.
+Definition ticket_lock : lock :=
+  {| lock.lockG := tlockG;
+     lock.locked_exclusive _ _ _ _ := locked_exclusive;
+     lock.is_lock_iff _ _ _ _ := is_lock_iff;
+     lock.newlock_spec _ _ _ _ := newlock_spec;
+     lock.acquire_spec _ _ _ _ := acquire_spec;
+     lock.release_spec _ _ _ _ := release_spec |}.

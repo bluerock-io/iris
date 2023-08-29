@@ -1,8 +1,9 @@
 1 goal
   
+  H : atomic_heap
   Σ : gFunctors
   heapGS0 : heapGS Σ
-  aheap : atomic_heap
+  atomic_heapGS0 : atomic_heapGS Σ
   Q : iProp Σ
   l : loc
   v : val
