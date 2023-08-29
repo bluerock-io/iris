@@ -10,7 +10,7 @@ Local Definition newlock : val := λ: <>, ref #false.
 Local Definition try_acquire : val := λ: "l", CAS "l" #false #true.
 Local Definition acquire : val :=
   rec: "acquire" "l" := if: try_acquire "l" then #() else "acquire" "l".
-Definition release : val := λ: "l", "l" <- #false.
+Local Definition release : val := λ: "l", "l" <- #false.
 
 (** The CMRA we need. *)
 (* Not bundling heapGS, as it may be shared with other users. *)
