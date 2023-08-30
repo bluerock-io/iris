@@ -550,10 +550,12 @@ Section lock_gen.
     "l" <- #42;;
     release "lock".
 
-  Lemma wp_lock_client_spin `{!heapGS Σ, !lockG Σ} :
+  (* Making sure that using [spin_lockG] here works, not just [lockG]. *)
+  Lemma wp_lock_client_spin `{!heapGS Σ, !spin_lockG Σ} :
     ⊢ WP lock_client_spin {{ _, True }}.
   Proof.
-    unfold lock_client_spin. wp_alloc l as "Hl".
+    unfold lock_client_spin. simpl. Show. (* should show no spin_lock.<something> *)
+    wp_alloc l as "Hl".
     wp_smart_apply (newlock_spec (∃ n : Z, l ↦ #n) with "[Hl]")
       as (lk γ) "#Hlock"; first by eauto.
     wp_smart_apply (acquire_spec with "Hlock") as "(Hlocked & %v & Hloc)".
@@ -562,7 +564,7 @@ Section lock_gen.
   Qed.
 End lock_gen.
 
-(** Making sure we the [lockG] conditions are resolved when using adequacy. For
+(** Making sure that the [lockG/spin_lockG] conditions are resolved when using adequacy. For
 the generic client, we need to instantiate it with a specific lock for that to
 make sense. *)
 Section lock_adequacy.
