@@ -46,8 +46,8 @@ Section lock_spin.
     ⊢ WP lock_client_spin {{ _, True }}.
   Proof.
     unfold lock_client_spin.
-   (* This should not unfold the `newlock`, `acquire`, and `release`
-    projections. That is, it should not show `spin_lock.<something>`. *)
+    (* This should not unfold the [newlock], [acquire], and [release]
+    projections. That is, it should not show [spin_lock.<something>]. *)
     simpl. Show.
     wp_alloc l as "Hl".
     wp_smart_apply (newlock_spec (∃ n : Z, l ↦ #n) with "[Hl]")
