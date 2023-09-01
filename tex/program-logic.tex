@@ -252,7 +252,7 @@ Finally, weakest precondition takes a parameter $\stuckness \in \set{\NotStuck, 
         & (\Exists\val. \toval(\expr) = \val \land \pvs[\mask] \pred(\val)) \lor {}\\
         & \Bigl(\toval(\expr) = \bot \land \All \state, n_s, \vec\obs, \vec\obs', n_t. \stateinterp(\state, n_s, \vec\obs \dplus \vec\obs', n_t) \vsW[\mask][\emptyset] {}\\
         &\qquad (s = \NotStuck \Ra \red(\expr, \state)) * \All \expr', \state', \vec\expr. (\expr, \state \step[\vec\obs] \expr', \state', \vec\expr) \wand \laterCredit{(n_\rhd(n_s)+1)} \wand {}\\
-        &\qquad\qquad (\pvs[\emptyset]\later\pvs[\emptyset])^{n_\rhd(n_s)+1} \pvs[\emptyset][\mask]\stateinterp(\state', n_s + 1 \vec\obs', n + |\vec\expr|) * \textdom{wp\any rec}(\mask, \expr', \pred) * {}\\
+        &\qquad\qquad (\pvs[\emptyset]\later\pvs[\emptyset])^{n_\rhd(n_s)+1} \pvs[\emptyset][\mask]\stateinterp(\state', n_s + 1, \vec\obs', n + |\vec\expr|) * \textdom{wp\any rec}(\mask, \expr', \pred) * {}\\
         &\qquad\qquad\qquad \Sep_{\expr'' \in \vec\expr} \textdom{wp\any rec}(\top, \expr'', \pred_F)\Bigr) \\
   \wpre[\stateinterp;\pred_F]\expr[\stuckness;\mask]{\Ret\val. \prop} \eqdef{}& \textdom{wp}(\stateinterp,\pred_F,\stuckness)(\mask, \expr, \Lam\val.\prop)
 \end{align*}
