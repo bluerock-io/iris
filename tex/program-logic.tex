@@ -1,4 +1,3 @@
-
 \section{Program Logic}
 \label{sec:program-logic}
 
@@ -244,7 +243,7 @@ Finally, we can define the core piece of the program logic, the proposition that
 We assume that everything making up the definition of the language, \ie values, expressions, states, the conversion functions, reduction relation and all their properties, are suitably reflected into the logic (\ie they are part of the signature $\Sig$).
 We further assume (as a parameter) a predicate $\stateinterp : \State \times \mathbb N \times \List(\Obs) \times \mathbb N \to \iProp$ that interprets the machine state as an Iris proposition, a predicate $\pred_F: \Val \to \iProp$ that serves as postcondition for forked-off threads, and a function $n_\rhd: \mathbb N \to \mathbb N$ specifying the number of additional laters and later credits used for each physical step.
 The state interpretation can depend on the current physical state, the number of steps since the begining of the execution, the list of \emph{future} observations as well as the total number of \emph{forked} threads (that is one less that the total number of threads).
-It should be monotone with respect to the step counter: $\stateinterp(\state, n_s, \vec\obs, n_t) \vs[\emptyset] \stateinterp(\state, n_s, \vec\obs, n_t + 1)$.
+It should be monotone with respect to the step counter: $\stateinterp(\state, n_s, \vec\obs, n_t) \vs[\emptyset] \stateinterp(\state, n_s + 1, \vec\obs, n_t)$.
 This can be instantiated, for example, with ownership of an authoritative RA to tie the physical state to fragments that are used for user-level proofs.
 Finally, weakest precondition takes a parameter $\stuckness \in \set{\NotStuck, \MaybeStuck}$ indicating whether program execution is allowed to get stuck.
 
@@ -253,7 +252,7 @@ Finally, weakest precondition takes a parameter $\stuckness \in \set{\NotStuck, 
         & (\Exists\val. \toval(\expr) = \val \land \pvs[\mask] \pred(\val)) \lor {}\\
         & \Bigl(\toval(\expr) = \bot \land \All \state, n_s, \vec\obs, \vec\obs', n_t. \stateinterp(\state, n_s, \vec\obs \dplus \vec\obs', n_t) \vsW[\mask][\emptyset] {}\\
         &\qquad (s = \NotStuck \Ra \red(\expr, \state)) * \All \expr', \state', \vec\expr. (\expr, \state \step[\vec\obs] \expr', \state', \vec\expr) \wand \laterCredit{(n_\rhd(n_s)+1)} \wand {}\\
-        &\qquad\qquad (\pvs[\emptyset]\later\pvs[\emptyset])^{n_\rhd(n_s)+1} \pvs[\emptyset][\mask]\stateinterp(\state', \vec\obs', n + |\vec\expr|) * \textdom{wp\any rec}(\mask, \expr', \pred) * {}\\
+        &\qquad\qquad (\pvs[\emptyset]\later\pvs[\emptyset])^{n_\rhd(n_s)+1} \pvs[\emptyset][\mask]\stateinterp(\state', n_s + 1 \vec\obs', n + |\vec\expr|) * \textdom{wp\any rec}(\mask, \expr', \pred) * {}\\
         &\qquad\qquad\qquad \Sep_{\expr'' \in \vec\expr} \textdom{wp\any rec}(\top, \expr'', \pred_F)\Bigr) \\
   \wpre[\stateinterp;\pred_F]\expr[\stuckness;\mask]{\Ret\val. \prop} \eqdef{}& \textdom{wp}(\stateinterp,\pred_F,\stuckness)(\mask, \expr, \Lam\val.\prop)
 \end{align*}
