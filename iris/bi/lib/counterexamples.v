@@ -259,6 +259,150 @@ Module inv. Section inv.
   Qed.
 End inv. End inv.
 
+(** This is another proof showing that we need the ▷ when opening invariants.
+Unlike the two paradoxes above, this proof does not rely on impredicative
+quantification -- at least, not directly. Instead it exploits the impredicative
+quantification that is implicit in [fupd]. Unlike the previous paradox,
+the [finish] token needs to be persistent for this paradox to work.
+
+This paradox is due to Yusuke Matsushita. *)
+Module inv2. Section inv2.
+  Context {PROP : bi} `{!BiAffine PROP}.
+  Implicit Types P : PROP.
+
+  (** Assumptions *)
+  (** We have the update modality (two classes: empty/full mask) *)
+  Inductive mask := M0 | M1.
+  Context (fupd : mask → PROP → PROP).
+  Hypothesis fupd_intro : ∀ E P, P ⊢ fupd E P.
+  Hypothesis fupd_mono : ∀ E P Q, (P ⊢ Q) → fupd E P ⊢ fupd E Q.
+  Hypothesis fupd_fupd : ∀ E P, fupd E (fupd E P) ⊢ fupd E P.
+  Hypothesis fupd_frame_l : ∀ E P Q, P ∗ fupd E Q ⊢ fupd E (P ∗ Q).
+  Hypothesis fupd_mask_mono : ∀ P, fupd M0 P ⊢ fupd M1 P.
+
+  (** We have invariants *)
+  Context (name : Type) (inv : name → PROP → PROP).
+  Global Arguments inv _ _%I.
+  Hypothesis inv_persistent : ∀ i P, Persistent (inv i P).
+  Hypothesis inv_alloc : ∀ P, P ⊢ fupd M1 (∃ i, inv i P).
+  Hypothesis inv_fupd :
+    ∀ i P Q R, (P ∗ Q ⊢ fupd M0 (P ∗ R)) → (inv i P ∗ Q ⊢ fupd M1 R).
+
+  (* We have tokens for a little "two-state STS": [start] -> [finish].
+     state. [start] also asserts the exact state; it is only ever owned by the
+     invariant.  [finished] is persistent. *)
+  (* Posssible implementations of these axioms:
+     * Using the STS monoid of a two-state STS, where [start] is the
+       authoritative saying the state is exactly [start], and [finish]
+       is the "we are at least in state [finish]" typically owned by threads.
+     * Ex () +_## ()
+  *)
+  Context (gname : Type).
+  Context (start finished : gname → PROP).
+
+  Hypothesis sts_alloc : ⊢ fupd M0 (∃ γ, start γ).
+  Hypotheses start_finish : ∀ γ, start γ ⊢ fupd M0 (finished γ).
+
+  Hypothesis finished_not_start : ∀ γ, start γ ∗ finished γ ⊢ False.
+
+  Hypothesis finished_persistent : ∀ γ, Persistent (finished γ).
+
+  (** We assume that we cannot update to false. *)
+  Hypothesis consistency : ¬ (⊢ fupd M1 False).
+
+  (** Some general lemmas and proof mode compatibility. *)
+  Lemma inv_fupd' i P R : inv i P ∗ (P -∗ fupd M0 (P ∗ fupd M1 R)) ⊢ fupd M1 R.
+  Proof.
+    iIntros "(#HiP & HP)". iApply fupd_fupd. iApply inv_fupd; last first.
+    { iSplit; first done. iExact "HP". }
+    iIntros "(HP & HPw)". by iApply "HPw".
+  Qed.
+
+  Global Instance fupd_mono' E : Proper ((⊢) ==> (⊢)) (fupd E).
+  Proof. intros P Q ?. by apply fupd_mono. Qed.
+  Global Instance fupd_proper E : Proper ((⊣⊢) ==> (⊣⊢)) (fupd E).
+  Proof.
+    intros P Q; rewrite !bi.equiv_entails=> -[??]; split; by apply fupd_mono.
+  Qed.
+
+  Lemma fupd_frame_r E P Q : fupd E P ∗ Q ⊢ fupd E (P ∗ Q).
+  Proof. by rewrite comm fupd_frame_l comm. Qed.
+
+  Global Instance elim_fupd_fupd p E P Q :
+    ElimModal True p false (fupd E P) P (fupd E Q) (fupd E Q).
+  Proof.
+    by rewrite /ElimModal bi.intuitionistically_if_elim
+      fupd_frame_r bi.wand_elim_r fupd_fupd.
+  Qed.
+
+  Global Instance elim_fupd0_fupd1 p P Q :
+    ElimModal True p false (fupd M0 P) P (fupd M1 Q) (fupd M1 Q).
+  Proof.
+    by rewrite /ElimModal bi.intuitionistically_if_elim
+      fupd_frame_r bi.wand_elim_r fupd_mask_mono fupd_fupd.
+  Qed.
+
+  Global Instance exists_split_fupd0 {A} E P (Φ : A → PROP) :
+    FromExist P Φ → FromExist (fupd E P) (λ a, fupd E (Φ a)).
+  Proof.
+    rewrite /FromExist=>HP. apply bi.exist_elim=> a.
+    apply fupd_mono. by rewrite -HP -(bi.exist_intro a).
+  Qed.
+
+  (** Now to the actual counterexample. *)
+  (** A version of ⊥ behind a persistent update. *)
+  Definition B : PROP := □ fupd M1 False.
+  (** A delayed-initialization invariant storing [B]. *)
+  Definition P (γ : gname) : PROP := start γ ∨ B.
+  Definition I (i : name) (γ : gname) : PROP := inv i (P γ).
+
+  (** If we can ever finish initializing the invariant, we have a
+  contradiction. *)
+  Lemma finished_contradiction γ i :
+    finished γ ∗ I i γ -∗ B.
+  Proof.
+    iIntros "[#Hfin #HI] !>".
+    iApply (inv_fupd' i). iSplit; first done.
+    iIntros "[Hstart|#Hfalse]".
+    { iDestruct (finished_not_start with "[$Hfin $Hstart]") as %[]. }
+    iApply fupd_intro. iSplitR; last done.
+    by iRight.
+  Qed.
+
+  (** If we can even just create the invariant, we can finish initializing it
+  using the above lemma, and then get the contradiction. *)
+  Lemma invariant_contradiction γ i :
+    I i γ -∗ B.
+  Proof.
+    iIntros "#HI !>".
+    iApply (inv_fupd' i). iSplit; first done.
+    iIntros "HP".
+    iAssert (fupd M0 B) with "[HP]" as ">#Hfalse".
+    { iDestruct "HP" as "[Hstart|#Hfalse]"; last by iApply fupd_intro.
+      iMod (start_finish with "Hstart"). iApply fupd_intro.
+      (** There's a magic moment here where we have the invariant open,
+          but inside [finished_contradiction] we will be proving
+          a [fupd M1] and so we can open the invariant *again*.
+          Really we are just building up a thunk that can be used
+          later when the invariant is closed again. But to build up that
+          thunk we can use resources that we just got out of the invariant,
+          before closing it again. *)
+      iApply finished_contradiction. eauto. }
+    iApply fupd_intro. iSplitR; last done.
+    by iRight.
+  Qed.
+
+  (** Of course, creating the invariant is trivial. *)
+  Lemma contradiction : False.
+  Proof using All.
+    apply consistency.
+    iMod sts_alloc as (γ) "Hstart".
+    iMod (inv_alloc (P γ) with "[Hstart]") as (i) "HI".
+    { by iLeft. }
+    iDestruct (invariant_contradiction with "HI") as "#>[]".
+  Qed.
+End inv2. End inv2.
+
 (** This proves that if we have linear impredicative invariants, we can still
 drop arbitrary resources (i.e., we can "defeat" linearity).
 We assume [cinv_alloc] without any bells or whistles.
