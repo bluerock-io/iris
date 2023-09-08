@@ -181,89 +181,89 @@ Module inv. Section inv.
 
   (** The original paradox, as found in the "Iris from the Ground Up" paper. *)
   Section inv1.
-  (** On top of invariants themselves, we need a particular kind of ghost state:
+    (** On top of invariants themselves, we need a particular kind of ghost state:
      we have tokens for a little "two-state STS": [start] -> [finish].
      [start] also asserts the exact state; it is only ever owned by the
      invariant. [finished] is duplicable. *)
-  (** Posssible implementations of these axioms:
-     * Using the STS monoid of a two-state STS, where [start] is the
+    (** Posssible implementations of these axioms:
+     - Using the STS monoid of a two-state STS, where [start] is the
        authoritative saying the state is exactly [start], and [finish]
        is the "we are at least in state [finish]" typically owned by threads.
-     * Ex () +_## ()
-  *)
-  Context (gname : Type).
-  Context (start finished : gname → PROP).
+     - Ex () +_## ()
+     *)
+    Context (gname : Type).
+    Context (start finished : gname → PROP).
 
-  Hypothesis sts_alloc : ⊢ fupd M0 (∃ γ, start γ).
-  Hypotheses start_finish : ∀ γ, start γ ⊢ fupd M0 (finished γ).
+    Hypothesis sts_alloc : ⊢ fupd M0 (∃ γ, start γ).
+    Hypotheses start_finish : ∀ γ, start γ ⊢ fupd M0 (finished γ).
 
-  Hypothesis finished_not_start : ∀ γ, start γ ∗ finished γ ⊢ False.
+    Hypothesis finished_not_start : ∀ γ, start γ ∗ finished γ ⊢ False.
 
-  Hypothesis finished_dup : ∀ γ, finished γ ⊢ finished γ ∗ finished γ.
+    Hypothesis finished_dup : ∀ γ, finished γ ⊢ finished γ ∗ finished γ.
 
-  (** Now to the actual counterexample. We start with a weird form of saved propositions. *)
-  Definition saved (γ : gname) (P : PROP) : PROP :=
-    ∃ i, inv i (start γ ∨ (finished γ ∗ □ P)).
-  Global Instance saved_persistent γ P : Persistent (saved γ P) := _.
+    (** Now to the actual counterexample. We start with a weird form of saved propositions. *)
+    Definition saved (γ : gname) (P : PROP) : PROP :=
+      ∃ i, inv i (start γ ∨ (finished γ ∗ □ P)).
+    Global Instance saved_persistent γ P : Persistent (saved γ P) := _.
 
-  Lemma saved_alloc (P : gname → PROP) : ⊢ fupd M1 (∃ γ, saved γ (P γ)).
-  Proof.
-    iIntros "". iMod (sts_alloc) as (γ) "Hs".
-    iMod (inv_alloc (start γ ∨ (finished γ ∗ □ (P γ))) with "[Hs]") as (i) "#Hi".
-    { auto. }
-    iApply fupd_intro. by iExists γ, i.
-  Qed.
+    Lemma saved_alloc (P : gname → PROP) : ⊢ fupd M1 (∃ γ, saved γ (P γ)).
+    Proof.
+      iIntros "". iMod (sts_alloc) as (γ) "Hs".
+      iMod (inv_alloc (start γ ∨ (finished γ ∗ □ (P γ))) with "[Hs]") as (i) "#Hi".
+      { auto. }
+      iApply fupd_intro. by iExists γ, i.
+    Qed.
 
-  Lemma saved_cast γ P Q : saved γ P ∗ saved γ Q ∗ □ P ⊢ fupd M1 (□ Q).
-  Proof.
-    iIntros "(#HsP & #HsQ & #HP)". iDestruct "HsP" as (i) "HiP".
-    iApply (inv_fupd' i). iSplit; first done.
-    iIntros "HaP". iAssert (fupd M0 (finished γ)) with "[HaP]" as "> Hf".
-    { iDestruct "HaP" as "[Hs | [Hf _]]".
-      - by iApply start_finish.
-      - by iApply fupd_intro. }
-    iDestruct (finished_dup with "Hf") as "[Hf Hf']".
-    iApply fupd_intro. iSplitL "Hf'"; first by eauto.
-    (* Step 2: Open the Q-invariant. *)
-    iClear (i) "HiP ". iDestruct "HsQ" as (i) "HiQ".
-    iApply (inv_fupd' i). iSplit; first done.
-    iIntros "[HaQ | [_ #HQ]]".
-    { iExFalso. iApply finished_not_start. by iFrame. }
-    iApply fupd_intro. iSplitL "Hf".
-    { iRight. by iFrame. }
-    by iApply fupd_intro.
-  Qed.
+    Lemma saved_cast γ P Q : saved γ P ∗ saved γ Q ∗ □ P ⊢ fupd M1 (□ Q).
+    Proof.
+      iIntros "(#HsP & #HsQ & #HP)". iDestruct "HsP" as (i) "HiP".
+      iApply (inv_fupd' i). iSplit; first done.
+      iIntros "HaP". iAssert (fupd M0 (finished γ)) with "[HaP]" as "> Hf".
+      { iDestruct "HaP" as "[Hs | [Hf _]]".
+        - by iApply start_finish.
+        - by iApply fupd_intro. }
+      iDestruct (finished_dup with "Hf") as "[Hf Hf']".
+      iApply fupd_intro. iSplitL "Hf'"; first by eauto.
+      (* Step 2: Open the Q-invariant. *)
+      iClear (i) "HiP ". iDestruct "HsQ" as (i) "HiQ".
+      iApply (inv_fupd' i). iSplit; first done.
+      iIntros "[HaQ | [_ #HQ]]".
+      { iExFalso. iApply finished_not_start. by iFrame. }
+      iApply fupd_intro. iSplitL "Hf".
+      { iRight. by iFrame. }
+      by iApply fupd_intro.
+    Qed.
 
-  (** And now we tie a bad knot. *)
-  Notation not_fupd P := (□ (P -∗ fupd M1 False))%I.
-  Definition A i : PROP := ∃ P, not_fupd P ∗ saved i P.
-  Global Instance A_persistent i : Persistent (A i) := _.
+    (** And now we tie a bad knot. *)
+    Notation not_fupd P := (□ (P -∗ fupd M1 False))%I.
+    Definition A i : PROP := ∃ P, not_fupd P ∗ saved i P.
+    Global Instance A_persistent i : Persistent (A i) := _.
 
-  Lemma A_alloc : ⊢ fupd M1 (∃ i, saved i (A i)).
-  Proof. by apply saved_alloc. Qed.
+    Lemma A_alloc : ⊢ fupd M1 (∃ i, saved i (A i)).
+    Proof. by apply saved_alloc. Qed.
 
-  Lemma saved_NA i : saved i (A i) ⊢ not_fupd (A i).
-  Proof.
-    iIntros "#Hi !> #HA". iPoseProof "HA" as "HA'".
-    iDestruct "HA'" as (P) "#[HNP Hi']".
-    iMod (saved_cast i (A i) P with "[]") as "HP".
-    { eauto. }
-    by iApply "HNP".
-  Qed.
+    Lemma saved_NA i : saved i (A i) ⊢ not_fupd (A i).
+    Proof.
+      iIntros "#Hi !> #HA". iPoseProof "HA" as "HA'".
+      iDestruct "HA'" as (P) "#[HNP Hi']".
+      iMod (saved_cast i (A i) P with "[]") as "HP".
+      { eauto. }
+      by iApply "HNP".
+    Qed.
 
-  Lemma saved_A i : saved i (A i) ⊢ A i.
-  Proof.
-    iIntros "#Hi". iExists (A i). iFrame "#".
-    by iApply saved_NA.
-  Qed.
+    Lemma saved_A i : saved i (A i) ⊢ A i.
+    Proof.
+      iIntros "#Hi". iExists (A i). iFrame "#".
+      by iApply saved_NA.
+    Qed.
 
-  Lemma contradiction : False.
-  Proof using All.
-    apply consistency. iIntros "".
-    iMod A_alloc as (i) "#H".
-    iPoseProof (saved_NA with "H") as "HN".
-    iApply "HN". iApply saved_A. done.
-  Qed.
+    Lemma contradiction : False.
+    Proof using All.
+      apply consistency. iIntros "".
+      iMod A_alloc as (i) "#H".
+      iPoseProof (saved_NA with "H") as "HN".
+      iApply "HN". iApply saved_A. done.
+    Qed.
 
   End inv1.
 
@@ -275,78 +275,78 @@ Module inv. Section inv.
 
   This paradox is due to Yusuke Matsushita. *)
   Section inv2.
-  (** On top of invariants themselves, we need a particular kind of ghost state:
+    (** On top of invariants themselves, we need a particular kind of ghost state:
      we have tokens for a little "two-state STS": [start] -> [finish].
      [start] also asserts the exact state; it is only ever owned by the
      invariant. [finished] is persistent. *)
-  (** Posssible implementations of these axioms:
-     * Using the STS monoid of a two-state STS, where [start] is the
+    (** Posssible implementations of these axioms:
+     - Using the STS monoid of a two-state STS, where [start] is the
        authoritative saying the state is exactly [start], and [finish]
        is the "we are at least in state [finish]" typically owned by threads.
-     * Ex () +_## ()
-  *)
-  Context (gname : Type).
-  Context (start finished : gname → PROP).
+     - Ex () +_## ()
+     *)
+    Context (gname : Type).
+    Context (start finished : gname → PROP).
 
-  Hypothesis sts_alloc : ⊢ fupd M0 (∃ γ, start γ).
-  Hypotheses start_finish : ∀ γ, start γ ⊢ fupd M0 (finished γ).
+    Hypothesis sts_alloc : ⊢ fupd M0 (∃ γ, start γ).
+    Hypotheses start_finish : ∀ γ, start γ ⊢ fupd M0 (finished γ).
 
-  Hypothesis finished_not_start : ∀ γ, start γ ∗ finished γ ⊢ False.
+    Hypothesis finished_not_start : ∀ γ, start γ ∗ finished γ ⊢ False.
 
-  Hypothesis finished_persistent : ∀ γ, Persistent (finished γ).
+    Hypothesis finished_persistent : ∀ γ, Persistent (finished γ).
 
-  (** Now to the actual counterexample. *)
-  (** A version of ⊥ behind a persistent update. *)
-  Definition B : PROP := □ fupd M1 False.
-  (** A delayed-initialization invariant storing [B]. *)
-  Definition P (γ : gname) : PROP := start γ ∨ B.
-  Definition I (i : name) (γ : gname) : PROP := inv i (P γ).
+    (** Now to the actual counterexample. *)
+    (** A version of ⊥ behind a persistent update. *)
+    Definition B : PROP := □ fupd M1 False.
+    (** A delayed-initialization invariant storing [B]. *)
+    Definition P (γ : gname) : PROP := start γ ∨ B.
+    Definition I (i : name) (γ : gname) : PROP := inv i (P γ).
 
-  (** If we can ever finish initializing the invariant, we have a
-  contradiction. *)
-  Lemma finished_contradiction γ i :
-    finished γ ∗ I i γ -∗ B.
-  Proof.
-    iIntros "[#Hfin #HI] !>".
-    iApply (inv_fupd' i). iSplit; first done.
-    iIntros "[Hstart|#Hfalse]".
-    { iDestruct (finished_not_start with "[$Hfin $Hstart]") as %[]. }
-    iApply fupd_intro. iSplitR; last done.
-    by iRight.
-  Qed.
+    (** If we can ever finish initializing the invariant, we have a
+     contradiction. *)
+    Lemma finished_contradiction γ i :
+      finished γ ∗ I i γ -∗ B.
+    Proof.
+      iIntros "[#Hfin #HI] !>".
+      iApply (inv_fupd' i). iSplit; first done.
+      iIntros "[Hstart|#Hfalse]".
+      { iDestruct (finished_not_start with "[$Hfin $Hstart]") as %[]. }
+      iApply fupd_intro. iSplitR; last done.
+      by iRight.
+    Qed.
 
-  (** If we can even just create the invariant, we can finish initializing it
-  using the above lemma, and then get the contradiction. *)
-  Lemma invariant_contradiction γ i :
-    I i γ -∗ B.
-  Proof.
-    iIntros "#HI !>".
-    iApply (inv_fupd' i). iSplit; first done.
-    iIntros "HP".
-    iAssert (fupd M0 B) with "[HP]" as ">#Hfalse".
-    { iDestruct "HP" as "[Hstart|#Hfalse]"; last by iApply fupd_intro.
-      iMod (start_finish with "Hstart"). iApply fupd_intro.
-      (** There's a magic moment here where we have the invariant open,
+    (** If we can even just create the invariant, we can finish initializing it
+     using the above lemma, and then get the contradiction. *)
+    Lemma invariant_contradiction γ i :
+      I i γ -∗ B.
+    Proof.
+      iIntros "#HI !>".
+      iApply (inv_fupd' i). iSplit; first done.
+      iIntros "HP".
+      iAssert (fupd M0 B) with "[HP]" as ">#Hfalse".
+      { iDestruct "HP" as "[Hstart|#Hfalse]"; last by iApply fupd_intro.
+        iMod (start_finish with "Hstart"). iApply fupd_intro.
+        (** There's a magic moment here where we have the invariant open,
           but inside [finished_contradiction] we will be proving
           a [fupd M1] and so we can open the invariant *again*.
           Really we are just building up a thunk that can be used
           later when the invariant is closed again. But to build up that
           thunk we can use resources that we just got out of the invariant,
           before closing it again. *)
-      iApply finished_contradiction. eauto. }
-    iApply fupd_intro. iSplitR; last done.
-    by iRight.
-  Qed.
+        iApply finished_contradiction. eauto. }
+      iApply fupd_intro. iSplitR; last done.
+      by iRight.
+    Qed.
 
-  (** Of course, creating the invariant is trivial. *)
-  Lemma contradiction' : False.
-  Proof using All.
-    apply consistency.
-    iMod sts_alloc as (γ) "Hstart".
-    iMod (inv_alloc (P γ) with "[Hstart]") as (i) "HI".
-    { by iLeft. }
-    iDestruct (invariant_contradiction with "HI") as "#>[]".
-  Qed.
+    (** Of course, creating the invariant is trivial. *)
+    Lemma contradiction' : False.
+    Proof using All.
+      apply consistency.
+      iMod sts_alloc as (γ) "Hstart".
+      iMod (inv_alloc (P γ) with "[Hstart]") as (i) "HI".
+      { by iLeft. }
+      iDestruct (invariant_contradiction with "HI") as "#>[]".
+    Qed.
 
   End inv2.
 End inv. End inv.
