@@ -110,7 +110,9 @@ Module savedprop. Section savedprop.
 End savedprop. End savedprop.
 
 
-(** This proves that we need the ▷ when opening invariants. *)
+(** This proves that we need the ▷ when opening invariants. We have two
+paradoxes in this section, but they share the general axiomatization of
+invariants. *)
 Module inv. Section inv.
   Context {PROP : bi} `{!BiAffine PROP}.
   Implicit Types P : PROP.
@@ -133,29 +135,12 @@ Module inv. Section inv.
   Hypothesis inv_fupd :
     ∀ i P Q R, (P ∗ Q ⊢ fupd M0 (P ∗ R)) → (inv i P ∗ Q ⊢ fupd M1 R).
 
-  (* We have tokens for a little "two-state STS": [start] -> [finish].
-     state. [start] also asserts the exact state; it is only ever owned by the
-     invariant.  [finished] is duplicable. *)
-  (* Posssible implementations of these axioms:
-     * Using the STS monoid of a two-state STS, where [start] is the
-       authoritative saying the state is exactly [start], and [finish]
-       is the "we are at least in state [finish]" typically owned by threads.
-     * Ex () +_## ()
-  *)
-  Context (gname : Type).
-  Context (start finished : gname → PROP).
-
-  Hypothesis sts_alloc : ⊢ fupd M0 (∃ γ, start γ).
-  Hypotheses start_finish : ∀ γ, start γ ⊢ fupd M0 (finished γ).
-
-  Hypothesis finished_not_start : ∀ γ, start γ ∗ finished γ ⊢ False.
-
-  Hypothesis finished_dup : ∀ γ, finished γ ⊢ finished γ ∗ finished γ.
-
   (** We assume that we cannot update to false. *)
   Hypothesis consistency : ¬ (⊢ fupd M1 False).
 
-  (** Some general lemmas and proof mode compatibility. *)
+  (** This completes the general assumptions shared by both paradoxes. We set up
+      some general lemmas and proof mode compatibility before proceeding with
+      the paradoxes. *)
   Lemma inv_fupd' i P R : inv i P ∗ (P -∗ fupd M0 (P ∗ fupd M1 R)) ⊢ fupd M1 R.
   Proof.
     iIntros "(#HiP & HP)". iApply fupd_fupd. iApply inv_fupd; last first.
@@ -193,6 +178,28 @@ Module inv. Section inv.
     rewrite /FromExist=>HP. apply bi.exist_elim=> a.
     apply fupd_mono. by rewrite -HP -(bi.exist_intro a).
   Qed.
+
+  (** The original paradox, as found in the "Iris from the Ground Up" paper. *)
+  Section inv1.
+  (** On top of invariants themselves, we need a particular kind of ghost state:
+     we have tokens for a little "two-state STS": [start] -> [finish].
+     [start] also asserts the exact state; it is only ever owned by the
+     invariant. [finished] is duplicable. *)
+  (** Posssible implementations of these axioms:
+     * Using the STS monoid of a two-state STS, where [start] is the
+       authoritative saying the state is exactly [start], and [finish]
+       is the "we are at least in state [finish]" typically owned by threads.
+     * Ex () +_## ()
+  *)
+  Context (gname : Type).
+  Context (start finished : gname → PROP).
+
+  Hypothesis sts_alloc : ⊢ fupd M0 (∃ γ, start γ).
+  Hypotheses start_finish : ∀ γ, start γ ⊢ fupd M0 (finished γ).
+
+  Hypothesis finished_not_start : ∀ γ, start γ ∗ finished γ ⊢ False.
+
+  Hypothesis finished_dup : ∀ γ, finished γ ⊢ finished γ ∗ finished γ.
 
   (** Now to the actual counterexample. We start with a weird form of saved propositions. *)
   Definition saved (γ : gname) (P : PROP) : PROP :=
@@ -257,41 +264,22 @@ Module inv. Section inv.
     iPoseProof (saved_NA with "H") as "HN".
     iApply "HN". iApply saved_A. done.
   Qed.
-End inv. End inv.
 
-(** This is another proof showing that we need the ▷ when opening invariants.
-Unlike the two paradoxes above, this proof does not rely on impredicative
-quantification -- at least, not directly. Instead it exploits the impredicative
-quantification that is implicit in [fupd]. Unlike the previous paradox,
-the [finish] token needs to be persistent for this paradox to work.
+  End inv1.
 
-This paradox is due to Yusuke Matsushita. *)
-Module inv2. Section inv2.
-  Context {PROP : bi} `{!BiAffine PROP}.
-  Implicit Types P : PROP.
+  (** This is another proof showing that we need the ▷ when opening invariants.
+  Unlike the two paradoxes above, this proof does not rely on impredicative
+  quantification -- at least, not directly. Instead it exploits the impredicative
+  quantification that is implicit in [fupd]. Unlike the previous paradox,
+  the [finish] token needs to be persistent for this paradox to work.
 
-  (** Assumptions *)
-  (** We have the update modality (two classes: empty/full mask) *)
-  Inductive mask := M0 | M1.
-  Context (fupd : mask → PROP → PROP).
-  Hypothesis fupd_intro : ∀ E P, P ⊢ fupd E P.
-  Hypothesis fupd_mono : ∀ E P Q, (P ⊢ Q) → fupd E P ⊢ fupd E Q.
-  Hypothesis fupd_fupd : ∀ E P, fupd E (fupd E P) ⊢ fupd E P.
-  Hypothesis fupd_frame_l : ∀ E P Q, P ∗ fupd E Q ⊢ fupd E (P ∗ Q).
-  Hypothesis fupd_mask_mono : ∀ P, fupd M0 P ⊢ fupd M1 P.
-
-  (** We have invariants *)
-  Context (name : Type) (inv : name → PROP → PROP).
-  Global Arguments inv _ _%I.
-  Hypothesis inv_persistent : ∀ i P, Persistent (inv i P).
-  Hypothesis inv_alloc : ∀ P, P ⊢ fupd M1 (∃ i, inv i P).
-  Hypothesis inv_fupd :
-    ∀ i P Q R, (P ∗ Q ⊢ fupd M0 (P ∗ R)) → (inv i P ∗ Q ⊢ fupd M1 R).
-
-  (* We have tokens for a little "two-state STS": [start] -> [finish].
-     state. [start] also asserts the exact state; it is only ever owned by the
-     invariant.  [finished] is persistent. *)
-  (* Posssible implementations of these axioms:
+  This paradox is due to Yusuke Matsushita. *)
+  Section inv2.
+  (** On top of invariants themselves, we need a particular kind of ghost state:
+     we have tokens for a little "two-state STS": [start] -> [finish].
+     [start] also asserts the exact state; it is only ever owned by the
+     invariant. [finished] is persistent. *)
+  (** Posssible implementations of these axioms:
      * Using the STS monoid of a two-state STS, where [start] is the
        authoritative saying the state is exactly [start], and [finish]
        is the "we are at least in state [finish]" typically owned by threads.
@@ -306,48 +294,6 @@ Module inv2. Section inv2.
   Hypothesis finished_not_start : ∀ γ, start γ ∗ finished γ ⊢ False.
 
   Hypothesis finished_persistent : ∀ γ, Persistent (finished γ).
-
-  (** We assume that we cannot update to false. *)
-  Hypothesis consistency : ¬ (⊢ fupd M1 False).
-
-  (** Some general lemmas and proof mode compatibility. *)
-  Lemma inv_fupd' i P R : inv i P ∗ (P -∗ fupd M0 (P ∗ fupd M1 R)) ⊢ fupd M1 R.
-  Proof.
-    iIntros "(#HiP & HP)". iApply fupd_fupd. iApply inv_fupd; last first.
-    { iSplit; first done. iExact "HP". }
-    iIntros "(HP & HPw)". by iApply "HPw".
-  Qed.
-
-  Global Instance fupd_mono' E : Proper ((⊢) ==> (⊢)) (fupd E).
-  Proof. intros P Q ?. by apply fupd_mono. Qed.
-  Global Instance fupd_proper E : Proper ((⊣⊢) ==> (⊣⊢)) (fupd E).
-  Proof.
-    intros P Q; rewrite !bi.equiv_entails=> -[??]; split; by apply fupd_mono.
-  Qed.
-
-  Lemma fupd_frame_r E P Q : fupd E P ∗ Q ⊢ fupd E (P ∗ Q).
-  Proof. by rewrite comm fupd_frame_l comm. Qed.
-
-  Global Instance elim_fupd_fupd p E P Q :
-    ElimModal True p false (fupd E P) P (fupd E Q) (fupd E Q).
-  Proof.
-    by rewrite /ElimModal bi.intuitionistically_if_elim
-      fupd_frame_r bi.wand_elim_r fupd_fupd.
-  Qed.
-
-  Global Instance elim_fupd0_fupd1 p P Q :
-    ElimModal True p false (fupd M0 P) P (fupd M1 Q) (fupd M1 Q).
-  Proof.
-    by rewrite /ElimModal bi.intuitionistically_if_elim
-      fupd_frame_r bi.wand_elim_r fupd_mask_mono fupd_fupd.
-  Qed.
-
-  Global Instance exists_split_fupd0 {A} E P (Φ : A → PROP) :
-    FromExist P Φ → FromExist (fupd E P) (λ a, fupd E (Φ a)).
-  Proof.
-    rewrite /FromExist=>HP. apply bi.exist_elim=> a.
-    apply fupd_mono. by rewrite -HP -(bi.exist_intro a).
-  Qed.
 
   (** Now to the actual counterexample. *)
   (** A version of ⊥ behind a persistent update. *)
@@ -393,7 +339,7 @@ Module inv2. Section inv2.
   Qed.
 
   (** Of course, creating the invariant is trivial. *)
-  Lemma contradiction : False.
+  Lemma contradiction' : False.
   Proof using All.
     apply consistency.
     iMod sts_alloc as (γ) "Hstart".
@@ -401,7 +347,9 @@ Module inv2. Section inv2.
     { by iLeft. }
     iDestruct (invariant_contradiction with "HI") as "#>[]".
   Qed.
-End inv2. End inv2.
+
+  End inv2.
+End inv. End inv.
 
 (** This proves that if we have linear impredicative invariants, we can still
 drop arbitrary resources (i.e., we can "defeat" linearity).
