@@ -50,6 +50,9 @@ Coq 8.13 is no longer supported.
 * Rename `singleton_mono` to `singleton_included_mono`.
 * Use `Strategy expand` for CMRA/UCMRA coercions and most projections to improve
   performance of type-checking some large CMRA/OFE types. (by Ike Mulder)
+* Add monotone resource algebra, `algebra/mra.v`, to enable reasoning about
+  monotonicity with respect to an arbitrary preorder relation: the extension order
+  of `mra R` is designed to embed the preorder relation `R`. (by Amin Timany)
 
 **Changes in `bi`:**
 
