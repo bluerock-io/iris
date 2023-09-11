@@ -1,5 +1,5 @@
 From stdpp Require Import propset gmap strings.
-From iris.unstable.algebra Require Import monotone.
+From iris Require Import algebra.mra.
 
 Unset Mangle Names.
 
