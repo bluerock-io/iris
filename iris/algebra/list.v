@@ -51,7 +51,7 @@ Proof. apply Forall2_cons_inv_r. Qed.
 Definition list_ofe_mixin : OfeMixin (list A).
 Proof.
   split.
-  - intros l k. rewrite equiv_Forall2 -Forall2_forall.
+  - intros l k. rewrite list_equiv_Forall2 -Forall2_forall.
     split; induction 1; constructor; intros; try apply equiv_dist; auto.
   - apply _.
   - rewrite /dist /list_dist. eauto using Forall2_impl, dist_le with si_solver.
