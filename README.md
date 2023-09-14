@@ -30,7 +30,7 @@ Importing Iris has some side effects as the library sets some global options.
 
 This version is known to compile with:
 
- - Coq 8.15.2 / 8.16.1 / 8.17.1 / 8.18.0
+ - Coq 8.16.1 / 8.17.1 / 8.18.0
  - A development version of [std++](https://gitlab.mpi-sws.org/iris/stdpp)
 
 Generally we always aim to support the last two stable Coq releases. Support for
