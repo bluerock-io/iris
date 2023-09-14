@@ -53,10 +53,10 @@ Section cofe.
       section by using Let. *)
     Let monPred_sig_equiv:
       ∀ P Q, P ≡ Q ↔ monPred_sig P ≡ monPred_sig Q.
-    Proof. by split; [intros []|]. Qed.
+    Proof. by split; [intros []|]. Defined.
     Let monPred_sig_dist:
       ∀ n, ∀ P Q : monPred, P ≡{n}≡ Q ↔ monPred_sig P ≡{n}≡ monPred_sig Q.
-    Proof. by split; [intros []|]. Qed.
+    Proof. by split; [intros []|]. Defined.
 
     Definition monPred_ofe_mixin : OfeMixin monPred.
     Proof.
