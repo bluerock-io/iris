@@ -44,21 +44,31 @@ variables:
 
 ## Build jobs
 
+# The newest version runs with timing.
 build-coq.8.18.0:
   <<: *template
   variables:
     OPAM_PINS: "coq version 8.18.0"
     DENY_WARNINGS: "1"
+    MANGLE_NAMES: "1"
+    OPAM_PKG: "1"
+    DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
+    DOC_OPTS: "--external https://plv.mpi-sws.org/coqdoc/stdpp/ stdpp"
+  tags:
+  - fp-timing
+  interruptible: false
+
+# The newest version also runs in MRs, without timing.
+build-coq.8.18.0-mr:
+  <<: *template
+  <<: *only_mr
+  variables:
+    OPAM_PINS: "coq version 8.18.0"
+    DENY_WARNINGS: "1"
+    MANGLE_NAMES: "1"
 
 build-coq.8.17.0:
   <<: *template
-  variables:
-    OPAM_PINS: "coq version 8.17.0"
-    DENY_WARNINGS: "1"
-
-build-coq.8.17.0-mr:
-  <<: *template
-  <<: *only_mr
   variables:
     OPAM_PINS: "coq version 8.17.0"
     DENY_WARNINGS: "1"
@@ -69,14 +79,8 @@ build-coq.8.16.1:
   variables:
     OPAM_PINS: "coq version 8.16.1"
     DENY_WARNINGS: "1"
-    MANGLE_NAMES: "1"
-    OPAM_PKG: "1"
-    DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
-    DOC_OPTS: "--external https://plv.mpi-sws.org/coqdoc/stdpp/ stdpp"
-  tags:
-  - fp-timing
-  interruptible: false
 
+# The oldest version runs in MRs, without name mangling.
 build-coq.8.15.2:
   <<: *template
   <<: *branches_and_mr
