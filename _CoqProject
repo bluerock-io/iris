@@ -20,8 +20,6 @@
 -arg -w -arg -future-coercion-class-field
 # Some warnings exist only on some Coq versions
 -arg -w -arg -unknown-warning
-# Since we still support Coq 8.15, we cannot yet deal with these deprecations.
--arg -w -arg -deprecated-since-8.18
 
 iris/prelude/options.v
 iris/prelude/prelude.v

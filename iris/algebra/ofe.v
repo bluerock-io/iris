@@ -1581,7 +1581,7 @@ Section iso_cofe_subtype.
   Context {A B : ofe} `{Cofe A} (P : A → Prop) (f : ∀ x, P x → B) (g : B → A).
   Context (g_dist : ∀ n y1 y2, y1 ≡{n}≡ y2 ↔ g y1 ≡{n}≡ g y2).
   Let Hgne : NonExpansive g.
-  Proof. intros n y1 y2. apply g_dist. Qed.
+  Proof. intros n y1 y2. apply g_dist. Defined.
   Local Existing Instance Hgne.
   Context (gf : ∀ x Hx, g (f x Hx) ≡ x).
   Context (Hlimit : ∀ c : chain B, P (compl (chain_map g c))).

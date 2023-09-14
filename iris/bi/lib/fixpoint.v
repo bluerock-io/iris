@@ -149,14 +149,14 @@ induction principles:
 Section least_ind.
   Context {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
 
-  Let wf_pred_mono `{!NonExpansive Φ} :
+  Local Lemma Private_wf_pred_mono `{!NonExpansive Φ} :
     BiMonoPred (λ (Ψ : A → PROP) (a : A), Φ a ∧ F Ψ a)%I.
   Proof using Type*.
     split; last solve_proper.
     intros Ψ Ψ' Hne Hne'. iIntros "#Mon" (x) "Ha". iSplit; first by iDestruct "Ha" as "[$ _]".
     iDestruct "Ha" as "[_ Hr]". iApply (bi_mono_pred with "[] Hr"). by iModIntro.
   Qed.
-  Local Existing Instance wf_pred_mono.
+  Local Existing Instance Private_wf_pred_mono.
 
   Lemma least_fixpoint_ind_wf (Φ : A → PROP) `{!NonExpansive Φ} :
     □ (∀ y, F (bi_least_fixpoint (λ Ψ a, Φ a ∧ F Ψ a)) y -∗ Φ y) -∗
@@ -304,13 +304,14 @@ again. *)
 Section greatest_coind.
   Context {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
 
-  Let paco_mono `{!NonExpansive Φ} : BiMonoPred (λ (Ψ : A → PROP) (a : A), Φ a ∨ F Ψ a)%I.
+  Local Lemma Private_paco_mono `{!NonExpansive Φ} :
+    BiMonoPred (λ (Ψ : A → PROP) (a : A), Φ a ∨ F Ψ a)%I.
   Proof using Type*.
     split; last solve_proper.
     intros Ψ Ψ' Hne Hne'. iIntros "#Mon" (x) "[H1|H2]"; first by iLeft.
     iRight. iApply (bi_mono_pred with "[] H2"). by iModIntro.
   Qed.
-  Local Existing Instance paco_mono.
+  Local Existing Instance Private_paco_mono.
 
   Lemma greatest_fixpoint_paco (Φ : A → PROP) `{!NonExpansive Φ} :
     □ (∀ y, Φ y -∗ F (bi_greatest_fixpoint (λ Ψ a, Φ a ∨ F Ψ a)) y) -∗
