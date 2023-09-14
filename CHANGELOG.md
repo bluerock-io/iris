@@ -5,7 +5,7 @@ lemma.
 
 ## Iris master
 
-Coq 8.13 is no longer supported.
+Coq 8.13, 8.14, and 8.15 are no longer supported.
 
 **Changes in `prelude`:**
 
