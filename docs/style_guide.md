@@ -221,6 +221,7 @@ theories/base_logic/lib is for constructions in the base logic (using own)
 * Lower-case theorem names, lower-case types, upper-case constructors
 * **TODO:** how should `f (g x) = f' (g' x)` be named?
 * `list_lookup_insert` is named by context (the type involved), then the two functions outside-in on the left-hand-side, so it has the type `lookup (insert …) = …` where the `insert` is on a list. Notations mean it doesn’t actually look like this and the insert is textually first.
+* Operations that "extract" from the data structure (`lookup`, `elem_of`, ...) should come before operations that "alter" the data structure (`filter`, `insert`, `union`, `fmap`). For example, use `map_lookup_filter` instead of `map_filter_lookup`.
 * Injectivity theorems are instances of `Inj` and then are used with `inj`
 * Suffixes `_l` and `_r` when we have binary `op x y` and a theorem related to the left or right. For example, `sep_mono_l` says bi_sep is monotonic in its left argument (holding the right constant).
 * Suffix `'` (prime) is used when `foo'` is a corollary of `foo`. Try to avoid
