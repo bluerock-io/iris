@@ -648,12 +648,10 @@ Class CombineSepsAsGives {PROP : bi} (Ps : list PROP) (Q R : PROP) := {
   combine_seps_as_gives_as : [∗] Ps ⊢ Q;
   combine_seps_as_gives_gives : [∗] Ps ⊢ <pers> R;
 }.
+Global Hint Mode CombineSepsAsGives + ! - - : typeclass_instances.
 Global Arguments CombineSepsAsGives {_} _%I _%I _%I.
 Global Arguments combine_seps_as_gives_as {_} _%I _%I _%I {_}.
 Global Arguments combine_seps_as_gives_gives {_} _%I _%I _%I {_}.
-(* FIXME: Hint Modes for this class are located after section closure due to
-Coq < 8.15 not supporting Global Hint Mode inside a section. Move them back
-once support for Coq < 8.15 is dropped *)
 
 Global Instance combine_seps_as_gives_nil : @CombineSepsAsGives PROP [] emp True.
 Proof.
@@ -699,11 +697,9 @@ Qed.
 the following [CombineSepsAs] typeclass. *)
 Class CombineSepsAs {PROP : bi} (Ps : list PROP) (Q : PROP) :=
   combine_seps_as : [∗] Ps ⊢ Q.
+Global Hint Mode CombineSepsAs + ! - : typeclass_instances.
 Global Arguments CombineSepsAs {_} _%I _%I.
 Global Arguments combine_seps_as {_} _%I _%I {_}.
-(* FIXME: Hint Modes for this class are located after section closure due to
-Coq < 8.15 not supporting Global Hint Mode inside a section. Move them back
-once support for Coq < 8.15 is dropped *)
 
 (** To ensure consistency of the output [Q] with that of [CombineSepsAsGives],
 the only instance of [CombineSepsAs] is constructed with an instance of
@@ -771,7 +767,7 @@ Lemma tac_combine_as_gives Δ1 Δ2 Δ3 js p Ps j k P R Q :
   envs_entails Δ3 Q → envs_entails Δ1 Q.
 Proof.
   rewrite envs_entails_unseal => ??? <-.
-  rewrite combine_seps_gives_of_envs //.
+  rewrite (combine_seps_gives_of_envs _ _ _ _ Ps) //.
   rewrite envs_lookup_delete_list_sound //.
   rewrite combine_seps_as_gives_as envs_app_sound //.
   destruct p => /=.
@@ -1038,9 +1034,6 @@ Proof.
   apply löb_wand_intuitionistically.
 Qed.
 End tactics.
-
-Global Hint Mode CombineSepsAs + ! - : typeclass_instances.
-Global Hint Mode CombineSepsAsGives + ! - - : typeclass_instances.
 
 (** * Introduction of modalities *)
 (** The following _private_ classes are used internally by [tac_modal_intro] /
