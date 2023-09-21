@@ -444,7 +444,7 @@ Section gmap.
     { by rewrite map_filter_empty !big_opM_empty. }
     destruct (decide (φ (k, v))).
     - rewrite map_filter_insert_True //.
-      assert (filter φ m !! k = None) by (apply map_filter_lookup_None; eauto).
+      assert (filter φ m !! k = None) by (apply map_lookup_filter_None; eauto).
       by rewrite !big_opM_insert // decide_True // IH.
     - rewrite map_filter_insert_not' //; last by congruence.
       rewrite !big_opM_insert // decide_False // IH. by rewrite left_id.
