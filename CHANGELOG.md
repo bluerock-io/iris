@@ -232,6 +232,9 @@ s/\bMonPred\.unseal\b/monPred\.unseal/g
 # big op
 s/\bbig_sepM2_alt\b/big_sepM2_alt_lookup/g
 s/\bbupd_plain\b/bupd_elim/g
+# Logical atomicity (will break Autosubst notation!)
+s/<<</<<\{/g
+s/>>>/\}>>/g
 EOF
 ```
 
