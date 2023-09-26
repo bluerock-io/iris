@@ -56,10 +56,10 @@ Class atomic_heap := AtomicHeap {
   free_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (v : val) :
     {{{ mapsto (H:=H) l (DfracOwn 1) v }}} free #l {{{ l, RET #l; True }}};
   load_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) :
-    ⊢ <<< ∀∀ (v : val) q, mapsto (H:=H) l q v >>> load #l @ ∅ <<< mapsto (H:=H) l q v, RET v >>>;
+    ⊢ <<{ ∀∀ (v : val) q, mapsto (H:=H) l q v }>> load #l @ ∅ <<{ mapsto (H:=H) l q v | RET v }>>;
   store_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (w : val) :
-    ⊢ <<< ∀∀ v, mapsto (H:=H) l (DfracOwn 1) v >>> store #l w @ ∅
-      <<< mapsto (H:=H) l (DfracOwn 1) w, RET #() >>>;
+    ⊢ <<{ ∀∀ v, mapsto (H:=H) l (DfracOwn 1) v }>> store #l w @ ∅
+      <<{ mapsto (H:=H) l (DfracOwn 1) w | RET #() }>>;
   (* This spec is slightly weaker than it could be: It is sufficient for [w1]
   *or* [v] to be unboxed.  However, by writing it this way the [val_is_unboxed]
   is outside the atomic triple, which makes it much easier to use -- and the
@@ -68,10 +68,10 @@ Class atomic_heap := AtomicHeap {
   [destruct (decide (a = b))] and it will simplify in both places. *)
   cmpxchg_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<< ∀∀ v, mapsto (H:=H) l (DfracOwn 1) v >>> cmpxchg #l w1 w2 @ ∅
-      <<< if decide (v = w1)
-          then mapsto (H:=H) l (DfracOwn 1) w2 else mapsto (H:=H) l (DfracOwn 1) v,
-        RET (v, #if decide (v = w1) then true else false) >>>;
+    ⊢ <<{ ∀∀ v, mapsto (H:=H) l (DfracOwn 1) v }>> cmpxchg #l w1 w2 @ ∅
+      <<{ if decide (v = w1)
+          then mapsto (H:=H) l (DfracOwn 1) w2 else mapsto (H:=H) l (DfracOwn 1) v
+        | RET (v, #if decide (v = w1) then true else false) }>>;
 }.
 
 Global Arguments alloc : simpl never.
@@ -112,11 +112,11 @@ Section derived.
 
   Lemma cas_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<< ∀∀ v, mapsto l (DfracOwn 1) v >>>
+    ⊢ <<{ ∀∀ v, mapsto l (DfracOwn 1) v }>>
       CAS #l w1 w2 @ ∅
-    <<< if decide (v = w1)
-        then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
-      RET #if decide (v = w1) then true else false >>>.
+    <<{ if decide (v = w1)
+        then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v
+      | RET #if decide (v = w1) then true else false }>>.
   Proof.
     iIntros (? Φ) "AU". awp_apply cmpxchg_spec; first done.
     iApply (aacc_aupd_commit with "AU"); first done.
@@ -125,9 +125,9 @@ Section derived.
   Qed.
 
   Lemma faa_spec (l : loc) (i2 : Z) :
-    ⊢ <<< ∀∀ i1 : Z, mapsto l (DfracOwn 1) #i1 >>>
+    ⊢ <<{ ∀∀ i1 : Z, mapsto l (DfracOwn 1) #i1 }>>
       FAA #l #i2 @ ∅
-    <<< mapsto l (DfracOwn 1) #(i1 + i2), RET #i1 >>>.
+    <<{ mapsto l (DfracOwn 1) #(i1 + i2) | RET #i1 }>>.
   Proof.
     iIntros (Φ) "AU". rewrite /faa_atomic. iLöb as "IH".
     wp_pures. awp_apply load_spec.
@@ -174,8 +174,8 @@ Section proof.
   Qed.
 
   Lemma primitive_load_spec (l : loc) :
-    ⊢ <<< ∀∀ (v : val) q, l ↦{q} v >>> primitive_load #l @ ∅
-    <<< l ↦{q} v, RET v >>>.
+    ⊢ <<{ ∀∀ (v : val) q, l ↦{q} v }>> primitive_load #l @ ∅
+      <<{ l ↦{q} v | RET v }>>.
   Proof.
     iIntros (Φ) "AU". wp_lam.
     iMod "AU" as (v q) "[H↦ [_ Hclose]]".
@@ -183,8 +183,8 @@ Section proof.
   Qed.
 
   Lemma primitive_store_spec (l : loc) (w : val) :
-    ⊢ <<< ∀∀ v, l ↦ v >>> primitive_store #l w @ ∅
-    <<< l ↦ w, RET #() >>>.
+    ⊢ <<{ ∀∀ v, l ↦ v }>> primitive_store #l w @ ∅
+      <<{ l ↦ w | RET #() }>>.
   Proof.
     iIntros (Φ) "AU". wp_lam. wp_let.
     iMod "AU" as (v) "[H↦ [_ Hclose]]".
@@ -193,10 +193,10 @@ Section proof.
 
   Lemma primitive_cmpxchg_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<< ∀∀ (v : val), l ↦ v >>>
+    ⊢ <<{ ∀∀ (v : val), l ↦ v }>>
       primitive_cmpxchg #l w1 w2 @ ∅
-    <<< if decide (v = w1) then l ↦ w2 else l ↦ v,
-        RET (v, #if decide (v = w1) then true else false) >>>.
+    <<{ if decide (v = w1) then l ↦ w2 else l ↦ v
+      | RET (v, #if decide (v = w1) then true else false) }>>.
   Proof.
     iIntros (? Φ) "AU". wp_lam. wp_pures.
     iMod "AU" as (v) "[H↦ [_ Hclose]]".
