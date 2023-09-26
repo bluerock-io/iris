@@ -118,6 +118,8 @@ Coq 8.13, 8.14, and 8.15 are no longer supported.
 * Fix `greatest_fixpoint_ne'` accidentally being about the least fixpoint.
 * Add `Plain` instance for `|==> P` when `P` is plain.
 * Rename `bupd_plain` → `bupd_elim`.
+* Change notation for atomic updates and atomic accessors to use `<{ ... }>`
+  instead of `<< ... >>`. This avoids a conflict with Autosubst.
 
 **Changes in `proofmode`:**
 
@@ -181,6 +183,15 @@ Coq 8.13, 8.14, and 8.15 are no longer supported.
   derived law.
 * Remove `frac_validI`. Instead, move to the pure context (with `%` in the proof
   mode or `uPred.discrete_valid` in manual proofs) and use `frac_valid`.
+
+**Changes in `program_logic`:**
+
+* Change the notation for logically atomic triples: we add support for specifying private (non-atomic) postconditions,
+  and we avoid a notation conflict with Autosubst. The new notation looks as follows:
+  `<<{ ∀∀ x, atomic_pre x }>> code @ ∅ <<{ ∃∃ y, atomic_post x y | z, RET v, non_atomic_post x y z }>>`.
+  To keep the notation without private postcondition consistent, the way the return value is specified changes slightly
+  even when there is no private postcondition:
+  `<<{ ∀∀ x, atomic_pre x }>> code @ ∅ <<{ ∃∃ y, atomic_post x y | RET v }>>`.
 
 **Changes in `heap_lang`:**
 
