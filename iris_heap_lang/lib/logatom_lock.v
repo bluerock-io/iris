@@ -71,9 +71,9 @@ Section tada.
 
   Lemma acquire_tada_spec γ lk :
     tada_is_lock γ lk -∗
-    <<< ∀∀ s, tada_lock_state γ s >>>
+    <<{ ∀∀ s, tada_lock_state γ s }>>
       acquire lk @ ∅
-    <<< ⌜ s = Free ⌝ ∗ tada_lock_state γ Locked >>> {{{ RET #() }}}.
+    <<{ ⌜ s = Free ⌝ ∗ tada_lock_state γ Locked | RET #() }>>.
   Proof.
     iIntros "#Hislock %Φ AU". iApply wp_fupd.
     wp_apply (acquire_spec with "Hislock") as "[Hlocked Hvar1]".
@@ -86,9 +86,9 @@ Section tada.
 
   Lemma release_tada_spec γ lk :
     tada_is_lock γ lk -∗
-    <<< tada_lock_state γ Locked >>>
+    <<{ tada_lock_state γ Locked }>>
       release lk @ ∅
-    <<< tada_lock_state γ Free >>> {{{ RET #() }}}.
+    <<{ tada_lock_state γ Free | RET #() }>>.
   Proof.
     iIntros "#Hislock %Φ AU". iApply fupd_wp.
     iMod "AU" as "[[Hvar1 [Hlocked Hvar2]] [_ Hclose]]".
