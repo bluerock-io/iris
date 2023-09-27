@@ -651,6 +651,15 @@ Lemma test_iFrame_disjunction_1 P1 P2 Q1 Q2 :
 Proof. intros ?. iIntros "#HP1 HQ2 HP2". iFrame "HP1 HQ2 HP2". Qed.
 Lemma test_iFrame_disjunction_2 P : P -∗ (True ∨ True) ∗ P.
 Proof. iIntros "HP". iFrame "HP". auto. Qed.
+Lemma test_iFrame_disjunction_3_evars `(Φ : nat → PROP) P1 P2 P3 P4 :
+  BiAffine PROP →
+  let n := 5 in
+  let R := fun a => Nat.iter n (fun P => (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a) ∨ P)%I (Φ a) in
+  P1 ⊢ ∃ a, R a.
+Proof.
+  intros ?. cbn. iIntros "HP1". iExists _.
+  Timeout 1 iFrame.
+Abort.
 
 Lemma test_iFrame_conjunction_1 P Q :
   P -∗ Q -∗ (P ∗ Q) ∧ (P ∗ Q).
@@ -666,6 +675,15 @@ Proof.
   iFrame "HP".
   (* [iFrame] should simplify [False ∧ Q] to just [False]. *)
   Show.
+Abort.
+Lemma test_iFrame_conjunction_4_evars `(Φ : nat → PROP) P1 P2 P3 P4 P5 :
+  BiAffine PROP →
+  let n := 5 in
+  let R := fun a => Nat.iter n (fun P => (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a) ∧ P)%I (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a)%I in
+  P5 ⊢ ∃ a, R a.
+Proof.
+  intros ?. cbn. iIntros "HP1". iExists _.
+  Timeout 1 iFrame.
 Abort.
 
 Lemma test_iFrame_later `{!BiAffine PROP} P Q : P -∗ Q -∗ ▷ P ∗ Q.

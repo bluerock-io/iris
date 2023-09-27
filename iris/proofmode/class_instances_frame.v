@@ -110,13 +110,13 @@ Proof. by rewrite /Frame big_sepMS_disj_union. Qed.
 (unlike with [∗] where we can only frame it in one conjunct).
 We require at least one of those to make progress though. *)
 Global Instance frame_and p progress1 progress2 R P1 P2 Q1 Q2 Q' :
-  MaybeFrame p R P1 Q1 progress1 →
-  MaybeFrame p R P2 Q2 progress2 →
+  TCNoBackTrack (MaybeFrame p R P1 Q1 progress1) →
+  TCNoBackTrack (MaybeFrame p R P2 Q2 progress2) →
   TCEq (progress1 || progress2) true →
   MakeAnd Q1 Q2 Q' →
   Frame p R (P1 ∧ P2) Q' | 9.
 Proof.
-  rewrite /MaybeFrame /Frame /MakeAnd => <- <- _ <-.
+  rewrite /MaybeFrame /Frame /MakeAnd => [[<-]] [<-] _ <-.
   apply and_intro; [rewrite and_elim_l|rewrite and_elim_r]; done.
 Qed.
 
@@ -135,19 +135,21 @@ If Coq would memorize the results of type class resolution, the solution with
 multiple instances would be preferred (and more Prolog-like). *)
 
 Global Instance frame_or_spatial progress1 progress2 R P1 P2 Q1 Q2 Q :
-  MaybeFrame false R P1 Q1 progress1 → MaybeFrame false R P2 Q2 progress2 →
+  TCNoBackTrack (MaybeFrame false R P1 Q1 progress1) →
+  TCNoBackTrack (MaybeFrame false R P2 Q2 progress2) →
   TCOr (TCEq (progress1 && progress2) true) (TCOr
     (TCAnd (TCEq progress1 true) (TCEq Q1 True%I))
     (TCAnd (TCEq progress2 true) (TCEq Q2 True%I))) →
   MakeOr Q1 Q2 Q →
   Frame false R (P1 ∨ P2) Q | 9.
-Proof. rewrite /Frame /MakeOr => <- <- _ <-. by rewrite -sep_or_l. Qed.
+Proof. rewrite /Frame /MakeOr => [[<-]] [<-] _ <-. by rewrite -sep_or_l. Qed.
 
 Global Instance frame_or_persistent progress1 progress2 R P1 P2 Q1 Q2 Q :
-  MaybeFrame true R P1 Q1 progress1 → MaybeFrame true R P2 Q2 progress2 →
+  TCNoBackTrack (MaybeFrame true R P1 Q1 progress1) →
+  TCNoBackTrack (MaybeFrame true R P2 Q2 progress2) →
   TCEq (progress1 || progress2) true →
   MakeOr Q1 Q2 Q → Frame true R (P1 ∨ P2) Q | 9.
-Proof. rewrite /Frame /MakeOr => <- <- _ <-. by rewrite -sep_or_l. Qed.
+Proof. rewrite /Frame /MakeOr => [[<-]] [<-] _ <-. by rewrite -sep_or_l. Qed.
 
 Global Instance frame_wand p R P1 P2 Q2 :
   Frame p R P2 Q2 → Frame p R (P1 -∗ P2) (P1 -∗ Q2) | 2.
