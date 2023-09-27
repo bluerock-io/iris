@@ -235,6 +235,7 @@ theories/base_logic/lib is for constructions in the base logic (using own)
     M1_M2: M1 (M2 P) ⊣⊢ M2 (M1 P)
     ```
 * Monotonicity lemmas where the relation can be ambiguous are called `<f>_<relation>_mono`, e.g. `Some_included_mono`.
+* For lemmas `f x = g ...` that give a definition of function `f` in terms of `g`, we use `f_as_g`. For example, `map_compose_as_omap : m ∘ₘ n = omap (m !!.) n`.
 
 ### Naming algebra libraries
 
