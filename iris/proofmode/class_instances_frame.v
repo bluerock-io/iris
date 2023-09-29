@@ -106,6 +106,9 @@ Global Instance frame_big_sepMS_disj_union `{Countable A} p (Φ : A → PROP) R 
   Frame p R ([∗ mset] y ∈ X1 ⊎ X2, Φ y) Q | 2.
 Proof. by rewrite /Frame big_sepMS_disj_union. Qed.
 
+(* For framing below [∧], we can frame [R] away in *both* conjuncts
+(unlike with [∗] where we can only frame it in one conjunct).
+We require at least one of those to make progress though. *)
 Global Instance frame_and p progress1 progress2 R P1 P2 Q1 Q2 Q' :
   MaybeFrame p R P1 Q1 progress1 →
   MaybeFrame p R P2 Q2 progress2 →
