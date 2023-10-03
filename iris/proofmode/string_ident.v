@@ -67,10 +67,8 @@ Module StringToIdent.
   does not support returning values from Ltac2 to Ltac1. So we provide
   [string_to_ident_cps] in CPS instead. *)
 
-  Ltac2 get_opt o := match o with None => Control.throw Not_found | Some x => x end.
-
   Ltac string_to_ident_cps :=
-    ltac2:(s1 r |- let s := get_opt (Ltac1.to_constr s1) in
+    ltac2:(s1 r |- let s := Option.get (Ltac1.to_constr s1) in
                    let ident := coq_string_to_ident s in
                    Ltac1.apply r [Ltac1.of_ident ident] Ltac1.run).
 End StringToIdent.
