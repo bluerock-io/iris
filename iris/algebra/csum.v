@@ -65,8 +65,8 @@ Proof.
   split.
   - intros mx my; split.
     + by destruct 1; constructor; try apply equiv_dist.
-    + intros Hxy; feed inversion (Hxy 0); subst; constructor; try done;
-      apply equiv_dist=> n; by feed inversion (Hxy n).
+    + intros Hxy; oinversion (Hxy 0); subst; constructor; try done;
+      apply equiv_dist=> n; by oinversion (Hxy n).
   - intros n; split.
     + by intros [|a|]; constructor.
     + by destruct 1; constructor.
@@ -91,7 +91,7 @@ Global Program Instance csum_cofe `{!Cofe A, !Cofe B} : Cofe csumO :=
   {| compl := csum_compl |}.
 Next Obligation.
   intros ?? n c; rewrite /compl /csum_compl.
-  feed inversion (chain_cauchy c 0 n); first auto with lia; constructor.
+  oinversion (chain_cauchy c 0 n); first auto with lia; constructor.
   + rewrite (conv_compl n (csum_chain_l c _)) /=. destruct (c n); naive_solver.
   + rewrite (conv_compl n (csum_chain_r c _)) /=. destruct (c n); naive_solver.
 Qed.
@@ -239,9 +239,9 @@ Proof.
       constructor; eauto using cmra_pcore_l.
   - intros [a|b|] ? [=]; subst; auto.
     + destruct (pcore a) as [ca|] eqn:?; simplify_option_eq.
-      feed inversion (cmra_pcore_idemp a ca); repeat constructor; auto.
+      oinversion (cmra_pcore_idemp a ca); repeat constructor; auto.
     + destruct (pcore b) as [cb|] eqn:?; simplify_option_eq.
-      feed inversion (cmra_pcore_idemp b cb); repeat constructor; auto.
+      oinversion (cmra_pcore_idemp b cb); repeat constructor; auto.
   - intros x y ? [->|[(a&a'&->&->&?)|(b&b'&->&->&?)]]%csum_included [=].
     + exists CsumBot. rewrite csum_included; eauto.
     + destruct (pcore a) as [ca|] eqn:?; simplify_option_eq.

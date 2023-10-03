@@ -1076,7 +1076,7 @@ Section sum.
     { compl := sum_compl }.
   Next Obligation.
     intros ?? n c; rewrite /compl /sum_compl.
-    feed inversion (chain_cauchy c 0 n); first by si_solver.
+    oinversion (chain_cauchy c 0 n); first by si_solver.
     - rewrite (conv_compl n (inl_chain c _)) /=. destruct (c n); naive_solver.
     - rewrite (conv_compl n (inr_chain c _)) /=. destruct (c n); naive_solver.
   Qed.
@@ -1230,7 +1230,7 @@ Section option.
     split.
     - intros mx my; split; [by destruct 1; constructor; apply equiv_dist|].
       intros Hxy; destruct (Hxy 0); constructor; apply equiv_dist.
-      by intros n; feed inversion (Hxy n).
+      by intros n; oinversion (Hxy n).
     - apply _.
     - destruct 1; constructor; eauto using dist_le with si_solver.
   Qed.
@@ -1245,7 +1245,7 @@ Section option.
     { compl := option_compl }.
   Next Obligation.
     intros ? n c; rewrite /compl /option_compl.
-    feed inversion (chain_cauchy c 0 n); auto with lia; [].
+    oinversion (chain_cauchy c 0 n); auto with lia; [].
     constructor. rewrite (conv_compl n (option_chain c _)) /=.
     destruct (c n); naive_solver.
   Qed.

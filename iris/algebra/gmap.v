@@ -34,7 +34,7 @@ Global Program Instance gmap_cofe `{Cofe A} : Cofe gmapO :=
   {| compl := gmap_compl |}.
 Next Obligation.
   intros ? n c k. rewrite /compl /gmap_compl map_lookup_imap.
-  feed inversion (λ H, chain_cauchy c 0 n H k);simplify_option_eq;auto with lia.
+  oinversion (λ H, chain_cauchy c 0 n H k);simplify_option_eq;auto with lia.
   by rewrite conv_compl /=; apply reflexive_eq.
 Qed.
 
