@@ -500,10 +500,10 @@ Section plainly_derived.
     (∀ x, Plain (Ψ x)) → Plain P → Plain (from_option Ψ P mx).
   Proof. destruct mx; apply _. Qed.
 
-  Global Instance big_sepL_nil_plain `{!BiAffine PROP} {A} (Φ : nat → A → PROP) :
+  Global Instance big_sepL_nil_plain {A} (Φ : nat → A → PROP) :
     Plain ([∗ list] k↦x ∈ [], Φ k x).
   Proof. simpl; apply _. Qed.
-  Global Instance big_sepL_plain `{!BiAffine PROP} {A} (Φ : nat → A → PROP) l :
+  Global Instance big_sepL_plain {A} (Φ : nat → A → PROP) l :
     (∀ k x, Plain (Φ k x)) → Plain ([∗ list] k↦x ∈ l, Φ k x).
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
   Global Instance big_andL_nil_plain {A} (Φ : nat → A → PROP) :
@@ -519,47 +519,48 @@ Section plainly_derived.
     (∀ k x, Plain (Φ k x)) → Plain ([∨ list] k↦x ∈ l, Φ k x).
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
 
-  Global Instance big_sepL2_nil_plain `{!BiAffine PROP} {A B} (Φ : nat → A → B → PROP) :
+  Global Instance big_sepL2_nil_plain {A B}
+      (Φ : nat → A → B → PROP) :
     Plain ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
   Proof. simpl; apply _. Qed.
-  Global Instance big_sepL2_plain `{!BiAffine PROP} {A B} (Φ : nat → A → B → PROP) l1 l2 :
+  Global Instance big_sepL2_plain {A B} (Φ : nat → A → B → PROP) l1 l2 :
     (∀ k x1 x2, Plain (Φ k x1 x2)) →
     Plain ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
   Proof. rewrite big_sepL2_alt. apply _. Qed.
 
-  Global Instance big_sepM_empty_plain `{!BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) :
+  Global Instance big_sepM_empty_plain `{Countable K} {A} (Φ : K → A → PROP) :
     Plain ([∗ map] k↦x ∈ ∅, Φ k x).
   Proof. rewrite big_opM_empty. apply _. Qed.
-  Global Instance big_sepM_plain `{!BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) m :
+  Global Instance big_sepM_plain `{Countable K} {A} (Φ : K → A → PROP) m :
     (∀ k x, Plain (Φ k x)) → Plain ([∗ map] k↦x ∈ m, Φ k x).
   Proof.
     induction m using map_ind;
       [rewrite big_opM_empty|rewrite big_opM_insert //]; apply _.
   Qed.
 
-  Global Instance big_sepM2_empty_plain `{!BiAffine PROP, Countable K}
+  Global Instance big_sepM2_empty_plain `{Countable K}
       {A B} (Φ : K → A → B → PROP) :
     Plain ([∗ map] k↦x1;x2 ∈ ∅;∅, Φ k x1 x2).
   Proof. rewrite big_sepM2_empty. apply _. Qed.
-  Global Instance big_sepM2_plain `{!BiAffine PROP, Countable K}
+  Global Instance big_sepM2_plain `{Countable K}
       {A B} (Φ : K → A → B → PROP) m1 m2 :
     (∀ k x1 x2, Plain (Φ k x1 x2)) →
     Plain ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
   Proof. intros. rewrite big_sepM2_alt. apply _. Qed.
 
-  Global Instance big_sepS_empty_plain `{!BiAffine PROP, Countable A} (Φ : A → PROP) :
+  Global Instance big_sepS_empty_plain `{Countable A} (Φ : A → PROP) :
     Plain ([∗ set] x ∈ ∅, Φ x).
   Proof. rewrite big_opS_empty. apply _. Qed.
-  Global Instance big_sepS_plain `{!BiAffine PROP, Countable A} (Φ : A → PROP) X :
+  Global Instance big_sepS_plain `{Countable A} (Φ : A → PROP) X :
     (∀ x, Plain (Φ x)) → Plain ([∗ set] x ∈ X, Φ x).
   Proof.
     induction X using set_ind_L;
       [rewrite big_opS_empty|rewrite big_opS_insert //]; apply _.
   Qed.
-  Global Instance big_sepMS_empty_plain `{!BiAffine PROP, Countable A} (Φ : A → PROP) :
+  Global Instance big_sepMS_empty_plain `{Countable A} (Φ : A → PROP) :
     Plain ([∗ mset] x ∈ ∅, Φ x).
   Proof. rewrite big_opMS_empty. apply _. Qed.
-  Global Instance big_sepMS_plain `{!BiAffine PROP, Countable A} (Φ : A → PROP) X :
+  Global Instance big_sepMS_plain `{Countable A} (Φ : A → PROP) X :
     (∀ x, Plain (Φ x)) → Plain ([∗ mset] x ∈ X, Φ x).
   Proof.
     induction X using gmultiset_ind;
