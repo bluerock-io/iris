@@ -41,6 +41,10 @@ Global Instance last_ne : NonExpansive (@last A).
 Proof. intros ????; by apply dist_option_Forall2, Forall2_last. Qed.
 Global Instance resize_ne n : NonExpansive2 (@resize A n) := _.
 
+Global Instance cons_dist_inj n :
+  Inj2 (dist n) (dist n) (dist n) (@cons A).
+Proof. by inversion_clear 1. Qed.
+
 Lemma list_dist_cons_inv_l n x l k :
   x :: l ≡{n}≡ k → ∃ y k', x ≡{n}≡ y ∧ l ≡{n}≡ k' ∧ k = y :: k'.
 Proof. apply Forall2_cons_inv_l. Qed.
