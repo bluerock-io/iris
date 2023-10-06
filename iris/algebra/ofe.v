@@ -1330,6 +1330,10 @@ Proof.
     apply optionO_map_ne, oFunctor_map_contractive.
 Qed.
 
+Global Instance option_fmap_dist_inj {A B : ofe} (f : A → B) n :
+  Inj (≡{n}≡) (≡{n}≡) f → Inj (≡{n}@{option A}≡) (≡{n}@{option B}≡) (fmap f).
+Proof. apply option_fmap_inj. Qed.
+
 (** * Later type *)
 (** Note that the projection [later_car] is not non-expansive (see also the
 lemma [later_car_anti_contractive] below), so it cannot be used in the logic.
