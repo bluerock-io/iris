@@ -118,17 +118,17 @@ Proof.
   intros ?? Hf ?? Hm1 ?? Hm2 i. rewrite !lookup_merge.
   destruct (Hm1 i), (Hm2 i); try apply Hf; by constructor.
 Qed.
-Global Instance union_with_proper `{Countable K} {A : ofe} n :
+Global Instance union_with_ne `{Countable K} {A : ofe} n :
   Proper ((dist n ==> dist n ==> dist n) ==>
           dist n ==> dist n ==> dist n) (union_with (M:=gmap K A)).
 Proof.
   intros ?? Hf ?? Hm1 ?? Hm2 i; apply (merge_ne _ _); auto.
   by do 2 destruct 1; first [apply Hf | constructor].
 Qed.
-Global Instance map_fmap_proper `{Countable K} {A B : ofe} (f : A → B) n :
+Global Instance map_fmap_ne `{Countable K} {A B : ofe} (f : A → B) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=gmap K) f).
 Proof. intros ? m m' ? k; rewrite !lookup_fmap. by repeat f_equiv. Qed.
-Global Instance map_zip_with_proper `{Countable K} {A B C : ofe} (f : A → B → C) n :
+Global Instance map_zip_with_ne `{Countable K} {A B C : ofe} (f : A → B → C) n :
   Proper (dist n ==> dist n ==> dist n) f →
   Proper (dist n ==> dist n ==> dist n) (map_zip_with (M:=gmap K) f).
 Proof.
