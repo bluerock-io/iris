@@ -30,6 +30,10 @@ Section upred.
 
     Lemma gmap_equivI m1 m2 : m1 ≡ m2 ⊣⊢ ∀ i, m1 !! i ≡ m2 !! i.
     Proof. by uPred.unseal. Qed.
+
+    Lemma gmap_union_equiv_eqI m m1 m2 :
+      m ≡ m1 ∪ m2 ⊣⊢ ∃ m1' m2', ⌜ m = m1' ∪ m2' ⌝ ∧ m1' ≡ m1 ∧ m2' ≡ m2.
+    Proof. uPred.unseal; split=> n x _. apply gmap_union_dist_eq. Qed.
   End gmap_ofe.
 
   Section gmap_cmra.

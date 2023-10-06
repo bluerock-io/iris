@@ -136,6 +136,30 @@ Proof.
   destruct 1; destruct 1; repeat f_equiv; constructor || done.
 Qed.
 
+Global Instance gmap_union_ne `{Countable K} {A : ofe} :
+  NonExpansive2 (union (A:=gmap K A)).
+Proof. intros n. apply union_with_ne. by constructor. Qed.
+Global Instance gmap_disjoint_ne `{Countable K} {A : ofe} n :
+  Proper (dist n ==> dist n ==> iff) (map_disjoint (M:=gmap K) (A:=A)).
+Proof.
+  intros m1 m1' Hm1 m2 m2' Hm2; split;
+    intros Hm i; specialize (Hm i); by destruct (Hm1 i), (Hm2 i).
+Qed.
+
+Lemma gmap_union_dist_eq `{Countable K} {A : ofe} (m m1 m2 : gmap K A) n :
+  m ≡{n}≡ m1 ∪ m2 ↔ ∃ m1' m2', m = m1' ∪ m2' ∧ m1' ≡{n}≡ m1 ∧ m2' ≡{n}≡ m2.
+Proof.
+  split; last first.
+  { by intros (m1'&m2'&->&<-&<-). }
+  intros Hm.
+  exists (filter (λ '(l,_), is_Some (m1 !! l)) m),
+    (m2 ∩ m1 ∪ filter (λ '(l,_), is_Some (m2 !! l)) m).
+  split_and!; [apply map_eq|..]; intros k; move: (Hm k);
+    rewrite ?lookup_union ?lookup_intersection !map_lookup_filter;
+    case _ : (m !! k)=> [x|] /=; case _ : (m1 !! k)=> [x1|] /=;
+      case _ : (m2 !! k)=> [x2|] /=; by inversion 1.
+Qed.
+
 Lemma big_opM_ne_2 `{Monoid M o} `{Countable K} {A : ofe} (f g : K → A → M) m1 m2 n :
   m1 ≡{n}≡ m2 →
   (∀ k y1 y2,
@@ -426,6 +450,24 @@ Proof.
     apply cmra_validN_op_r.
   - move: (Hm j). by rewrite !lookup_op lookup_delete_ne.
 Qed.
+
+Lemma gmap_op_union m1 m2 : m1 ##ₘ m2 → m1 ⋅ m2 = m1 ∪ m2.
+Proof.
+  intros Hm. apply map_eq=> k. specialize (Hm k).
+  rewrite lookup_op lookup_union. by destruct (m1 !! k), (m2 !! k).
+Qed.
+
+Lemma gmap_op_valid0_disjoint m1 m2 :
+  ✓{0} (m1 ⋅ m2) → (∀ k x, m1 !! k = Some x → Exclusive x) → m1 ##ₘ m2.
+Proof.
+  unfold Exclusive. intros Hvalid Hexcl k.
+  specialize (Hvalid k). rewrite lookup_op in Hvalid. specialize (Hexcl k).
+  destruct (m1 !! k), (m2 !! k); [|done..].
+  rewrite -Some_op Some_validN in Hvalid. naive_solver.
+Qed.
+Lemma gmap_op_valid_disjoint m1 m2 :
+  ✓ (m1 ⋅ m2) → (∀ k x, m1 !! k = Some x → Exclusive x) → m1 ##ₘ m2.
+Proof. move=> /cmra_valid_validN /(_ 0). apply gmap_op_valid0_disjoint. Qed.
 
 Lemma dom_op m1 m2 : dom (m1 ⋅ m2) = dom m1 ∪ dom m2.
 Proof.
