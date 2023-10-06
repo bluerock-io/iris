@@ -1413,6 +1413,10 @@ Global Instance later_map_proper {A B : ofe} (f : A → B) :
   Proper ((≡) ==> (≡)) f →
   Proper ((≡) ==> (≡)) (later_map f).
 Proof. solve_proper. Qed.
+
+Lemma later_map_Next {A B : ofe} (f : A → B) x :
+  later_map f (Next x) = Next (f x).
+Proof. done. Qed.
 Lemma later_map_id {A} (x : later A) : later_map id x = x.
 Proof. by destruct x. Qed.
 Lemma later_map_compose {A B C} (f : A → B) (g : B → C) (x : later A) :
