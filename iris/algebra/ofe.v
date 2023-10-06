@@ -1222,7 +1222,7 @@ Section option.
   Context {A : ofe}.
 
   Local Instance option_dist : Dist (option A) := λ n, option_Forall2 (dist n).
-  Lemma dist_option_Forall2 n mx my : mx ≡{n}≡ my ↔ option_Forall2 (dist n) mx my.
+  Lemma option_dist_Forall2 n mx my : mx ≡{n}≡ my ↔ option_Forall2 (dist n) mx my.
   Proof. done. Qed.
 
   Definition option_ofe_mixin : OfeMixin (option A).
@@ -1295,6 +1295,10 @@ Global Instance option_mjoin_ne {A : ofe} n:
   Proper (dist n ==> dist n) (@mjoin option _ A).
 Proof. destruct 1 as [?? []|]; simpl; by constructor. Qed.
 
+Global Instance option_fmap_dist_inj {A B : ofe} (f : A → B) n :
+  Inj (≡{n}≡) (≡{n}≡) f → Inj (≡{n}@{option A}≡) (≡{n}@{option B}≡) (fmap f).
+Proof. apply option_fmap_inj. Qed.
+
 Lemma fmap_Some_dist {A B : ofe} (f : A → B) (mx : option A) (y : B) n :
   f <$> mx ≡{n}≡ Some y ↔ ∃ x : A, mx = Some x ∧ y ≡{n}≡ f x.
 Proof.
@@ -1329,10 +1333,6 @@ Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg;
     apply optionO_map_ne, oFunctor_map_contractive.
 Qed.
-
-Global Instance option_fmap_dist_inj {A B : ofe} (f : A → B) n :
-  Inj (≡{n}≡) (≡{n}≡) f → Inj (≡{n}@{option A}≡) (≡{n}@{option B}≡) (fmap f).
-Proof. apply option_fmap_inj. Qed.
 
 (** * Later type *)
 (** Note that the projection [later_car] is not non-expansive (see also the

@@ -9,8 +9,10 @@ Implicit Types l : list A.
 
 Local Instance list_dist : Dist (list A) := λ n, Forall2 (dist n).
 
+Lemma list_dist_Forall2 n l k : l ≡{n}≡ k ↔ Forall2 (dist n) l k.
+Proof. done. Qed.
 Lemma list_dist_lookup n l1 l2 : l1 ≡{n}≡ l2 ↔ ∀ i, l1 !! i ≡{n}≡ l2 !! i.
-Proof. setoid_rewrite dist_option_Forall2. apply Forall2_lookup. Qed.
+Proof. setoid_rewrite option_dist_Forall2. apply Forall2_lookup. Qed.
 
 Global Instance cons_ne : NonExpansive2 (@cons A) := _.
 Global Instance app_ne : NonExpansive2 (@app A) := _.
@@ -21,7 +23,7 @@ Global Instance drop_ne n : NonExpansive (@drop A n) := _.
 Global Instance head_ne : NonExpansive (head (A:=A)).
 Proof. destruct 1; by constructor. Qed.
 Global Instance list_lookup_ne i : NonExpansive (lookup (M:=list A) i).
-Proof. intros ????. by apply dist_option_Forall2, Forall2_lookup. Qed.
+Proof. intros ????. by apply option_dist_Forall2, Forall2_lookup. Qed.
 Global Instance list_lookup_total_ne `{!Inhabited A} i :
   NonExpansive (lookup_total (M:=list A) i).
 Proof. intros ???. rewrite !list_lookup_total_alt. by intros ->. Qed.
@@ -31,14 +33,14 @@ Global Instance list_insert_ne i : NonExpansive2 (insert (M:=list A) i) := _.
 Global Instance list_inserts_ne i : NonExpansive2 (@list_inserts A i) := _.
 Global Instance list_delete_ne i : NonExpansive (delete (M:=list A) i) := _.
 Global Instance option_list_ne : NonExpansive (@option_list A).
-Proof. intros ????; by apply Forall2_option_list, dist_option_Forall2. Qed.
+Proof. intros ????; by apply Forall2_option_list, option_dist_Forall2. Qed.
 Global Instance list_filter_ne n P `{∀ x, Decision (P x)} :
   Proper (dist n ==> iff) P →
   Proper (dist n ==> dist n) (filter (B:=list A) P) := _.
 Global Instance replicate_ne n : NonExpansive (@replicate A n) := _.
 Global Instance reverse_ne : NonExpansive (@reverse A) := _.
 Global Instance last_ne : NonExpansive (@last A).
-Proof. intros ????; by apply dist_option_Forall2, Forall2_last. Qed.
+Proof. intros ????; by apply option_dist_Forall2, Forall2_last. Qed.
 Global Instance resize_ne n : NonExpansive2 (@resize A n) := _.
 
 Global Instance cons_dist_inj n :
@@ -131,6 +133,10 @@ Proof.
   intros f1 f2 Hf.
   induction 1; destruct 1; simpl; [constructor..|f_equiv; try apply Hf; auto].
 Qed.
+
+Global Instance list_fmap_dist_inj {A B : ofe} (f : A → B) n :
+  Inj (≡{n}≡) (≡{n}≡) f → Inj (≡{n}@{list A}≡) (≡{n}@{list B}≡) (fmap f).
+Proof. apply list_fmap_inj. Qed.
 
 Lemma big_opL_ne_2 {M : ofe} {o : M → M → M} `{!Monoid o} {A : ofe} (f g : nat → A → M) l1 l2 n :
   l1 ≡{n}≡ l2 →
