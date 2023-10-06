@@ -55,6 +55,9 @@ Coq 8.13, 8.14, and 8.15 are no longer supported.
   of `mra R` is designed to embed the preorder relation `R`. (by Amin Timany)
 * Rename instances `union_with_proper` → `union_with_ne`,
   `map_fmap_proper` → `map_fmap_ne`, `map_zip_with_proper` → `map_zip_with_ne`.
+* Rename `dist_option_Forall2` → `option_dist_Forall2`. Add similar lemma
+  `list_dist_Forall2`.
+* Add instances `option_fmap_dist_inj` and `list_fmap_dist_inj`.
 
 **Changes in `bi`:**
 
@@ -237,6 +240,8 @@ s/\bbupd_plain\b/bupd_elim/g
 # Logical atomicity (will break Autosubst notation!)
 s/<<</<<\{/g
 s/>>>/\}>>/g
+# option dist
+s/\bdist_option_Forall2\b/option_dist_Forall2/g
 EOF
 ```
 
