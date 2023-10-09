@@ -382,8 +382,8 @@ Proof.
   iIntros "HP HQ".
   iAssert True%I as "#_". { by iClear "HP HQ". }
   iAssert True%I with "[HP]" as "#_". { Fail iClear "HQ". by iClear "HP". }
-  iAssert True%I as %_. { by iClear "HP HQ". }
-  iAssert True%I with "[HP]" as %_. { Fail iClear "HQ". by iClear "HP". }
+  iAssert True%I as % _. { by iClear "HP HQ". }
+  iAssert True%I with "[HP]" as % _. { Fail iClear "HQ". by iClear "HP". }
   done.
 Qed.
 

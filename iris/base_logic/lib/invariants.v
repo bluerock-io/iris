@@ -146,7 +146,7 @@ Section inv.
     iMod ("HinvQ" with "[%]") as "[$ HcloseQ]"; first set_solver.
     iApply fupd_mask_intro; first set_solver.
     iIntros "Hclose [HP HQ]".
-    iMod "Hclose" as %_. iMod ("HcloseQ" with "HQ") as %_. by iApply "HcloseP".
+    iMod "Hclose" as % _. iMod ("HcloseQ" with "HQ") as % _. by iApply "HcloseP".
   Qed.
 
   Lemma inv_combine_dup_l N P Q :
@@ -156,7 +156,7 @@ Section inv.
     rewrite inv_unseal. iIntros "#HPdup #HinvP #HinvQ !>" (E ?).
     iMod ("HinvP" with "[//]") as "[HP HcloseP]".
     iDestruct ("HPdup" with "HP") as "[$ HP]".
-    iMod ("HcloseP" with "HP") as %_.
+    iMod ("HcloseP" with "HP") as % _.
     iMod ("HinvQ" with "[//]") as "[$ HcloseQ]".
     iIntros "!> [HP HQ]". by iApply "HcloseQ".
   Qed.
