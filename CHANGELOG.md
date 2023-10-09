@@ -58,6 +58,12 @@ Coq 8.13, 8.14, and 8.15 are no longer supported.
 * Rename `dist_option_Forall2` → `option_dist_Forall2`. Add similar lemma
   `list_dist_Forall2`.
 * Add instances `option_fmap_dist_inj` and `list_fmap_dist_inj`.
+* Rename `list_dist_cons_inv_r` → `cons_dist_eq` and remove
+  `list_dist_cons_inv_l` to be consistent with `cons_equiv_eq` in std++.
+  (If you needed `list_dist_cons_inv_l`, you can apply `symmetry` and
+  then use `cons_dist_eq`.)
+  Add similar lemmas `nil_dist_eq`, `app_dist_eq`, `list_singleton_dist_eq`,
+  `dist_Permutation`.
 
 **Changes in `bi`:**
 
@@ -240,8 +246,9 @@ s/\bbupd_plain\b/bupd_elim/g
 # Logical atomicity (will break Autosubst notation!)
 s/<<</<<\{/g
 s/>>>/\}>>/g
-# option dist
+# option and list
 s/\bdist_option_Forall2\b/option_dist_Forall2/g
+s/\blist_dist_cons_inv_r\b/cons_dist_eq/g
 EOF
 ```
 

@@ -47,12 +47,21 @@ Global Instance cons_dist_inj n :
   Inj2 (dist n) (dist n) (dist n) (@cons A).
 Proof. by inversion_clear 1. Qed.
 
-Lemma list_dist_cons_inv_l n x l k :
-  x :: l ≡{n}≡ k → ∃ y k', x ≡{n}≡ y ∧ l ≡{n}≡ k' ∧ k = y :: k'.
-Proof. apply Forall2_cons_inv_l. Qed.
-Lemma list_dist_cons_inv_r n l k y :
+Lemma nil_dist_eq n l : l ≡{n}≡ [] ↔ l = [].
+Proof. split; by inversion 1. Qed.
+Lemma cons_dist_eq n l k y :
   l ≡{n}≡ y :: k → ∃ x l', x ≡{n}≡ y ∧ l' ≡{n}≡ k ∧ l = x :: l'.
 Proof. apply Forall2_cons_inv_r. Qed.
+Lemma app_dist_eq n l k1 k2 :
+  l ≡{n}≡ k1 ++ k2 ↔ ∃ k1' k2', l = k1' ++ k2' ∧ k1' ≡{n}≡ k1 ∧ k2' ≡{n}≡ k2.
+Proof. rewrite list_dist_Forall2 Forall2_app_inv_r. naive_solver. Qed.
+Lemma list_singleton_dist_eq n l x :
+  l ≡{n}≡ [x] ↔ ∃ x', l = [x'] ∧ x' ≡{n}≡ x.
+Proof.
+  split; [|by intros (?&->&->)].
+  intros (?&?&?&->%Forall2_nil_inv_r&->)%list_dist_Forall2%Forall2_cons_inv_r.
+  eauto.
+Qed.
 
 Definition list_ofe_mixin : OfeMixin (list A).
 Proof.
@@ -84,7 +93,7 @@ Next Obligation.
   revert Hc0. generalize (c 0)=> c0. revert c.
   induction c0 as [|x c0 IH]=> c Hc0 /=.
   { by inversion Hc0. }
-  apply list_dist_cons_inv_l in Hc0 as (x' & xs' & Hx & Hc0 & Hcn).
+  apply symmetry, cons_dist_eq in Hc0 as (x' & xs' & Hx & Hc0 & Hcn).
   rewrite Hcn. f_equiv.
   - by rewrite conv_compl /= Hcn /=.
   - rewrite IH /= ?Hcn //.
@@ -98,6 +107,18 @@ Proof. inversion_clear 1; constructor. Qed.
 Global Instance cons_discrete x l : Discrete x → Discrete l → Discrete (x :: l).
 Proof. intros ??; inversion_clear 1; constructor; by apply discrete. Qed.
 
+Lemma dist_Permutation n l1 l2 l3 :
+  l1 ≡{n}≡ l2 → l2 ≡ₚ l3 → ∃ l2', l1 ≡ₚ l2' ∧ l2' ≡{n}≡ l3.
+Proof.
+  intros Hequiv Hperm. revert l1 Hequiv.
+  induction Hperm as [|x l2 l3 _ IH|x y l2|l2 l3 l4 _ IH1 _ IH2]; intros l1.
+  - intros ?. by exists l1.
+  - intros (x'&l2'&?&(l2''&?&?)%IH&->)%cons_dist_eq.
+    exists (x' :: l2''). by repeat constructor.
+  - intros (y'&?&?&(x'&l2'&?&?&->)%cons_dist_eq&->)%cons_dist_eq.
+    exists (x' :: y' :: l2'). by repeat constructor.
+  - intros (l2'&?&(l3'&?&?)%IH2)%IH1. exists l3'. split; [by etrans|done].
+Qed.
 End ofe.
 
 Global Arguments listO : clear implicits.
