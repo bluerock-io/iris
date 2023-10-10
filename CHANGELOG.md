@@ -3,9 +3,43 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
-## Iris master
+## Iris 4.1.0 (2023-10-??)
 
-Coq 8.13, 8.14, and 8.15 are no longer supported.
+This Iris release mostly features quality-of-life improvements, such as smarter
+handling of `->`/`<-` patters by `iDestruct`, support for an arbitrary number of
+Coq intro patterns in the Iris proofmode tactics (`iIntros`, `iDestruct`, etc.),
+and support for immediately introducing the postcondition of a WP specification
+via `wp_apply lemma as "Hpost"`.
+
+The biggest changes and new features are:
+* Logically atomic triples now support private (non-atomic) postconditions, and
+  the notation was changed to not clash with Autosubst any more. Existing users
+  of logically atomic specifications have to update their notation, see the full
+  CHANGELOG for more details.
+* The meaning of `P -∗ Q` as a Coq proposition has changed from `P ⊢ Q` to
+  `⊢ P -∗ Q`. If you are only using the Iris proofmode, this will not make a
+  difference, but when writing proof scripts or tactics that `rewrite` or
+  `apply` Iris lemmas, the exact position of the `⊢ P -∗ Q` matters and this
+  will now always be visible in lemma statements.
+* `iCombine` is starting to gain support for a `gives` clause, which yields
+  persistent facts gained from combining the resources. So far, this remains
+  mostly experimental. We support `↦` and the connectives of ghost theories in
+  `base_logic/lib`, but support for `own` and custom cameras is minimal and will
+  be improved in future releases.
+* Some initial refactoring prepares Iris for eventually supporting transfinite step-indexing.
+* New resources algebras have been added: `Z`, `max_Z`, `mono_Z`, and `mra` (the
+  monotone resource algebra of https://iris-project.org/pdfs/2021-CPP-monotone-final.pdf)
+
+Iris 4.1 supports Coq 8.16-Coq 8.18. Coq 8.13-8.15 are no longer supported.
+
+This release was managed by Ralf Jung, Robbert Krebbers, and Johannes Hostert,
+with contributions from Amin Timany, Arthur Azevedo de Amorim, Armaël Guéneau,
+Benjamin Peters, Dan Frumin, Dorian Lesbre, Ike Mulder, Isaac van Bakel, Jaemin
+Choi, Janine Lohse, Jan-Oliver Kaiser, Jonas Kastberg Hinrichsen, Lennard Gäher,
+Mathias Adam Møller, Michael Sammler, Paolo Giarrusso, Pierre Roux, Rodolphe
+Lepigre, Simcha van Collem, Simon Friis Vindum, Simon Spies, Tej Chajed, Yicuan
+Chen, and Yusuke Matsushita. Thanks a lot to everyone involved!
+
 
 **Changes in `prelude`:**
 
