@@ -6,7 +6,7 @@ lemma.
 ## Iris 4.1.0 (2023-10-11)
 
 This Iris release mostly features quality-of-life improvements, such as smarter
-handling of `->`/`<-` patters by `iDestruct`, support for an arbitrary number of
+handling of `->`/`<-` patterns by `iDestruct`, support for an arbitrary number of
 Coq intro patterns in the Iris proofmode tactics (`iIntros`, `iDestruct`, etc.),
 and support for immediately introducing the postcondition of a WP specification
 via `wp_apply lemma as "Hpost"`.
@@ -30,7 +30,7 @@ The biggest changes and new features are:
 * New resources algebras have been added: `Z`, `max_Z`, `mono_Z`, and `mra` (the
   monotone resource algebra of https://iris-project.org/pdfs/2021-CPP-monotone-final.pdf)
 
-Iris 4.1 supports Coq 8.16-Coq 8.18. Coq 8.13-8.15 are no longer supported.
+Iris 4.1 supports Coq 8.16-8.18. Coq 8.13-8.15 are no longer supported.
 
 This release was managed by Ralf Jung, Robbert Krebbers, and Johannes Hostert,
 with contributions from Amin Timany, Arthur Azevedo de Amorim, Armaël Guéneau,
