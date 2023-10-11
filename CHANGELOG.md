@@ -3,6 +3,10 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
+## Iris master
+
+(nothing yet)
+
 ## Iris 4.1.0 (2023-10-11)
 
 This Iris release mostly features quality-of-life improvements, such as smarter
