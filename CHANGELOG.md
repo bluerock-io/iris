@@ -3,7 +3,7 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
-## Iris 4.1.0 (2023-10-??)
+## Iris 4.1.0 (2023-10-11)
 
 This Iris release mostly features quality-of-life improvements, such as smarter
 handling of `->`/`<-` patters by `iDestruct`, support for an arbitrary number of
