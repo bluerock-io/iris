@@ -692,13 +692,13 @@ Proof.
   (* [iFrame] should simplify [False ∧ Q] to just [False]. *)
   Show.
 Abort.
-Lemma test_iFrame_conjunction_4_evars `(Φ : nat → PROP) P1 P2 P3 P4 P5 :
+Lemma test_iFrame_conjunction_4_evars (Φ : nat → PROP) P1 P2 P3 P4 P5 :
   BiAffine PROP →
   let n := 5 in
-  let R := fun a => Nat.iter n (fun P => (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a) ∧ P)%I (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a)%I in
+  let R := λ a, Nat.iter n (λ P, (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a) ∧ P)%I (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a)%I in
   P5 ⊢ ∃ a, R a.
 Proof.
-  intros ?. cbn. iIntros "HP1". iExists _.
+  intros ?. simpl. iIntros "HP1". iExists _.
   Timeout 1 iFrame. (* The combination of evars and nested conjunctions used to
   cause excessive backtracking during the construction of [Frame] instances,
   which made [iFrame] very slow. Above [Timeout] ensures [iFrame] now performs
