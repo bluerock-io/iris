@@ -59,13 +59,14 @@ Global Instance frame_pure_embed `{!BiEmbed PROP PROP'} p P Q (Q' : PROP') φ :
 Proof. rewrite /Frame /MakeEmbed -embed_pure. apply (frame_embed p P Q). Qed.
 
 Global Instance frame_sep_persistent_l progress R P1 P2 Q1 Q2 Q' :
-  (* This [MaybeFrame] does not have to be guarded by [TCNoBacktrack]:
+  (* This [MaybeFrame] does not really have to be guarded by [TCNoBacktrack]:
     if the first [Frame] instance can be satisfied, this instance will
-    be successfully constructed, regardless of the [progress] *)
-  Frame true R P1 Q1 → MaybeFrame true R P2 Q2 progress → MakeSep Q1 Q2 Q' →
+    be successfully constructed, regardless of the [progress]. *)
+  Frame true R P1 Q1 → TCNoBackTrack (MaybeFrame true R P2 Q2 progress) →
+  MakeSep Q1 Q2 Q' →
   Frame true R (P1 ∗ P2) Q' | 9.
 Proof.
-  rewrite /Frame /MaybeFrame /MakeSep /= => <- <- <-.
+  rewrite /Frame /MaybeFrame /MakeSep /= => <- [<-] <-.
   rewrite {1}(intuitionistically_sep_dup R).
   by rewrite !assoc -(assoc _ _ _ Q1) -(comm _ Q1) assoc -(comm _ Q1).
 Qed.
