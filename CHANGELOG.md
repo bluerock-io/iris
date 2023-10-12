@@ -41,7 +41,7 @@ with contributions from Amin Timany, Arthur Azevedo de Amorim, Armaël Guéneau,
 Benjamin Peters, Dan Frumin, Dorian Lesbre, Ike Mulder, Isaac van Bakel, Jaemin
 Choi, Janine Lohse, Jan-Oliver Kaiser, Jonas Kastberg Hinrichsen, Lennard Gäher,
 Mathias Adam Møller, Michael Sammler, Paolo Giarrusso, Pierre Roux, Rodolphe
-Lepigre, Simcha van Collem, Simon Friis Vindum, Simon Spies, Tej Chajed, Yicuan
+Lepigre, Simcha van Collem, Simon Friis Vindum, Simon Spies, Tej Chajed, Yixuan
 Chen, and Yusuke Matsushita. Thanks a lot to everyone involved!
 
 
