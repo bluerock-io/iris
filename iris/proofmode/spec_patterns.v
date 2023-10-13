@@ -75,7 +75,7 @@ with parse_goal (ts : list token)
     (k : stack) : option (list spec_pat) :=
   match ts with
   | TMinus :: ts =>
-     guard (¬neg ∧ frame = [] ∧ hyps = []);
+     guard (¬neg ∧ frame = [] ∧ hyps = []);;
      parse_goal ts ki true frame hyps k
   | TName s :: ts => parse_goal ts ki neg frame (INamed s :: hyps) k
   | TFrame :: TName s :: ts => parse_goal ts ki neg (INamed s :: frame) hyps k

@@ -64,10 +64,10 @@ Fixpoint close_conj_list (k : stack)
   match k with
   | StConjList :: k =>
      ps ← match cur with
-          | None => guard (ps = []); Some [] | Some p => Some (p :: ps)
+          | None => guard (ps = []);; Some [] | Some p => Some (p :: ps)
           end;
      Some (StPat (big_conj ps) :: k)
-  | StPat pat :: k => guard (cur = None); close_conj_list k (Some pat) ps
+  | StPat pat :: k => guard (cur = None);; close_conj_list k (Some pat) ps
   | StIntuitionistic :: k => p ← cur; close_conj_list k (Some (IIntuitionistic p)) ps
   | StSpatial :: k => p ← cur; close_conj_list k (Some (ISpatial p)) ps
   | StModalElim :: k => p ← cur; close_conj_list k (Some (IModalElim p)) ps
