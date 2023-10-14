@@ -224,6 +224,15 @@ Section ofe.
   Qed.
   Lemma discrete_iff_0 n (x : A) `{!Discrete x} y : x ≡{0}≡ y ↔ x ≡{n}≡ y.
   Proof. by rewrite -!discrete_iff. Qed.
+  Lemma discrete_n n (x : A) `{!Discrete x} y : x ≡{n}≡ y → x ≡ y.
+  Proof. intros. eapply discrete_iff; done. Qed.
+
+  Global Instance ofe_discrete_subrelation `{!OfeDiscrete A} n :
+    @SolveProperSubrelation A (dist n) (≡).
+  Proof. intros ???. apply: discrete_n. done. Qed.
+  Global Instance ofe_leibniz_subrelation `{!OfeDiscrete A, !LeibnizEquiv A} n :
+    @SolveProperSubrelation A (dist n) (=).
+  Proof. intros ?? EQ. unfold_leibniz. apply (is_solve_proper_subrelation EQ). Qed.
 End ofe.
 
 (** Contractive functions *)

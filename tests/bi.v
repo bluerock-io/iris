@@ -70,3 +70,19 @@ Proof. intros. eexists _. Fail apply _. Abort.
 Goal ∀ {PROP : bi} (P : PROP),
   ∃ plainly_instance, Persistent (@plainly PROP plainly_instance P).
 Proof. intros. eexists _. Fail apply _. Abort.
+
+Section internal_eq_ne.
+  Context `{!BiInternalEq PROP} {A : ofe} (a : A).
+
+  Goal NonExpansive (λ x, (a ≡ x : PROP)%I).
+  Proof. solve_proper. Qed.
+
+  (* The ones below rely on [SolveProperSubrelation] *)
+  Context `{!OfeDiscrete A}.
+  Goal NonExpansive (λ x, (⌜a ≡ x⌝ : PROP)%I).
+  Proof. solve_proper. Qed.
+
+  Context `{!LeibnizEquiv A}.
+  Goal NonExpansive (λ x, (⌜a = x⌝ : PROP)%I).
+  Proof. solve_proper. Qed.
+End internal_eq_ne.
