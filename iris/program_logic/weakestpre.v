@@ -445,6 +445,17 @@ Section proofmode_classes.
     by rewrite /ElimModal intuitionistically_if_elim
       fupd_frame_r wand_elim_r fupd_wp.
   Qed.
+  (** Error message instance for non-mask-changing view shifts.
+  Also uses a slightly different error: we cannot apply [fupd_mask_subseteq]
+  if [e] is not atomic, so we tell the user to first add a leading [fupd]
+  and then change the mask of that. *)
+  Global Instance elim_modal_fupd_wp_wrong_mask p s E1 E2 e P Φ :
+    ElimModal
+      (pm_error "Goal and eliminated modality must have the same mask.
+Use [iApply fupd_wp; iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]")
+      p false
+      (|={E2}=> P) False (WP e @ s; E1 {{ Φ }}) False | 100.
+  Proof. intros []. Qed.
 
   Global Instance elim_modal_fupd_wp_atomic p s E1 E2 e P Φ :
     ElimModal (Atomic (stuckness_to_atomicity s) e) p false
@@ -454,6 +465,15 @@ Section proofmode_classes.
     intros ?. by rewrite intuitionistically_if_elim
       fupd_frame_r wand_elim_r wp_atomic.
   Qed.
+  (** Error message instance for mask-changing view shifts. *)
+  Global Instance elim_modal_fupd_wp_atomic_wrong_mask p s E1 E2 E2' e P Φ :
+    ElimModal
+      (pm_error "Goal and eliminated modality must have the same mask.
+Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]")
+      p false
+      (|={E2,E2'}=> P) False
+      (WP e @ s; E1 {{ Φ }}) False | 200.
+  Proof. intros []. Qed.
 
   Global Instance add_modal_fupd_wp s E e P Φ :
     AddModal (|={E}=> P) P (WP e @ s; E {{ Φ }}).

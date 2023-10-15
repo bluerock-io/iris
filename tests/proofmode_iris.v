@@ -2,6 +2,7 @@ From iris.algebra Require Import frac.
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic Require Import base_logic.
 From iris.base_logic.lib Require Import invariants cancelable_invariants na_invariants ghost_var.
+From iris.program_logic Require Import weakestpre.
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
@@ -302,7 +303,32 @@ Section iris_tests.
   Proof.
     iIntros "H1 H2". iCombine "H1 H2" as "H". Show. done.
   Qed.
+
 End iris_tests.
+
+Section WP_tests.
+  Context `{!irisGS_gen hlc Λ Σ}.
+  Implicit Types P Q R : iProp Σ.
+
+  Check "iMod_WP_mask_mismatch".
+  Lemma iMod_WP_mask_mismatch E1 E2 P (e : expr Λ) :
+    (|={E2}=> P) ⊢ WP e @ E1 {{ _, True }}.
+  Proof.
+    Fail iIntros ">HP".
+    iIntros "HP". Fail iMod "HP".
+    iApply fupd_wp; iMod (fupd_mask_subseteq E2).
+  Abort.
+
+  Check "iMod_WP_atomic_mask_mismatch".
+  Lemma iMod_WP_atomic_mask_mismatch E1 E2 E2' P (e : expr Λ) :
+    (|={E2,E2'}=> P) ⊢ WP e @ E1 {{ _, True }}.
+  Proof.
+    Fail iIntros ">HP".
+    iIntros "HP". Fail iMod "HP".
+    iMod (fupd_mask_subseteq E2).
+  Abort.
+
+End WP_tests.
 
 Section monpred_tests.
   Context `{!invGS_gen hlc Σ}.
