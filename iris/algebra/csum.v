@@ -98,15 +98,15 @@ Qed.
 
 Global Instance csum_ofe_discrete :
   OfeDiscrete A → OfeDiscrete B → OfeDiscrete csumO.
-Proof. by inversion_clear 3; constructor; apply (discrete _). Qed.
+Proof. by inversion_clear 3; constructor; apply (discrete_0 _). Qed.
 Global Instance csum_leibniz :
   LeibnizEquiv A → LeibnizEquiv B → LeibnizEquiv csumO.
 Proof. by destruct 3; f_equal; apply leibniz_equiv. Qed.
 
 Global Instance Cinl_discrete a : Discrete a → Discrete (Cinl a).
-Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
+Proof. by inversion_clear 2; constructor; apply (discrete_0 _). Qed.
 Global Instance Cinr_discrete b : Discrete b → Discrete (Cinr b).
-Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
+Proof. by inversion_clear 2; constructor; apply (discrete_0 _). Qed.
 
 End ofe.
 

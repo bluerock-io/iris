@@ -100,12 +100,12 @@ Next Obligation.
 Qed.
 
 Global Instance list_ofe_discrete : OfeDiscrete A → OfeDiscrete listO.
-Proof. induction 2; constructor; try apply (discrete _); auto. Qed.
+Proof. induction 2; constructor; try apply (discrete_0 _); auto. Qed.
 
 Global Instance nil_discrete : Discrete (@nil A).
 Proof. inversion_clear 1; constructor. Qed.
 Global Instance cons_discrete x l : Discrete x → Discrete l → Discrete (x :: l).
-Proof. intros ??; inversion_clear 1; constructor; by apply discrete. Qed.
+Proof. intros ??; inversion_clear 1; constructor; by apply discrete_0. Qed.
 
 Lemma dist_Permutation n l1 l2 l3 :
   l1 ≡{n}≡ l2 → l2 ≡ₚ l3 → ∃ l2', l1 ≡ₚ l2' ∧ l2' ≡{n}≡ l3.

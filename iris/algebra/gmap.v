@@ -39,7 +39,7 @@ Next Obligation.
 Qed.
 
 Global Instance gmap_ofe_discrete : OfeDiscrete A → OfeDiscrete gmapO.
-Proof. intros ? m m' ? i. by apply (discrete _). Qed.
+Proof. intros ? m m' ? i. by apply (discrete_0 _). Qed.
 (* why doesn't this go automatic? *)
 Global Instance gmapO_leibniz: LeibnizEquiv A → LeibnizEquiv gmapO.
 Proof. intros; change (LeibnizEquiv (gmap K A)); apply _. Qed.
@@ -80,7 +80,7 @@ Proof.
   intros ? [x|] Hx; [|by symmetry; apply: discrete].
   assert (m ≡{0}≡ <[i:=x]> m)
     by (by symmetry in Hx; inversion Hx; ofe_subst; rewrite insert_id).
-  by rewrite (discrete m (<[i:=x]>m)) // lookup_insert.
+  by rewrite (discrete_0 m (<[i:=x]>m)) // lookup_insert.
 Qed.
 Global Instance gmap_insert_discrete m i x :
   Discrete x → Discrete m → Discrete (<[i:=x]>m).

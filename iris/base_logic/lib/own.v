@@ -124,7 +124,7 @@ Proof.
   intros ?. rewrite /iRes_singleton.
   apply discrete_fun_singleton_discrete, gmap_singleton_discrete; [apply _|].
   intros x Hx. assert (cmra_transport inG_prf a ≡ inG_fold x) as Ha.
-  { apply (discrete _). by rewrite -Hx inG_fold_unfold. }
+  { apply (discrete_0 _). by rewrite -Hx inG_fold_unfold. }
   by rewrite Ha inG_unfold_fold.
 Qed.
 Local Instance iRes_singleton_core_id γ a :

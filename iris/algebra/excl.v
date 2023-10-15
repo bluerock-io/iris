@@ -60,12 +60,12 @@ Proof.
 Qed.
 
 Global Instance excl_ofe_discrete : OfeDiscrete A → OfeDiscrete exclO.
-Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
+Proof. by inversion_clear 2; constructor; apply (discrete_0 _). Qed.
 Global Instance excl_leibniz : LeibnizEquiv A → LeibnizEquiv (excl A).
 Proof. by destruct 2; f_equal; apply leibniz_equiv. Qed.
 
 Global Instance Excl_discrete a : Discrete a → Discrete (Excl a).
-Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
+Proof. by inversion_clear 2; constructor; apply (discrete_0 _). Qed.
 Global Instance ExclBot_discrete : Discrete (@ExclBot A).
 Proof. by inversion_clear 1; constructor. Qed.
 
