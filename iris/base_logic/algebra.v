@@ -28,14 +28,14 @@ Section upred.
   Lemma id_freeI_r {A : cmra} (x y : A) :
     IdFree x → ⊢ ✓ x -∗ (x ⋅ y) ≡ x -∗ False.
   Proof.
-    intros HIdFree. apply bi.wand_intro_l. rewrite bi.sep_and right_id.
+    intros ?. apply bi.wand_intro_l. rewrite bi.sep_and right_id.
     apply bi.wand_intro_r. rewrite bi.sep_and.
     uPred.unseal. split => n m Hm. case. by apply id_freeN_r.
   Qed.
   Lemma id_freeI_l {A : cmra} (x y : A) :
     IdFree x → ⊢ ✓ x -∗ (y ⋅ x) ≡ x -∗ False.
   Proof.
-    intros HIdFree. apply bi.wand_intro_l. rewrite bi.sep_and right_id.
+    intros ?. apply bi.wand_intro_l. rewrite bi.sep_and right_id.
     apply bi.wand_intro_r. rewrite bi.sep_and.
     uPred.unseal. split => n m Hm. case. by apply id_freeN_l.
   Qed.
