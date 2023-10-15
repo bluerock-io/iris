@@ -27,6 +27,12 @@ Notation "(≼)" := included (only parsing) : stdpp_scope.
 Global Hint Extern 0 (_ ≼ _) => reflexivity : core.
 Global Instance: Params (@included) 3 := {}.
 
+(** [opM] is used in some lemma statements where [A] has not yet been shown to
+be a CMRA, so we define it directly in terms of [Op]. *)
+Definition opM `{!Op A} (x : A) (my : option A) :=
+  match my with Some y => x ⋅ y | None => x end.
+Infix "⋅?" := opM (at level 50, left associativity) : stdpp_scope.
+
 Class ValidN (A : Type) := validN : nat → A → Prop.
 Global Hint Mode ValidN ! : typeclass_instances.
 Global Instance: Params (@validN) 3 := {}.
@@ -156,10 +162,6 @@ Section cmra_mixin.
     { z1 : A & { z2 | x ≡ z1 ⋅ z2 ∧ z1 ≡{n}≡ y1 ∧ z2 ≡{n}≡ y2 } }.
   Proof. apply (mixin_cmra_extend _ (cmra_mixin A)). Qed.
 End cmra_mixin.
-
-Definition opM `{!Op A} (x : A) (my : option A) :=
-  match my with Some y => x ⋅ y | None => x end.
-Infix "⋅?" := opM (at level 50, left associativity) : stdpp_scope.
 
 (** * CoreId elements *)
 Class CoreId {A : cmra} (x : A) := core_id : pcore x ≡ Some x.
@@ -551,8 +553,7 @@ Section total_core.
   Lemma core_id_core x `{!CoreId x} : core x ≡ x.
   Proof. by apply core_id_total. Qed.
 
-  (** Not an instance since TC search won't usually be able to solve the
-  premise. *)
+  (** Not an instance since TC search cannot solve the premise. *)
   Lemma cmra_pcore_core_id x y : pcore x = Some y → CoreId y.
   Proof. rewrite /CoreId. eauto using cmra_pcore_idemp. Qed.
 
