@@ -1835,14 +1835,17 @@ Lemma iso_cmra_mixin_restrict_domain_and_validity {A : cmra} {B : ofe}
   (f : A → option B) (g : B → A)
   (* [g] is proper/non-expansive and injective w.r.t. OFE equality *)
   (g_dist : ∀ n y1 y2, y1 ≡{n}≡ y2 ↔ g y1 ≡{n}≡ g y2)
-  (* [g] is surjective into the part of [A] where [is_Some ∘ f] holds (and [f] its inverse) *)
+  (* [g] is surjective into the part of [A] where [is_Some ∘ f] holds (and [f]
+  its inverse) *)
   (gf_dist : ∀ (x : A) (y : B) n, f x ≡{n}≡ Some y ↔ g y ≡{n}≡ x)
   (* [g] commutes with [pcore] (on the part where it is defined) and [op] *)
-  (g_pcore_dist : ∀ (y cy : B) n, pcore y ≡{n}≡ Some cy ↔ pcore (g y) ≡{n}≡ Some (g cy))
+  (g_pcore_dist : ∀ (y cy : B) n,
+    pcore y ≡{n}≡ Some cy ↔ pcore (g y) ≡{n}≡ Some (g cy))
   (g_op : ∀ y1 y2, g (y1 ⋅ y2) ≡ g y1 ⋅ g y2)
-  (* [g] also commutes with [opM] when the right-hand side is produced by [f], and cancels the [f].
-     In particular this axiom implies that when taking an element in the domain ([g y]),
-     its composition with *any* [x : A] is still in the domain, and [f] computes the preimage properly. *)
+  (* [g] also commutes with [opM] when the right-hand side is produced by [f],
+  and cancels the [f]. In particular this axiom implies that when taking an
+  element in the domain ([g y]), its composition with *any* [x : A] is still in
+  the domain, and [f] computes the preimage properly. *)
   (g_opM_f : ∀ x y, g (y ⋅? f x) ≡ g y ⋅ x)
   (* The validity predicate on [B] restricts the one on [A] *)
   (g_validN : ∀ n y, ✓{n} y → ✓{n} (g y))
@@ -1855,11 +1858,12 @@ Lemma iso_cmra_mixin_restrict_domain_and_validity {A : cmra} {B : ofe}
 Proof.
   (* Some general derived facts that will be useful later. *)
   assert (g_equiv : ∀ y1 y2, y1 ≡ y2 ↔ g y1 ≡ g y2).
-  { intros ??. split; intros ?; apply equiv_dist; intros; apply g_dist, equiv_dist; done. }
-  assert (g_pcore : ∀ (y cy : B), pcore y ≡ Some cy ↔ pcore (g y) ≡ Some (g cy)).
-  { intros. split; intros; apply equiv_dist; intros; apply g_pcore_dist, equiv_dist; done. }
+  { intros ??. rewrite !equiv_dist. naive_solver. }
+  assert (g_pcore : ∀ (y cy : B),
+    pcore y ≡ Some cy ↔ pcore (g y) ≡ Some (g cy)).
+  { intros. rewrite !equiv_dist. naive_solver. }
   assert (gf : ∀ x y, f x ≡ Some y ↔ g y ≡ x).
-  { intros. split; intros; apply equiv_dist; intros; apply gf_dist, equiv_dist; done. }
+  { intros. rewrite !equiv_dist. naive_solver. }
   assert (fg : ∀ y, f (g y) ≡ Some y).
   { intros. apply gf. done. }
   assert (g_ne : NonExpansive g).
@@ -1869,14 +1873,13 @@ Proof.
   { intros y cy Hy. apply g_equiv. rewrite g_op. apply cmra_pcore_l'.
     apply g_pcore. done. }
   assert (b_pcore_idemp : ∀ y cy : B, pcore y ≡ Some cy → pcore cy ≡ Some cy).
-  { intros y cy Hy. rewrite g_pcore in Hy. apply cmra_pcore_idemp' in Hy.
-    rewrite -g_pcore in Hy. done. }
+  { intros y cy Hy. eapply g_pcore, cmra_pcore_idemp', g_pcore. done. }
   (* Now prove all the mixin laws. *)
   split.
   - intros y n z1 z2 Hz%g_dist. apply g_dist. by rewrite !g_op Hz.
   - intros n y1 y2 cy Hy%g_dist Hy1.
     assert (g <$> pcore y2 ≡{n}≡ Some (g cy))
-      as (cx&(cy'&->&->)%fmap_Some_1&?%g_dist)%dist_Some_inv_r'; [|by eauto].
+      as (cx & (cy'&->&->)%fmap_Some_1 & ?%g_dist)%dist_Some_inv_r'; [|by eauto].
     assert (Hgcy : pcore (g y1) ≡ Some (g cy)).
     { apply g_pcore. rewrite Hy1. done. }
     rewrite equiv_dist in Hgcy. specialize (Hgcy n).
@@ -1892,14 +1895,15 @@ Proof.
     destruct (cmra_pcore_mono' (g y1) (g y2) (g cy)) as (cx&Hcgy2&[x Hcx]).
     { exists (g z). rewrite -g_op. by apply g_equiv. }
     { apply g_pcore. rewrite Hy1 //. }
-    apply (@reflexive_eq _ equiv _) in Hcgy2.
+    apply (reflexive_eq (R:=equiv)) in Hcgy2.
     rewrite -g_opM_f in Hcx. rewrite Hcx in Hcgy2.
     apply g_pcore in Hcgy2.
     apply Some_equiv_eq in Hcgy2 as [cy' [-> Hcy']].
     eexists. split; first done.
     destruct (f x) as [y|].
     + exists y. done.
-    + exists cy. apply (@reflexive_eq _ equiv _), b_pcore_idemp, b_pcore_l' in Hy1. rewrite Hy1 //.
+    + exists cy. apply (reflexive_eq (R:=equiv)), b_pcore_idemp, b_pcore_l' in Hy1.
+      rewrite Hy1 //.
   - done.
   - intros n y z1 z2 ?%g_validN ?.
     destruct (cmra_extend n (g y) (g z1) (g z2)) as (x1&x2&Hgy&Hx1&Hx2).
@@ -1907,10 +1911,10 @@ Proof.
     { rewrite -g_op. by apply g_dist. }
     symmetry in Hx1, Hx2.
     apply gf_dist in Hx1, Hx2.
-    destruct (f x1) as [y1|] eqn:Hy1.
-    2:{ exfalso. inversion Hx1. }
-    destruct (f x2) as [y2|] eqn:Hy2.
-    2:{ exfalso. inversion Hx2. }
+    destruct (f x1) as [y1|] eqn:Hy1; last first.
+    { exfalso. inversion Hx1. }
+    destruct (f x2) as [y2|] eqn:Hy2; last first.
+    { exfalso. inversion Hx2. }
     exists y1, y2. split_and!.
     + apply g_equiv. rewrite Hgy g_op.
       f_equiv; symmetry; apply gf; rewrite ?Hy1 ?Hy2 //.
@@ -1941,7 +1945,8 @@ Proof.
   assert (g_ne : NonExpansive g).
   { intros n ???. apply g_dist. done. }
   assert (g_equiv : ∀ y1 y2, y1 ≡ y2 ↔ g y1 ≡ g y2).
-  { intros ??. split; intros ?; apply equiv_dist; intros; apply g_dist, equiv_dist; done. }
+  { intros ??.
+    split; intros ?; apply equiv_dist; intros; apply g_dist, equiv_dist; done. }
   apply (iso_cmra_mixin_restrict_domain_and_validity (λ x, Some (f x)) g); try done.
   - intros. split.
     + intros Hy%(inj Some). rewrite -Hy gf //.
