@@ -5,7 +5,12 @@ lemma.
 
 ## Iris master
 
-(nothing yet)
+**Changes in `algebra`:**
+
+* Rename `discrete` to `discrete_0`, to make room for a new lemma `discrete`
+  that works for all `n` : `x ≡{n}≡ y → x ≡ y`.
+* Enable `f_equiv` and `solve_proper` to exploit the fact that `≡{n}≡` is a
+  subrelation of `≡` and `=`.
 
 ## Iris 4.1.0 (2023-10-11)
 

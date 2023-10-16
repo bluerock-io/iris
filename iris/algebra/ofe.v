@@ -125,8 +125,8 @@ End ofe_mixin.
 Global Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption : core.
 
 (** Discrete OFEs and discrete OFE elements *)
-Class Discrete {A : ofe} (x : A) := discrete y : x ≡{0}≡ y → x ≡ y.
-Global Arguments discrete {_} _ {_} _ _.
+Class Discrete {A : ofe} (x : A) := discrete_0 y : x ≡{0}≡ y → x ≡ y.
+Global Arguments discrete_0 {_} _ {_} _ _.
 Global Hint Mode Discrete + ! : typeclass_instances.
 Global Instance: Params (@Discrete) 1 := {}.
 
@@ -220,10 +220,19 @@ Section ofe.
 
   Lemma discrete_iff n (x : A) `{!Discrete x} y : x ≡ y ↔ x ≡{n}≡ y.
   Proof.
-    split; intros; auto. apply (discrete _), dist_le with n; auto with lia.
+    split; intros; auto. apply (discrete_0 _), dist_le with n; auto with lia.
   Qed.
   Lemma discrete_iff_0 n (x : A) `{!Discrete x} y : x ≡{0}≡ y ↔ x ≡{n}≡ y.
   Proof. by rewrite -!discrete_iff. Qed.
+  Lemma discrete n (x : A) `{!Discrete x} y : x ≡{n}≡ y → x ≡ y.
+  Proof. intros. eapply discrete_iff; done. Qed.
+
+  Global Instance ofe_discrete_subrelation `{!OfeDiscrete A} n :
+    @SolveProperSubrelation A (dist n) (≡).
+  Proof. intros ???. apply: discrete. done. Qed.
+  Global Instance ofe_leibniz_subrelation `{!OfeDiscrete A, !LeibnizEquiv A} n :
+    @SolveProperSubrelation A (dist n) (=).
+  Proof. intros ?? EQ. unfold_leibniz. apply (is_solve_proper_subrelation EQ). Qed.
 End ofe.
 
 (** Contractive functions *)
@@ -856,7 +865,7 @@ Section product.
 
   Global Instance prod_discrete (x : A * B) :
     Discrete (x.1) → Discrete (x.2) → Discrete x.
-  Proof. by intros ???[??]; split; apply (discrete _). Qed.
+  Proof. by intros ???[??]; split; apply (discrete_0 _). Qed.
   Global Instance prod_ofe_discrete :
     OfeDiscrete A → OfeDiscrete B → OfeDiscrete prodO.
   Proof. intros ?? [??]; apply _. Qed.
@@ -1082,9 +1091,9 @@ Section sum.
   Qed.
 
   Global Instance inl_discrete (x : A) : Discrete x → Discrete (inl x).
-  Proof. inversion_clear 2; constructor; by apply (discrete _). Qed.
+  Proof. inversion_clear 2; constructor; by apply (discrete_0 _). Qed.
   Global Instance inr_discrete (y : B) : Discrete y → Discrete (inr y).
-  Proof. inversion_clear 2; constructor; by apply (discrete _). Qed.
+  Proof. inversion_clear 2; constructor; by apply (discrete_0 _). Qed.
   Global Instance sum_ofe_discrete :
     OfeDiscrete A → OfeDiscrete B → OfeDiscrete sumO.
   Proof. intros ?? [?|?]; apply _. Qed.
@@ -1251,7 +1260,7 @@ Section option.
   Qed.
 
   Global Instance option_ofe_discrete : OfeDiscrete A → OfeDiscrete optionO.
-  Proof. destruct 2; constructor; by apply (discrete _). Qed.
+  Proof. destruct 2; constructor; by apply (discrete_0 _). Qed.
 
   Global Instance Some_ne : NonExpansive (@Some A).
   Proof. by constructor. Qed.
@@ -1266,7 +1275,7 @@ Section option.
   Global Instance None_discrete : Discrete (@None A).
   Proof. inversion_clear 1; constructor. Qed.
   Global Instance Some_discrete x : Discrete x → Discrete (Some x).
-  Proof. by intros ?; inversion_clear 1; constructor; apply discrete. Qed.
+  Proof. by intros ?; inversion_clear 1; constructor; apply discrete_0. Qed.
 
   Lemma dist_None n mx : mx ≡{n}≡ None ↔ mx = None.
   Proof. split; [by inversion_clear 1|by intros ->]. Qed.
@@ -1641,7 +1650,7 @@ Section sigma.
   Proof. apply (iso_cofe_subtype' P (exist P) proj1_sig)=> //. by intros []. Qed.
 
   Global Instance sig_discrete (x : sig P) :  Discrete (`x) → Discrete x.
-  Proof. intros ? y. rewrite sig_dist_def sig_equiv_def. apply (discrete _). Qed.
+  Proof. intros ? y. rewrite sig_dist_def sig_equiv_def. apply (discrete_0 _). Qed.
   Global Instance sig_ofe_discrete : OfeDiscrete A → OfeDiscrete sigO.
   Proof. intros ??. apply _. Qed.
 End sigma.
@@ -1760,7 +1769,7 @@ Section sigT.
   Global Instance sigT_discrete x : Discrete (projT2 x) → Discrete x.
   Proof.
     move: x => [xa x] ? [ya y] [] /=; intros -> => /= Hxy n.
-    exists eq_refl => /=. apply equiv_dist, (discrete _), Hxy.
+    exists eq_refl => /=. apply equiv_dist, (discrete_0 _), Hxy.
   Qed.
 
   Global Instance sigT_ofe_discrete : (∀ a, OfeDiscrete (P a)) → OfeDiscrete sigTO.

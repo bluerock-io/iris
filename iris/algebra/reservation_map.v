@@ -74,7 +74,7 @@ Section ofe.
 
   Global Instance ReservationMap_discrete a b :
     Discrete a → Discrete b → Discrete (ReservationMap a b).
-  Proof. intros ?? [??] [??]; split; unfold_leibniz; by eapply discrete. Qed.
+  Proof. intros ?? [??] [??]; split; unfold_leibniz; by eapply discrete_0. Qed.
   Global Instance reservation_map_ofe_discrete :
     OfeDiscrete A → OfeDiscrete reservation_mapO.
   Proof. intros ? [??]; apply _. Qed.

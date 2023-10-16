@@ -579,17 +579,17 @@ Lemma cmra_discrete_included_l x y : Discrete x → ✓{0} y → x ≼{0} y → 
 Proof.
   intros ?? [x' ?].
   destruct (cmra_extend 0 y x x') as (z&z'&Hy&Hz&Hz'); auto; simpl in *.
-  by exists z'; rewrite Hy (discrete x z).
+  by exists z'; rewrite Hy (discrete_0 x z).
 Qed.
 Lemma cmra_discrete_included_r x y : Discrete y → x ≼{0} y → x ≼ y.
-Proof. intros ? [x' ?]. exists x'. by apply (discrete y). Qed.
+Proof. intros ? [x' ?]. exists x'. by apply (discrete_0 y). Qed.
 Lemma cmra_op_discrete x1 x2 :
   ✓{0} (x1 ⋅ x2) → Discrete x1 → Discrete x2 → Discrete (x1 ⋅ x2).
 Proof.
   intros ??? z Hz.
   destruct (cmra_extend 0 z x1 x2) as (y1&y2&Hz'&?&?); auto; simpl in *.
   { rewrite -?Hz. done. }
-  by rewrite Hz' (discrete x1 y1) // (discrete x2 y2).
+  by rewrite Hz' (discrete_0 x1 y1) // (discrete_0 x2 y2).
 Qed.
 
 (** ** Discrete *)
@@ -646,7 +646,7 @@ Proof. rewrite comm. eauto using id_free_r. Qed.
 Lemma discrete_id_free x `{!CmraDiscrete A}:
   (∀ y, ✓ x → x ⋅ y ≡ x → False) → IdFree x.
 Proof.
-  intros Hx y ??. apply (Hx y), (discrete _); eauto using cmra_discrete_valid.
+  intros Hx y ??. apply (Hx y), (discrete_0 _); eauto using cmra_discrete_valid.
 Qed.
 Global Instance id_free_op_r x y : IdFree y → Cancelable x → IdFree (x ⋅ y).
 Proof.

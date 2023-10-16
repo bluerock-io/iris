@@ -89,7 +89,7 @@ Section ofe.
 
   Global Instance DynReservationMap_discrete a b :
     Discrete a → Discrete b → Discrete (DynReservationMap a b).
-  Proof. intros ?? [??] [??]; split; unfold_leibniz; by eapply discrete. Qed.
+  Proof. intros ?? [??] [??]; split; unfold_leibniz; by eapply discrete_0. Qed.
   Global Instance dyn_reservation_map_ofe_discrete :
     OfeDiscrete A → OfeDiscrete dyn_reservation_mapO.
   Proof. intros ? [??]; apply _. Qed.
