@@ -1824,30 +1824,38 @@ Qed.
 
 (** * Constructing a camera [B] through a mapping into [A]
 
-The mapping may restrict the domain and validity.
-These two restrictions work on opposite "ends" of [A] according to [≼]: domain
-restriction must prove that when two element are in the domain, so is their
-composition; validity restriction must prove that if the composition of two
-elements is valid, then so are both of the elements.
-The "domain" is the image of [g] in [A], or equivalently the part of [A] where
-[f] returns [Some]. *)
-Lemma iso_cmra_mixin_restrict_domain_and_validity {A : cmra} {B : ofe}
+The mapping may restrict the domain (i.e., we have an injection from [B] to [A],
+not a bijection) and validity. These two restrictions work on opposite "ends" of
+[A] according to [≼]: domain restriction must prove that when an element is in
+the domain, so is its composition with other elements; validity restriction must
+prove that if the composition of two elements is valid, then so are both of the
+elements. The "domain" is the image of [g] in [A], or equivalently the part of
+[A] where [f] returns [Some]. *)
+Lemma inj_cmra_mixin_restrict_validity {A : cmra} {B : ofe}
   `{!PCore B, !Op B, !Valid B, !ValidN B}
   (f : A → option B) (g : B → A)
   (* [g] is proper/non-expansive and injective w.r.t. OFE equality *)
   (g_dist : ∀ n y1 y2, y1 ≡{n}≡ y2 ↔ g y1 ≡{n}≡ g y2)
-  (* [g] is surjective into the part of [A] where [is_Some ∘ f] holds (and [f]
-  its inverse) *)
+  (* [g] is surjective into the part of [A] where [is_Some ∘ f] holds
+  (and [f] its inverse) *)
   (gf_dist : ∀ (x : A) (y : B) n, f x ≡{n}≡ Some y ↔ g y ≡{n}≡ x)
   (* [g] commutes with [pcore] (on the part where it is defined) and [op] *)
   (g_pcore_dist : ∀ (y cy : B) n,
     pcore y ≡{n}≡ Some cy ↔ pcore (g y) ≡{n}≡ Some (g cy))
-  (g_op : ∀ y1 y2, g (y1 ⋅ y2) ≡ g y1 ⋅ g y2)
+  (g_op : ∀ (y1 y2 : B), g (y1 ⋅ y2) ≡ g y1 ⋅ g y2)
   (* [g] also commutes with [opM] when the right-hand side is produced by [f],
   and cancels the [f]. In particular this axiom implies that when taking an
   element in the domain ([g y]), its composition with *any* [x : A] is still in
-  the domain, and [f] computes the preimage properly. *)
-  (g_opM_f : ∀ x y, g (y ⋅? f x) ≡ g y ⋅ x)
+  the domain, and [f] computes the preimage properly.
+  Note that just requiring "the composition of two elements from the domain
+  is in the domain" is insufficient for this lemma to hold. [g_op] already shows
+  that this is the case, but the issue is that in [pcore_mono] we obtain a
+  [g y1 ≼ g y2], and the existentially quantified "remainder" in the [≼] has no
+  reason to be in the domain, so [g_op] is too weak to turn this into some
+  relation between [y1] and [y2] in [B]. At the same time, [g_opM_f] does not
+  impl [g_op] since we need [g_op] to prove that [⋅] in [B] respects [≡].
+  Therefore both [g_op] and [g_opM_f] are required for this lemma to work. *)
+  (g_opM_f : ∀ (x : A) (y : B), g (y ⋅? f x) ≡ g y ⋅ x)
   (* The validity predicate on [B] restricts the one on [A] *)
   (g_validN : ∀ n y, ✓{n} y → ✓{n} (g y))
   (* The validity predicate on [B] satisfies the laws of validity *)
@@ -1948,7 +1956,7 @@ Proof.
   assert (g_equiv : ∀ y1 y2, y1 ≡ y2 ↔ g y1 ≡ g y2).
   { intros ??.
     split; intros ?; apply equiv_dist; intros; apply g_dist, equiv_dist; done. }
-  apply (iso_cmra_mixin_restrict_domain_and_validity (λ x, Some (f x)) g); try done.
+  apply (inj_cmra_mixin_restrict_validity (λ x, Some (f x)) g); try done.
   - intros. split.
     + intros Hy%(inj Some). rewrite -Hy gf //.
     + intros ?. f_equiv. apply g_dist. rewrite gf. done.
