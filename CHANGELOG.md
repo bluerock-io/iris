@@ -11,6 +11,8 @@ lemma.
   that works for all `n` : `x ≡{n}≡ y → x ≡ y`.
 * Enable `f_equiv` and `solve_proper` to exploit the fact that `≡{n}≡` is a
   subrelation of `≡` and `=`.
+* Add `inj_cmra_mixin_restrict_validity` as a more general version of
+  `iso_cmra_mixin_restrict_validity`.
 
 ## Iris 4.1.0 (2023-10-11)
 

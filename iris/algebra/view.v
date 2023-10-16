@@ -218,7 +218,7 @@ Section cmra.
 
   Lemma view_cmra_mixin : CmraMixin (view rel).
   Proof.
-    apply (iso_cmra_mixin_restrict
+    apply (iso_cmra_mixin_restrict_validity
       (λ x : option (dfrac * agree A) * B, View x.1 x.2)
       (λ x, (view_auth_proj x, view_frag_proj x))); try done.
     - intros [x b]. by rewrite /= pair_pcore !cmra_pcore_core.
