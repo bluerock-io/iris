@@ -11,6 +11,9 @@ lemma.
   that works for all `n` : `x ≡{n}≡ y → x ≡ y`.
 * Enable `f_equiv` and `solve_proper` to exploit the fact that `≡{n}≡` is a
   subrelation of `≡` and `=`.
+* Rename `iso_cmra_mixin_restrict` to `iso_cmra_mixin_restrict_validity`, and
+  simplify its statement and that of `iso_cmra_mixin` by removing the `g_equiv`
+  assumption that follows from the other assumptions.
 * Add `inj_cmra_mixin_restrict_validity` as a more general version of
   `iso_cmra_mixin_restrict_validity`.
 
