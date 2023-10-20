@@ -222,7 +222,7 @@ Section Z.
   Proof. by intros ???? ?%Z.add_cancel_l. Qed.
 
   Lemma Z_local_update (x y x' y' : Z) :
-    x + y' = x' + y → (x,y) ~l~> (x',y').
+    x - y = x' - y' → (x,y) ~l~> (x',y').
   Proof.
     intros. rewrite local_update_unital_discrete=> z _.
     compute -[Z.sub Z.add]; lia.
