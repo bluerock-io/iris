@@ -32,6 +32,8 @@ Section nat.
   Proof. by intros ???? ?%Nat.add_cancel_l. Qed.
 
   Lemma nat_local_update (x y x' y' : nat) :
+    (** Morally [x - y = x' - y']: the difference between auth and frag must
+    stay the same with this update. Written using [+] due to underflow. *)
     x + y' = x' + y → (x,y) ~l~> (x',y').
   Proof.
     intros ??; apply local_update_unital_discrete=> z _.
@@ -221,6 +223,7 @@ Section Z.
   Global Instance Z_cancelable (x : Z) : Cancelable x.
   Proof. by intros ???? ?%Z.add_cancel_l. Qed.
 
+  (** The difference between auth and frag must stay the same with this update. *)
   Lemma Z_local_update (x y x' y' : Z) :
     x - y = x' - y' → (x,y) ~l~> (x',y').
   Proof.
