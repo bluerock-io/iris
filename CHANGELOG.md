@@ -17,7 +17,7 @@ lemma.
 * Add `inj_cmra_mixin_restrict_validity` as a more general version of
   `iso_cmra_mixin_restrict_validity`.
 * Change statement of [Z_local_update] to be more intuitive. It now says
-  [x - y = x' - y' → (x,y) ~l~> (x',y')], i.e., the difference between the
+  `x - y = x' - y' → (x,y) ~l~> (x',y')`, i.e., the difference between the
   authoritative element and the fragment must stay the same.
 
 ## Iris 4.1.0 (2023-10-11)
