@@ -16,11 +16,11 @@ may just be [True].
 Since invariant locations cannot be deallocated, they only make sense when
 modeling languages with garbage collection.  HeapLang can be used to model
 either language by choosing whether or not to use the [Free] operation.  By
-using a separate assertion [inv_mapsto_own] for "invariant" locations, we can
+using a separate assertion [inv_pointsto_own] for "invariant" locations, we can
 keep all the other proofs that do not need it conservative.  *)
 
 Definition inv_heapN: namespace := nroot .@ "inv_heap".
-Local Notation "l ↦ v" := (mapsto l (DfracOwn 1) v) (at level 20) : bi_scope.
+Local Notation "l ↦ v" := (pointsto l (DfracOwn 1) v) (at level 20) : bi_scope.
 
 Definition inv_heap_mapUR (L V : Type) `{Countable L} : ucmra := gmapUR L $ prodR
   (optionR $ exclR $ leibnizO V)
@@ -61,26 +61,26 @@ Section definitions.
 
   Definition inv_heap_inv : iProp Σ := inv inv_heapN inv_heap_inv_P.
 
-  Definition inv_mapsto_own (l : L) (v : V) (I : V → Prop) : iProp Σ :=
+  Definition inv_pointsto_own (l : L) (v : V) (I : V → Prop) : iProp Σ :=
     own (inv_heap_name gG) (◯ {[l := (Excl' v, to_agree I) ]}).
 
-  Definition inv_mapsto (l : L) (I : V → Prop) : iProp Σ :=
+  Definition inv_pointsto (l : L) (I : V → Prop) : iProp Σ :=
     own (inv_heap_name gG) (◯ {[l := (None, to_agree I)]}).
 
 End definitions.
 
-Local Notation "l '↦_' I v" := (inv_mapsto_own l v I%stdpp%type)
+Local Notation "l '↦_' I v" := (inv_pointsto_own l v I%stdpp%type)
   (at level 20, I at level 9, format "l  '↦_' I  v") : bi_scope.
 
-Local Notation "l '↦_' I □" := (inv_mapsto l I%stdpp%type)
+Local Notation "l '↦_' I □" := (inv_pointsto l I%stdpp%type)
   (at level 20, I at level 9, format "l  '↦_' I  '□'") : bi_scope.
 
 (* [inv_heap_inv] has no parameters to infer the types from, so we need to
    make them explicit. *)
 Global Arguments inv_heap_inv _ _ {_ _ _ _ _ _ _}.
 
-Global Instance: Params (@inv_mapsto_own) 8 := {}.
-Global Instance: Params (@inv_mapsto) 7 := {}.
+Global Instance: Params (@inv_pointsto_own) 8 := {}.
+Global Instance: Params (@inv_pointsto) 7 := {}.
 
 Section to_inv_heap.
   Context {L V : Type} `{Countable L}.
@@ -134,7 +134,7 @@ Section inv_heap.
 
   (** * Helpers *)
 
-  Lemma inv_mapsto_lookup_Some l h I :
+  Lemma inv_pointsto_lookup_Some l h I :
     l ↦_I □ -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
     ⌜∃ v I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
@@ -147,7 +147,7 @@ Section inv_heap.
       to_agree_included; intros [??]; eauto.
   Qed.
 
-  Lemma inv_mapsto_own_lookup_Some l v h I :
+  Lemma inv_pointsto_own_lookup_Some l v h I :
     l ↦_I v -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
     ⌜ ∃ I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
@@ -165,34 +165,34 @@ Section inv_heap.
   (* FIXME(Coq #6294): needs new unification
   The uses of [apply:] and [move: ..; rewrite ..] (by lack of [apply: .. in ..])
   in this file are needed because Coq's default unification algorithm fails. *)
-  Global Instance inv_mapsto_own_proper l v :
-    Proper (pointwise_relation _ iff ==> (≡)) (inv_mapsto_own l v).
+  Global Instance inv_pointsto_own_proper l v :
+    Proper (pointwise_relation _ iff ==> (≡)) (inv_pointsto_own l v).
   Proof.
-    intros I1 I2 ?. rewrite /inv_mapsto_own. do 2 f_equiv.
+    intros I1 I2 ?. rewrite /inv_pointsto_own. do 2 f_equiv.
     apply: singletonM_proper. f_equiv. by apply: to_agree_proper.
   Qed.
-  Global Instance inv_mapsto_proper l :
-    Proper (pointwise_relation _ iff ==> (≡)) (inv_mapsto l).
+  Global Instance inv_pointsto_proper l :
+    Proper (pointwise_relation _ iff ==> (≡)) (inv_pointsto l).
   Proof.
-    intros I1 I2 ?. rewrite /inv_mapsto. do 2 f_equiv.
+    intros I1 I2 ?. rewrite /inv_pointsto. do 2 f_equiv.
     apply: singletonM_proper. f_equiv. by apply: to_agree_proper.
   Qed.
 
   Global Instance inv_heap_inv_persistent : Persistent (inv_heap_inv L V).
   Proof. apply _. Qed.
 
-  Global Instance inv_mapsto_persistent l I : Persistent (l ↦_I □).
+  Global Instance inv_pointsto_persistent l I : Persistent (l ↦_I □).
   Proof. apply _. Qed.
 
-  Global Instance inv_mapsto_timeless l I : Timeless (l ↦_I □).
+  Global Instance inv_pointsto_timeless l I : Timeless (l ↦_I □).
   Proof. apply _. Qed.
 
-  Global Instance inv_mapsto_own_timeless l v I : Timeless (l ↦_I v).
+  Global Instance inv_pointsto_own_timeless l v I : Timeless (l ↦_I v).
   Proof. apply _. Qed.
 
   (** * Public lemmas *)
 
-  Lemma make_inv_mapsto l v I E :
+  Lemma make_inv_pointsto l v I E :
     ↑inv_heapN ⊆ E →
     I v →
     inv_heap_inv L V -∗ l ↦ v ={E}=∗ l ↦_I v.
@@ -214,30 +214,30 @@ Section inv_heap.
       + iExists _.
         iDestruct (big_sepM_insert _ _ _ (_,_) with "[$HsepM $Hl]")
           as "HsepM"; auto with iFrame.
-      + iModIntro. by rewrite /inv_mapsto_own to_inv_heap_singleton.
+      + iModIntro. by rewrite /inv_pointsto_own to_inv_heap_singleton.
   Qed.
 
-  Lemma inv_mapsto_own_inv l v I : l ↦_I v -∗ l ↦_I □.
+  Lemma inv_pointsto_own_inv l v I : l ↦_I v -∗ l ↦_I □.
   Proof.
     iApply own_mono. apply auth_frag_mono.
     rewrite singleton_included_total pair_included.
     split; [apply: ucmra_unit_least|done].
   Qed.
 
-  (** An accessor to make use of [inv_mapsto_own].
-    This opens the invariant *before* consuming [inv_mapsto_own] so that you can use
-    this before opening an atomic update that provides [inv_mapsto_own]!. *)
-  Lemma inv_mapsto_own_acc_strong E :
+  (** An accessor to make use of [inv_pointsto_own].
+    This opens the invariant *before* consuming [inv_pointsto_own] so that you can use
+    this before opening an atomic update that provides [inv_pointsto_own]!. *)
+  Lemma inv_pointsto_own_acc_strong E :
     ↑inv_heapN ⊆ E →
     inv_heap_inv L V ={E, E ∖ ↑inv_heapN}=∗ ∀ l v I, l ↦_I v -∗
       (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ==∗
-        inv_mapsto_own l w I ∗ |={E ∖ ↑inv_heapN, E}=> True)).
+        inv_pointsto_own l w I ∗ |={E ∖ ↑inv_heapN, E}=> True)).
   Proof.
     iIntros (HN) "#Hinv".
     iMod (inv_acc_timeless _ inv_heapN _ with "Hinv") as "[HP Hclose]"; first done.
     iIntros "!>" (l v I) "Hl_inv".
     iDestruct "HP" as (h) "[H● HsepM]".
-    iDestruct (inv_mapsto_own_lookup_Some with "Hl_inv H●") as %(I'&?&HI').
+    iDestruct (inv_pointsto_own_lookup_Some with "Hl_inv H●") as %(I'&?&HI').
     setoid_rewrite HI'.
     iDestruct (big_sepM_delete with "HsepM") as "[[HI Hl] HsepM]"; first done.
     iIntros "{$HI $Hl}" (w ?) "Hl".
@@ -255,19 +255,19 @@ Section inv_heap.
   Qed.
 
   (** Derive a more standard accessor. *)
-  Lemma inv_mapsto_own_acc E l v I:
+  Lemma inv_pointsto_own_acc E l v I:
     ↑inv_heapN ⊆ E →
     inv_heap_inv L V -∗ l ↦_I v ={E, E ∖ ↑inv_heapN}=∗
       (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑inv_heapN, E}=∗ l ↦_I w)).
   Proof.
     iIntros (?) "#Hinv Hl".
-    iMod (inv_mapsto_own_acc_strong with "Hinv") as "Hacc"; first done.
+    iMod (inv_pointsto_own_acc_strong with "Hinv") as "Hacc"; first done.
     iDestruct ("Hacc" with "Hl") as "(HI & Hl & Hclose)".
     iIntros "!> {$HI $Hl}" (w) "HI Hl".
     iMod ("Hclose" with "HI Hl") as "[$ $]".
   Qed.
 
-  Lemma inv_mapsto_acc l I E :
+  Lemma inv_pointsto_acc l I E :
     ↑inv_heapN ⊆ E →
     inv_heap_inv L V -∗ l ↦_I □ ={E, E ∖ ↑inv_heapN}=∗
     ∃ v, ⌜I v⌝ ∗ l ↦ v ∗ (l ↦ v ={E ∖ ↑inv_heapN, E}=∗ ⌜True⌝).
@@ -276,7 +276,7 @@ Section inv_heap.
     iMod (inv_acc_timeless _ inv_heapN _ with "Hinv") as "[HP Hclose]"; first done.
     iModIntro.
     iDestruct "HP" as (h) "[H● HsepM]".
-    iDestruct (inv_mapsto_lookup_Some with "Hl_inv H●") as %(v&I'&?&HI').
+    iDestruct (inv_pointsto_lookup_Some with "Hl_inv H●") as %(v&I'&?&HI').
     iDestruct (big_sepM_lookup_acc with "HsepM") as "[[#HI Hl] HsepM]"; first done.
     setoid_rewrite HI'.
     iExists _. iIntros "{$HI $Hl} Hl".
@@ -286,4 +286,4 @@ Section inv_heap.
 
 End inv_heap.
 
-Global Typeclasses Opaque inv_heap_inv inv_mapsto inv_mapsto_own.
+Global Typeclasses Opaque inv_heap_inv inv_pointsto inv_pointsto_own.

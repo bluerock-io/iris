@@ -36,30 +36,32 @@ Class atomic_heap := AtomicHeap {
   (** The assumptions about [Σ], and the singleton [gname]s (if needed) *)
   atomic_heapGS : gFunctors → Type;
   (* -- predicates -- *)
-  mapsto `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (dq: dfrac) (v : val) : iProp Σ;
-  (* -- mapsto properties -- *)
-  mapsto_timeless `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v :>
-    Timeless (mapsto (H:=H) l q v);
-  mapsto_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v :>
-    Fractional (λ (q : Qp), mapsto (H:=H) l (DfracOwn q) v);
-  mapsto_persistent `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v :>
-    Persistent (mapsto (H:=H) l DfracDiscarded v);
-  mapsto_as_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v :>
-    AsFractional (mapsto (H:=H) l (DfracOwn q) v) (λ q, mapsto (H:=H) l (DfracOwn q) v) q;
-  mapsto_agree `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l dq1 dq2 v1 v2 :
-    mapsto (H:=H) l dq1 v1 -∗ mapsto (H:=H) l dq2 v2 -∗ ⌜v1 = v2⌝;
-  mapsto_persist `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l dq v :
-    mapsto (H:=H) l dq v ==∗ mapsto (H:=H) l DfracDiscarded v;
+  pointsto `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (dq: dfrac) (v : val) : iProp Σ;
+  (* -- pointsto properties -- *)
+  pointsto_timeless `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v :>
+    Timeless (pointsto (H:=H) l q v);
+  pointsto_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v :>
+    Fractional (λ (q : Qp), pointsto (H:=H) l (DfracOwn q) v);
+  pointsto_persistent `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v :>
+    Persistent (pointsto (H:=H) l DfracDiscarded v);
+  pointsto_as_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v :>
+    AsFractional (pointsto (H:=H) l (DfracOwn q) v) (λ q, pointsto (H:=H) l (DfracOwn q) v) q;
+  pointsto_agree `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l dq1 dq2 v1 v2 :
+    pointsto (H:=H) l dq1 v1 -∗ pointsto (H:=H) l dq2 v2 -∗ ⌜v1 = v2⌝;
+  pointsto_persist `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l dq v :
+    pointsto (H:=H) l dq v ==∗ pointsto (H:=H) l DfracDiscarded v;
   (* -- operation specs -- *)
   alloc_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (v : val) :
-    {{{ True }}} alloc v {{{ l, RET #l; mapsto (H:=H) l (DfracOwn 1) v }}};
+    {{{ True }}} alloc v {{{ l, RET #l; pointsto (H:=H) l (DfracOwn 1) v }}};
   free_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (v : val) :
-    {{{ mapsto (H:=H) l (DfracOwn 1) v }}} free #l {{{ l, RET #l; True }}};
+    {{{ pointsto (H:=H) l (DfracOwn 1) v }}} free #l {{{ l, RET #l; True }}};
   load_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) :
-    ⊢ <<{ ∀∀ (v : val) q, mapsto (H:=H) l q v }>> load #l @ ∅ <<{ mapsto (H:=H) l q v | RET v }>>;
+    ⊢ <<{ ∀∀ (v : val) q, pointsto (H:=H) l q v }>>
+        load #l @ ∅
+      <<{ pointsto (H:=H) l q v | RET v }>>;
   store_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (w : val) :
-    ⊢ <<{ ∀∀ v, mapsto (H:=H) l (DfracOwn 1) v }>> store #l w @ ∅
-      <<{ mapsto (H:=H) l (DfracOwn 1) w | RET #() }>>;
+    ⊢ <<{ ∀∀ v, pointsto (H:=H) l (DfracOwn 1) v }>> store #l w @ ∅
+      <<{ pointsto (H:=H) l (DfracOwn 1) w | RET #() }>>;
   (* This spec is slightly weaker than it could be: It is sufficient for [w1]
   *or* [v] to be unboxed.  However, by writing it this way the [val_is_unboxed]
   is outside the atomic triple, which makes it much easier to use -- and the
@@ -68,9 +70,9 @@ Class atomic_heap := AtomicHeap {
   [destruct (decide (a = b))] and it will simplify in both places. *)
   cmpxchg_spec `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<{ ∀∀ v, mapsto (H:=H) l (DfracOwn 1) v }>> cmpxchg #l w1 w2 @ ∅
+    ⊢ <<{ ∀∀ v, pointsto (H:=H) l (DfracOwn 1) v }>> cmpxchg #l w1 w2 @ ∅
       <<{ if decide (v = w1)
-          then mapsto (H:=H) l (DfracOwn 1) w2 else mapsto (H:=H) l (DfracOwn 1) v
+          then pointsto (H:=H) l (DfracOwn 1) w2 else pointsto (H:=H) l (DfracOwn 1) v
         | RET (v, #if decide (v = w1) then true else false) }>>;
 }.
 
@@ -79,7 +81,7 @@ Global Arguments free : simpl never.
 Global Arguments load : simpl never.
 Global Arguments store : simpl never.
 Global Arguments cmpxchg : simpl never.
-Global Arguments mapsto : simpl never.
+Global Arguments pointsto : simpl never.
 
 Existing Class atomic_heapGS.
 Global Hint Mode atomic_heapGS + + : typeclass_instances.
@@ -94,7 +96,7 @@ Definition faa_atomic `{!atomic_heap} : val :=
 
 (** Notation for heap primitives, in a module so you can import it separately. *)
 Module notation.
-  Notation "l ↦ dq v" := (mapsto l dq v)
+  Notation "l ↦ dq v" := (pointsto l dq v)
     (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 
   Notation "'ref' e" := (alloc e) : expr_scope.
@@ -112,10 +114,10 @@ Section derived.
 
   Lemma cas_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<{ ∀∀ v, mapsto l (DfracOwn 1) v }>>
+    ⊢ <<{ ∀∀ v, pointsto l (DfracOwn 1) v }>>
       CAS #l w1 w2 @ ∅
     <<{ if decide (v = w1)
-        then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v
+        then pointsto l (DfracOwn 1) w2 else pointsto l (DfracOwn 1) v
       | RET #if decide (v = w1) then true else false }>>.
   Proof.
     iIntros (? Φ) "AU". awp_apply cmpxchg_spec; first done.
@@ -125,9 +127,9 @@ Section derived.
   Qed.
 
   Lemma faa_spec (l : loc) (i2 : Z) :
-    ⊢ <<{ ∀∀ i1 : Z, mapsto l (DfracOwn 1) #i1 }>>
+    ⊢ <<{ ∀∀ i1 : Z, pointsto l (DfracOwn 1) #i1 }>>
       FAA #l #i2 @ ∅
-    <<{ mapsto l (DfracOwn 1) #(i1 + i2) | RET #i1 }>>.
+    <<{ pointsto l (DfracOwn 1) #(i1 + i2) | RET #i1 }>>.
   Proof.
     iIntros (Φ) "AU". rewrite /faa_atomic. iLöb as "IH".
     wp_pures. awp_apply load_spec.
@@ -215,5 +217,5 @@ Definition primitive_atomic_heap : atomic_heap :=
      load_spec _ _ _ _ := primitive_load_spec;
      store_spec _ _ _ _ := primitive_store_spec;
      cmpxchg_spec _ _ _ _ := primitive_cmpxchg_spec;
-     mapsto_persist _ _ _ _ := primitive_laws.mapsto_persist;
-     mapsto_agree _ _ _ _ := primitive_laws.mapsto_agree |}.
+     pointsto_persist _ _ _ _ := primitive_laws.pointsto_persist;
+     pointsto_agree _ _ _ _ := primitive_laws.pointsto_agree |}.

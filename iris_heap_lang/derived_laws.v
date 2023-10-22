@@ -11,7 +11,7 @@ From iris.heap_lang Require Export primitive_laws.
 From iris.heap_lang Require Import tactics notation.
 From iris.prelude Require Import options.
 
-(** The [array] connective is a version of [mapsto] that works
+(** The [array] connective is a version of [pointsto] that works
 with lists of values. *)
 
 Definition array `{!heapGS_gen hlc Σ} (l : loc) (dq : dfrac) (vs : list val) : iProp Σ :=
@@ -88,7 +88,7 @@ Proof.
 Qed.
 
 (** * Rules for allocation *)
-Lemma mapsto_seq_array l dq v n :
+Lemma pointsto_seq_array l dq v n :
   ([∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦{dq} v) -∗
   l ↦∗{dq} replicate n v.
 Proof.
@@ -108,7 +108,7 @@ Proof.
   iIntros (Hzs Φ) "_ HΦ". iApply twp_allocN_seq; [done..|].
   iIntros (l) "Hlm". iApply "HΦ".
   iDestruct (big_sepL_sep with "Hlm") as "[Hl $]".
-  by iApply mapsto_seq_array.
+  by iApply pointsto_seq_array.
 Qed.
 Lemma wp_allocN s E v n :
   (0 < n)%Z →

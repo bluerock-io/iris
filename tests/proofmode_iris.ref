@@ -211,7 +211,7 @@ goal 2 is:
  "Hlc2" : £ m
  --------------------------------------∗
  £ m
-"test_iCombine_mapsto_no_beta"
+"test_iCombine_pointsto_no_beta"
      : string
 1 goal
   

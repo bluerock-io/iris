@@ -89,7 +89,7 @@ Section proph_map.
   Implicit Types R : proph_map P V.
   Implicit Types ps : gset P.
 
-  (** General properties of mapsto *)
+  (** General properties of pointsto *)
   Global Instance proph_timeless p vs : Timeless (proph p vs).
   Proof. rewrite proph_unseal /proph_def. apply _. Qed.
 
