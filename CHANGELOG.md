@@ -37,6 +37,16 @@ lemma.
 * Rename `mapsto` to `pointsto` to align with standard separation logic
   terminology.
 
+**Changes in `program_logic`:**
+
+* Rename `head_step` to `base_step` to avoid potential confusing with the
+  standard term "head reduction", and also rename all associated definitions and
+  lemmas. In particular: `head_stuck` → `base_stuck`, `head_reducible` →
+  `base_reducible`, `head_irreducible` → `base_irreducible`.
+  The sed script will rename all definitions and lemmas that come with Iris,
+  but if you had additional definitions or lemmas with `head` in their name,
+  you will have to rename them by hand if you want to remain consistent.
+
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
 Note that the script is not idempotent, do not run it twice.
@@ -47,6 +57,8 @@ s/\bcmra_discrete_update\b/cmra_discrete_total_update/g
 s/\bcmra_discrete_updateP\b/cmra_discrete_total_updateP/g
 # maps-to → points-to
 s/(\b|_)mapsto(\b|_)/\1pointsto\2/g
+# Head reduction
+s/(\b|_)head_(step|stuck|ctx|prim_|(ir)?reducible)/\1\base_\2/g
 EOF
 ```
 

@@ -217,14 +217,14 @@ Section ectx_lifting.
   Implicit Types s : stuckness.
   Implicit Types Φ : val Λ → iProp Σ.
   Implicit Types e : expr Λ.
-  Local Hint Resolve head_prim_reducible head_reducible_prim_step : core.
+  Local Hint Resolve base_prim_reducible base_reducible_prim_step : core.
   Local Definition reducible_not_val_inhabitant e := reducible_not_val e inhabitant.
   Local Hint Resolve reducible_not_val_inhabitant : core.
-  Local Hint Resolve head_stuck_stuck : core.
+  Local Hint Resolve base_stuck_stuck : core.
 
-  Lemma ownP_lift_head_step s E Φ e1 :
-    (|={E,∅}=> ∃ σ1, ⌜head_reducible e1 σ1⌝ ∗ ▷ (ownP σ1) ∗
-            ▷ ∀ κ e2 σ2 efs, ⌜head_step e1 σ1 κ e2 σ2 efs⌝ -∗
+  Lemma ownP_lift_base_step s E Φ e1 :
+    (|={E,∅}=> ∃ σ1, ⌜base_reducible e1 σ1⌝ ∗ ▷ (ownP σ1) ∗
+            ▷ ∀ κ e2 σ2 efs, ⌜base_step e1 σ1 κ e2 σ2 efs⌝ -∗
             ownP σ2
             ={∅,E}=∗ WP e2 @ s; E {{ Φ }} ∗ [∗ list] ef ∈ efs, WP ef @ s; ⊤ {{ _, True }})
     ⊢ WP e1 @ s; E {{ Φ }}.
@@ -236,19 +236,19 @@ Section ectx_lifting.
     iApply ("Hwp" with "[] Hσ2"); eauto.
   Qed.
 
-  Lemma ownP_lift_head_stuck E Φ e :
+  Lemma ownP_lift_base_stuck E Φ e :
     sub_redexes_are_values e →
-    (|={E,∅}=> ∃ σ, ⌜head_stuck e σ⌝ ∗ ▷ (ownP σ))
+    (|={E,∅}=> ∃ σ, ⌜base_stuck e σ⌝ ∗ ▷ (ownP σ))
     ⊢ WP e @ E ?{{ Φ }}.
   Proof.
     iIntros (?) "H". iApply ownP_lift_stuck. iMod "H" as (σ) "[% >Hσ]".
     iExists σ. iModIntro. by auto with iFrame.
   Qed.
 
-  Lemma ownP_lift_pure_head_step s E Φ e1 :
-    (∀ σ1, head_reducible e1 σ1) →
-    (∀ σ1 κ e2 σ2 efs, head_step e1 σ1 κ e2 σ2 efs → κ = [] ∧ σ2 = σ1) →
-    (▷ ∀ κ e2 efs σ, ⌜head_step e1 σ κ e2 σ efs⌝ →
+  Lemma ownP_lift_pure_base_step s E Φ e1 :
+    (∀ σ1, base_reducible e1 σ1) →
+    (∀ σ1 κ e2 σ2 efs, base_step e1 σ1 κ e2 σ2 efs → κ = [] ∧ σ2 = σ1) →
+    (▷ ∀ κ e2 efs σ, ⌜base_step e1 σ κ e2 σ efs⌝ →
       WP e2 @ s; E {{ Φ }} ∗ [∗ list] ef ∈ efs, WP ef @ s; ⊤ {{ _, True }})
     ⊢ WP e1 @ s; E {{ Φ }}.
   Proof using Hinh.
@@ -257,10 +257,10 @@ Section ectx_lifting.
     iNext. iIntros (?????). iApply "H"; eauto.
   Qed.
 
-  Lemma ownP_lift_atomic_head_step {s E Φ} e1 σ1 :
-    head_reducible e1 σ1 →
+  Lemma ownP_lift_atomic_base_step {s E Φ} e1 σ1 :
+    base_reducible e1 σ1 →
     ▷ (ownP σ1) ∗ ▷ (∀ κ e2 σ2 efs,
-    ⌜head_step e1 σ1 κ e2 σ2 efs⌝ -∗ ownP σ2 -∗
+    ⌜base_step e1 σ1 κ e2 σ2 efs⌝ -∗ ownP σ2 -∗
       from_option Φ False (to_val e2) ∗ [∗ list] ef ∈ efs, WP ef @ s; ⊤ {{ _, True }})
     ⊢ WP e1 @ s; E {{ Φ }}.
   Proof.
@@ -270,9 +270,9 @@ Section ectx_lifting.
     iNext. iIntros (???? ?) "Hσ". iApply ("H" with "[] Hσ"); eauto.
   Qed.
 
-  Lemma ownP_lift_atomic_det_head_step {s E Φ e1} σ1 v2 σ2 efs :
-    head_reducible e1 σ1 →
-    (∀ κ' e2' σ2' efs', head_step e1 σ1 κ' e2' σ2' efs' →
+  Lemma ownP_lift_atomic_det_base_step {s E Φ e1} σ1 v2 σ2 efs :
+    base_reducible e1 σ1 →
+    (∀ κ' e2' σ2' efs', base_step e1 σ1 κ' e2' σ2' efs' →
       σ2' = σ2 ∧ to_val e2' = Some v2 ∧ efs' = efs) →
     ▷ (ownP σ1) ∗ ▷ (ownP σ2 -∗
                       Φ v2 ∗ [∗ list] ef ∈ efs, WP ef @ s; ⊤ {{ _, True }})
@@ -283,9 +283,9 @@ Section ectx_lifting.
     intros; eapply Hs; eauto 10.
   Qed.
 
-  Lemma ownP_lift_atomic_det_head_step_no_fork {s E e1} σ1 κ v2 σ2 :
-    head_reducible e1 σ1 →
-    (∀ κ' e2' σ2' efs', head_step e1 σ1 κ' e2' σ2' efs' →
+  Lemma ownP_lift_atomic_det_base_step_no_fork {s E e1} σ1 κ v2 σ2 :
+    base_reducible e1 σ1 →
+    (∀ κ' e2' σ2' efs', base_step e1 σ1 κ' e2' σ2' efs' →
       κ' = κ ∧ σ2' = σ2 ∧ to_val e2' = Some v2 ∧ efs' = []) →
     {{{ ▷ (ownP σ1) }}} e1 @ s; E {{{ RET v2; ownP σ2 }}}.
   Proof.
@@ -293,9 +293,9 @@ Section ectx_lifting.
     by destruct s; eauto using reducible_not_val.
   Qed.
 
-  Lemma ownP_lift_pure_det_head_step_no_fork {s E Φ} e1 e2 :
-    (∀ σ1, head_reducible e1 σ1) →
-    (∀ σ1 κ e2' σ2 efs', head_step e1 σ1 κ e2' σ2 efs' → κ = [] ∧ σ2 = σ1 ∧ e2' = e2 ∧ efs' = []) →
+  Lemma ownP_lift_pure_det_base_step_no_fork {s E Φ} e1 e2 :
+    (∀ σ1, base_reducible e1 σ1) →
+    (∀ σ1 κ e2' σ2 efs', base_step e1 σ1 κ e2' σ2 efs' → κ = [] ∧ σ2 = σ1 ∧ e2' = e2 ∧ efs' = []) →
     ▷ WP e2 @ s; E {{ Φ }} ⊢ WP e1 @ s; E {{ Φ }}.
   Proof using Hinh.
     iIntros (??) "H"; iApply wp_lift_pure_det_step_no_fork; try by eauto.
