@@ -28,7 +28,7 @@ test: $(TESTFILES:.v=.vo)
 COQ_TEST=$(COQTOP) $(COQDEBUG) -batch -test-mode
 # These versions of Coq are known to have different output so we don't test them.
 # Need to make this a lazy variable (`=` instead of `:=`) since COQ_VERSION is only set later.
-COQ_NOREF=$(shell echo "$(COQ_VERSION)" | egrep "^8\.19\." -q && echo 1)
+COQ_NOREF=$(shell echo "$(COQ_VERSION)" | egrep "^8\.19[.+]" -q && echo 1)
 
 tests/.coqdeps.d: $(TESTFILES)
 	$(SHOW)'COQDEP TESTFILES'
