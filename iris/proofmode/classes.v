@@ -371,7 +371,9 @@ Global Hint Mode Frame + + ! ! - : typeclass_instances.
 
 (* The boolean [progress] indicates whether actual framing has been performed.
 If it is [false], then the default instance [maybe_frame_default] below has been
-used. *)
+used.
+[MaybeFrame'] instances should generally _not_ be used directly---instead, use
+the [MaybeFrame] notation defined below. *)
 Class MaybeFrame' {PROP : bi} (p : bool) (R P Q : PROP) (progress : bool) :=
   maybe_frame : □?p R ∗ Q ⊢ P.
 Global Arguments MaybeFrame' {_} _ _%I _%I _%I _.
