@@ -39,7 +39,7 @@ lemma.
 
 **Changes in `program_logic`:**
 
-* Rename `head_step` to `base_step` to avoid potential confusing with the
+* Rename `head_step` to `base_step` to avoid potential confusion with the
   standard term "head reduction", and also rename all associated definitions and
   lemmas. In particular: `head_stuck` → `base_stuck`, `head_reducible` →
   `base_reducible`, `head_irreducible` → `base_irreducible`.
