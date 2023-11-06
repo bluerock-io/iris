@@ -584,7 +584,7 @@ End interpreter.
 (** * Theory for proving steps are sound. *)
 
 Lemma atomic_step e σ e' σ' :
-  head_step e σ [] e' σ' [] →
+  base_step e σ [] e' σ' [] →
   ∀ tp, rtc erased_step (e :: tp, σ) (e' :: tp, σ').
 Proof.
   intros ? tp.
@@ -694,7 +694,7 @@ Section interpret_ok.
     end.
 
   Ltac step_atomic :=
-    step by (apply atomic_step; eauto using head_step);
+    step by (apply atomic_step; eauto using base_step);
     try reflexivity.
 
   Lemma state_wf_init_alloc (v0 : val) (s : interp_state) (n : Z) :
@@ -808,8 +808,8 @@ Section interpret_ok.
       lazymatch goal with
       | |- context[Fork ?e] => eapply (step_atomic _ _ _ _ [e] []); simpl; eauto
       end.
-      apply head_prim_step; simpl.
-      eauto using head_step.
+      apply base_prim_step; simpl.
+      eauto using base_step.
   Qed.
 
   (** * Theory for expressions that are stuck after some execution steps. *)
@@ -866,7 +866,7 @@ Section interpret_ok.
     end.
 
   (** We need more complicated theory to handle expressions that are stuck now,
-  because there is no [head_step] they can take. *)
+  because there is no [base_step] they can take. *)
 
   (* [terminal_expr e] holds when e cannot be the result of taking a context
   step. Slightly more formally, e doesn't have the shape [fill K e'] where e' is
@@ -886,17 +886,17 @@ Section interpret_ok.
     intuition.
   Qed.
 
-  Local Hint Resolve val_head_stuck : core.
+  Local Hint Resolve val_base_stuck : core.
 
   (* This theorem expresses the point of [terminal_expr e]: a terminal_expr is
   stuck if it can't take a head step, because there's *)
   Lemma terminal_expr_stuck e σ :
     to_val e = None →
     terminal_expr e →
-    (∀ κ e' σ' efs, head_step e σ κ e' σ' efs → False) →
+    (∀ κ e' σ' efs, base_step e σ κ e' σ' efs → False) →
     stuck e σ.
   Proof.
-    intros Hnot_val Hterminal Hno_head_step.
+    intros Hnot_val Hterminal Hno_base_step.
     apply stuck_not_val; first done; intros * Hstep.
     invc Hstep; simpl in *.
     lazymatch type of Hnot_val with
