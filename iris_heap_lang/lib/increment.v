@@ -24,9 +24,16 @@ Section increment_physical.
     ⊢ <<{ ∀∀ (v : Z), l ↦ #v }>> incr_phy #l @ ∅ <<{ l ↦ #(v + 1) | RET #v }>>.
   Proof.
     iIntros (Φ) "AU". iLöb as "IH". wp_lam.
+    (* [iMod] knows how to eliminate [AU] assertions. They are mask-changing
+    though so we first need to bind to make sure we have an atomic expression.
+    Out of the [AU], we then get the atomic precondition as well as the
+    closing updates. There's two closing updates, one to "abort" the update
+    and one to "commit"; in this case, we only need the "abort". *)
     wp_bind (!_)%E. iMod "AU" as (v) "[Hl [Hclose _]]".
-    wp_load. iMod ("Hclose" with "Hl") as "AU". iModIntro.
-    wp_pures. wp_bind (CmpXchg _ _ _)%E. iMod "AU" as (w) "[Hl Hclose]".
+    wp_load. iMod ("Hclose" with "Hl") as "AU".
+    iModIntro. wp_pures.
+    (* As above, but this time we need both the "abort" and "commit" updates. *)
+    wp_bind (CmpXchg _ _ _)%E. iMod "AU" as (w) "[Hl Hclose]".
     destruct (decide (#v = #w)) as [[= ->]|Hx].
     - wp_cmpxchg_suc. iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
       iModIntro. wp_pures. done.
@@ -60,7 +67,7 @@ Section increment.
     awp_apply load_spec.
     (* Prove the atomic update for load *)
     (* To [iMod] a *mask-changing* update (like "AU"), we have to unfold
-       [atomic_acc].
+       [atomic_acc] in the goal.
        Note that non-mask-changing [iMod] and [iInv] would work here without
        unfolding, i.e., an [AACC] in the goal supports eliminating
        non-mask-changing updates and accessors but it does not support
