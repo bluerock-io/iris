@@ -32,6 +32,11 @@ lemma.
   `MaybeFrame` class has become notation for `TCNoBackTrack (MaybeFrame' ...)`,
   which means the proofs of your instances might need a slight refactoring.
 
+**Changes in `base_logic`:**
+
+* Rename `mapsto` to `pointsto` to align with standard separation logic
+  terminology.
+
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
 Note that the script is not idempotent, do not run it twice.
@@ -40,6 +45,8 @@ sed -i -E -f- $(find theories -name "*.v") <<EOF
 # discrete camera updates
 s/\bcmra_discrete_update\b/cmra_discrete_total_update/g
 s/\bcmra_discrete_updateP\b/cmra_discrete_total_updateP/g
+# maps-to → points-to
+s/(\b|_)mapsto(\b|_)/\1pointsto\2/g
 EOF
 ```
 

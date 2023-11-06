@@ -12,7 +12,7 @@ Import uPred.
 connective [l ↦{dq} v] reflecting the physical heap.  This library is designed to
 be used as a singleton (i.e., with only a single instance existing in any
 proof), with the [gen_heapGS] typeclass providing the ghost names of that unique
-instance.  That way, [mapsto] does not need an explicit [gname] parameter.
+instance.  That way, [pointsto] does not need an explicit [gname] parameter.
 This mechanism can be plugged into a language and related to the physical heap
 by using [gen_heap_interp σ] in the state interpretation of the weakest
 precondition. See heap-lang for an example.
@@ -102,11 +102,12 @@ Section definitions.
     ghost_map_auth (gen_heap_name hG) 1 σ ∗
     ghost_map_auth (gen_meta_name hG) 1 m.
 
-  Local Definition mapsto_def (l : L) (dq : dfrac) (v: V) : iProp Σ :=
+  Local Definition pointsto_def (l : L) (dq : dfrac) (v: V) : iProp Σ :=
     l ↪[gen_heap_name hG]{dq} v.
-  Local Definition mapsto_aux : seal (@mapsto_def). Proof. by eexists. Qed.
-  Definition mapsto := mapsto_aux.(unseal).
-  Local Definition mapsto_unseal : @mapsto = @mapsto_def := mapsto_aux.(seal_eq).
+  Local Definition pointsto_aux : seal (@pointsto_def). Proof. by eexists. Qed.
+  Definition pointsto := pointsto_aux.(unseal).
+  Local Definition pointsto_unseal : @pointsto = @pointsto_def :=
+    pointsto_aux.(seal_eq).
 
   Local Definition meta_token_def (l : L) (E : coPset) : iProp Σ :=
     ∃ γm, l ↪[gen_meta_name hG]□ γm ∗ own γm (reservation_map_token E).
@@ -126,7 +127,7 @@ Section definitions.
 End definitions.
 Global Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
-Local Notation "l ↦ dq v" := (mapsto l dq v)
+Local Notation "l ↦ dq v" := (pointsto l dq v)
   (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 
 Section gen_heap.
@@ -138,57 +139,58 @@ Section gen_heap.
   Implicit Types l : L.
   Implicit Types v : V.
 
-  (** General properties of mapsto *)
-  Global Instance mapsto_timeless l dq v : Timeless (l ↦{dq} v).
-  Proof. rewrite mapsto_unseal. apply _. Qed.
-  Global Instance mapsto_fractional l v : Fractional (λ q, l ↦{#q} v)%I.
-  Proof. rewrite mapsto_unseal. apply _. Qed.
-  Global Instance mapsto_as_fractional l q v :
+  (** General properties of pointsto *)
+  Global Instance pointsto_timeless l dq v : Timeless (l ↦{dq} v).
+  Proof. rewrite pointsto_unseal. apply _. Qed.
+  Global Instance pointsto_fractional l v : Fractional (λ q, l ↦{#q} v)%I.
+  Proof. rewrite pointsto_unseal. apply _. Qed.
+  Global Instance pointsto_as_fractional l q v :
     AsFractional (l ↦{#q} v) (λ q, l ↦{#q} v)%I q.
-  Proof. rewrite mapsto_unseal. apply _. Qed.
-  Global Instance mapsto_persistent l v : Persistent (l ↦□ v).
-  Proof. rewrite mapsto_unseal. apply _. Qed.
+  Proof. rewrite pointsto_unseal. apply _. Qed.
+  Global Instance pointsto_persistent l v : Persistent (l ↦□ v).
+  Proof. rewrite pointsto_unseal. apply _. Qed.
 
-  Lemma mapsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝%Qp.
-  Proof. rewrite mapsto_unseal. apply ghost_map_elem_valid. Qed.
-  Lemma mapsto_valid_2 l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
-  Proof. rewrite mapsto_unseal. apply ghost_map_elem_valid_2. Qed.
+  Lemma pointsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝%Qp.
+  Proof. rewrite pointsto_unseal. apply ghost_map_elem_valid. Qed.
+  Lemma pointsto_valid_2 l dq1 dq2 v1 v2 :
+    l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
+  Proof. rewrite pointsto_unseal. apply ghost_map_elem_valid_2. Qed.
   (** Almost all the time, this is all you really need. *)
-  Lemma mapsto_agree l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜v1 = v2⌝.
-  Proof. rewrite mapsto_unseal. apply ghost_map_elem_agree. Qed.
+  Lemma pointsto_agree l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜v1 = v2⌝.
+  Proof. rewrite pointsto_unseal. apply ghost_map_elem_agree. Qed.
 
-  Global Instance mapsto_combine_sep_gives l dq1 dq2 v1 v2 : 
+  Global Instance pointsto_combine_sep_gives l dq1 dq2 v1 v2 :
     CombineSepGives (l ↦{dq1} v1) (l ↦{dq2} v2) ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝ | 30.
   Proof.
     rewrite /CombineSepGives. iIntros "[H1 H2]".
-    iDestruct (mapsto_valid_2 with "H1 H2") as %?. eauto.
+    iDestruct (pointsto_valid_2 with "H1 H2") as %?. eauto.
   Qed.
 
-  Lemma mapsto_combine l dq1 dq2 v1 v2 :
+  Lemma pointsto_combine l dq1 dq2 v1 v2 :
     l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ l ↦{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
-  Proof. rewrite mapsto_unseal. apply ghost_map_elem_combine. Qed.
+  Proof. rewrite pointsto_unseal. apply ghost_map_elem_combine. Qed.
 
-  Global Instance mapsto_combine_as l dq1 dq2 v1 v2 :
+  Global Instance pointsto_combine_as l dq1 dq2 v1 v2 :
     CombineSepAs (l ↦{dq1} v1) (l ↦{dq2} v2) (l ↦{dq1 ⋅ dq2} v1) | 60. 
     (* higher cost than the Fractional instance, which kicks in for #qs *)
   Proof.
     rewrite /CombineSepAs. iIntros "[H1 H2]".
-    iDestruct (mapsto_combine with "H1 H2") as "[$ _]".
+    iDestruct (pointsto_combine with "H1 H2") as "[$ _]".
   Qed.
 
-  Lemma mapsto_frac_ne l1 l2 dq1 dq2 v1 v2 :
+  Lemma pointsto_frac_ne l1 l2 dq1 dq2 v1 v2 :
     ¬ ✓(dq1 ⋅ dq2) → l1 ↦{dq1} v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
-  Proof. rewrite mapsto_unseal. apply ghost_map_elem_frac_ne. Qed.
-  Lemma mapsto_ne l1 l2 dq2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
-  Proof. rewrite mapsto_unseal. apply ghost_map_elem_ne. Qed.
+  Proof. rewrite pointsto_unseal. apply ghost_map_elem_frac_ne. Qed.
+  Lemma pointsto_ne l1 l2 dq2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
+  Proof. rewrite pointsto_unseal. apply ghost_map_elem_ne. Qed.
 
   (** Permanently turn any points-to predicate into a persistent
       points-to predicate. *)
-  Lemma mapsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
-  Proof. rewrite mapsto_unseal. apply ghost_map_elem_persist. Qed.
+  Lemma pointsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
+  Proof. rewrite pointsto_unseal. apply ghost_map_elem_persist. Qed.
 
   (** Framing support *)
-  Global Instance frame_mapsto p l v q1 q2 q :
+  Global Instance frame_pointsto p l v q1 q2 q :
     FrameFractionalQp q1 q2 q →
     Frame p (l ↦{#q1} v) (l ↦{#q2} v) (l ↦{#q} v) | 5.
   Proof. apply: frame_fractional. Qed.
@@ -259,7 +261,8 @@ Section gen_heap.
     σ !! l = None →
     gen_heap_interp σ ==∗ gen_heap_interp (<[l:=v]>σ) ∗ l ↦ v ∗ meta_token l ⊤.
   Proof.
-    iIntros (Hσl). rewrite /gen_heap_interp mapsto_unseal /mapsto_def meta_token_unseal /meta_token_def /=.
+    iIntros (Hσl). rewrite /gen_heap_interp pointsto_unseal /pointsto_def
+      meta_token_unseal /meta_token_def /=.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
     iMod (ghost_map_insert l with "Hσ") as "[Hσ Hl]"; first done.
     iMod (own_alloc (reservation_map_token ⊤)) as (γm) "Hγm".
@@ -288,7 +291,7 @@ Section gen_heap.
   Lemma gen_heap_valid σ l dq v : gen_heap_interp σ -∗ l ↦{dq} v -∗ ⌜σ !! l = Some v⌝.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ _]". iIntros "Hl".
-    rewrite /gen_heap_interp mapsto_unseal.
+    rewrite /gen_heap_interp pointsto_unseal.
     by iCombine "Hσ Hl" gives %?.
   Qed.
 
@@ -296,7 +299,7 @@ Section gen_heap.
     gen_heap_interp σ -∗ l ↦ v1 ==∗ gen_heap_interp (<[l:=v2]>σ) ∗ l ↦ v2.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
-    iIntros "Hl". rewrite /gen_heap_interp mapsto_unseal /mapsto_def.
+    iIntros "Hl". rewrite /gen_heap_interp pointsto_unseal /pointsto_def.
     iCombine "Hσ Hl" gives %Hl.
     iMod (ghost_map_update with "Hσ Hl") as "[Hσ Hl]".
     iModIntro. iFrame "Hl". iExists m. iFrame.

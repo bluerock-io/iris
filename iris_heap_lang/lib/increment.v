@@ -130,7 +130,7 @@ Section increment.
 
   (** Logically atomic spec for weak increment. Also an example for what TaDA
       calls "private precondition". *)
-  (* TODO: Generalize to q and 1-q, based on some theory for a "maybe-mapsto"
+  (* TODO: Generalize to q and 1-q, based on some theory for a "maybe-pointsto"
      connective that works on [option Qp] (the type of 1-q). *)
   Lemma weak_incr_spec (l: loc) (v : Z) :
     l ↦{#1/2} #v -∗
@@ -145,7 +145,7 @@ Section increment.
     (* Prove the atomic update for store *)
     iApply (aacc_aupd_commit with "AU"); first done.
     iIntros (x) "H↦".
-    iDestruct (mapsto_agree with "Hl H↦") as %[= <-].
+    iDestruct (pointsto_agree with "Hl H↦") as %[= <-].
     iCombine "Hl" "H↦" as "Hl". iAaccIntro with "Hl".
     { iIntros "[$ $]"; eauto. }
     iIntros "$ !>". iSplit; first done.

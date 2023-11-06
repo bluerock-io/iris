@@ -370,65 +370,65 @@ Section tests.
 
 End tests.
 
-Section mapsto_tests.
+Section pointsto_tests.
   Context `{!heapGS Σ}.
 
-  (* Test that the different versions of mapsto work with the tactics, parses,
+  (* Test that the different versions of pointsto work with the tactics, parses,
      and prints correctly. *)
 
   (* Loading from a persistent points-to predicate in the _persistent_ context. *)
-  Lemma persistent_mapsto_load_persistent l v :
+  Lemma persistent_pointsto_load_persistent l v :
     {{{ l ↦□ v }}} ! #l {{{ RET v; True }}}.
   Proof. iIntros (Φ) "#Hl HΦ". Show. wp_load. by iApply "HΦ". Qed.
 
   (* Loading from a persistent points-to predicate in the _spatial_ context. *)
-  Lemma persistent_mapsto_load_spatial l v :
+  Lemma persistent_pointsto_load_spatial l v :
     {{{ l ↦□ v }}} ! #l {{{ RET v; True }}}.
   Proof. iIntros (Φ) "Hl HΦ". wp_load. by iApply "HΦ". Qed.
 
-  Lemma persistent_mapsto_twp_load_persistent l v :
+  Lemma persistent_pointsto_twp_load_persistent l v :
     [[{ l ↦□ v }]] ! #l [[{ RET v; True }]].
   Proof. iIntros (Φ) "#Hl HΦ". wp_load. by iApply "HΦ". Qed.
 
-  Lemma persistent_mapsto_twp_load_spatial l v :
+  Lemma persistent_pointsto_twp_load_spatial l v :
     [[{ l ↦□ v }]] ! #l [[{ RET v; True }]].
   Proof. iIntros (Φ) "Hl HΦ". wp_load. by iApply "HΦ". Qed.
 
-  Lemma persistent_mapsto_load l (n : nat) :
+  Lemma persistent_pointsto_load l (n : nat) :
     {{{ l ↦ #n }}} Store #l (! #l + #5) ;; ! #l {{{ RET #(n + 5); l ↦□ #(n + 5) }}}.
   Proof.
     iIntros (Φ) "Hl HΦ".
     wp_load. wp_store.
-    iMod (mapsto_persist with "Hl") as "#Hl".
+    iMod (pointsto_persist with "Hl") as "#Hl".
     wp_load. by iApply "HΦ".
   Qed.
 
-  (* Loading from the general mapsto for any [dfrac]. *)
-  Lemma general_mapsto dq l v :
+  (* Loading from the general pointsto for any [dfrac]. *)
+  Lemma general_pointsto dq l v :
     [[{ l ↦{dq} v }]] ! #l [[{ RET v; True }]].
   Proof.
     iIntros (Φ) "Hl HΦ". Show. wp_load. by iApply "HΦ".
   Qed.
 
-  (* Make sure that we can split a mapsto containing an evar. *)
-  Lemma mapsto_evar_iSplit l v :
+  (* Make sure that we can split a pointsto containing an evar. *)
+  Lemma pointsto_evar_iSplit l v :
     l ↦{#1 / 2} v -∗  ∃ q, l ↦{#1 / 2 + q} v.
   Proof. iIntros "H". iExists _. iSplitL; first by iAssumption. Abort.
 
-  Lemma mapsto_frame_1 l v q1 q2 :
+  Lemma pointsto_frame_1 l v q1 q2 :
     l ↦{#q1} v -∗ l ↦{#q2} v -∗ l ↦{#q1 + q2} v.
   Proof. iIntros "H1 H2". iFrame "H1". iExact "H2". Qed.
 
-  Lemma mapsto_frame_2 l v q :
+  Lemma pointsto_frame_2 l v q :
     l ↦{#q/2} v -∗ l ↦{#q/2} v -∗ l ↦{#q} v.
   Proof. iIntros "H1 H2". iFrame "H1". iExact "H2". Qed.
 
-  Lemma mapsto_combine_2 l v1 q1 v2 q2 :
+  Lemma pointsto_combine_2 l v1 q1 v2 q2 :
     l ↦{#q1} v1 -∗ l ↦{#q2} v2 -∗
     l ↦{#(q1 + q2)} v1 ∗ ⌜q1 + q2 ≤ 1⌝%Qp ∗ ⌜v1 = v2⌝.
   Proof. iIntros "H1 H2". by iCombine "H1 H2" as "$" gives %[? ->]. Qed.
 
-  Lemma mapsto_combine_3 l v1 q1 v2 q2 v3 q3 :
+  Lemma pointsto_combine_3 l v1 q1 v2 q2 v3 q3 :
     l ↦{#q1} v1 -∗ l ↦{#q2} v2 -∗ l ↦{#q3} v3 -∗
     l ↦{#(q1 + (q2 + q3))} v1 ∗ ⌜q1 + (q2 + q3) ≤ 1⌝%Qp ∗ ⌜v1 = v2⌝ ∗ ⌜v2 = v3⌝.
   Proof.
@@ -436,7 +436,7 @@ Section mapsto_tests.
     by iCombine "H1 H2 H3" as "$" gives %[[_ ->] [? ->]].
   Qed.
 
-  Lemma mapsto_combine_4 l v1 q1 v2 q2 v3 q3 v4 q4 :
+  Lemma pointsto_combine_4 l v1 q1 v2 q2 v3 q3 v4 q4 :
     l ↦{#q1} v1 -∗ l ↦{#q2} v2 -∗ l ↦{#q3} v3 -∗ l ↦{#q4} v4 -∗
     l ↦{#(q1 + (q2 + (q3 + q4)))} v1 ∗ ⌜q1 + (q2 + (q3 + q4)) ≤ 1⌝%Qp ∗
       ⌜v1 = v2⌝ ∗ ⌜v2 = v3⌝ ∗ ⌜v3 = v4⌝.
@@ -445,23 +445,23 @@ Section mapsto_tests.
     iCombine "H1 H2 H3 H4" as "$" gives %H. Show.
     by destruct H as [[[_ ->] [_ ->]] [? ->]].
   Qed.
-End mapsto_tests.
+End pointsto_tests.
 
-Section inv_mapsto_tests.
+Section inv_pointsto_tests.
   Context `{!heapGS Σ}.
 
   (* Make sure these parse and type-check. *)
-  Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
-  Lemma inv_mapsto_test (l : loc) : ⊢ l ↦_(λ _, True) □. Abort.
+  Lemma inv_pointsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
+  Lemma inv_pointsto_test (l : loc) : ⊢ l ↦_(λ _, True) □. Abort.
 
   (* Make sure [setoid_rewrite] works. *)
-  Lemma inv_mapsto_setoid_rewrite (l : loc) (I : val → Prop) :
+  Lemma inv_pointsto_setoid_rewrite (l : loc) (I : val → Prop) :
     (∀ v, I v ↔ I #true) →
     ⊢ l ↦_(λ v, I v) □.
   Proof.
     iIntros (Heq). setoid_rewrite Heq. Show.
   Abort.
-End inv_mapsto_tests.
+End inv_pointsto_tests.
 
 Section atomic.
   Context `{!heapGS Σ}.

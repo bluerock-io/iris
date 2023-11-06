@@ -297,7 +297,7 @@ Section iris_tests.
   Proof. iIntros "Hlc1 Hlc2". iSplitL "Hlc1". Show. all: done. Qed.
 
   (** Make sure [iCombine] doesn't leave behind beta redexes. *)
-  Check "test_iCombine_mapsto_no_beta".
+  Check "test_iCombine_pointsto_no_beta".
   Lemma test_iCombine_ghost_var_no_beta `{!ghost_varG Σ nat} l (v : nat) q1 q2 :
     ghost_var l q1 v -∗ ghost_var l q2 v -∗ ghost_var l (q1+q2) v.
   Proof.
