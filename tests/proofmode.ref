@@ -269,6 +269,8 @@ Tactic failure: iSpecialize: Q not persistent.
      : string
 The command has indeed failed with message:
 Tactic failure: iSpecialize: (|==> P)%I not persistent.
+"test_iFrame_disjunction_4_evars"
+     : string
 The command has indeed failed with message:
 Tactic failure: iFrame: cannot frame (Φ 0 1).
 "test_iFrame_conjunction_3"

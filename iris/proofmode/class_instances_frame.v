@@ -59,7 +59,8 @@ Global Instance frame_pure_embed `{!BiEmbed PROP PROP'} p P Q (Q' : PROP') φ :
 Proof. rewrite /Frame /MakeEmbed -embed_pure. apply (frame_embed p P Q). Qed.
 
 Global Instance frame_sep_persistent_l progress R P1 P2 Q1 Q2 Q' :
-  Frame true R P1 Q1 → MaybeFrame true R P2 Q2 progress →
+  Frame true R P1 Q1 →
+  MaybeFrame true R P2 Q2 progress →
   MakeSep Q1 Q2 Q' →
   Frame true R (P1 ∗ P2) Q' | 9.
 Proof.
@@ -132,7 +133,7 @@ We require at least one of those to make progress though. *)
 Global Instance frame_and p progress1 progress2 R P1 P2 Q1 Q2 Q' :
   MaybeFrame p R P1 Q1 progress1 →
   MaybeFrame p R P2 Q2 progress2 →
-  (* If below [TCEq] fails, the [frame_and] instance is immediately abandoned:
+  (** If below [TCEq] fails, the [frame_and] instance is immediately abandoned:
     the [TCNoBackTrack]s above prevent Coq from considering other ways to
     construct [MaybeFrame] instances. *)
   TCEq (progress1 || progress2) true →
@@ -165,7 +166,7 @@ exactly one side, since that can make your goal unprovable. *)
 Global Instance frame_or_spatial progress1 progress2 R P1 P2 Q1 Q2 Q :
   MaybeFrame false R P1 Q1 progress1 →
   MaybeFrame false R P2 Q2 progress2 →
-  (* Below [TCOr] encodes the condition described above. If this condition
+  (** Below [TCOr] encodes the condition described above. If this condition
     cannot be satisfied, the [frame_or_spatial] instance is immediately
     abandoned: the [TCNoBackTrack]s present in the [MaybeFrame] notation
     prevent Coq from considering other ways to construct [MaybeFrame']
@@ -183,7 +184,7 @@ since you can keep the resource after framing. *)
 Global Instance frame_or_persistent progress1 progress2 R P1 P2 Q1 Q2 Q :
   MaybeFrame true R P1 Q1 progress1 →
   MaybeFrame true R P2 Q2 progress2 →
-  (* If below [TCEq] fails, the [frame_or_persistent] instance is immediately
+  (** If below [TCEq] fails, the [frame_or_persistent] instance is immediately
     abandoned: the [TCNoBackTrack]s present in the [MaybeFrame] notation
     prevent Coq from considering other ways to construct [MaybeFrame']
     instances. *)

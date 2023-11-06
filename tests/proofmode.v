@@ -663,6 +663,7 @@ Proof.
   which made [iFrame] very slow. Above [Timeout] ensures [iFrame] now performs
   acceptably in this situation *)
 Abort.
+Check "test_iFrame_disjunction_4_evars".
 Lemma test_iFrame_disjunction_4_evars (Φ : nat → nat → PROP) P :
   Φ 0 1 ⊢ ∃ n m, (Φ n m ∗ Φ 0 1) ∨ (P ∗ Φ m n).
 Proof.
