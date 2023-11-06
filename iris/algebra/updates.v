@@ -119,37 +119,45 @@ Proof.
   - apply Hmz.
 Qed.
 
-(** ** Frame preserving updates for total CMRAs *)
-Section total_updates.
-  Local Set Default Proof Using "Type*".
-  Context `{!CmraTotal A}.
+(** ** Frame preserving updates for total and discete CMRAs *)
+Lemma cmra_total_updateP `{!CmraTotal A} x (P : A → Prop) :
+  x ~~>: P ↔ ∀ n z, ✓{n} (x ⋅ z) → ∃ y, P y ∧ ✓{n} (y ⋅ z).
+Proof.
+  split=> Hup; [intros n z; apply (Hup n (Some z))|].
+  intros n [z|] ?; simpl; [by apply Hup|].
+  destruct (Hup n (core x)) as (y&?&?); first by rewrite cmra_core_r.
+  eauto using cmra_validN_op_l.
+Qed.
+Lemma cmra_total_update `{!CmraTotal A} x y :
+   x ~~> y ↔ ∀ n z, ✓{n} (x ⋅ z) → ✓{n} (y ⋅ z).
+Proof. rewrite cmra_update_updateP cmra_total_updateP. naive_solver. Qed.
 
-  Lemma cmra_total_updateP x (P : A → Prop) :
-    x ~~>: P ↔ ∀ n z, ✓{n} (x ⋅ z) → ∃ y, P y ∧ ✓{n} (y ⋅ z).
-  Proof.
-    split=> Hup; [intros n z; apply (Hup n (Some z))|].
-    intros n [z|] ?; simpl; [by apply Hup|].
-    destruct (Hup n (core x)) as (y&?&?); first by rewrite cmra_core_r.
-    eauto using cmra_validN_op_l.
-  Qed.
-  Lemma cmra_total_update x y : x ~~> y ↔ ∀ n z, ✓{n} (x ⋅ z) → ✓{n} (y ⋅ z).
-  Proof. rewrite cmra_update_updateP cmra_total_updateP. naive_solver. Qed.
+Lemma cmra_discrete_updateP `{!CmraDiscrete A} (x : A) (P : A → Prop) :
+  x ~~>: P ↔ ∀ mz, ✓ (x ⋅? mz) → ∃ y, P y ∧ ✓ (y ⋅? mz).
+Proof.
+  unfold cmra_updateP. setoid_rewrite <-cmra_discrete_valid_iff.
+  naive_solver eauto using O.
+Qed.
+Lemma cmra_discrete_update `{!CmraDiscrete A} (x y : A) :
+  x ~~> y ↔ ∀ mz, ✓ (x ⋅? mz) → ✓ (y ⋅? mz).
+Proof.
+  unfold cmra_update. setoid_rewrite <-cmra_discrete_valid_iff.
+  naive_solver eauto using O.
+Qed.
 
-  Context `{!CmraDiscrete A}.
-
-  Lemma cmra_discrete_updateP (x : A) (P : A → Prop) :
-    x ~~>: P ↔ ∀ z, ✓ (x ⋅ z) → ∃ y, P y ∧ ✓ (y ⋅ z).
-  Proof.
-    rewrite cmra_total_updateP; setoid_rewrite <-cmra_discrete_valid_iff.
-    naive_solver eauto using O.
-  Qed.
-  Lemma cmra_discrete_update (x y : A) :
-    x ~~> y ↔ ∀ z, ✓ (x ⋅ z) → ✓ (y ⋅ z).
-  Proof.
-    rewrite cmra_total_update; setoid_rewrite <-cmra_discrete_valid_iff.
-    naive_solver eauto using O.
-  Qed.
-End total_updates.
+Lemma cmra_discrete_total_updateP `{!CmraDiscrete A, CmraTotal A}
+    (x : A) (P : A → Prop) :
+  x ~~>: P ↔ ∀ z, ✓ (x ⋅ z) → ∃ y, P y ∧ ✓ (y ⋅ z).
+Proof.
+  rewrite cmra_total_updateP; setoid_rewrite <-cmra_discrete_valid_iff.
+  naive_solver eauto using O.
+Qed.
+Lemma cmra_discrete_total_update `{!CmraDiscrete A, CmraTotal A} (x y : A) :
+  x ~~> y ↔ ∀ z, ✓ (x ⋅ z) → ✓ (y ⋅ z).
+Proof.
+  rewrite cmra_total_update; setoid_rewrite <-cmra_discrete_valid_iff.
+  naive_solver eauto using O.
+Qed.
 End updates.
 
 (** * Transport *)

@@ -150,7 +150,7 @@ Section gset_disj.
     GSet X ~~>: Q.
   Proof.
     intros Hfresh HQ.
-    apply cmra_discrete_updateP=> ? /gset_disj_valid_inv_l [Y [->?]].
+    apply cmra_discrete_total_updateP=> ? /gset_disj_valid_inv_l [Y [->?]].
     destruct (Hfresh (X ∪ Y)) as (i&?&?); first set_solver.
     exists (GSet ({[ i ]} ∪ X)); split.
     - apply HQ; set_solver by eauto.
