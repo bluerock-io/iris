@@ -371,23 +371,31 @@ Global Hint Mode Frame + + ! ! - : typeclass_instances.
 
 (* The boolean [progress] indicates whether actual framing has been performed.
 If it is [false], then the default instance [maybe_frame_default] below has been
-used. *)
-Class MaybeFrame {PROP : bi} (p : bool) (R P Q : PROP) (progress : bool) :=
+used.
+[MaybeFrame'] instances should generally _not_ be used directly---instead, use
+the [MaybeFrame] notation defined below. *)
+Class MaybeFrame' {PROP : bi} (p : bool) (R P Q : PROP) (progress : bool) :=
   maybe_frame : □?p R ∗ Q ⊢ P.
-Global Arguments MaybeFrame {_} _ _%I _%I _%I _.
+Global Arguments MaybeFrame' {_} _ _%I _%I _%I _.
 Global Arguments maybe_frame {_} _ _%I _%I _%I _ {_}.
-Global Hint Mode MaybeFrame + + ! - - - : typeclass_instances.
+Global Hint Mode MaybeFrame' + + ! - - - : typeclass_instances.
 
 Global Instance maybe_frame_frame {PROP : bi} p (R P Q : PROP) :
-  Frame p R P Q → MaybeFrame p R P Q true.
+  Frame p R P Q → MaybeFrame' p R P Q true.
 Proof. done. Qed.
 
 Global Instance maybe_frame_default_persistent {PROP : bi} (R P : PROP) :
-  MaybeFrame true R P P false | 100.
-Proof. intros. rewrite /MaybeFrame /=. by rewrite sep_elim_r. Qed.
+  MaybeFrame' true R P P false | 100.
+Proof. intros. rewrite /MaybeFrame' /=. by rewrite sep_elim_r. Qed.
 Global Instance maybe_frame_default {PROP : bi} (R P : PROP) :
-  TCOr (Affine R) (Absorbing P) → MaybeFrame false R P P false | 100.
-Proof. intros. rewrite /MaybeFrame /=. apply: sep_elim_r. Qed.
+  TCOr (Affine R) (Absorbing P) → MaybeFrame' false R P P false | 100.
+Proof. intros. rewrite /MaybeFrame' /=. apply: sep_elim_r. Qed.
+
+(* We never want to backtrack on instances of [MaybeFrame']. We provide
+a notation for [MaybeFrame'] wrapped in the [TCNoBackTrack] construct.
+For more details, see also iris!989 and the [frame_and] and [frame_or_spatial]
+instances in [class_instances_frame.v] *)
+Notation MaybeFrame p R P Q progress := (TCNoBackTrack (MaybeFrame' p R P Q progress)).
 
 Class IntoExcept0 {PROP : bi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
 Global Arguments IntoExcept0 {_} _%I _%I : simpl never.

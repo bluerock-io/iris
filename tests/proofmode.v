@@ -651,6 +651,32 @@ Lemma test_iFrame_disjunction_1 P1 P2 Q1 Q2 :
 Proof. intros ?. iIntros "#HP1 HQ2 HP2". iFrame "HP1 HQ2 HP2". Qed.
 Lemma test_iFrame_disjunction_2 P : P -∗ (True ∨ True) ∗ P.
 Proof. iIntros "HP". iFrame "HP". auto. Qed.
+Lemma test_iFrame_disjunction_3_evars (Φ : nat → PROP) P1 P2 P3 P4 :
+  BiAffine PROP →
+  let n := 5 in
+  let R := λ a, Nat.iter n (λ P, (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a) ∨ P)%I (Φ a) in
+  P1 ⊢ ∃ a, R a.
+Proof.
+  intros ?. simpl. iIntros "HP1". iExists _.
+  Timeout 1 iFrame. (* The combination of evars and nested disjunctions used to
+  cause excessive backtracking during the construction of [Frame] instances,
+  which made [iFrame] very slow. Above [Timeout] ensures [iFrame] now performs
+  acceptably in this situation *)
+Abort.
+Check "test_iFrame_disjunction_4_evars".
+Lemma test_iFrame_disjunction_4_evars (Φ : nat → nat → PROP) P :
+  Φ 0 1 ⊢ ∃ n m, (Φ n m ∗ Φ 0 1) ∨ (P ∗ Φ m n).
+Proof.
+  iIntros "HΦ1". iExists _, _.
+  Fail iFrame "HΦ1". (* During the construction of [Frame] instances for
+  disjunctions, [Frame] instances for each of the sides should be constructed
+  _exactly_ once. This test shows that after finding a way to frame "HΦ1" on
+  the left-hand side of the disjunction (and instantiating [n = 0] and [m = 1])
+  the second way of framing "HΦ1" in the left-hand side is not considered,
+  even though this would cause the framing to be succesful on the right-hand
+  side. Considering multiple successes can cause exponential blowups, see above *)
+Abort.
+
 
 Lemma test_iFrame_conjunction_1 P Q :
   P -∗ Q -∗ (P ∗ Q) ∧ (P ∗ Q).
@@ -666,6 +692,18 @@ Proof.
   iFrame "HP".
   (* [iFrame] should simplify [False ∧ Q] to just [False]. *)
   Show.
+Abort.
+Lemma test_iFrame_conjunction_4_evars (Φ : nat → PROP) P1 P2 P3 P4 P5 :
+  BiAffine PROP →
+  let n := 5 in
+  let R := λ a, Nat.iter n (λ P, (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a) ∧ P)%I (P1 ∗ P2 ∗ P3 ∗ P4 ∗ Φ a)%I in
+  P5 ⊢ ∃ a, R a.
+Proof.
+  intros ?. simpl. iIntros "HP1". iExists _.
+  Timeout 1 iFrame. (* The combination of evars and nested conjunctions used to
+  cause excessive backtracking during the construction of [Frame] instances,
+  which made [iFrame] very slow. Above [Timeout] ensures [iFrame] now performs
+  acceptably in this situation *)
 Abort.
 
 Lemma test_iFrame_later `{!BiAffine PROP} P Q : P -∗ Q -∗ ▷ P ∗ Q.

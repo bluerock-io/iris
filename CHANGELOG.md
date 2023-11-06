@@ -20,6 +20,15 @@ lemma.
   `x - y = x' - y' → (x,y) ~l~> (x',y')`, i.e., the difference between the
   authoritative element and the fragment must stay the same.
 
+**Changes in `proofmode`:**
+
+* The `iFrame` tactic has become slightly weaker for goals that contain both
+  evars and either `∨` or `∧`. This prevents an exponential slowdown of
+  `iFrame` on some goals. This change should be backwards compatible for almost
+  all proofs. If you define or use custom `Frame` instances, note that the 
+  `MaybeFrame` class has become notation for `TCNoBackTrack (MaybeFrame' ...)`,
+  which means the proofs of your instances might need a slight refactoring.
+
 ## Iris 4.1.0 (2023-10-11)
 
 This Iris release mostly features quality-of-life improvements, such as smarter

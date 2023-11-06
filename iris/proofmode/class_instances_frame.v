@@ -59,10 +59,12 @@ Global Instance frame_pure_embed `{!BiEmbed PROP PROP'} p P Q (Q' : PROP') φ :
 Proof. rewrite /Frame /MakeEmbed -embed_pure. apply (frame_embed p P Q). Qed.
 
 Global Instance frame_sep_persistent_l progress R P1 P2 Q1 Q2 Q' :
-  Frame true R P1 Q1 → MaybeFrame true R P2 Q2 progress → MakeSep Q1 Q2 Q' →
+  Frame true R P1 Q1 →
+  MaybeFrame true R P2 Q2 progress →
+  MakeSep Q1 Q2 Q' →
   Frame true R (P1 ∗ P2) Q' | 9.
 Proof.
-  rewrite /Frame /MaybeFrame /MakeSep /= => <- <- <-.
+  rewrite /Frame /MaybeFrame' /MakeSep /= => <- [<-] <-.
   rewrite {1}(intuitionistically_sep_dup R).
   by rewrite !assoc -(assoc _ _ _ Q1) -(comm _ Q1) assoc -(comm _ Q1).
 Qed.
@@ -106,17 +108,39 @@ Global Instance frame_big_sepMS_disj_union `{Countable A} p (Φ : A → PROP) R 
   Frame p R ([∗ mset] y ∈ X1 ⊎ X2, Φ y) Q | 2.
 Proof. by rewrite /Frame big_sepMS_disj_union. Qed.
 
+(** The instances that allow framing under [∨] and [∧] need to be carefully
+constructed. Such instances should make progress on at least one, but
+possibly _both_ sides of the connective---unlike [∗], where we want to make
+progress on exactly one side.
+
+Naive implementations of this idea can cause Coq to do multiple searches
+for [Frame] instances of the subterms. For terms with nested [∧]s or [∨]s,
+this can cause an exponential blowup in the time it takes for Coq to
+_fail_ to construct a [Frame] instance. This happens especially when the
+resource we are framing in contains evars, since Coq's typeclass search
+does more backtracking in this case.
+
+To combat this, the [∧] and [∨] instances use [MaybeFrame] classes---
+a notation for [MaybeFrame'] guarded by a [TCNoBackTrack]. The [MaybeFrame]
+clauses for the subterms output a boolean [progress] indicator, on which some
+condition is posed. The [TCNoBackTrack] ensures that when this condition is not
+met, Coq will not backtrack on the [MaybeFrame] clauses to consider different
+[progress]es. *)
+
 (* For framing below [∧], we can frame [R] away in *both* conjuncts
 (unlike with [∗] where we can only frame it in one conjunct).
 We require at least one of those to make progress though. *)
 Global Instance frame_and p progress1 progress2 R P1 P2 Q1 Q2 Q' :
   MaybeFrame p R P1 Q1 progress1 →
   MaybeFrame p R P2 Q2 progress2 →
+  (** If below [TCEq] fails, the [frame_and] instance is immediately abandoned:
+    the [TCNoBackTrack]s above prevent Coq from considering other ways to
+    construct [MaybeFrame] instances. *)
   TCEq (progress1 || progress2) true →
   MakeAnd Q1 Q2 Q' →
   Frame p R (P1 ∧ P2) Q' | 9.
 Proof.
-  rewrite /MaybeFrame /Frame /MakeAnd => <- <- _ <-.
+  rewrite /MaybeFrame' /Frame /MakeAnd => [[<-]] [<-] _ <-.
   apply and_intro; [rewrite and_elim_l|rewrite and_elim_r]; done.
 Qed.
 
@@ -134,20 +158,39 @@ appears at most once.
 If Coq would memorize the results of type class resolution, the solution with
 multiple instances would be preferred (and more Prolog-like). *)
 
+(** Framing a spatial resource [R] under [∨] is done only when:
+  - [R] can be framed on both sides of the [∨]; or
+  - [R] completely solves one side of the [∨], reducing it to [True].
+This instance does _not_ framing spatial resources when they can be framed in
+exactly one side, since that can make your goal unprovable. *)
 Global Instance frame_or_spatial progress1 progress2 R P1 P2 Q1 Q2 Q :
-  MaybeFrame false R P1 Q1 progress1 → MaybeFrame false R P2 Q2 progress2 →
+  MaybeFrame false R P1 Q1 progress1 →
+  MaybeFrame false R P2 Q2 progress2 →
+  (** Below [TCOr] encodes the condition described above. If this condition
+    cannot be satisfied, the [frame_or_spatial] instance is immediately
+    abandoned: the [TCNoBackTrack]s present in the [MaybeFrame] notation
+    prevent Coq from considering other ways to construct [MaybeFrame']
+    instances. *)
   TCOr (TCEq (progress1 && progress2) true) (TCOr
     (TCAnd (TCEq progress1 true) (TCEq Q1 True%I))
     (TCAnd (TCEq progress2 true) (TCEq Q2 True%I))) →
   MakeOr Q1 Q2 Q →
   Frame false R (P1 ∨ P2) Q | 9.
-Proof. rewrite /Frame /MakeOr => <- <- _ <-. by rewrite -sep_or_l. Qed.
+Proof. rewrite /Frame /MakeOr => [[<-]] [<-] _ <-. by rewrite -sep_or_l. Qed.
 
+(** Framing a persistent resource [R] under [∨] is done when [R] can be framed
+on _at least_ one side. This does not affect provability of your goal,
+since you can keep the resource after framing. *)
 Global Instance frame_or_persistent progress1 progress2 R P1 P2 Q1 Q2 Q :
-  MaybeFrame true R P1 Q1 progress1 → MaybeFrame true R P2 Q2 progress2 →
+  MaybeFrame true R P1 Q1 progress1 →
+  MaybeFrame true R P2 Q2 progress2 →
+  (** If below [TCEq] fails, the [frame_or_persistent] instance is immediately
+    abandoned: the [TCNoBackTrack]s present in the [MaybeFrame] notation
+    prevent Coq from considering other ways to construct [MaybeFrame']
+    instances. *)
   TCEq (progress1 || progress2) true →
   MakeOr Q1 Q2 Q → Frame true R (P1 ∨ P2) Q | 9.
-Proof. rewrite /Frame /MakeOr => <- <- _ <-. by rewrite -sep_or_l. Qed.
+Proof. rewrite /Frame /MakeOr => [[<-]] [<-] _ <-. by rewrite -sep_or_l. Qed.
 
 Global Instance frame_wand p R P1 P2 Q2 :
   Frame p R P2 Q2 → Frame p R (P1 -∗ P2) (P1 -∗ Q2) | 2.
