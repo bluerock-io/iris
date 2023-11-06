@@ -525,7 +525,7 @@ Lemma sts_frag_up_op s T1 T2 :
 Lemma sts_update_auth s1 s2 T1 T2 :
   steps (s1,T1) (s2,T2) → sts_auth s1 T1 ~~> sts_auth s2 T2.
 Proof.
-  intros ?. apply cmra_discrete_update.
+  intros ?. apply cmra_discrete_total_update.
   intros [x x_val Hx_val]; simpl. intros (Htok & Hval & Hdisj).
   specialize (Hx_val Hval).
   inversion Hdisj as [|? S ? Tf|]; simplify_eq/=; destruct_and?.
@@ -536,7 +536,7 @@ Qed.
 Lemma sts_update_frag S1 S2 T1 T2 :
   (closed S1 T1 → closed S2 T2 ∧ S1 ⊆ S2 ∧ T2 ⊆ T1) → sts_frag S1 T1 ~~> sts_frag S2 T2.
 Proof.
-  rewrite /sts_frag=> HC HS HT. apply cmra_discrete_update.
+  rewrite /sts_frag=> HC HS HT. apply cmra_discrete_total_update.
   intros [x x_val Hx_val]; simpl. intros (Htok & Hval & Hdisj).
   specialize (Hx_val Hval).
   inversion Hdisj as [|? S ? Tf|]; simplify_eq/=;

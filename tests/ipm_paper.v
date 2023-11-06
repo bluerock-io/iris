@@ -184,7 +184,7 @@ Section M.
 
   Lemma M_update n : Auth n ~~> Auth (S n).
   Proof.
-    apply cmra_discrete_update=>-[m|j|] /= ?; repeat case_decide; done || lia.
+    apply cmra_discrete_total_update=>-[m|j|] /= ?; repeat case_decide; done || lia.
   Qed.
 End M.
 
