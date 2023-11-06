@@ -66,6 +66,7 @@ Proof.
   rewrite twptp_unfold /twptp_pre. iIntros (t1'' σ1 ns κ κs σ2 nt Hstep) "Hσ1".
   destruct Hstep as [e1 σ1' e2 σ2' efs' t1' t2' [=Ht ?] ? Hstep]; simplify_eq/=.
   apply app_eq_inv in Ht as [(t&?&?)|(t&?&?)]; subst.
+  (* Case distinction on whether [e1] is in [t1] or [t2]. *)
   - destruct t as [|e1' ?]; simplify_eq/=.
     + iMod ("IH2" with "[%] Hσ1") as (n2) "($ & Hσ & IH2 & _)".
       { by eapply (step_atomic _ _ _ _ _ []). }
