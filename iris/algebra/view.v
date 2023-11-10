@@ -483,14 +483,30 @@ Section cmra.
   Proof. rewrite view_both_dfrac_included. naive_solver. Qed.
 
   (** Updates *)
+
+  Lemma view_updateP a b Pab :
+    (∀ n bf, rel n a (b ⋅ bf) → ∃ a' b', Pab a' b' ∧ rel n a' (b' ⋅ bf)) →
+    ●V a ⋅ ◯V b ~~>: λ k, ∃ a' b', k = ●V a' ⋅ ◯V b' ∧ Pab a' b'.
+  Proof.
+    intros Hup; apply cmra_total_updateP=> n [[[dq ag]|] bf] [/=].
+    { by intros []%(exclusiveN_l _ _). }
+    intros _ (a0 & <-%(inj to_agree) & Hrel).
+    rewrite !left_id in Hrel. apply Hup in Hrel as (a' & b' & Hab' & Hrel).
+    eexists; split.
+    - naive_solver.
+    - split; simpl; [done|].
+      exists a'; split; [done|]. by rewrite left_id.
+  Qed.
+
   Lemma view_update a b a' b' :
     (∀ n bf, rel n a (b ⋅ bf) → rel n a' (b' ⋅ bf)) →
     ●V a ⋅ ◯V b ~~> ●V a' ⋅ ◯V b'.
   Proof.
-    intros Hup; apply cmra_total_update=> n [[[dq ag]|] bf] [/=].
-    { by intros []%(exclusiveN_l _ _). }
-    intros _ (a0 & <-%(inj to_agree) & Hrel). split; simpl; [done|].
-    exists a'; split; [done|]. revert Hrel. rewrite !left_id. apply Hup.
+    intros Hup.
+    eapply cmra_update_updateP, cmra_updateP_weaken.
+    { eapply view_updateP with (Pab := λ a b, a = a' ∧ b = b').
+      naive_solver. }
+    { naive_solver. }
   Qed.
 
   Lemma view_update_alloc a a' b' :
@@ -520,6 +536,13 @@ Section cmra.
     apply cmra_total_update.
     move=> n [[[dq' ag]|] bf] [Hv ?]; last done. split; last done.
     by apply (dfrac_discard_update dq _ (Some dq')).
+  Qed.
+
+  Lemma view_updateP_frag b P :
+    (∀ a n bf, rel n a (b ⋅ bf) → ∃ b', P b' ∧ rel n a (b' ⋅ bf)) →
+    ◯V b ~~>: λ k, ∃ b', k = ◯V b' ∧ P b'.
+  Proof.
+    rewrite !cmra_total_updateP view_validN_eq=> ? n [[[dq ag]|] bf]; naive_solver.
   Qed.
 
   Lemma view_update_frag b b' :

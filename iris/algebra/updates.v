@@ -202,6 +202,27 @@ Section iso_cmra.
   Proof. eauto using iso_cmra_updateP. Qed.
 End iso_cmra.
 
+Section update_lift_cmra.
+  Context {A B : cmra}.
+  Implicit Types a : A.
+  Implicit Types b : B.
+
+  (** This lemma shows that if [f] maps non-deterministic updates from [B] to [A]
+  (i.e., [cmra_updateP] / [~~>:]), then [f] also maps deterministic updates from
+  [B] to [A] (i.e., [cmra_update] / [~~>]) *)
+  Lemma cmra_update_lift_updateP (f : B → A) b b' :
+    (∀ P, b ~~>: P → f b ~~>: λ a', ∃ b', a' = f b' ∧ P b') →
+    b ~~> b' →
+    f b ~~> f b'.
+  Proof.
+    intros Hgen Hupd.
+    eapply cmra_update_updateP, cmra_updateP_weaken.
+    { eapply Hgen, cmra_update_updateP, Hupd. }
+    naive_solver.
+  Qed.
+
+End update_lift_cmra.
+
 (** * Product *)
 Section prod.
   Context {A B : cmra}.
