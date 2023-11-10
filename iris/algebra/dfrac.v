@@ -211,4 +211,21 @@ Section dfrac.
     - apply cmra_valid_op_r.
   Qed.
 
+  Lemma dfrac_undiscard_update : DfracDiscarded ~~>: λ k, ∃ q, k = DfracOwn q.
+  Proof.
+    apply cmra_discrete_updateP. intros [[q'| |q']|].
+    - intros [qd Hqd]%Qp.lt_sum. exists (DfracOwn (qd/2)%Qp).
+      split; first by eexists. apply dfrac_valid_own.
+      rewrite Hqd Qp.add_comm -Qp.add_le_mono_l.
+      by apply Qp.div_le.
+    - intros _. exists (DfracOwn (1/2)); split; first by eexists.
+      by apply dfrac_valid_own_discarded.
+    - intros [qd Hqd]%Qp.lt_sum. exists (DfracOwn (qd/2)%Qp).
+      split; first by eexists. rewrite /= /op /valid /cmra_op /cmra_valid /=.
+      rewrite Hqd Qp.add_comm -Qp.add_lt_mono_l.
+      by apply Qp.div_lt.
+    - intros _. exists (DfracOwn 1); split; first by eexists.
+      by apply dfrac_valid_own.
+  Qed.
+
 End dfrac.
