@@ -118,6 +118,9 @@ Section mono_Z.
     eapply cmra_update_op_proper; last done.
     eapply auth_update_auth_persist.
   Qed.
+  Lemma mono_Z_auth_unpersist n :
+    ●MZ□ n ~~>: λ k, ∃ q, k = ●MZ{# q} n.
+  Proof. eapply auth_updateP_both_unpersist. Qed.
 End mono_Z.
 
 Global Typeclasses Opaque mono_Z_auth mono_Z_lb.

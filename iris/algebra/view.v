@@ -531,11 +531,39 @@ Section cmra.
     intros Hup. rewrite -(right_id _ _ (●V a)) -(right_id _ _ (●V a')).
     apply view_update=> n bf. rewrite !left_id. apply Hup.
   Qed.
+
+  Local Lemma view_updateP_auth_dfrac dq P a :
+    dq ~~>: P →
+    ●V{dq} a ~~>: λ k, ∃ dq', k = ●V{dq'} a ∧ P dq'.
+  Proof.
+    intros Hupd. apply cmra_total_updateP.
+    move=> n [[[dq' ag]|] bf] [Hv ?].
+    - destruct (Hupd n (Some dq') Hv) as (dr&Hdr&Heq).
+      eexists. split; first by eexists. done.
+    - destruct (Hupd n None Hv) as (dr&Hdr&Heq).
+      eexists. split; first by eexists. done.
+  Qed.
+
   Lemma view_update_auth_persist dq a : ●V{dq} a ~~> ●V□ a.
   Proof.
-    apply cmra_total_update.
-    move=> n [[[dq' ag]|] bf] [Hv ?]; last done. split; last done.
-    by apply (dfrac_discard_update dq _ (Some dq')).
+    eapply (cmra_update_lift_updateP (λ dq, view_auth dq a)).
+    { intros; by apply view_updateP_auth_dfrac. }
+    { apply dfrac_discard_update. }
+  Qed.
+  Lemma view_updateP_auth_unpersist a : ●V□ a ~~>: λ k, ∃ q, k = ●V{#q} a.
+  Proof.
+    eapply cmra_updateP_weaken.
+    { eapply view_updateP_auth_dfrac, dfrac_undiscard_update. }
+    naive_solver.
+  Qed.
+
+  Lemma view_updateP_both_unpersist a b : ●V□ a ⋅ ◯V b ~~>: λ k, ∃ q, k = ●V{#q} a ⋅ ◯V b.
+  Proof.
+    eapply cmra_updateP_weaken.
+    { eapply cmra_updateP_op'.
+      { eapply view_updateP_auth_unpersist. }
+      by eapply cmra_update_updateP. }
+    naive_solver.
   Qed.
 
   Lemma view_updateP_frag b P :

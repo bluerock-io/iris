@@ -114,6 +114,9 @@ Section mono_nat.
     eapply cmra_update_op_proper; last done.
     eapply auth_update_auth_persist.
   Qed.
+  Lemma mono_nat_auth_unpersist n :
+    ●MN□ n ~~>: λ k, ∃ q, k = ●MN{# q} n.
+  Proof. eapply auth_updateP_both_unpersist. Qed.
 End mono_nat.
 
 Global Typeclasses Opaque mono_nat_auth mono_nat_lb.

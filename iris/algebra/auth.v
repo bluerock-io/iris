@@ -332,6 +332,10 @@ Section auth.
   Qed.
   Lemma auth_update_auth_persist dq a : ●{dq} a ~~> ●□ a.
   Proof. apply view_update_auth_persist. Qed.
+  Lemma auth_updateP_auth_unpersist a : ●□ a ~~>: λ k, ∃ q, k = ●{#q} a.
+  Proof. apply view_updateP_auth_unpersist. Qed.
+  Lemma auth_updateP_both_unpersist a b : ●□ a ⋅ ◯ b ~~>: λ k, ∃ q, k = ●{#q} a ⋅ ◯ b.
+  Proof. apply view_updateP_both_unpersist. Qed.
 
   Lemma auth_update_dfrac_alloc dq a b `{!CoreId b} :
     b ≼ a → ●{dq} a ~~> ●{dq} a ⋅ ◯ b.

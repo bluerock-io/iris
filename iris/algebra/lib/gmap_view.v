@@ -407,6 +407,10 @@ Section lemmas.
     gmap_view_auth dq m ~~> gmap_view_auth DfracDiscarded m.
   Proof. apply view_update_auth_persist. Qed.
 
+  Lemma gmap_view_auth_unpersist m :
+    gmap_view_auth DfracDiscarded m ~~>: λ a, ∃ q, a = gmap_view_auth (DfracOwn q) m.
+  Proof. apply view_updateP_auth_unpersist. Qed.
+
   Lemma gmap_view_frag_persist k dq v :
     gmap_view_frag k dq v ~~> gmap_view_frag k DfracDiscarded v.
   Proof.
