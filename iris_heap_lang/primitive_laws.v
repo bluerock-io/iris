@@ -233,6 +233,8 @@ Proof. apply pointsto_ne. Qed.
 
 Lemma pointsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
 Proof. apply pointsto_persist. Qed.
+Lemma pointsto_unpersist l v : l ↦□ v ==∗ ∃ q, l ↦{#q} v.
+Proof. apply pointsto_unpersist. Qed.
 
 Global Instance inv_pointsto_own_proper l v :
   Proper (pointwise_relation _ iff ==> (≡)) (inv_pointsto_own l v).

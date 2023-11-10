@@ -189,6 +189,11 @@ Section gen_heap.
   Lemma pointsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
   Proof. rewrite pointsto_unseal. apply ghost_map_elem_persist. Qed.
 
+  (** Recover fractional ownership for read-only element. *)
+  Lemma pointsto_unpersist l v :
+    l ↦□ v ==∗ ∃ q, l ↦{# q} v.
+  Proof. rewrite pointsto_unseal. apply ghost_map_elem_unpersist. Qed.
+
   (** Framing support *)
   Global Instance frame_pointsto p l v q1 q2 q :
     FrameFractionalQp q1 q2 q →

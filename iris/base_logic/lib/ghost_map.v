@@ -137,6 +137,17 @@ Section lemmas.
     k ↪[γ]{dq} v ==∗ k ↪[γ]□ v.
   Proof. unseal. iApply own_update. apply gmap_view_frag_persist. Qed.
 
+  (** Recover fractional ownership for read-only element. *)
+  Lemma ghost_map_elem_unpersist k γ v :
+    k ↪[γ]□ v ==∗ ∃ q, k ↪[γ]{# q} v.
+  Proof.
+    unseal. iIntros "H".
+    iMod (own_updateP with "H") as "H";
+      first by apply gmap_view_frag_unpersist.
+    iDestruct "H" as (? (q&->)) "H".
+    iIntros "!>". iExists q. done.
+  Qed.
+
   (** * Lemmas about [ghost_map_auth] *)
   Lemma ghost_map_alloc_strong P m :
     pred_infinite P →
