@@ -22,6 +22,15 @@ lemma.
 * Rename `cmra_discrete_update` → `cmra_discrete_total_update` and
   `cmra_discrete_updateP` → `cmra_discrete_total_updateP`. Repurpose original
   names for lemmas that only require `CmraDiscrete`, not `CmraTotal`.
+* Add a law for undiscarding discardable fractions, allowing one to update from
+  `DfracDiscarded` to `DfracOwn(q)` for some fresh `q`. This formalizes the
+  intuition that a discarded fraction is merely an "existentially quantified
+  fraction." (by Johannes Hostert)
+* Add laws for un-persisting resources with a discardable fractional part,
+  based on the undiscarding law for discardable fractions. For example,
+  `gmap_view_frag k DfracDiscarded v ~~>: λ a, ∃ q, a = gmap_view_frag k (DfracOwn q) v`
+  will allow recovering a fractional points-to from a discarded one. (by Johannes
+  Hostert)
 
 **Changes in `proofmode`:**
 
@@ -36,6 +45,13 @@ lemma.
 
 * Rename `mapsto` to `pointsto` to align with standard separation logic
   terminology.
+* Add laws for un-persisting assertions with a discardable fractional permission,
+  for example `l ↦□ v ==∗ ∃ q, l ↦{#q} v`, using the new laws from `algebra`
+  (see above). These laws allow one to update a persistent (discarded) assertion,
+  like a points-to, back into a fractionally owned one, where the fraction is
+  existentially quantified. They are useful when e.g. constructing invariants
+  that allow exchanging fractional assertions. See !960 for more details. (by
+  Johannes Hostert)
 
 **Changes in `program_logic`:**
 
