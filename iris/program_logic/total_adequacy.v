@@ -106,7 +106,7 @@ Proof.
 Qed.
 
 Lemma twptp_total σ ns nt t :
-  state_interp σ ns [] nt -∗ twptp t ={⊤}=∗ ▷ ⌜sn erased_step (t, σ)⌝.
+  state_interp σ ns [] nt -∗ twptp t ={⊤}=∗ ⌜sn erased_step (t, σ)⌝.
 Proof.
   iIntros "Hσ Ht". iRevert (σ ns nt) "Hσ". iRevert (t) "Ht".
   iApply twptp_ind; iIntros "!>" (t) "IH"; iIntros (σ ns nt) "Hσ".
@@ -134,7 +134,7 @@ Theorem twp_total Σ Λ `{!invGpreS Σ} s e σ Φ n :
        stateI σ n [] 0 ∗ WP e @ s; ⊤ [{ Φ }]) →
   sn erased_step ([e], σ). (* i.e. ([e], σ) is strongly normalizing *)
 Proof.
-  intros Hwp. eapply pure_soundness. apply (laterN_soundness _  1); simpl.
+  intros Hwp. eapply pure_soundness.
   apply (fupd_soundness_no_lc ⊤ ⊤ _ 0)=> Hinv. iIntros "_".
   iMod (Hwp) as (stateI num_laters_per_step fork_post stateI_mono) "[Hσ H]".
   set (iG := IrisG Hinv stateI fork_post num_laters_per_step stateI_mono).
