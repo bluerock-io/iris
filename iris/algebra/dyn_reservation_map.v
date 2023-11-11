@@ -298,7 +298,7 @@ Section cmra.
       apply elem_of_dom_2, elem_of_gset_to_coPset in Hp. right. set_solver.
   Qed.
   Lemma dyn_reservation_map_reserve' :
-    ε ~~>: (λ x, ∃ E, set_infinite E ∧ x = dyn_reservation_map_token E).
+    ε ~~>: λ x, ∃ E, set_infinite E ∧ x = dyn_reservation_map_token E.
   Proof. eauto using dyn_reservation_map_reserve. Qed.
 
   Lemma dyn_reservation_map_alloc E k a :

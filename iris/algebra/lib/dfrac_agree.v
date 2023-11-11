@@ -123,6 +123,14 @@ Section lemmas.
     simpl. apply dfrac_discard_update.
   Qed.
 
+  Lemma dfrac_agree_unpersist a :
+    to_dfrac_agree DfracDiscarded a ~~>: λ k, ∃ q, k = to_dfrac_agree (DfracOwn q) a.
+  Proof.
+    rewrite /to_dfrac_agree. eapply prod_updateP; first apply dfrac_undiscard_update.
+    { by eapply cmra_update_updateP. }
+    naive_solver.
+  Qed.
+
 End lemmas.
 
 Definition dfrac_agreeRF (F : oFunctor) : rFunctor :=

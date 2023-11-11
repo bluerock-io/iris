@@ -108,6 +108,17 @@ Section saved_anything.
     iApply own_update. apply dfrac_agree_persist.
   Qed.
 
+  (** Recover fractional ownership for read-only element. *)
+  Lemma saved_anything_unpersist γ v :
+    saved_anything_own γ DfracDiscarded v ==∗ ∃ q, saved_anything_own γ (DfracOwn q) v.
+  Proof.
+    iIntros "H".
+    iMod (own_updateP with "H") as "H";
+      first by apply dfrac_agree_unpersist.
+    iDestruct "H" as (? (q&->)) "H".
+    iIntros "!>". iExists q. done.
+  Qed.
+
   (** Updates *)
   Lemma saved_anything_update y γ x :
     saved_anything_own γ (DfracOwn 1) x ==∗ saved_anything_own γ (DfracOwn 1) y.
@@ -193,6 +204,11 @@ Section saved_prop.
     saved_prop_own γ dq P ==∗ saved_prop_own γ DfracDiscarded P.
   Proof. apply saved_anything_persist. Qed.
 
+  (** Recover fractional ownership for read-only element. *)
+  Lemma saved_prop_unpersist γ v :
+    saved_prop_own γ DfracDiscarded v ==∗ ∃ q, saved_prop_own γ (DfracOwn q) v.
+  Proof. apply saved_anything_unpersist. Qed.
+
   (** Updates *)
   Lemma saved_prop_update Q γ P :
     saved_prop_own γ (DfracOwn 1) P ==∗ saved_prop_own γ (DfracOwn 1) Q.
@@ -271,6 +287,11 @@ Section saved_pred.
   Lemma saved_pred_persist γ dq Φ :
     saved_pred_own γ dq Φ ==∗ saved_pred_own γ DfracDiscarded Φ.
   Proof. apply saved_anything_persist. Qed.
+
+  (** Recover fractional ownership for read-only element. *)
+  Lemma saved_pred_unpersist γ Φ:
+    saved_pred_own γ DfracDiscarded Φ ==∗ ∃ q, saved_pred_own γ (DfracOwn q) Φ.
+  Proof. apply saved_anything_unpersist. Qed.
 
   (** Updates *)
   Lemma saved_pred_update Ψ γ Φ :

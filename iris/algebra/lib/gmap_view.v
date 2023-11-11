@@ -407,29 +407,48 @@ Section lemmas.
     gmap_view_auth dq m ~~> gmap_view_auth DfracDiscarded m.
   Proof. apply view_update_auth_persist. Qed.
 
+  Lemma gmap_view_auth_unpersist m :
+    gmap_view_auth DfracDiscarded m ~~>: λ a, ∃ q, a = gmap_view_auth (DfracOwn q) m.
+  Proof. apply view_updateP_auth_unpersist. Qed.
+
+  Local Lemma gmap_view_frag_dfrac k dq P v :
+    dq ~~>: P →
+    gmap_view_frag k dq v ~~>: λ a, ∃ dq', a = gmap_view_frag k dq' v ∧ P dq'.
+  Proof.
+    intros Hdq.
+    eapply cmra_updateP_weaken;
+      [apply view_updateP_frag with (P := λ b', ∃ dq', ◯V b' = gmap_view_frag k dq' v ∧ P dq')
+      |naive_solver].
+    intros m n bf Hrel.
+    destruct (Hrel k ((dq, to_agree v) ⋅? bf !! k)) as (v' & Hdqv & Hv1 & Hv2).
+    { by rewrite lookup_op lookup_singleton Some_op_opM. }
+    destruct (Hdq n (option_map fst (bf !! k))) as (dq' & HPdq' & Hvdq').
+    { by destruct (bf !! k). }
+    eexists. split; first by exists dq'.
+    intros j [df va] Heq.
+    destruct (decide (k = j)) as [->|Hne].
+    - rewrite lookup_op lookup_singleton in Heq. exists v'.
+      destruct (bf !! j) as [[dfbf vabf]|] eqn:Hbf.
+      + rewrite Hbf -Some_op -pair_op in Heq. by simplify_eq.
+      + rewrite Hbf right_id in Heq. by simplify_eq.
+    - rewrite lookup_op lookup_singleton_ne // left_id in Heq.
+      eapply Hrel. rewrite lookup_op lookup_singleton_ne // left_id Heq //.
+  Qed.
+
   Lemma gmap_view_frag_persist k dq v :
     gmap_view_frag k dq v ~~> gmap_view_frag k DfracDiscarded v.
   Proof.
-    apply view_update_frag=>m n bf Hrel j [df va] /=.
-    rewrite lookup_op. destruct (decide (j = k)) as [->|Hne].
-    - rewrite lookup_singleton.
-      edestruct (Hrel k ((dq, to_agree v) ⋅? bf !! k)) as (v' & Hdf & Hva & Hm).
-      { rewrite lookup_op lookup_singleton.
-        destruct (bf !! k) eqn:Hbf; by rewrite Hbf. }
-      rewrite Some_op_opM. intros [= Hbf].
-      exists v'. rewrite assoc; split; last done.
-      destruct (bf !! k) as [[df' va']|] eqn:Hbfk; rewrite Hbfk in Hbf; clear Hbfk.
-      + simpl in *. rewrite -pair_op in Hbf.
-        move:Hbf=>[= <- <-]. split; first done.
-        eapply cmra_discrete_valid.
-        eapply (dfrac_discard_update _ _ (Some df')).
-        apply cmra_discrete_valid_iff. done.
-      + simpl in *. move:Hbf=>[= <- <-]. split; done.
-    - rewrite lookup_singleton_ne //.
-      rewrite left_id=>Hbf.
-      edestruct (Hrel j) as (v'' & ? & ? & Hm).
-      { rewrite lookup_op lookup_singleton_ne // left_id. done. }
-      simpl in *. eexists. do 2 (split; first done). done.
+    eapply (cmra_update_lift_updateP (λ dq, gmap_view_frag k dq v)).
+    - intros. by apply gmap_view_frag_dfrac.
+    - apply dfrac_discard_update.
+  Qed.
+
+  Lemma gmap_view_frag_unpersist k v :
+    gmap_view_frag k DfracDiscarded v ~~>: λ a, ∃ q, a = gmap_view_frag k (DfracOwn q) v.
+  Proof.
+    eapply cmra_updateP_weaken.
+    { apply gmap_view_frag_dfrac, dfrac_undiscard_update. }
+    naive_solver.
   Qed.
 
   (** Typeclass instances *)

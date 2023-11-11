@@ -178,6 +178,9 @@ Section mono_list_props.
     rewrite /mono_list_auth. apply cmra_update_op; [|done].
     by apply auth_update_auth_persist.
   Qed.
+  Lemma mono_list_auth_unpersist l :
+    ●ML□ l ~~>: λ k, ∃ q, k = ●ML{#q} l.
+  Proof. eapply auth_updateP_both_unpersist. Qed.
 End mono_list_props.
 
 Definition mono_listURF (F : oFunctor) : urFunctor :=
