@@ -32,6 +32,10 @@ Section steps.
   Definition steps_lb (n : nat) : iProp Σ :=
     mono_nat_lb_own heapGS_step_name n.
 
+  Lemma steps_lb_0 :
+    ⊢ |==> steps_lb 0.
+  Proof. by apply mono_nat_lb_own_0. Qed.
+
   Local Lemma steps_lb_valid n m :
     steps_auth n -∗ steps_lb m -∗ ⌜m ≤ n⌝.
   Proof.
@@ -106,20 +110,6 @@ Implicit Types efs : list expr.
 Implicit Types σ : state.
 Implicit Types v : val.
 Implicit Types l : loc.
-
-Lemma wp_lb_init s E e Φ :
-  TCEq (to_val e) None →
-  (steps_lb 0 -∗ WP e @ s; E {{ v, Φ v }}) -∗
-  WP e @ s; E {{ Φ }}.
-Proof.
-  (** TODO: We should try to use a generic lifting lemma (and avoid [wp_unfold])
-  here, since this breaks the WP abstraction. *)
-  rewrite !wp_unfold /wp_pre /=. iIntros (->) "Hwp".
-  iIntros (σ1 ns κ κs m) "(Hσ & Hκ & Hsteps)".
-  iDestruct (steps_lb_get with "Hsteps") as "#Hlb".
-  iDestruct (steps_lb_le _ 0 with "Hlb") as "Hlb0"; [lia|].
-  iSpecialize ("Hwp" with "Hlb0"). iApply ("Hwp" $! σ1 ns κ κs m). iFrame.
-Qed.
 
 Lemma wp_lb_update s n E e Φ :
   TCEq (to_val e) None →
