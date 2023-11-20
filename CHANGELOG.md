@@ -63,6 +63,11 @@ lemma.
   but if you had additional definitions or lemmas with `head` in their name,
   you will have to rename them by hand if you want to remain consistent.
 
+**Changes in `heap_lang`:**
+
+* Replace `wp_lb_init` with a more general `steps_lb_0` lemma for creating a `steps_lb`
+  without depending on WP. (by Thomas Somers)
+
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
 Note that the script is not idempotent, do not run it twice.
