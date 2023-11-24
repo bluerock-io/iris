@@ -146,11 +146,15 @@ Section upred.
     Qed.
 
     Lemma to_agree_includedI a b :
-      to_agree a ≼ to_agree b ⊢ a ≡ b.
+      to_agree a ≼ to_agree b ⊣⊢ a ≡ b.
     Proof.
-      apply bi.exist_elim=>c. rewrite internal_eq_sym.
-      rewrite agree_op_equiv_to_agreeI -agree_equivI.
-      apply internal_eq_trans.
+      apply (anti_symm _).
+      - apply bi.exist_elim=>c. rewrite internal_eq_sym.
+        rewrite agree_op_equiv_to_agreeI -agree_equivI.
+        apply internal_eq_trans.
+      - apply: (internal_eq_rewrite' _ _ (λ b, to_agree a ≼ to_agree b)%I);
+          [solve_proper|done|].
+        rewrite -internal_included_refl. apply bi.True_intro.
     Qed.
 
   End agree.

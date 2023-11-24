@@ -36,7 +36,8 @@ Local Existing Instances wsat_inG wsatGpreS_inv wsatGpreS_enabled wsatGpreS_disa
 Definition invariant_unfold {Σ} (P : iProp Σ) : later (iProp Σ) :=
   Next P.
 Definition ownI `{!wsatGS Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
-  own invariant_name (gmap_view_frag i DfracDiscarded (to_agree $ invariant_unfold P)).
+  own invariant_name
+    (gmap_view_frag i DfracDiscarded (to_agree $ invariant_unfold P)).
 Global Typeclasses Opaque ownI.
 Global Instance: Params (@invariant_unfold) 1 := {}.
 Global Instance: Params (@ownI) 3 := {}.
@@ -53,7 +54,8 @@ Global Instance: Params (@ownD) 3 := {}.
 
 Definition wsat `{!wsatGS Σ} : iProp Σ :=
   locked (∃ I : gmap positive (iProp Σ),
-    own invariant_name (gmap_view_auth (DfracOwn 1) (to_agree <$> (invariant_unfold <$> I))) ∗
+    own invariant_name
+      (gmap_view_auth (DfracOwn 1) (to_agree <$> (invariant_unfold <$> I))) ∗
     [∗ map] i ↦ Q ∈ I, ▷ Q ∗ ownD {[i]} ∨ ownE {[i]})%I.
 
 Section wsat.
