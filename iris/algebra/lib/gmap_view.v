@@ -286,6 +286,26 @@ Section lemmas.
       + rewrite pair_validN. split; first done. rewrite -Heq. done.
       + apply: Some_includedN_refl. split; done.
   Qed.
+  (** The backwards direction here does not hold: if [dq = DfracOwn 1] but
+  [v ≠ v'], we have to find a suitable erased fraction [dq'] to satisfy the view
+  relation, but there is no way to satisfy [Some (DfracOwn 1, v) ≼{n} Some (dq', v')]
+  for any [dq']. The "if and only if" version of this lemma would have to
+  involve some extra condition like [dq = DfracOwn 1 → v = v'], or phrased
+  more like the view relation itself: [∃ dq', ✓ dq' ∧ Some (v, dq) ≼{n} Some (v', dq')]. *)
+  Lemma gmap_view_both_dfrac_validN_total `{!CmraTotal V} n dp m k dq v :
+    ✓{n} (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) →
+    ✓ dp ∧ ✓ dq ∧ ∃ v', m !! k = Some v' ∧ ✓{n} v' ∧ v ≼{n} v'.
+  Proof.
+    rewrite gmap_view_both_dfrac_validN.
+    intros [Hdp (v' & dq' & Hlookup & Hvalid & Hincl)].
+    split; first done. split.
+    - eapply (cmra_valid_Some_included dq'); first by apply Hvalid.
+      eapply cmra_discrete_included_iff.
+      eapply Some_pair_includedN_l. done.
+    - exists v'. split; first done. split; first apply Hvalid.
+      move:Hincl=> /Some_pair_includedN_r /Some_includedN_total. done.
+  Qed.
+
   (** Without [CmraDiscrete], we cannot do much better than [∀ n, <same as above>].
   This is because both the [dq'] and the witness for the [≼{n}] can be different for
   each step-index. It is totally possible that at low step-indices, [v] has a frame
@@ -311,7 +331,8 @@ Section lemmas.
   [v ≠ v'], we have to find a suitable erased fraction [dq'] to satisfy the view
   relation, but there is no way to satisfy [Some (DfracOwn 1, v) ≼ Some (dq', v')]
   for any [dq']. The "if and only if" version of this lemma would have to
-  involve some extra condition like [dq = DfracOwn 1 → v = v'].  *)
+  involve some extra condition like [dq = DfracOwn 1 → v = v'], or phrased
+  more like the view relation itself: [∃ dq', ✓ dq' ∧ Some (v, dq) ≼ Some (v', dq')]. *)
   Lemma gmap_view_both_dfrac_valid_discrete_total
       `{!CmraDiscrete V, !CmraTotal V} dp m k dq v :
     ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) →

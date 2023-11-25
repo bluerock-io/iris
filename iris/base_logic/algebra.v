@@ -330,16 +330,11 @@ Section upred.
       ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) ⊢
       ⌜✓ dp ∧ ✓ dq⌝ ∧ ∃ v', ⌜m !! k = Some v'⌝ ∧ ✓ v' ∧ v ≼ v'.
     Proof.
-      rewrite gmap_view_both_validI. uPred.unseal.
-      split. intros n x Hx.
-      intros [Hdp (v' & dq' & Hlookup & Hvalid & Hincl%cmra_includedI)].
-      split; first split; first done.
-      - eapply cmra_discrete_valid_iff.
-        eapply (cmra_validN_Some_includedN _ dq'); first by apply Hvalid.
-        eapply Some_pair_includedN_l. apply Hincl.
-      - exists v'. split; first done. split; first apply Hvalid.
-        move:Hincl=> /Some_pair_includedN_r /Some_includedN_total.
-        rewrite cmra_includedI. done.
+      uPred.unseal. split. intros n x Hx.
+      intros (Hdp & Hdq & v' & Hmv' & Hv' & Hincl)%gmap_view_both_dfrac_validN_total.
+      split; first by eauto.
+      exists v'. split; first done. split; first done.
+      rewrite cmra_includedI. done.
     Qed.
 
     Lemma gmap_view_frag_op_validI k dq1 dq2 v1 v2 :
