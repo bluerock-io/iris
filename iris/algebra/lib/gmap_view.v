@@ -29,20 +29,27 @@ Section rel.
   Implicit Types (m : gmap K V) (k : K) (v : V) (n : nat).
   Implicit Types (f : gmap K (dfrac * V)).
 
-  (* This is very similar to [auth] except that we do not require a unit,
-  and the authoritative fraction is "erased": instead of [dv ≼ (DfracOwn 1, v)],
-  we just say that [dv ≼ (_, v)] for *some* valid value in place of the
-  underscore, and we move to the reflexive closure via [Some dv ≼ Some (_, v)].
-  This ensures that if [dv.1] is the full fraction, we get the right behavior:
-  there is no frame, and hence [dv.2 ≡ v]. At the same time it allows
-  [dv.1 = DfracDiscarded], which would be ruled out by hard-coding [DfracOwn 1].
+  (* If we exactly followed [auth], we'd write something like [f ≼{n} m ∧ ✓{n} m],
+  which is equivalent to:
+  [map_Forall (λ k fv, ∃ v, m !! k = Some v ∧ Some fv ≼{n} Some v ∧ ✓{n} v) f].
+  (Note the use of [Some] in the inclusion; the elementwise RA might not have a
+  unit and we want a reflexive relation!) However, [f] and [m] do not have the
+  same type, so this definition does not type-check: the fractions have been
+  erased from the authoritative [m]. So we additionally quantify over the erased
+  fraction [dq] and [(dq, v)] becomes the authoritative value.
+
+  An alternative definition one might consider is to replace the erased fraction
+  by a hard-coded [DfracOwn 1], the biggest possible fraction. That would not
+  work: we would end up with [Some dv ≼{n} Some (DfracOwn 1, v)] but that cannot
+  be satisfied if [dv.1 = DfracDiscarded], a case that we definitely want to
+  allow!
 
   It is possible that [∀ k, ∃ dq, let auth := (pair dq) <$> m !! k in ✓{n} auth
   ∧ f !! k ≼{n} auth] would also work, but now the proofs are all done already.  ;)
   The two are probably equivalent, with a proof similar to [lookup_includedN]? *)
   Local Definition gmap_view_rel_raw n m f :=
-    map_Forall (λ k dv,
-      ∃ v dq, m !! k = Some v ∧ ✓{n} (dq, v) ∧ (Some dv ≼{n} Some (dq, v))) f.
+    map_Forall (λ k fv,
+      ∃ v dq, m !! k = Some v ∧ ✓{n} (dq, v) ∧ (Some fv ≼{n} Some (dq, v))) f.
 
   Local Lemma gmap_view_rel_raw_mono n1 n2 m1 m2 f1 f2 :
     gmap_view_rel_raw n1 m1 f1 →
