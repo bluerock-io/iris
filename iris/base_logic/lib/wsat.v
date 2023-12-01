@@ -111,8 +111,8 @@ Lemma invariant_lookup (I : gmap positive (iProp Σ)) i P :
   own invariant_name (gmap_view_frag i DfracDiscarded (to_agree $ invariant_unfold P)) ⊢
   ∃ Q, ⌜I !! i = Some Q⌝ ∗ ▷ (Q ≡ P).
 Proof.
-  rewrite -own_op own_valid gmap_view_both_validI_total bi.and_elim_r.
-  iIntros "[%Q' (HQ' & Hval & Hincl)]". rewrite !lookup_fmap.
+  rewrite -own_op own_valid gmap_view_both_validI_total.
+  iIntros "[%Q' (_& _ & HQ' & Hval & Hincl)]". rewrite !lookup_fmap.
   case: (I !! i)=> [Q|] /=; last first.
   { iDestruct "HQ'" as %?. done. }
   iDestruct "HQ'" as %[= <-]. iExists Q; iSplit; first done.

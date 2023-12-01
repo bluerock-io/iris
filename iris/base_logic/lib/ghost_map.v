@@ -222,7 +222,7 @@ Section lemmas.
   Proof.
     unseal. iIntros "Hauth Hel".
     iCombine "Hauth Hel" gives
-      %(_ & _ & (av' & Hav' & _ & Hincl))%gmap_view_both_dfrac_valid_discrete_total.
+      %(av' & _ & _ & Hav' & _ & Hincl)%gmap_view_both_dfrac_valid_discrete_total.
     iPureIntro.
     apply lookup_fmap_Some in Hav' as [v' [<- Hv']].
     apply to_agree_included_L in Hincl. by rewrite Hincl.

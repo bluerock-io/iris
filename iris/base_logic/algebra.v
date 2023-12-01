@@ -15,10 +15,6 @@ Section upred.
   Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
   Notation "⊢ Q" := (bi_emp_valid (PROP:=uPredI M) Q).
 
-  Lemma cmra_includedI {A : cmra} n (a b : A) x :
-    internal_included (PROP:=uPredI M) a b n x ↔ a ≼{n} b.
-  Proof. rewrite /internal_included. uPred.unseal. done. Qed.
-
   Lemma prod_validI {A B : cmra} (x : A * B) : ✓ x ⊣⊢ ✓ x.1 ∧ ✓ x.2.
   Proof. by uPred.unseal. Qed.
   Lemma option_validI {A : cmra} (mx : option A) :
@@ -319,32 +315,30 @@ Section upred.
     Context {K : Type} `{Countable K} {V : cmra}.
     Implicit Types (m : gmap K V) (k : K) (dq : dfrac) (v : V).
 
-    Lemma gmap_view_both_validI dp m k dq v :
+    Lemma gmap_view_both_dfrac_validI dp m k dq v :
       ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) ⊣⊢
-      ⌜✓ dp⌝ ∧ ∃ v' dq', ⌜m !! k = Some v'⌝ ∧ ✓ (dq', v') ∧ Some (dq, v) ≼ Some (dq', v').
+      ∃ v' dq', ⌜✓ dp⌝ ∧ ⌜m !! k = Some v'⌝ ∧ ✓ (dq', v') ∧
+                Some (dq, v) ≼ Some (dq', v').
     Proof.
-      rewrite /gmap_view_auth /gmap_view_frag. apply: view_both_dfrac_validI.
-      intros n a. rewrite /internal_included. uPred.unseal. apply gmap_view.gmap_view_rel_lookup.
+      unfold internal_included.
+      uPred.unseal. split=> n x _. apply: gmap_view_both_dfrac_validN.
     Qed.
+    Lemma gmap_view_both_validI m dp k v :
+      ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k (DfracOwn 1) v) ⊣⊢
+      ⌜ ✓ dp ⌝ ∧ ✓ v ∧ m !! k ≡ Some v.
+    Proof. uPred.unseal. split=> n x _. apply: gmap_view_both_validN. Qed.
     Lemma gmap_view_both_validI_total `{!CmraTotal V} dp m k dq v :
       ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) ⊢
-      ⌜✓ dp ∧ ✓ dq⌝ ∧ ∃ v', ⌜m !! k = Some v'⌝ ∧ ✓ v' ∧ v ≼ v'.
+      ∃ v', ⌜✓ dp ⌝ ∧ ⌜ ✓ dq⌝ ∧ ⌜m !! k = Some v'⌝ ∧ ✓ v' ∧ v ≼ v'.
     Proof.
-      uPred.unseal. split. intros n x Hx.
-      intros (Hdp & Hdq & v' & Hmv' & Hv' & Hincl)%gmap_view_both_dfrac_validN_total.
-      split; first by eauto.
-      exists v'. split; first done. split; first done.
-      rewrite cmra_includedI. done.
+      unfold internal_included.
+      uPred.unseal. split=> n x _. apply: gmap_view_both_dfrac_validN_total.
     Qed.
 
     Lemma gmap_view_frag_op_validI k dq1 dq2 v1 v2 :
       ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ⊣⊢
       ⌜✓ (dq1 ⋅ dq2)⌝ ∧ ✓ (v1 ⋅ v2).
-    Proof.
-      rewrite /gmap_view_frag -view_frag_op. apply view_frag_validI=> n x.
-      rewrite gmap_view.gmap_view_rel_exists singleton_op singleton_validN.
-      rewrite -pair_op pair_validN. by uPred.unseal.
-    Qed.
+    Proof. uPred.unseal. split=> n x _. apply: gmap_view_frag_op_validN. Qed.
 
   End gmap_view.
 End upred.

@@ -262,11 +262,11 @@ Section lemmas.
 
   Lemma gmap_view_both_dfrac_validN n dp m k dq v :
     ✓{n} (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) ↔
-      ✓ dp ∧ ∃ v' dq', m !! k = Some v' ∧ ✓{n} (dq', v') ∧
-        Some (dq, v) ≼{n} Some (dq', v').
+      ∃ v' dq', ✓ dp ∧ m !! k = Some v' ∧ ✓{n} (dq', v') ∧
+                Some (dq, v) ≼{n} Some (dq', v').
   Proof.
     rewrite /gmap_view_auth /gmap_view_frag.
-    rewrite view_both_dfrac_validN gmap_view_rel_lookup. done.
+    rewrite view_both_dfrac_validN gmap_view_rel_lookup. naive_solver.
   Qed.
   Lemma gmap_view_both_validN n dp m k v :
     ✓{n} (gmap_view_auth dp m ⋅ gmap_view_frag k (DfracOwn 1) v) ↔
@@ -279,12 +279,11 @@ Section lemmas.
       simpl in Heq. split.
       + rewrite pair_validN in Hvalid. rewrite Heq. naive_solver.
       + by rewrite Heq.
-    - intros (Hdp & Hval & Hlookup). split; first done.
+    - intros (Hdp & Hval & Hlookup).
       apply dist_Some_inv_r' in Hlookup as [v' [Hlookup Heq]].
-      exists v', (DfracOwn 1). split; first done.
-      split.
-      + rewrite pair_validN. split; first done. rewrite -Heq. done.
-      + apply: Some_includedN_refl. split; done.
+      exists v', (DfracOwn 1). do 2 (split; [done|]). split.
+      + rewrite pair_validN. by rewrite -Heq.
+      + by apply: Some_includedN_refl.
   Qed.
   (** The backwards direction here does not hold: if [dq = DfracOwn 1] but
   [v ≠ v'], we have to find a suitable erased fraction [dq'] to satisfy the view
@@ -294,15 +293,15 @@ Section lemmas.
   more like the view relation itself: [∃ dq', ✓ dq' ∧ Some (v, dq) ≼{n} Some (v', dq')]. *)
   Lemma gmap_view_both_dfrac_validN_total `{!CmraTotal V} n dp m k dq v :
     ✓{n} (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) →
-    ✓ dp ∧ ✓ dq ∧ ∃ v', m !! k = Some v' ∧ ✓{n} v' ∧ v ≼{n} v'.
+    ∃ v', ✓ dp ∧ ✓ dq ∧ m !! k = Some v' ∧ ✓{n} v' ∧ v ≼{n} v'.
   Proof.
     rewrite gmap_view_both_dfrac_validN.
-    intros [Hdp (v' & dq' & Hlookup & Hvalid & Hincl)].
-    split; first done. split.
+    intros (v' & dq' & Hdp & Hlookup & Hvalid & Hincl).
+    exists v'. split; first done. split.
     - eapply (cmra_valid_Some_included dq'); first by apply Hvalid.
       eapply cmra_discrete_included_iff.
       eapply Some_pair_includedN_l. done.
-    - exists v'. split; first done. split; first apply Hvalid.
+    - split; first done. split; first apply Hvalid.
       move:Hincl=> /Some_pair_includedN_r /Some_includedN_total. done.
   Qed.
 
@@ -312,18 +311,18 @@ Section lemmas.
   (and [dq' > dq]) while at higher step-indices, [v] has no frame (and [dq' = dq]). *)
   Lemma gmap_view_both_dfrac_valid_discrete `{!CmraDiscrete V} dp m k dq v :
     ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) ↔
-      ✓ dp ∧ ∃ v' dq', m !! k = Some v' ∧
-                       ✓ (dq', v') ∧
-                       Some (dq, v) ≼ Some (dq', v').
+      ∃ v' dq', ✓ dp ∧ m !! k = Some v' ∧
+                ✓ (dq', v') ∧
+                Some (dq, v) ≼ Some (dq', v').
   Proof.
     rewrite cmra_valid_validN. setoid_rewrite gmap_view_both_dfrac_validN. split.
     - intros Hvalid. specialize (Hvalid 0).
-      destruct Hvalid as [Hdp (v' & dq' & Hlookup & Hvalid & Hincl)].
-      split; first done. exists v', dq'. split; first done.
+      destruct Hvalid as (v' & dq' & Hdp & Hlookup & Hvalid & Hincl).
+      exists v', dq'. do 2 (split; first done).
       split; first by apply cmra_discrete_valid.
       by apply: cmra_discrete_included_r.
-    - intros [Hdp (v' & dq' & Hlookup & Hvalid & Hincl)] n.
-      split; first done. exists v', dq'. split; first done.
+    - intros (v' & dq' & Hdp & Hlookup & Hvalid & Hincl) n.
+      exists v', dq'. do 2 (split; first done).
       split; first by apply cmra_valid_validN.
       by apply: cmra_included_includedN.
   Qed.
@@ -336,14 +335,14 @@ Section lemmas.
   Lemma gmap_view_both_dfrac_valid_discrete_total
       `{!CmraDiscrete V, !CmraTotal V} dp m k dq v :
     ✓ (gmap_view_auth dp m ⋅ gmap_view_frag k dq v) →
-    ✓ dp ∧ ✓ dq ∧ ∃ v', m !! k = Some v' ∧ ✓ v' ∧ v ≼ v'.
+    ∃ v', ✓ dp ∧ ✓ dq ∧ m !! k = Some v' ∧ ✓ v' ∧ v ≼ v'.
   Proof.
     rewrite gmap_view_both_dfrac_valid_discrete.
-    intros [Hdp (v' & dq' & Hlookup & Hvalid & Hincl)].
-    split; first done. split.
+    intros (v' & dq' & Hdp & Hlookup & Hvalid & Hincl).
+    exists v'. split; first done. split.
     - eapply (cmra_valid_Some_included dq'); first by apply Hvalid.
       eapply Some_pair_included_l. done.
-    - exists v'. split; first done. split; first apply Hvalid.
+    - split; first done. split; first apply Hvalid.
       move:Hincl=> /Some_pair_included_r /Some_included_total. done.
   Qed.
   (** On the other hand, this one holds for all CMRAs, not just discrete ones. *)
@@ -438,12 +437,14 @@ Section lemmas.
     rewrite -delete_difference. done.
   Qed.
 
-  (** This cannot use [local_update] since we also want to expose the role of
-  the fractions. *)
+  (** We do not use [local_update] ([~l~>]) in the premise because we also want
+  to expose the role of the fractions. *)
   Lemma gmap_view_update m k dq v mv' v' dq' :
     (∀ n mv f,
-     m !! k = Some mv → ✓{n} ((dq, v) ⋅? f) → mv ≡{n}≡ v ⋅? (snd <$> f) →
-     ✓{n} ((dq', v') ⋅? f) ∧ mv' ≡{n}≡ v' ⋅? (snd <$> f)) →
+      m !! k = Some mv →
+      ✓{n} ((dq, v) ⋅? f) →
+      mv ≡{n}≡ v ⋅? (snd <$> f) →
+      ✓{n} ((dq', v') ⋅? f) ∧ mv' ≡{n}≡ v' ⋅? (snd <$> f)) →
     gmap_view_auth (DfracOwn 1) m ⋅ gmap_view_frag k dq v ~~>
       gmap_view_auth (DfracOwn 1) (<[k := mv']> m) ⋅ gmap_view_frag k dq' v'.
   Proof.
