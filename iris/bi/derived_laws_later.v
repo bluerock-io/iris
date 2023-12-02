@@ -337,6 +337,21 @@ Proof. rewrite /bi_except_0; apply _. Qed.
 Global Instance Timeless_proper : Proper ((≡) ==> iff) (@Timeless PROP).
 Proof. solve_proper. Qed.
 
+(* To prove a timeless proposition Q, we can additionally assume
+   that we are at step-index 0 (hypothesis ▷ False).
+   In fact, this can also serve as a definition of timelessness. *)
+Lemma timeless_alt `{!BiLöb PROP} Q :
+  Timeless Q ↔ ∀ P, (▷ False ∧ P ⊢ Q) → (P ⊢ Q).
+Proof.
+  split; rewrite /Timeless => H.
+  * intros P Hpr.
+    rewrite -(löb Q). apply impl_intro_l.
+    rewrite H /bi_except_0 and_or_r. apply or_elim; auto.
+  * rewrite later_false_em.
+    apply or_mono; first done.
+    apply H, impl_elim_r.
+Qed.
+
 Global Instance pure_timeless φ : Timeless (PROP:=PROP) ⌜φ⌝.
 Proof.
   rewrite /Timeless /bi_except_0 pure_alt later_exist_false.
@@ -352,11 +367,8 @@ Proof. intros; rewrite /Timeless except_0_or later_or; auto. Qed.
 
 Global Instance impl_timeless `{!BiLöb PROP} P Q : Timeless Q → Timeless (P → Q).
 Proof.
-  rewrite /Timeless=> HQ. rewrite later_false_em.
-  apply or_mono, impl_intro_l; first done.
-  rewrite -{2}(löb Q). apply impl_intro_l.
-  rewrite HQ /bi_except_0 !and_or_r. apply or_elim; last auto.
-  by rewrite assoc (comm _ _ P) -assoc !impl_elim_r.
+  rewrite !timeless_alt=> HQ R HR. apply impl_intro_l, HQ.
+  rewrite assoc -(comm _ P) -assoc. by apply impl_elim_r'.
 Qed.
 Global Instance sep_timeless P Q: Timeless P → Timeless Q → Timeless (P ∗ Q).
 Proof.
@@ -365,11 +377,9 @@ Qed.
 
 Global Instance wand_timeless `{!BiLöb PROP} P Q : Timeless Q → Timeless (P -∗ Q).
 Proof.
-  rewrite /Timeless=> HQ. rewrite later_false_em.
-  apply or_mono, wand_intro_l; first done.
-  rewrite -{2}(löb Q); apply impl_intro_l.
-  rewrite HQ /bi_except_0 !and_or_r. apply or_elim; last auto.
-  by rewrite (comm _ P) persistent_and_sep_assoc impl_elim_r wand_elim_l.
+  rewrite !timeless_alt=> HQ R HR. apply wand_intro_l, HQ.
+  rewrite persistent_and_affinely_sep_l assoc -(comm _ P) -assoc.
+  rewrite -persistent_and_affinely_sep_l. by apply wand_elim_r'.
 Qed.
 Global Instance forall_timeless {A} (Ψ : A → PROP) :
   (∀ x, Timeless (Ψ x)) → Timeless (∀ x, Ψ x).
