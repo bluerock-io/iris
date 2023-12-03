@@ -337,11 +337,13 @@ Proof. rewrite /bi_except_0; apply _. Qed.
 Global Instance Timeless_proper : Proper ((≡) ==> iff) (@Timeless PROP).
 Proof. solve_proper. Qed.
 
-(* To prove a timeless proposition Q, we can additionally assume
-   that we are at step-index 0 (hypothesis ▷ False).
-   In fact, this can also serve as a definition of timelessness. *)
+(* The left-to-right direction of this lemma shows that to prove a timeless
+   proposition [Q], we can additionally assume that we are at step-index 0, i.e.
+   we can add [▷ False] to our assumptions. The right-to-left direction shows
+   that this is in fact an exact characterization of timeless propositions.
+   See also the comment above the definition of [Timeless]. *)
 Lemma timeless_alt `{!BiLöb PROP} Q :
-  Timeless Q ↔ ∀ P, (▷ False ∧ P ⊢ Q) → (P ⊢ Q).
+  Timeless Q ↔ (∀ P, (▷ False ∧ P ⊢ Q) → (P ⊢ Q)).
 Proof.
   split; rewrite /Timeless => H.
   * intros P Hpr.

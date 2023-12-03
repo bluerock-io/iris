@@ -93,6 +93,21 @@ Notation "◇ P" := (bi_except_0 P) : bi_scope.
 Global Instance: Params (@bi_except_0) 1 := {}.
 Global Typeclasses Opaque bi_except_0.
 
+(* Timeless propositions are propositions that do not depend on the step-index.
+   There are two equivalent ways of expressing that a step-indexed proposition
+   [P : nat → Prop] is timeless:
+   * Option one, used here, says that [∀ n, P n → P (S n)]. In the logic, this
+     is stated as [▷ P ⊢ ◇ P] (which actually reads [∀ n > 0, P (n-1) → P n],
+     but this is trivially equivalent).
+   * Option two says that [∀ n, P 0 → P n]. In the logic, this is stated as a
+     meta-entailment [∀ P, (▷ False ∧ P ⊢ Q) → (P ⊢ Q)]. The assumption
+     [▷ False] expresses that the step-index is 0.
+
+   Both formulations are equivalent. In the logic, this can be shown using Löb
+   induction and [later_false_em]. In the model, this follows from regular
+   natural induction.
+   The law [timeless_alt] in [derived_laws_later.v] provides option two, by
+   proving that both versions are equivalent in the logic.  *)
 Class Timeless {PROP : bi} (P : PROP) := timeless : ▷ P ⊢ ◇ P.
 Global Arguments Timeless {_} _%I : simpl never.
 Global Arguments timeless {_} _%I {_}.
