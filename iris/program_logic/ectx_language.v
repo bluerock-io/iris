@@ -29,23 +29,23 @@ Section ectx_language_mixin.
     mixin_fill_inj K : Inj (=) (=) (fill K);
     mixin_fill_val K e : is_Some (to_val (fill K e)) → is_Some (to_val e);
 
-    (** Given a head redex [e1_redex] somewhere in a term, and another
+    (** Given a base redex [e1_redex] somewhere in a term, and another
         decomposition of the same term into [fill K' e1'] such that [e1'] is not
-        a value, then the head redex context is [e1']'s context [K'] filled with
+        a value, then the base redex context is [e1']'s context [K'] filled with
         another context [K''].  In particular, this implies [e1 = fill K''
-        e1_redex] by [fill_inj], i.e., [e1]' contains the head redex.)
+        e1_redex] by [fill_inj], i.e., [e1]' contains the base redex.)
 
-        This implies there can be only one head redex, see
-        [head_redex_unique]. *)
+        This implies there can be only one base redex, see
+        [base_redex_unique]. *)
     mixin_step_by_val K' K_redex e1' e1_redex σ1 κ e2 σ2 efs :
       fill K' e1' = fill K_redex e1_redex →
       to_val e1' = None →
       base_step e1_redex σ1 κ e2 σ2 efs →
       ∃ K'', K_redex = comp_ectx K' K'';
 
-    (** If [fill K e] takes a head step, then either [e] is a value or [K] is
+    (** If [fill K e] takes a base step, then either [e] is a value or [K] is
         the empty evaluation context. In other words, if [e] is not a value
-        wrapping it in a context does not add new head redex positions. *)
+        wrapping it in a context does not add new base redex positions. *)
     mixin_base_ctx_step_val K e σ1 κ e2 σ2 efs :
       base_step (fill K e) σ1 κ e2 σ2 efs → is_Some (to_val e) ∨ K = empty_ectx;
   }.
@@ -143,7 +143,7 @@ Section ectx_language.
 
   Canonical Structure ectx_lang : language := Language ectx_lang_mixin.
 
-  Definition head_atomic (a : atomicity) (e : expr Λ) : Prop :=
+  Definition base_atomic (a : atomicity) (e : expr Λ) : Prop :=
     ∀ σ κ e' σ' efs,
       base_step e σ κ e' σ' efs →
       if a is WeaklyAtomic then irreducible e' σ' else is_Some (to_val e').
@@ -158,12 +158,12 @@ Section ectx_language.
   Lemma not_base_reducible e σ : ¬base_reducible e σ ↔ base_irreducible e σ.
   Proof. unfold base_reducible, base_irreducible. naive_solver. Qed.
 
-  (** The decomposition into head redex and context is unique.
+  (** The decomposition into base redex and context is unique.
 
       In all sensible instances, [comp_ectx K' empty_ectx] will be the same as
       [K'], so the conclusion is [K = K' ∧ e = e'], but we do not require a law
       to actually prove that so we cannot use that fact here. *)
-  Lemma head_redex_unique K K' e e' σ :
+  Lemma base_redex_unique K K' e e' σ :
     fill K e = fill K' e' →
     base_reducible e σ →
     base_reducible e' σ →
@@ -237,7 +237,7 @@ Section ectx_language.
   Qed.
 
   Lemma ectx_language_atomic a e :
-    head_atomic a e → sub_redexes_are_values e → Atomic a e.
+    base_atomic a e → sub_redexes_are_values e → Atomic a e.
   Proof.
     intros Hatomic_step Hatomic_fill σ κ e' σ' efs [K e1' e2' -> -> Hstep].
     assert (K = empty_ectx) as -> by eauto 10 using val_base_stuck.
@@ -321,8 +321,8 @@ work.
 Note that this trick no longer works when we switch to canonical projections
 because then the pattern match [let '...] will be desugared into projections. *)
 Definition LanguageOfEctx (Λ : ectxLanguage) : language :=
-  let '@EctxLanguage E V C St K of_val to_val empty comp fill head mix := Λ in
+  let '@EctxLanguage E V C St K of_val to_val empty comp fill base mix := Λ in
   @Language E V St K of_val to_val _
-    (@ectx_lang_mixin (@EctxLanguage E V C St K of_val to_val empty comp fill head mix)).
+    (@ectx_lang_mixin (@EctxLanguage E V C St K of_val to_val empty comp fill base mix)).
 
 Global Arguments LanguageOfEctx : simpl never.
