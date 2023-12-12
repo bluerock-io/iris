@@ -96,11 +96,11 @@ on the math symbol list, and with some custom aliases for symbols used a lot in 
 (mapc (lambda (x)
         (if (cddr x)
             (quail-defrule (cadr x) (car (cddr x)))))
-      (append math-symbol-list-basic math-symbol-list-extended))
+      ; need to reverse since different emacs packages disagree on whether
+      ; the first or last entry should take priority...
+      ; see <https://mattermost.mpi-sws.org/iris/pl/46onxnb3tb8ndg8b6h1z1f7tny> for discussion
+      (reverse (append math-symbol-list-basic math-symbol-list-extended)))
 ```
-
-Finally, set your default input method with `M-x customize-set-value`, setting
-`default-input-method` to `math`.
 
 ### Font Configuration
 
