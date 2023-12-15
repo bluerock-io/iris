@@ -224,6 +224,8 @@ Proof.
   split; last by intros ->.
   intros. by apply (inj to_agree), agree_valid_included.
 Qed.
+Lemma to_agree_included_L `{!LeibnizEquiv A}  a b : to_agree a ≼ to_agree b ↔ a = b.
+Proof. unfold_leibniz. apply to_agree_included. Qed.
 
 Global Instance agree_cancelable x : Cancelable x.
 Proof.

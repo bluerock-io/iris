@@ -31,6 +31,16 @@ lemma.
   `gmap_view_frag k DfracDiscarded v ~~>: λ a, ∃ q, a = gmap_view_frag k (DfracOwn q) v`
   will allow recovering a fractional points-to from a discarded one. (by Johannes
   Hostert)
+* Generalize `gmap_viewUR K A` from `A : ofe` to `A : cmra`. Previously, the
+  "agreement" camera was part of the definition, now the user can pick an
+  arbitrary camera. All lemmas that exposed agreement properties have
+  been generalized to expose general camera validity/composition.
+  For porting:
+  + Replace `gmap_viewR K V` by `gmap_viewR K (agreeR V)`.
+  + Definitions and proofs on top of this will need to be manually adjusted.
+  + Replace `gmap_view_update` by `gmap_view_replace`.
+  + Proofs using `gmap_view_both_dfrac_valid_L` should instead use
+    `gmap_view_both_dfrac_valid_discrete_total` followed by `to_agree_included_L`.
 
 **Changes in `proofmode`:**
 

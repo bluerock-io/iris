@@ -109,6 +109,11 @@ Section internal_eq_derived.
 
   Lemma internal_eq_sym {A : ofe} (a b : A) : a ≡ b ⊢ b ≡ a.
   Proof. apply (internal_eq_rewrite' a b (λ b, b ≡ a)%I); auto. Qed.
+  Lemma internal_eq_trans {A : ofe} (a b c : A) : a ≡ b ∧ b ≡ c ⊢ a ≡ c.
+  Proof.
+    apply (internal_eq_rewrite' b a (λ b, b ≡ c)%I); auto.
+    rewrite and_elim_l. apply internal_eq_sym.
+  Qed.
   Lemma internal_eq_iff P Q : P ≡ Q ⊢ P ↔ Q.
   Proof. apply (internal_eq_rewrite' P Q (λ Q, P ↔ Q))%I; auto using iff_refl. Qed.
 

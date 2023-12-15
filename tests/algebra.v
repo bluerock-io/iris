@@ -67,7 +67,7 @@ End test_prod.
 (** Make sure the [auth]/[gmap_view] notation does not mix up its arguments. *)
 Definition auth_check {A : ucmra} :
   auth A = authO A := eq_refl.
-Definition gmap_view_check {K : Type} `{Countable K} {V : ofe} :
+Definition gmap_view_check {K : Type} `{Countable K} {V : cmra} :
   gmap_view K V = gmap_viewO K V := eq_refl.
 
 Lemma uncurry_ne_test {A B C : ofe} (f : A → B → C) :
