@@ -171,7 +171,7 @@ Section gen_heap.
   Proof. rewrite pointsto_unseal. apply ghost_map_elem_combine. Qed.
 
   Global Instance pointsto_combine_as l dq1 dq2 v1 v2 :
-    CombineSepAs (l ↦{dq1} v1) (l ↦{dq2} v2) (l ↦{dq1 ⋅ dq2} v1) | 60. 
+    CombineSepAs (l ↦{dq1} v1) (l ↦{dq2} v2) (l ↦{dq1 ⋅ dq2} v1) | 60.
     (* higher cost than the Fractional instance, which kicks in for #qs *)
   Proof.
     rewrite /CombineSepAs. iIntros "[H1 H2]".
