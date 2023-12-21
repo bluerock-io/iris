@@ -222,6 +222,12 @@ Section bi_mixin.
     bi_mixin_later_persistently_1 P : ▷ <pers> P ⊢ <pers> ▷ P;
     bi_mixin_later_persistently_2 P : <pers> ▷ P ⊢ ▷ <pers> P;
 
+    (* In a step-index model, this law allows case distinctions on whether
+       the step-index is 0 (expressed as [▷ False] in the logic):
+       * If it is 0, the left side is true, and we know nothing about [P].
+       * If not, then it is [S n] for some [n], and [P] holds at [n]. By down-
+         closure, it also holds at [0]. Thus, we get to use [P], but only if
+         the step-index is 0 ([▷ False] is true). *)
     bi_mixin_later_false_em P : ▷ P ⊢ ▷ False ∨ (▷ False → P);
   }.
 
