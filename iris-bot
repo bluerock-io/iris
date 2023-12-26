@@ -84,6 +84,8 @@ def build(args):
         var = project.upper()
         vars[var+"_REPO"] = repo
         vars[var+"_REV"] = rev
+    if args.coq:
+        vars["NIGHTLY_COQ"] = args.coq
     # Loop over all projects, and trigger build.
     for (name, project) in PROJECTS.items():
         if args.filter in name:
@@ -170,6 +172,7 @@ if __name__ == "__main__":
 
     parser_build = subparsers.add_parser('build', help='Build many reverse dependencies against an Iris branch')
     parser_build.set_defaults(func=build)
+    parser_build.add_argument('--coq', help='the (opam) Coq version to use for these tests')
     parser_build.add_argument('filter', nargs='?', default='', help='(optional) restrict build to projects matching the filter')
 
     parser_time = subparsers.add_parser('time', help='Time one reverse dependency against an Iris branch')
