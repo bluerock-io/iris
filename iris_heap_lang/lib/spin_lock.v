@@ -34,7 +34,7 @@ Section proof.
   Local Definition locked (γ : gname) : iProp Σ := token γ.
 
   Local Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
-  Proof. iIntros "H1 H2". by iDestruct (token_exclusive with "H1 H2") as %?. Qed.
+  Proof. iIntros "H1 H2". by iCombine "H1 H2" gives %?. Qed.
 
   (** The main proofs. *)
   Local Lemma is_lock_iff γ lk R1 R2 :

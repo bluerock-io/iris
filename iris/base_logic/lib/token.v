@@ -49,6 +49,12 @@ Section lemmas.
     unseal. iIntros "Htok1 Htok2".
     iCombine "Htok1 Htok2" gives %[].
   Qed.
+  Global Instance token_combine_gives γ :
+    CombineSepGives (token γ) (token γ) ⌜False⌝.
+  Proof.
+    rewrite /CombineSepGives. iIntros "[H1 H2]".
+    iDestruct (token_exclusive with "H1 H2") as %[].
+  Qed.
 
 End lemmas.
 
