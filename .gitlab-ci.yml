@@ -45,10 +45,10 @@ variables:
 ## Build jobs
 
 # The newest version runs with timing.
-build-coq.8.18.0:
+build-coq.8.19.0:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.18.0"
+    OPAM_PINS: "coq version 8.19.0"
     DENY_WARNINGS: "1"
     MANGLE_NAMES: "1"
     OPAM_PKG: "1"
@@ -59,9 +59,16 @@ build-coq.8.18.0:
   interruptible: false
 
 # The newest version also runs in MRs, without timing.
-build-coq.8.18.0-mr:
+build-coq.8.19.0-mr:
   <<: *template
   <<: *only_mr
+  variables:
+    OPAM_PINS: "coq version 8.19.0"
+    DENY_WARNINGS: "1"
+    MANGLE_NAMES: "1"
+
+build-coq.8.18.0:
+  <<: *template
   variables:
     OPAM_PINS: "coq version 8.18.0"
     DENY_WARNINGS: "1"
