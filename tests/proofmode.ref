@@ -313,7 +313,7 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   P1, P2, P3 : PROP
   ============================
   --------------------------------------∗
-  ▷ (∃ _ : nat, emp)
+  ▷ ∃ _ : nat, emp
 "test_iFrame_or_2"
      : string
 1 goal
@@ -322,7 +322,7 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   P1, P2, P3 : PROP
   ============================
   --------------------------------------∗
-  ▷ (∃ x : nat, emp ∧ ⌜x = 0⌝ ∨ emp)
+  ▷ ∃ x : nat, emp ∧ ⌜x = 0⌝ ∨ emp
 "test_iFrame_or_3"
      : string
 1 goal
@@ -331,7 +331,7 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   P1, P2, P3 : PROP
   ============================
   --------------------------------------∗
-  ▷ (∃ x : nat, ⌜x = 0⌝)
+  ▷ ∃ x : nat, ⌜x = 0⌝
 "test_iFrame_or_affine_1"
      : string
 1 goal
@@ -341,7 +341,7 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   P1, P2, P3 : PROP
   ============================
   --------------------------------------∗
-  ▷ (∃ _ : nat, True)
+  ▷ ∃ _ : nat, True
 "test_iFrame_or_affine_2"
      : string
 1 goal
@@ -351,7 +351,7 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   P1, P2, P3 : PROP
   ============================
   --------------------------------------∗
-  ▷ (∃ _ : nat, True)
+  ▷ ∃ _ : nat, True
 "test_iCombine_nested_no_gives"
      : string
 The command has indeed failed with message:
