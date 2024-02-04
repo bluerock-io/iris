@@ -14,8 +14,7 @@
   _ : own γ (Pending (1 / 2))
   --------------------------------------∗
   one_shot_inv γ l ∗
-  (⌜InjLV #() = InjLV #()⌝
-   ∨ (∃ n : Z, ⌜InjLV #() = InjRV #n⌝ ∗ own γ (Shot n)))
+  (⌜InjLV #() = InjLV #()⌝ ∨ ∃ n : Z, ⌜InjLV #() = InjRV #n⌝ ∗ own γ (Shot n))
 1 goal
   
   Σ : gFunctors
