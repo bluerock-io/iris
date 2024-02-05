@@ -67,26 +67,12 @@ build-coq.8.19.0-mr:
     DENY_WARNINGS: "1"
     MANGLE_NAMES: "1"
 
-build-coq.8.18.0:
-  <<: *template
-  variables:
-    OPAM_PINS: "coq version 8.18.0"
-    DENY_WARNINGS: "1"
-    MANGLE_NAMES: "1"
-
-build-coq.8.17.1:
-  <<: *template
-  variables:
-    OPAM_PINS: "coq version 8.17.1"
-    DENY_WARNINGS: "1"
-    MANGLE_NAMES: "1"
-
 # The oldest version runs in MRs, without name mangling.
-build-coq.8.16.1:
+build-coq.8.18.0:
   <<: *template
   <<: *branches_and_mr
   variables:
-    OPAM_PINS: "coq version 8.16.1"
+    OPAM_PINS: "coq version 8.18.0"
     DENY_WARNINGS: "1"
 
 trigger-stdpp.dev:
