@@ -92,14 +92,14 @@ Record BiFUpdMixin (PROP : bi) `(FUpd PROP) := {
 }.
 
 Class BiBUpd (PROP : bi) := {
-  bi_bupd_bupd :> BUpd PROP;
+  #[global] bi_bupd_bupd :: BUpd PROP;
   bi_bupd_mixin : BiBUpdMixin PROP bi_bupd_bupd;
 }.
 Global Hint Mode BiBUpd ! : typeclass_instances.
 Global Arguments bi_bupd_bupd : simpl never.
 
 Class BiFUpd (PROP : bi) := {
-  bi_fupd_fupd :> FUpd PROP;
+  #[global] bi_fupd_fupd :: FUpd PROP;
   bi_fupd_mixin : BiFUpdMixin PROP bi_fupd_fupd;
 }.
 Global Hint Mode BiFUpd ! : typeclass_instances.

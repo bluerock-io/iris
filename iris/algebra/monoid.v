@@ -46,7 +46,7 @@ Class WeakMonoidHomomorphism {M1 M2 : ofe}
 Class MonoidHomomorphism {M1 M2 : ofe}
     (o1 : M1 → M1 → M1) (o2 : M2 → M2 → M2) `{!Monoid o1, !Monoid o2}
     (R : relation M2) (f : M1 → M2) := {
-  monoid_homomorphism_weak :> WeakMonoidHomomorphism o1 o2 R f;
+  #[global] monoid_homomorphism_weak :: WeakMonoidHomomorphism o1 o2 R f;
   monoid_homomorphism_unit : R (f monoid_unit) monoid_unit
 }.
 

@@ -35,7 +35,7 @@ Definition ownPΣ (Λ : language) : gFunctors :=
     GFunctor (excl_authR (stateO Λ))].
 
 Class ownPGpreS (Λ : language) (Σ : gFunctors) : Set := {
-  ownPPre_invG :> invGpreS Σ;
+  #[global] ownPPre_invG :: invGpreS Σ;
   ownPPre_state_inG : inG Σ (excl_authR (stateO Λ))
 }.
 Local Existing Instance ownPPre_state_inG.

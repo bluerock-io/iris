@@ -32,11 +32,11 @@ Class lock := Lock {
   is_lock `{!heapGS_gen hlc Σ} {L : lockG Σ} (γ: lock_name) (lock: val) (R: iProp Σ) : iProp Σ;
   locked `{!heapGS_gen hlc Σ} {L : lockG Σ} (γ: lock_name) : iProp Σ;
   (** * General properties of the predicates *)
-  is_lock_persistent `{!heapGS_gen hlc Σ} {L : lockG Σ} γ lk R :>
+  #[global] is_lock_persistent `{!heapGS_gen hlc Σ} {L : lockG Σ} γ lk R ::
     Persistent (is_lock (L:=L) γ lk R);
   is_lock_iff `{!heapGS_gen hlc Σ} {L : lockG Σ} γ lk R1 R2 :
     is_lock (L:=L) γ lk R1 -∗ ▷ □ (R1 ∗-∗ R2) -∗ is_lock (L:=L) γ lk R2;
-  locked_timeless `{!heapGS_gen hlc Σ} {L : lockG Σ} γ :>
+  #[global] locked_timeless `{!heapGS_gen hlc Σ} {L : lockG Σ} γ ::
     Timeless (locked (L:=L) γ);
   locked_exclusive `{!heapGS_gen hlc Σ} {L : lockG Σ} γ :
     locked (L:=L) γ -∗ locked (L:=L) γ -∗ False;

@@ -6,11 +6,11 @@ From iris.heap_lang Require Import proofmode notation.
 From iris.prelude Require Import options.
 
 Class heapGpreS Σ := HeapGpreS {
-  heapGpreS_iris :> invGpreS Σ;
-  heapGpreS_heap :> gen_heapGpreS loc (option val) Σ;
-  heapGpreS_inv_heap :> inv_heapGpreS loc (option val) Σ;
-  heapGpreS_proph :> proph_mapGpreS proph_id (val * val) Σ;
-  heapGS_step_cnt :> mono_natG Σ;
+  #[global] heapGpreS_iris :: invGpreS Σ;
+  #[global] heapGpreS_heap :: gen_heapGpreS loc (option val) Σ;
+  #[global] heapGpreS_inv_heap :: inv_heapGpreS loc (option val) Σ;
+  #[global] heapGpreS_proph :: proph_mapGpreS proph_id (val * val) Σ;
+  #[global] heapGS_step_cnt :: mono_natG Σ;
 }.
 
 Definition heapΣ : gFunctors :=

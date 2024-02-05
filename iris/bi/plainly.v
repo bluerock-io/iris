@@ -44,7 +44,7 @@ Record BiPlainlyMixin (PROP : bi) `(Plainly PROP) := {
 }.
 
 Class BiPlainly (PROP : bi) := {
-  bi_plainly_plainly :> Plainly PROP;
+  #[global] bi_plainly_plainly :: Plainly PROP;
   bi_plainly_mixin : BiPlainlyMixin PROP bi_plainly_plainly;
 }.
 Global Hint Mode BiPlainly ! : typeclass_instances.

@@ -38,13 +38,13 @@ Class atomic_heap := AtomicHeap {
   (* -- predicates -- *)
   pointsto `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} (l : loc) (dq: dfrac) (v : val) : iProp Σ;
   (* -- pointsto properties -- *)
-  pointsto_timeless `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v :>
+  #[global] pointsto_timeless `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v ::
     Timeless (pointsto (H:=H) l q v);
-  pointsto_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v :>
+  #[global] pointsto_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v ::
     Fractional (λ (q : Qp), pointsto (H:=H) l (DfracOwn q) v);
-  pointsto_persistent `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v :>
+  #[global] pointsto_persistent `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l v ::
     Persistent (pointsto (H:=H) l DfracDiscarded v);
-  pointsto_as_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v :>
+  #[global] pointsto_as_fractional `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l q v ::
     AsFractional (pointsto (H:=H) l (DfracOwn q) v) (λ q, pointsto (H:=H) l (DfracOwn q) v) q;
   pointsto_agree `{!heapGS_gen hlc Σ} {H : atomic_heapGS Σ} l dq1 dq2 v1 v2 :
     pointsto (H:=H) l dq1 v1 -∗ pointsto (H:=H) l dq2 v2 -∗ ⌜v1 = v2⌝;

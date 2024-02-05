@@ -272,14 +272,14 @@ End ucmra_mixin.
 #[projections(primitive=no)] (* FIXME: making this primitive means we cannot use
 the projections with eauto any more (see https://github.com/coq/coq/issues/17561) *)
 Class CmraDiscrete (A : cmra) := {
-  cmra_discrete_ofe_discrete :> OfeDiscrete A;
+  #[global] cmra_discrete_ofe_discrete :: OfeDiscrete A;
   cmra_discrete_valid (x : A) : ✓{0} x → ✓ x
 }.
 Global Hint Mode CmraDiscrete ! : typeclass_instances.
 
 (** * Morphisms *)
 Class CmraMorphism {A B : cmra} (f : A → B) := {
-  cmra_morphism_ne :> NonExpansive f;
+  #[global] cmra_morphism_ne :: NonExpansive f;
   cmra_morphism_validN n x : ✓{n} x → ✓{n} f x;
   cmra_morphism_pcore x : f <$> pcore x ≡ pcore (f x);
   cmra_morphism_op x y : f (x ⋅ y) ≡ f x ⋅ f y
@@ -848,7 +848,7 @@ Delimit Scope rFunctor_scope with RF.
 Bind Scope rFunctor_scope with rFunctor.
 
 Class rFunctorContractive (F : rFunctor) :=
-  rFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
+  #[global] rFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} ::
     Contractive (@rFunctor_map F A1 _ A2 _ B1 _ B2 _).
 Global Hint Mode rFunctorContractive ! : typeclass_instances.
 
@@ -942,7 +942,7 @@ Delimit Scope urFunctor_scope with URF.
 Bind Scope urFunctor_scope with urFunctor.
 
 Class urFunctorContractive (F : urFunctor) :=
-  urFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
+  #[global] urFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} ::
     Contractive (@urFunctor_map F A1 _ A2 _ B1 _ B2 _).
 Global Hint Mode urFunctorContractive ! : typeclass_instances.
 
