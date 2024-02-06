@@ -13,9 +13,9 @@ From iris.prelude Require Import options.
 
 Class heapGS_gen hlc Σ := HeapGS {
   heapGS_invGS : invGS_gen hlc Σ;
-  heapGS_gen_heapGS :> gen_heapGS loc (option val) Σ;
-  heapGS_inv_heapGS :> inv_heapGS loc (option val) Σ;
-  heapGS_proph_mapGS :> proph_mapGS proph_id (val * val) Σ;
+  #[global] heapGS_gen_heapGS :: gen_heapGS loc (option val) Σ;
+  #[global] heapGS_inv_heapGS :: inv_heapGS loc (option val) Σ;
+  #[global] heapGS_proph_mapGS :: proph_mapGS proph_id (val * val) Σ;
   heapGS_step_name : gname;
   heapGS_step_cnt : mono_natG Σ;
 }.

@@ -37,13 +37,13 @@ Class rwlock := RwLock {
   reader_locked `{!heapGS_gen hlc Σ} {L : rwlockG Σ} (γ : lock_name) (q : Qp) : iProp Σ;
   writer_locked `{!heapGS_gen hlc Σ} {L : rwlockG Σ} (γ : lock_name) : iProp Σ;
   (** * General properties of the predicates *)
-  is_rw_lock_persistent `{!heapGS_gen hlc Σ} {L : rwlockG Σ} γ lk Φ :>
+  #[global] is_rw_lock_persistent `{!heapGS_gen hlc Σ} {L : rwlockG Σ} γ lk Φ ::
     Persistent (is_rw_lock (L:=L) γ lk Φ);
   is_rw_lock_iff `{!heapGS_gen hlc Σ} {L : rwlockG Σ} γ lk Φ Ψ :
     is_rw_lock (L:=L) γ lk Φ -∗ ▷ □ (∀ q, Φ q ∗-∗ Ψ q) -∗ is_rw_lock (L:=L) γ lk Ψ;
-  reader_locked_timeless `{!heapGS_gen hlc Σ} {L : rwlockG Σ} γ q :>
+  #[global] reader_locked_timeless `{!heapGS_gen hlc Σ} {L : rwlockG Σ} γ q ::
     Timeless (reader_locked (L:=L) γ q);
-  writer_locked_timeless `{!heapGS_gen hlc Σ} {L : rwlockG Σ} γ :>
+  #[global] writer_locked_timeless `{!heapGS_gen hlc Σ} {L : rwlockG Σ} γ ::
     Timeless (writer_locked (L:=L) γ);
   writer_locked_exclusive `{!heapGS_gen hlc Σ} {L : rwlockG Σ} γ :
     writer_locked (L:=L) γ -∗ writer_locked (L:=L) γ -∗ False;

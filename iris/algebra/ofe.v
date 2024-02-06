@@ -130,7 +130,7 @@ Global Arguments discrete_0 {_} _ {_} _ _.
 Global Hint Mode Discrete + ! : typeclass_instances.
 Global Instance: Params (@Discrete) 1 := {}.
 
-Class OfeDiscrete (A : ofe) := ofe_discrete_discrete (x : A) :> Discrete x.
+Class OfeDiscrete (A : ofe) := #[global] ofe_discrete_discrete (x : A) :: Discrete x.
 Global Hint Mode OfeDiscrete ! : typeclass_instances.
 
 (** OFEs with a completion *)
@@ -939,7 +939,7 @@ Delimit Scope oFunctor_scope with OF.
 Bind Scope oFunctor_scope with oFunctor.
 
 Class oFunctorContractive (F : oFunctor) :=
-  oFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
+  #[global] oFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} ::
     Contractive (@oFunctor_map F A1 _ A2 _ B1 _ B2 _).
 Global Hint Mode oFunctorContractive ! : typeclass_instances.
 

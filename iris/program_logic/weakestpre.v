@@ -8,7 +8,7 @@ From iris.prelude Require Import options.
 Import uPred.
 
 Class irisGS_gen (hlc : has_lc) (Λ : language) (Σ : gFunctors) := IrisG {
-  iris_invGS :> invGS_gen hlc Σ;
+  #[global] iris_invGS :: invGS_gen hlc Σ;
 
   (** The state interpretation is an invariant that should hold in
   between each step of reduction. Here [Λstate] is the global state,

@@ -45,7 +45,7 @@ Record BiInternalEqMixin (PROP : bi) `(!InternalEq PROP) := {
 }.
 
 Class BiInternalEq (PROP : bi) := {
-  bi_internal_eq_internal_eq :> InternalEq PROP;
+  #[global] bi_internal_eq_internal_eq :: InternalEq PROP;
   bi_internal_eq_mixin : BiInternalEqMixin PROP bi_internal_eq_internal_eq;
 }.
 Global Hint Mode BiInternalEq ! : typeclass_instances.

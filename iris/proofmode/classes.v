@@ -17,13 +17,13 @@ Global Arguments from_assumption {_} _ _%I _%I {_}.
 Global Hint Mode FromAssumption + + - - : typeclass_instances.
 
 Class KnownLFromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
-  knownl_from_assumption :> FromAssumption p P Q.
+  #[global] knownl_from_assumption :: FromAssumption p P Q.
 Global Arguments KnownLFromAssumption {_} _ _%I _%I : simpl never.
 Global Arguments knownl_from_assumption {_} _ _%I _%I {_}.
 Global Hint Mode KnownLFromAssumption + + ! - : typeclass_instances.
 
 Class KnownRFromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
-  knownr_from_assumption :> FromAssumption p P Q.
+  #[global] knownr_from_assumption :: FromAssumption p P Q.
 Global Arguments KnownRFromAssumption {_} _ _%I _%I : simpl never.
 Global Arguments knownr_from_assumption {_} _ _%I _%I {_}.
 Global Hint Mode KnownRFromAssumption + + - ! : typeclass_instances.
@@ -444,7 +444,7 @@ Global Arguments maybe_into_laterN {_} _ _%nat_scope _%I _%I {_}.
 Global Hint Mode MaybeIntoLaterN + + + - - : typeclass_instances.
 
 Class IntoLaterN {PROP : bi} (only_head : bool) (n : nat) (P Q : PROP) :=
-  into_laterN :> MaybeIntoLaterN only_head n P Q.
+  #[global] into_laterN :: MaybeIntoLaterN only_head n P Q.
 Global Arguments IntoLaterN {_} _ _%nat_scope _%I _%I.
 Global Hint Mode IntoLaterN + + + ! - : typeclass_instances.
 

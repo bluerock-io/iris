@@ -49,7 +49,7 @@ Record BiEmbedMixin (PROP1 PROP2 : bi) `(Embed PROP1 PROP2) := {
 }.
 
 Class BiEmbed (PROP1 PROP2 : bi) := {
-  bi_embed_embed :> Embed PROP1 PROP2;
+  #[global] bi_embed_embed :: Embed PROP1 PROP2;
   bi_embed_mixin : BiEmbedMixin PROP1 PROP2 bi_embed_embed;
 }.
 Global Hint Mode BiEmbed ! - : typeclass_instances.

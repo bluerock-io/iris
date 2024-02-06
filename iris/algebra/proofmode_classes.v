@@ -35,7 +35,7 @@ Global Hint Mode IsOp + - - - : typeclass_instances.
 Global Instance is_op_op {A : cmra} (a b : A) : IsOp (a ⋅ b) a b | 100.
 Proof. by rewrite /IsOp. Qed.
 
-Class IsOp' {A : cmra} (a b1 b2 : A) := is_op' :> IsOp a b1 b2.
+Class IsOp' {A : cmra} (a b1 b2 : A) := #[global] is_op' :: IsOp a b1 b2.
 Global Hint Mode IsOp' + ! - - : typeclass_instances.
 Global Hint Mode IsOp' + - ! ! : typeclass_instances.
 

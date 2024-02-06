@@ -12,7 +12,7 @@ Import uPred.
 (* The CMRA we need. *)
 Class authG Σ (A : ucmra) := AuthG {
   auth_inG : inG Σ (authR A);
-  auth_cmra_discrete :> CmraDiscrete A;
+  #[global] auth_cmra_discrete :: CmraDiscrete A;
 }.
 Local Existing Instance auth_inG.
 

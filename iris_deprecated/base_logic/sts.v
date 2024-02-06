@@ -11,7 +11,7 @@ Import uPred.
 (** The CMRA we need. *)
 Class stsG Σ (sts : stsT) := StsG {
   sts_inG : inG Σ (sts_resR sts);
-  sts_inhabited :> Inhabited (sts.state sts);
+  #[global] sts_inhabited :: Inhabited (sts.state sts);
 }.
 Local Existing Instance sts_inG.
 
