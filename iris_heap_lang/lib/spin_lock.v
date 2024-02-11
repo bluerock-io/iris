@@ -1,6 +1,6 @@
-From iris.algebra Require Import excl.
 From iris.proofmode Require Import proofmode.
 From iris.program_logic Require Export weakestpre.
+From iris.base_logic Require Import lib.token.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import proofmode notation.
 From iris.heap_lang.lib Require Export lock.
@@ -13,11 +13,10 @@ Local Definition acquire : val :=
 Local Definition release : val := λ: "l", "l" <- #false.
 
 (** The CMRA we need. *)
-(* Not bundling heapGS, as it may be shared with other users. *)
-Class spin_lockG Σ := LockG { lock_tokG : inG Σ (exclR unitO) }.
+Class spin_lockG Σ := LockG { lock_tokG : tokenG Σ }.
 Local Existing Instance lock_tokG.
 
-Definition spin_lockΣ : gFunctors := #[GFunctor (exclR unitO)].
+Definition spin_lockΣ : gFunctors := #[tokenΣ].
 
 Global Instance subG_spin_lockΣ {Σ} : subG spin_lockΣ Σ → spin_lockG Σ.
 Proof. solve_inG. Qed.
@@ -27,12 +26,12 @@ Section proof.
   Let N := nroot .@ "spin_lock".
 
   Local Definition lock_inv (γ : gname) (l : loc) (R : iProp Σ) : iProp Σ :=
-    ∃ b : bool, l ↦ #b ∗ if b then True else own γ (Excl ()) ∗ R.
+    ∃ b : bool, l ↦ #b ∗ if b then True else token γ ∗ R.
 
   Local Definition is_lock (γ : gname) (lk : val) (R : iProp Σ) : iProp Σ :=
     ∃ l: loc, ⌜lk = #l⌝ ∧ inv N (lock_inv γ l R).
 
-  Local Definition locked (γ : gname) : iProp Σ := own γ (Excl ()).
+  Local Definition locked (γ : gname) : iProp Σ := token γ.
 
   Local Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
   Proof. iIntros "H1 H2". by iCombine "H1 H2" gives %?. Qed.
@@ -53,7 +52,7 @@ Section proof.
   Proof.
     iIntros (Φ) "HR HΦ". rewrite /newlock /=.
     wp_lam. wp_alloc l as "Hl".
-    iMod (own_alloc (Excl ())) as (γ) "Hγ"; first done.
+    iMod token_alloc as (γ) "Hγ".
     iMod (inv_alloc N _ (lock_inv γ l R) with "[-HΦ]") as "#?".
     { iIntros "!>". iExists false. by iFrame. }
     iModIntro. iApply "HΦ". iExists l. eauto.
@@ -65,10 +64,10 @@ Section proof.
   Proof.
     iIntros (Φ) "#Hl HΦ". iDestruct "Hl" as (l ->) "#Hinv".
     wp_rec. wp_bind (CmpXchg _ _ _). iInv N as ([]) "[Hl HR]".
-    - wp_cmpxchg_fail. iModIntro. iSplitL "Hl"; first (iNext; iExists true; eauto).
+    - wp_cmpxchg_fail. iModIntro. iSplitL "Hl". { iNext. iExists true; eauto. }
       wp_pures. iApply ("HΦ" $! false). done.
     - wp_cmpxchg_suc. iDestruct "HR" as "[Hγ HR]".
-      iModIntro. iSplitL "Hl"; first (iNext; iExists true; eauto).
+      iModIntro. iSplitL "Hl". { iNext; iExists true; eauto. }
       rewrite /locked. wp_pures. by iApply ("HΦ" $! true with "[$Hγ $HR]").
   Qed.
 
