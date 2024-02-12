@@ -63,7 +63,7 @@ lemma.
   that allow exchanging fractional assertions. See !960 for more details. (by
   Johannes Hostert)
 * Add `token` library, providing a simple ghost token as a logic-level wrapper
-  over the RA `exclR unitO`.
+  over the RA `excl unit`.
 
 **Changes in `program_logic`:**
 
