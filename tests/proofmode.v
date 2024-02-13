@@ -718,13 +718,14 @@ Proof.
   done.
 Qed.
 
+Check "test_wrong_instantiation".
 Lemma test_wrong_instantiation (Φ : nat → PROP) :
   Φ 0 ∗ Φ 1 ⊢ ∃ n m, Φ n ∗ Φ m ∗ ⌜n = 0⌝ ∗ ⌜m = 1⌝.
-Proof. iIntros "[HΦ1 HΦ2]". iFrame. Abort.
+Proof. iIntros "[HΦ1 HΦ2]". iFrame. Show. Abort.
 
 Lemma test_iFrame_nary_exists (Φ Ψ : nat → PROP) P Q :
   let n := 10 in
-  let R := Nat.iter n (λ P, ∃ (n : nat), P ∗ ⌜n = 0⌝)%I (∃ m, Φ m ∗ P)%I in
+  let R := Nat.iter n (λ P, ∃ n : nat, P ∗ ⌜n = 0⌝)%I (∃ m, Φ m ∗ P)%I in
   P ∗ Φ 0 ⊢ R.
 Proof.
   simpl.

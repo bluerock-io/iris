@@ -316,6 +316,15 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   "HQ" : Q
   --------------------------------------∗
   Q
+"test_wrong_instantiation"
+     : string
+1 goal
+  
+  PROP : bi
+  Φ : nat → PROP
+  ============================
+  --------------------------------------∗
+  ⌜1 = 0⌝ ∗ ⌜0 = 1⌝
 "test_iFrame_affinely_emp"
      : string
 1 goal

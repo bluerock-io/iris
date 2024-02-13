@@ -81,7 +81,7 @@ Section proof.
     { by apply auth_both_valid_discrete. }
     iMod (inv_alloc _ _ (lock_inv γ lo ln R) with "[-HΦ]").
     { iNext. rewrite /lock_inv.
-      iExists 0, 0. iFrame. iLeft. by iFrame. }
+      iExists 0, 0. auto with iFrame. }
     wp_pures. iModIntro. iApply ("HΦ" $! (#lo, #ln)%V γ). iExists lo, ln. eauto.
   Qed.
 
@@ -93,15 +93,13 @@ Section proof.
     iInv N as (o n) "(Hlo & Hln & Ha)".
     wp_load. destruct (decide (x = o)) as [->|Hneq].
     - iDestruct "Ha" as "[Hainv [[Ho HR] | Haown]]".
-      + iModIntro. iSplitL "Hlo Hln Hainv Ht".
-        { iFrame. }
+      + iModIntro. iFrame "Hlo Hln Hainv Ht".
         wp_pures. case_bool_decide; [|done]. wp_if.
         iApply ("HΦ" with "[-]"). rewrite /locked. iFrame.
       + iCombine "Ht Haown"
           gives %[_ ?%gset_disj_valid_op]%auth_frag_op_valid_1.
         set_solver.
-    - iModIntro. iSplitL "Hlo Hln Ha".
-      { iNext. iExists o, n. iFrame. }
+    - iModIntro. iFrame "Hlo Hln Ha".
       wp_pures. case_bool_decide; [simplify_eq |].
       wp_if. iApply ("IH" with "Ht"). iNext. by iExact "HΦ".
   Qed.
@@ -112,8 +110,7 @@ Section proof.
     iIntros (ϕ) "Hl HΦ". iDestruct "Hl" as (lo ln ->) "#Hinv".
     iLöb as "IH". wp_rec. wp_bind (! _)%E. simplify_eq/=. wp_proj.
     iInv N as (o n) "[Hlo [Hln Ha]]".
-    wp_load. iModIntro. iSplitL "Hlo Hln Ha".
-    { iFrame. }
+    wp_load. iModIntro. iFrame "Hlo Hln Ha".
     wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as (o' n') "(>Hlo' & >Hln' & >Hauth & Haown)".
     destruct (decide (#n' = #n))%V as [[= ->%Nat2Z.inj] | Hneq].
@@ -127,11 +124,9 @@ Section proof.
         rewrite Nat2Z.inj_succ -Z.add_1_r. by iFrame. }
       wp_pures.
       iApply (wait_loop_spec γ (#lo, #ln) with "[-HΦ]").
-      + iFrame. rewrite /is_lock; eauto 10.
+      + rewrite /is_lock; eauto 10.
       + by iNext.
-    - wp_cmpxchg_fail. iModIntro.
-      iSplitL "Hlo' Hln' Hauth Haown".
-      { iFrame. }
+    - wp_cmpxchg_fail. iModIntro. iFrame "Hlo' Hln' Hauth Haown".
       wp_pures. by iApply "IH"; auto.
   Qed.
 
@@ -145,9 +140,7 @@ Section proof.
     wp_load.
     iCombine "Hauth Hγo" gives
       %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_both_valid_discrete.
-    iModIntro. iSplitL "Hlo Hln Hauth Haown".
-    { iFrame. }
-    wp_pures.
+    iModIntro. iFrame. wp_pures.
     iInv N as (o' n') "(>Hlo & >Hln & >Hauth & Haown)".
     iApply wp_fupd. wp_store.
     iCombine "Hauth Hγo" gives
@@ -159,7 +152,7 @@ Section proof.
       by apply option_local_update, (exclusive_local_update _ (Excl (S o))). }
     iModIntro. iSplitR "HΦ"; last by iApply "HΦ".
     iIntros "!> !>". iExists (S o), n'.
-    rewrite Nat2Z.inj_succ -Z.add_1_r. iFrame. iLeft. by iFrame.
+    rewrite Nat2Z.inj_succ -Z.add_1_r. auto with iFrame.
   Qed.
 End proof.
 
