@@ -109,20 +109,6 @@ paper. This should simplify explaining and understanding what is happening.
 A version that uses the authoritative monoid and natural number monoid
 under max can be found in [theories/heap_lang/lib/counter.v]. *)
 
-(** The invariant rule in the paper is in fact derived from mask changing
-update modalities (which we did not cover in the paper). Normally we use these
-mask changing update modalities directly in our proofs, but in this file we use
-the first prove the rule as a lemma, and then use that. *)
-Lemma wp_inv_open `{!irisGS Λ Σ} N E P e Φ :
-  nclose N ⊆ E → Atomic WeaklyAtomic e →
-  inv N P ∗ (▷ P -∗ WP e @ E ∖ ↑N {{ v, ▷ P ∗ Φ v }}) ⊢ WP e @ E {{ Φ }}.
-Proof.
-  iIntros (??) "[#Hinv Hwp]".
-  iMod (inv_acc E N P with "Hinv") as "[HP Hclose]"=>//.
-  iApply wp_wand_r; iSplitL "HP Hwp"; [by iApply "Hwp"|].
-  iIntros (v) "[HP $]". by iApply "Hclose".
-Qed.
-
 Definition newcounter : val := λ: <>, ref #0.
 Definition incr : val :=
   rec: "incr" "l" :=
@@ -226,12 +212,10 @@ Section counter_proof.
   Proof.
     iIntros "!> Hl /=". iLöb as "IH". wp_rec.
     iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
-    wp_bind (! _)%E. iApply wp_inv_open; last iFrame "Hinv"; auto.
-    iDestruct 1 as (c) "[Hl Hγ]".
+    wp_bind (! _)%E. iInv "Hinv" as (c) "[Hl Hγ]".
     wp_load. iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     wp_let. wp_op.
-    wp_bind (CmpXchg _ _ _). iApply wp_inv_open; last iFrame "Hinv"; auto.
-    iDestruct 1 as (c') ">[Hl Hγ]".
+    wp_bind (CmpXchg _ _ _). iInv "Hinv" as (c') ">[Hl Hγ]".
     destruct (decide (c' = c)) as [->|].
     - iCombine "Hγ" "Hγf" as "Hγ".
       iDestruct (own_valid with "Hγ") as %?%auth_frag_valid; rewrite -auth_frag_op //.
@@ -250,8 +234,7 @@ Section counter_proof.
     ⊢ {{ C l n }} read #l {{ v, ∃ m : nat, ⌜v = #m ∧ n ≤ m⌝ ∧ C l m }}.
   Proof.
     iIntros "!> Hl /=". iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
-    rewrite /read /=. wp_lam. Show. iApply wp_inv_open; last iFrame "Hinv"; auto.
-    iDestruct 1 as (c) "[Hl Hγ]". wp_load. Show.
+    rewrite /read /=. wp_lam. Show. iInv "Hinv" as (c) "[Hl Hγ]". wp_load. Show.
     iDestruct (own_valid γ (Auth c ⋅ Frag n) with "[-]") as %H%auth_frag_valid.
     { iApply own_op. by iFrame. }
     rewrite (auth_frag_op c c); last lia; iDestruct "Hγ" as "[Hγ Hγf']".
