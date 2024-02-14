@@ -14,14 +14,14 @@ Implicit Types P Q R : PROP.
 goal. Otherwise we leave [emp] via [frame_here].
 Only if all those options fail, we start decomposing [R], via instances like
 [frame_exist]. To ensure that, all other instances must have cost > 1. *)
-Global Instance frame_here_absorbing p R : Absorbing R → Frame p R R True | 0.
-Proof. intros. by rewrite /Frame intuitionistically_if_elim sep_elim_l. Qed.
+Global Instance frame_here_absorbing p R : QuickAbsorbing R → Frame p R R True | 0.
+Proof. rewrite /QuickAbsorbing /Frame. intros. by rewrite intuitionistically_if_elim sep_elim_l. Qed.
 Global Instance frame_here p R : Frame p R R emp | 1.
 Proof. intros. by rewrite /Frame intuitionistically_if_elim sep_elim_l. Qed.
 Global Instance frame_affinely_here_absorbing p R :
-  Absorbing R → Frame p (<affine> R) R True | 0.
+  QuickAbsorbing R → Frame p (<affine> R) R True | 0.
 Proof.
-  intros. rewrite /Frame intuitionistically_if_elim affinely_elim.
+  rewrite /QuickAbsorbing /Frame. intros. rewrite intuitionistically_if_elim affinely_elim.
   apply sep_elim_l, _.
 Qed.
 Global Instance frame_affinely_here p R : Frame p (<affine> R) R emp | 1.
@@ -200,11 +200,11 @@ Proof.
 Qed.
 
 Global Instance frame_affinely p R P Q Q' :
-  TCOr (TCEq p true) (Affine R) →
+  TCOr (TCEq p true) (QuickAffine R) →
   Frame p R P Q → MakeAffinely Q Q' →
   Frame p R (<affine> P) Q'. (* Default cost > 1 *)
 Proof.
-  rewrite /Frame /MakeAffinely=> -[->|?] <- <- /=;
+  rewrite /QuickAffine /Frame /MakeAffinely=> -[->|?] <- <- /=;
     by rewrite -{1}(affine_affinely (_ R)) affinely_sep_2.
 Qed.
 
@@ -254,10 +254,10 @@ Proof.
              persistently_and_intuitionistically_sep_l.
 Qed.
 Global Instance frame_impl R P1 P2 Q2 :
-  Persistent P1 → Absorbing P1 →
+  Persistent P1 → QuickAbsorbing P1 →
   Frame false R P2 Q2 → Frame false R (P1 → P2) (P1 → Q2). (* Default cost > 1 *)
 Proof.
-  rewrite /Frame /==> ???. apply impl_intro_l.
+  rewrite /Frame /QuickAbsorbing /==> ???. apply impl_intro_l.
   rewrite {1}(persistent P1) persistently_and_intuitionistically_sep_l assoc.
   rewrite (comm _ (□ P1)%I) -assoc -persistently_and_intuitionistically_sep_l.
   rewrite persistently_elim impl_elim_r //.
