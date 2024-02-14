@@ -714,7 +714,7 @@ Lemma test_iFrame_affinely_1 P Q `{!Affine P} :
 Proof. iIntros "HP HQ". iFrame "HQ". by iModIntro. Qed.
 Lemma test_iFrame_affinely_2 P Q `{!Affine P, !Affine Q} :
   P -∗ Q -∗ <affine> (P ∗ Q).
-Proof. iIntros "HP HQ". iFrame "HQ". by iModIntro. Qed.
+Proof. iIntros "HP HQ". iModIntro. iFrame "HQ". done. Qed.
 
 Check "test_iFrame_affinely_emp".
 Lemma test_iFrame_affinely_emp P :
