@@ -50,6 +50,10 @@ lemma.
   all proofs. If you define or use custom `Frame` instances, note that the 
   `MaybeFrame` class has become notation for `TCNoBackTrack (MaybeFrame' ...)`,
   which means the proofs of your instances might need a slight refactoring.
+* Adjust the `iFrame` proof search to use `QuickAffine` and `QuickAbsorbing`
+  instead of `Affine` and `Absorbing`. This fixes some performance issues with
+  large terms in non-affine logics, at the expense of a slight reduction in what
+  `iFrame` can do in these logics.
 
 **Changes in `base_logic`:**
 
