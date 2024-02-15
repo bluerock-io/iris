@@ -237,33 +237,40 @@ Proof.
     persistently_affinely_elim persistently_idemp.
 Qed.
 
+(** We construct an instance for [Frame]ing under existentials that can both
+instantiate the existential and leave it untouched:
 
-(** We construct a rule for [Frame]ing under existentials that can both
-instantiate the existential and leave it unchanged. The general lemma is: *)
-Lemma frame_exist {A} p R (Φ : A → PROP)
-    (C : Type) (g : C → A) (Ψ : C → PROP) :
-  (∀ (c : C), Frame p R (Φ $ g c) (Ψ c)) →
+- If we have [H : P a] and goal [∃ b, P b ∗ Q b], framing [H] turns the goal
+  into [Q a], i.e., instantiates the existential.
+- If we have [H : P] and goal [∃ b, P ∗ Q b], framing [H] turns the goal
+  into [∃ b, Q b], i.e., leaves the existential untouched.
+
+Below we describe the instances. More information can be found in the paper
+https://doi.org/10.1145/3636501.3636950 The general lemma is: *)
+Local Lemma frame_exist_helper {A} p R (Φ : A → PROP)
+    {C} (g : C → A) (Ψ : C → PROP) :
+  (∀ c, Frame p R (Φ $ g c) (Ψ c)) →
   Frame p R (∃ a, Φ a) (∃ c, Ψ c).
 Proof.
-  rewrite /Frame => HΨ. rewrite sep_exist_l.
-  apply bi.exist_elim => c. rewrite HΨ. apply exist_intro.
+  rewrite /Frame=> HΨ. rewrite sep_exist_l.
+  apply bi.exist_elim=> c. rewrite HΨ. apply exist_intro.
 Qed.
-(** [frame_exist] captures the two common usecases:
-- To keep the existential quantification untouched, take [C = A] and [g = id]
+(** [frame_exist_helper] captures the two common usecases:
 - To instantiate the existential with witness [a], take [C = unit] and
   use [g = λ _, a].
+- To keep the existential quantification untouched, take [C = A] and [g = id]
 Note that having separate instances for these two cases is a bad idea:
 typeclass search for [n] existential quantifiers would have [2^n] possibilities!
 
-However, we do not use [frame_exist] directly in typeclass search. One reason
+We cannot use [frame_exist] directly in type class search. One reason
 is that we do not want to present the user with a useless existential
 quantification on [unit]. This means we want to replace [∃ c, Φ c] with
 the telescopic quantification [∃.. c, Φ c].
 Another reason is that [frame_exist] does not indicate how [C] and [g] should
-be inferred.
+be inferred, so type class search would simply fail.
 
 We want to infer these as follows. On a goal [Frame p R (∃ a, Φ a) _]:
-- We first run typeclass search on [Frame p R (Φ ?a) _].
+- We first run type class search on [Frame p R (Φ ?a) _].
   If an instance is found, [?a] is a term that might still contain evars.
   The idea is to turn these evars back into existential quantifiers,
   whenever that is possible.
@@ -275,55 +282,58 @@ We want to infer these as follows. On a goal [Frame p R (∃ a, Φ a) _]:
   we have found [g].
 *)
 
-(** To perform above inference, we introduce a separate equality typeclass. *)
+(** To perform above inference, we introduce a separate equality type class. *)
 Inductive GatherEvarsEq {A} (x : A) : A → Prop := 
   GatherEvarsEq_refl : GatherEvarsEq x x.
 Existing Class GatherEvarsEq.
 (** The goal [GatherEvarsEq a (?g c)] with [a : A] and [g : ?C → A] is solved
-in the way described above. This is done by tactic [solve_evar_tele_equality],
+in the way described above. This is done by tactic [solve_gather_evars_eq],
 given at the end of this section, with an accompanying [Hint Extern]. *)
 
 (** We are now able to state a lemma for building [Frame] instances directly:
+
 [Lemma frame_exist_instance {A} p R (Φ : A → PROP)
-    (C : tele) (g : C → A) (Ψ : C → PROP) :
-  (∀ c : C, ∃ a' G,
+    (TT : tele) (g : TT → A) (Ψ : TT → PROP) :
+  (∀ c, ∃ a' G,
     Frame p R (Φ a') G ∧
     GatherEvarsEq a' (g c) ∧
     TCEq G (Ψ c)) →
   Frame p R (∃ a, Φ a) (∃.. c, Ψ c)%I.]
-Although this would function as intended, the two inner [ex] and [conj]s
-repeat terms; in particular, they repeat the quantified goal [Φ] a bunch
-of times. This means the term size can get quite big, and make type checking
-slower than need. We therefore make an effort to reduce term size and
-type-checking time by creating a tailored [Record]. *)
-#[projections(primitive)] Record packaged_frame_exist_requirements
-    (p : bool) (R : PROP) {A} (Φ : A → PROP) (a' : A) (G' : PROP) :=
-    PackageFrameExist {
-  witness : A;
-  framed_resource : PROP;
-  frame_proof : Frame p R (Φ witness) framed_resource;
-  witness_equality : GatherEvarsEq witness a';
-  framed_resource_equality : TCEq framed_resource G'
-}.
 
-(** Now we state the instance with above Record. *)
-Lemma frame_exist_record_instance {A} p R (Φ : A → PROP)
-    (C : tele) (g : C → A) (Ψ : C → PROP) Ψ' :
-  (∀ c : C,
-    packaged_frame_exist_requirements p R Φ (g c) (Ψ c)) →
+Although this would function as intended, the two inner [ex] and [conj]s
+repeat terms in the implicit arguments; in particular, they repeat the
+quantified goal [Φ] a bunch of times. This means the term size can get quite
+big, and make type checking slower than need. We therefore make an effort to
+reduce term size and type-checking time by creating a tailored [Class], which
+furthermore can be solved automatically by type class search. *)
+#[projections(primitive)] Class FrameExistRequirements
+    (p : bool) (R : PROP) {A} (Φ : A → PROP) (a' : A) (G' : PROP) := {
+  frame_exist_witness : A;
+  frame_exist_resource : PROP;
+  frame_exist_proof : Frame p R (Φ frame_exist_witness) frame_exist_resource;
+  frame_exist_witness_eq : GatherEvarsEq frame_exist_witness a';
+  frame_exist_resource_eq : TCEq frame_exist_resource G'
+}.
+Global Existing Instance Build_FrameExistRequirements.
+
+(** Now we state the instance with the above [Record]. See [FrameExists] below
+how we add this instance as a type class hint. *)
+Lemma frame_exist {A} p R (Φ : A → PROP)
+    (TT : tele) (g : TT → A) (Ψ : TT → PROP) Ψ' :
+  (∀ c, FrameExistRequirements p R Φ (g c) (Ψ c)) →
   (* The next equality is included so that we can [simpl] away the [bi_texist]
   in [Ψ], and present the user with the simplified remaining goal [Ψ']. *)
   Ψ' = (∃.. c, Ψ c)%I →
   Frame p R (∃ a, Φ a) Ψ'.
 Proof.
-  move => H ->. rewrite /Frame bi_texist_exist.
-  eapply frame_exist => c.
+  move=> H ->. rewrite /Frame bi_texist_exist.
+  eapply frame_exist_helper=> c.
   by specialize (H c) as [a G HG -> ->].
 Qed.
 
 Global Instance frame_texist {TT : tele} p R (Φ Ψ : TT → PROP) :
   (∀ x, Frame p R (Φ x) (Ψ x)) → Frame p R (∃.. x, Φ x) (∃.. x, Ψ x) | 2.
-Proof. rewrite /Frame !bi_texist_exist. apply frame_exist. Qed.
+Proof. rewrite /Frame !bi_texist_exist. apply frame_exist_helper. Qed.
 Global Instance frame_forall {A} p R (Φ Ψ : A → PROP) :
   (∀ a, Frame p R (Φ a) (Ψ a)) → Frame p R (∀ x, Φ x) (∀ x, Ψ x) | 2.
 Proof. rewrite /Frame=> ?. by rewrite sep_forall_l; apply forall_mono. Qed.
@@ -389,9 +399,9 @@ Qed.
 End class_instances_frame.
 
 (** We now write the tactic for constructing [GatherEvarsEq] instances.
-We want to prove goals of shape [GatherEvarsEq a (?g c] with [a : A],
+We want to prove goals of shape [GatherEvarsEq a (?g c)] with [a : A],
 and [g : ?C → A]. We need to infer both the function [g] and [C : tele].*)
-Ltac solve_evar_tele_equality :=
+Ltac solve_gather_evars_eq :=
   lazymatch goal with
   | |- GatherEvarsEq ?a (?g ?c) =>
     let rec retcon_tele T arg :=
@@ -430,34 +440,28 @@ Ltac solve_evar_tele_equality :=
   end.
 
 Global Hint Extern 4 (GatherEvarsEq _ _) =>
-  solve_evar_tele_equality : typeclass_instances.
+  solve_gather_evars_eq : typeclass_instances.
 
-(** We want to use [frame_exist_record_instance] and some custom Ltac whenever
-the goal unfolds to an existentially quantified goal. We cannot use
-[Hint Extern] directly for this, since that would only work when the goal is
-syntactically precisely an existentially quantified goal. We thus introduce
-this intermediate [FrameExists] typeclass. We set it up so that Coq will look
-for a [FrameExist] instance whenever the goal unfolds to an existentially
-quantified goal. The one way of constructing a [FrameExists] instance will
-be with a [Hint Extern] containing our custom Ltac. *)
-Class FrameExists {PROP : bi} p P `(Q : A → PROP) R :=
-  #[global] frame_exists_intermediate_instance :: Frame p P (∃ a, Q a) R.
+(** We want to define [frame_exist] as a hint that uses some custom Ltac to
+simplify the telescopes in the equality. We cannot use [Hint Extern] directly
+for this, since that would only work when the goal is syntactically precisely
+an existentially quantified goal. We thus introduce the intermediate
+[FrameExists] type class. We set it up so that Coq will look for a [FrameExist]
+instance whenever the goal unfolds to an existentially quantified goal. The one
+way of constructing a [FrameExists] instance will be with a [Hint Extern]
+containing our custom Ltac. *)
+Class FrameExists {PROP : bi} {A}
+    (p : bool) (P : PROP) (Q : A → PROP) (R : PROP) :=
+  #[global] frame_exists_frame :: Frame p P (∃ a, Q a) R.
 
-Ltac apply_frame_exist_instance :=
-  (* This tactic performs both steps of applying the [Frame] exists instance *)
-  notypeclasses refine (frame_exist_record_instance _ _ _ _ _ _ _
-    (λ _, PackageFrameExist _ _ _ _ _ _ _ _ _ _ _)
-    _
-  ).
-
-Ltac construct_frame_instance := 
-  apply_frame_exist_instance;
-    [tc_solve|..]; (* solve the [Frame] condition *)
-    [tc_solve|tc_solve|]; (* construct [GatherEvarsEq], [TCEq] *)
+Ltac solve_frame_exists :=
+  notypeclasses refine (frame_exist _ _ _ _ _ _ _ _ _);
+    [tc_solve (* the [FrameExistRequirements] condition *)
+    |];
   (* Next [cbn] simplifies away the telescopic quantification. *)
   cbn [bi_texist tele_fold tele_bind tele_arg_head tele_arg_tail];
   (* Now we prove the equality, giving the user a simplified goal. *)
   exact (eq_refl _).
 
 Global Hint Extern 1 (FrameExists _ _ _ _) =>
-  construct_frame_instance : typeclass_instances.
+  solve_frame_exists : typeclass_instances.
