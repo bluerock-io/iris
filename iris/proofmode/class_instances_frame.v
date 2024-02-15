@@ -283,26 +283,15 @@ Existing Class GatherEvarsEq.
 in the way described above. This is done by tactic [solve_evar_tele_equality],
 given at the end of this section, with an accompanying [Hint Extern]. *)
 
-(** We can now state the lemma we use for building [Frame] instances for
-existentially quantified goals. We also register this one with a [Hint Extern],
-so that we can simplify away the telescopic quantification. *)
-Lemma frame_exist_instance {A} p R (Φ : A → PROP)
-    (C : tele) (g : C → A) (Ψ : C → PROP) Ψ' :
+(** We are now able to state a lemma for building [Frame] instances directly:
+[Lemma frame_exist_instance {A} p R (Φ : A → PROP)
+    (C : tele) (g : C → A) (Ψ : C → PROP) :
   (∀ c : C, ∃ a' G,
     Frame p R (Φ a') G ∧
     GatherEvarsEq a' (g c) ∧
     TCEq G (Ψ c)) →
-  (* The next equality is included so that we can [simpl] away the [bi_texist]
-  in [Ψ], and present the user with the simplified remaining goal [Ψ']. *)
-  Ψ' = (∃.. c, Ψ c)%I →
-  Frame p R (∃ a, Φ a) Ψ'.
-Proof.
-  move => H ->. rewrite /Frame bi_texist_exist.
-  eapply frame_exist => c.
-  by specialize (H c) as (a & G & HG & -> & ->).
-Qed.
-
-(** Above lemma functions as intended, but the two inner [ex] and [conj]s
+  Frame p R (∃ a, Φ a) (∃.. c, Ψ c)%I.]
+Although this would function as intended, the two inner [ex] and [conj]s
 repeat terms; in particular, they repeat the quantified goal [Φ] a bunch
 of times. This means the term size can get quite big, and make type checking
 slower than need. We therefore make an effort to reduce term size and
@@ -322,14 +311,14 @@ Lemma frame_exist_record_instance {A} p R (Φ : A → PROP)
     (C : tele) (g : C → A) (Ψ : C → PROP) Ψ' :
   (∀ c : C,
     packaged_frame_exist_requirements p R Φ (g c) (Ψ c)) →
-  Ψ' = (∃.. c, Ψ c)%I →
-  (* This equality is included so that we can [simpl] away the [bi_texist]
+  (* The next equality is included so that we can [simpl] away the [bi_texist]
   in [Ψ], and present the user with the simplified remaining goal [Ψ']. *)
+  Ψ' = (∃.. c, Ψ c)%I →
   Frame p R (∃ a, Φ a) Ψ'.
 Proof.
-  move => H Heq.
-  eapply frame_exist_instance, Heq => c.
-  destruct (H c) as [a' G' HF He1 He2]. eauto.
+  move => H ->. rewrite /Frame bi_texist_exist.
+  eapply frame_exist => c.
+  by specialize (H c) as [a G HG -> ->].
 Qed.
 
 Global Instance frame_texist {TT : tele} p R (Φ Ψ : TT → PROP) :
