@@ -316,17 +316,26 @@ furthermore can be solved automatically by type class search. *)
 }.
 Global Existing Instance Build_FrameExistRequirements.
 
+(* This class is used so that we can [cbn] away the [bi_texist] in the result
+of framing. This is done by the [Hint Extern] at the bottom of the file. *)
+Inductive TCCbnTele {A} (x : A) : A → Prop :=
+  TCCbnTele_refl : TCCbnTele x x.
+Existing Class TCCbnTele.
+Global Hint Mode TCCbnTele ! - - : typeclass_instances.
+
 (** Now we state the instance with the above [Record]. See [FrameExists] below
 how we add this instance as a type class hint. *)
-Lemma frame_exist {A} p R (Φ : A → PROP)
-    (TT : tele) (g : TT → A) (Ψ : TT → PROP) Ψ' :
+Class FrameExists {PROP : bi} {A}
+    (p : bool) (R : PROP) (Ψ : A → PROP) (Q : PROP) :=
+  #[global] frame_exists_frame :: Frame p R (∃ a, Ψ a) Q.
+
+Global Instance frame_exist {A} p R (Φ : A → PROP)
+    (TT : tele) (g : TT → A) (Ψ : TT → PROP) Q :
   (∀ c, FrameExistRequirements p R Φ (g c) (Ψ c)) →
-  (* The next equality is included so that we can [simpl] away the [bi_texist]
-  in [Ψ], and present the user with the simplified remaining goal [Ψ']. *)
-  Ψ' = (∃.. c, Ψ c)%I →
-  Frame p R (∃ a, Φ a) Ψ'.
+  TCCbnTele (∃.. c, Ψ c)%I Q →
+  FrameExists p R Φ Q.
 Proof.
-  move=> H ->. rewrite /Frame bi_texist_exist.
+  move=> H <-. rewrite /FrameExists /Frame bi_texist_exist.
   eapply frame_exist_helper=> c.
   by specialize (H c) as [a G HG -> ->].
 Qed.
@@ -439,29 +448,9 @@ Ltac solve_gather_evars_eq :=
     exact (GatherEvarsEq_refl _)
   end.
 
-Global Hint Extern 4 (GatherEvarsEq _ _) =>
+Global Hint Extern 0 (GatherEvarsEq _ _) =>
   solve_gather_evars_eq : typeclass_instances.
 
-(** We want to define [frame_exist] as a hint that uses some custom Ltac to
-simplify the telescopes in the equality. We cannot use [Hint Extern] directly
-for this, since that would only work when the goal is syntactically precisely
-an existentially quantified goal. We thus introduce the intermediate
-[FrameExists] type class. We set it up so that Coq will look for a [FrameExist]
-instance whenever the goal unfolds to an existentially quantified goal. The one
-way of constructing a [FrameExists] instance will be with a [Hint Extern]
-containing our custom Ltac. *)
-Class FrameExists {PROP : bi} {A}
-    (p : bool) (P : PROP) (Q : A → PROP) (R : PROP) :=
-  #[global] frame_exists_frame :: Frame p P (∃ a, Q a) R.
-
-Ltac solve_frame_exists :=
-  notypeclasses refine (frame_exist _ _ _ _ _ _ _ _ _);
-    [tc_solve (* the [FrameExistRequirements] condition *)
-    |];
-  (* Next [cbn] simplifies away the telescopic quantification. *)
+Global Hint Extern 0 (TCCbnTele _ _) =>
   cbn [bi_texist tele_fold tele_bind tele_arg_head tele_arg_tail];
-  (* Now we prove the equality, giving the user a simplified goal. *)
-  exact (eq_refl _).
-
-Global Hint Extern 1 (FrameExists _ _ _ _) =>
-  solve_frame_exists : typeclass_instances.
+  exact (TCCbnTele_refl _) : typeclass_instances.
