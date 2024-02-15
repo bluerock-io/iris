@@ -20,7 +20,7 @@ Proof.
   - Show. iExists x. iRight. iSplitL "HP"; iAssumption.
 Qed.
 Lemma example {PROP : bi} {A : Type} (P : PROP) (Φ Ψ : A → PROP) :
-P ∗ (∃ a, Φ a ∨ Ψ a) -∗ ∃ a, (P ∗ Φ a) ∨ (P ∗ Ψ a).
+  P ∗ (∃ a, Φ a ∨ Ψ a) -∗ ∃ a, (P ∗ Φ a) ∨ (P ∗ Ψ a).
 Proof.
   iIntros "[HP H]". Show.
   iFrame "HP". Show.
