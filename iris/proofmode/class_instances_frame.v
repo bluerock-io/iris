@@ -292,7 +292,7 @@ given at the end of this section, with an accompanying [Hint Extern]. *)
 
 (** We are now able to state a lemma for building [Frame] instances directly:
 
-[Lemma frame_exist_instance {A} p R (Φ : A → PROP)
+[Lemma frame_exist_slow {A} p R (Φ : A → PROP)
     (TT : tele) (g : TT → A) (Ψ : TT → PROP) :
   (∀ c, ∃ a' G,
     Frame p R (Φ a') G ∧
@@ -323,19 +323,13 @@ Inductive TCCbnTele {A} (x : A) : A → Prop :=
 Existing Class TCCbnTele.
 Global Hint Mode TCCbnTele ! - - : typeclass_instances.
 
-(** Now we state the instance with the above [Record]. See [FrameExists] below
-how we add this instance as a type class hint. *)
-Class FrameExists {PROP : bi} {A}
-    (p : bool) (R : PROP) (Ψ : A → PROP) (Q : PROP) :=
-  #[global] frame_exists_frame :: Frame p R (∃ a, Ψ a) Q.
-
 Global Instance frame_exist {A} p R (Φ : A → PROP)
     (TT : tele) (g : TT → A) (Ψ : TT → PROP) Q :
   (∀ c, FrameExistRequirements p R Φ (g c) (Ψ c)) →
   TCCbnTele (∃.. c, Ψ c)%I Q →
-  FrameExists p R Φ Q.
+  Frame p R (∃ a, Φ a) Q.
 Proof.
-  move=> H <-. rewrite /FrameExists /Frame bi_texist_exist.
+  move=> H <-. rewrite /Frame bi_texist_exist.
   eapply frame_exist_helper=> c.
   by specialize (H c) as [a G HG -> ->].
 Qed.
