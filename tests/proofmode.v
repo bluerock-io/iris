@@ -706,6 +706,43 @@ Proof.
   acceptably in this situation *)
 Abort.
 
+
+Check "test_iFrame_exists_instantiate".
+Lemma test_iFrame_exists_instantiate (Φ Ψ : nat → PROP) P Q :
+  P ∗ Φ 0 ∗ Ψ 1 ∗ Q ⊢ ∃ n, Φ n ∗ ∃ m, Ψ m ∗ P ∗ Q.
+Proof.
+  iIntros "(HP & HΦ & HΨ & HQ)".
+  iFrame "HΨ". (* instantiates the inner existential quantifier [m] *) Show.
+  iFrame "HP". (* keeps the outer existential quantifier [n] around *) Show.
+  iFrame "HΦ". (* instantiates the outer existential quantifier [n] *) Show.
+  done.
+Qed.
+
+Check "test_wrong_instantiation".
+Lemma test_wrong_instantiation (Φ : nat → PROP) :
+  Φ 0 ∗ Φ 1 ⊢ ∃ n m, Φ n ∗ Φ m ∗ ⌜n = 0⌝ ∗ ⌜m = 1⌝.
+Proof. iIntros "[HΦ1 HΦ2]". iFrame. Show. Abort.
+
+Lemma test_iFrame_nary_exists (Φ Ψ : nat → PROP) P Q :
+  let n := 10 in
+  let R := Nat.iter n (λ P, ∃ n : nat, P ∗ ⌜n = 0⌝)%I (∃ m, Φ m ∗ P)%I in
+  P ∗ Φ 0 ⊢ R.
+Proof.
+  simpl.
+  (* This test asserts that the [Frame] instance for existential quantifiers
+  performs acceptably when the number of quantifiers becomes larger. A naive
+  implementation of this functionality would face an exponential slowdown. *)
+  iIntros "[HP HΦ]".
+  Timeout 1 iFrame "HP".
+  Timeout 1 iFrame "HΦ".
+  repeat (iExists 0; iSplit); eauto.
+Qed.
+
+Lemma test_iFrame_exists_under_definition (Φ : nat → PROP) :
+  let P := (∃ n m, Φ m ∗ Φ n ∗ ⌜n = 0⌝ ∗ ⌜m = 1⌝)%I in
+  Φ 0 ∗ Φ 1 ⊢ P.
+Proof. iIntros (P) "[HΦ1 HΦ2]". by iFrame. Qed.
+
 Lemma test_iFrame_later `{!BiAffine PROP} P Q : P -∗ Q -∗ ▷ P ∗ Q.
 Proof. iIntros "H1 H2". by iFrame "H1". Qed.
 

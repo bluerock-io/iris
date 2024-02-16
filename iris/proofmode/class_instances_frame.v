@@ -237,12 +237,106 @@ Proof.
     persistently_affinely_elim persistently_idemp.
 Qed.
 
-Global Instance frame_exist {A} p R (Φ Ψ : A → PROP) :
-  (∀ a, Frame p R (Φ a) (Ψ a)) → Frame p R (∃ x, Φ x) (∃ x, Ψ x) | 2.
-Proof. rewrite /Frame=> ?. by rewrite sep_exist_l; apply exist_mono. Qed.
+(** We construct an instance for [Frame]ing under existentials that can both
+instantiate the existential and leave it untouched:
+
+- If we have [H : P a] and goal [∃ b, P b ∗ Q b], framing [H] turns the goal
+  into [Q a], i.e., instantiates the existential.
+- If we have [H : P] and goal [∃ b, P ∗ Q b], framing [H] turns the goal
+  into [∃ b, Q b], i.e., leaves the existential untouched.
+
+Below we describe the instances. More information can be found in the paper
+https://doi.org/10.1145/3636501.3636950 The general lemma is: *)
+Local Lemma frame_exist_helper {A} p R (Φ : A → PROP)
+    {C} (g : C → A) (Ψ : C → PROP) :
+  (∀ c, Frame p R (Φ $ g c) (Ψ c)) →
+  Frame p R (∃ a, Φ a) (∃ c, Ψ c).
+Proof.
+  rewrite /Frame=> HΨ. rewrite sep_exist_l.
+  apply bi.exist_elim=> c. rewrite HΨ. apply exist_intro.
+Qed.
+(** [frame_exist_helper] captures the two common usecases:
+- To instantiate the existential with witness [a], take [C = unit] and
+  use [g = λ _, a].
+- To keep the existential quantification untouched, take [C = A] and [g = id]
+Note that having separate instances for these two cases is a bad idea:
+typeclass search for [n] existential quantifiers would have [2^n] possibilities!
+
+We cannot use [frame_exist] directly in type class search. One reason
+is that we do not want to present the user with a useless existential
+quantification on [unit]. This means we want to replace [∃ c, Φ c] with
+the telescopic quantification [∃.. c, Φ c].
+Another reason is that [frame_exist] does not indicate how [C] and [g] should
+be inferred, so type class search would simply fail.
+
+We want to infer these as follows. On a goal [Frame p R (∃ a, Φ a) _]:
+- We first run type class search on [Frame p R (Φ ?a) _].
+  If an instance is found, [?a] is a term that might still contain evars.
+  The idea is to turn these evars back into existential quantifiers,
+  whenever that is possible.
+- To do so, choose [C] to be the telescope with types for each of the evars
+  in [?a].
+- This means [c : C] is (morally) a tuple with an element for each of the
+  evars in [?a]---so we can unify all evars to be a projection of [c].
+- After this unification, [?a] is an explicit function of [c], which means
+  we have found [g].
+*)
+
+(** To perform above inference, we introduce a separate equality type class. *)
+Inductive GatherEvarsEq {A} (x : A) : A → Prop := 
+  GatherEvarsEq_refl : GatherEvarsEq x x.
+Existing Class GatherEvarsEq.
+(** The goal [GatherEvarsEq a (?g c)] with [a : A] and [g : ?C → A] is solved
+in the way described above. This is done by tactic [solve_gather_evars_eq],
+given at the end of this section, with an accompanying [Hint Extern]. *)
+
+(** We are now able to state a lemma for building [Frame] instances directly:
+
+[Lemma frame_exist_slow {A} p R (Φ : A → PROP)
+    (TT : tele) (g : TT → A) (Ψ : TT → PROP) :
+  (∀ c, ∃ a' G,
+    Frame p R (Φ a') G ∧
+    GatherEvarsEq a' (g c) ∧
+    TCEq G (Ψ c)) →
+  Frame p R (∃ a, Φ a) (∃.. c, Ψ c)%I.]
+
+Although this would function as intended, the two inner [ex] and [conj]s
+repeat terms in the implicit arguments; in particular, they repeat the
+quantified goal [Φ] a bunch of times. This means the term size can get quite
+big, and make type checking slower than need. We therefore make an effort to
+reduce term size and type-checking time by creating a tailored [Class], which
+furthermore can be solved automatically by type class search. *)
+#[projections(primitive)] Class FrameExistRequirements
+    (p : bool) (R : PROP) {A} (Φ : A → PROP) (a' : A) (G' : PROP) := {
+  frame_exist_witness : A;
+  frame_exist_resource : PROP;
+  frame_exist_proof : Frame p R (Φ frame_exist_witness) frame_exist_resource;
+  frame_exist_witness_eq : GatherEvarsEq frame_exist_witness a';
+  frame_exist_resource_eq : TCEq frame_exist_resource G'
+}.
+Global Existing Instance Build_FrameExistRequirements.
+
+(* This class is used so that we can [cbn] away the [bi_texist] in the result
+of framing. This is done by the [Hint Extern] at the bottom of the file. *)
+Inductive TCCbnTele {A} (x : A) : A → Prop :=
+  TCCbnTele_refl : TCCbnTele x x.
+Existing Class TCCbnTele.
+Global Hint Mode TCCbnTele ! - - : typeclass_instances.
+
+Global Instance frame_exist {A} p R (Φ : A → PROP)
+    (TT : tele) (g : TT → A) (Ψ : TT → PROP) Q :
+  (∀ c, FrameExistRequirements p R Φ (g c) (Ψ c)) →
+  TCCbnTele (∃.. c, Ψ c)%I Q →
+  Frame p R (∃ a, Φ a) Q.
+Proof.
+  move=> H <-. rewrite /Frame bi_texist_exist.
+  eapply frame_exist_helper=> c.
+  by specialize (H c) as [a G HG -> ->].
+Qed.
+
 Global Instance frame_texist {TT : tele} p R (Φ Ψ : TT → PROP) :
   (∀ x, Frame p R (Φ x) (Ψ x)) → Frame p R (∃.. x, Φ x) (∃.. x, Ψ x) | 2.
-Proof. rewrite /Frame !bi_texist_exist. apply frame_exist. Qed.
+Proof. rewrite /Frame !bi_texist_exist. apply frame_exist_helper. Qed.
 Global Instance frame_forall {A} p R (Φ Ψ : A → PROP) :
   (∀ a, Frame p R (Φ a) (Ψ a)) → Frame p R (∀ x, Φ x) (∀ x, Ψ x) | 2.
 Proof. rewrite /Frame=> ?. by rewrite sep_forall_l; apply forall_mono. Qed.
@@ -306,3 +400,51 @@ Proof.
   by rewrite except_0_sep -(except_0_intro (□?p R)).
 Qed.
 End class_instances_frame.
+
+(** We now write the tactic for constructing [GatherEvarsEq] instances.
+We want to prove goals of shape [GatherEvarsEq a (?g c)] with [a : A],
+and [g : ?C → A]. We need to infer both the function [g] and [C : tele].*)
+Ltac solve_gather_evars_eq :=
+  lazymatch goal with
+  | |- GatherEvarsEq ?a (?g ?c) =>
+    let rec retcon_tele T arg :=
+      (* [retcon_tele] takes two arguments:
+      - [T], an evar that has type [tele]
+      - [arg], a term that has type [tele_arg T]
+        (recall that [tele_arg] is the [tele → Type] coercion)
+      [retcon_tele] will find all the evars occurring in [a], and unify [T]
+      to be the telescope with types for all these evars. These evars will be
+      unified with projections of [arg].
+      In effect, it ensures 'retro-active continuity', namely that the
+      telescope [T] was appropriately chosen all along. *)
+      match a with
+      | context [?term] =>
+        is_evar term;
+        let X := type of term in
+        lazymatch X with
+        | tele => fail (* Shortcircuit, since nesting telescopes is a bad idea *)
+        | _ => idtac
+        end;
+        let T' := open_constr:(_) in (* creates a new evar *)
+        unify T (TeleS (λ _ : X, T')); 
+        (* The evar telescope [T'] is used for any remaining evars *)
+        unify term (tele_arg_head (λ _ : X, T') arg);
+        (* [tele_arg_head] is the first projection of [arg] *)
+        retcon_tele T' (tele_arg_tail (λ _ : X, T') arg)
+        (* recurse with the tail projection of [arg] *)
+      | _ => 
+        (* no more evars: unify [T] with the empty telescope *)
+        unify T TeleO
+      end
+    in
+    let T' := lazymatch (type of c) with tele_arg ?T => T end in
+    retcon_tele T' c;
+    exact (GatherEvarsEq_refl _)
+  end.
+
+Global Hint Extern 0 (GatherEvarsEq _ _) =>
+  solve_gather_evars_eq : typeclass_instances.
+
+Global Hint Extern 0 (TCCbnTele _ _) =>
+  cbn [bi_texist tele_fold tele_bind tele_arg_head tele_arg_tail];
+  exact (TCCbnTele_refl _) : typeclass_instances.

@@ -109,8 +109,6 @@ Section proph_map.
     rewrite proph_unseal /proph_def.
     iMod (ghost_map_insert p (proph_list_resolves pvs p) with "H●") as "[H● H◯]".
     { apply not_elem_of_dom. set_solver. }
-    iModIntro. iFrame.
-    iExists (<[p := proph_list_resolves pvs p]> R).
     iFrame. iPureIntro. split.
     - apply resolves_insert; first done. set_solver.
     - rewrite dom_insert. set_solver.
@@ -128,7 +126,7 @@ Section proph_map.
     iMod (ghost_map_update (proph_list_resolves pvs p) with "H● Hp") as "[H● H◯]".
     iModIntro. iExists (proph_list_resolves pvs p). iFrame. iSplitR.
     - iPureIntro. done.
-    - iExists _. iFrame. iPureIntro. split.
+    - iPureIntro. split.
       + intros q ws HEq. destruct (decide (p = q)) as [<-|NEq].
         * rewrite lookup_insert in HEq. by inversion HEq.
         * rewrite lookup_insert_ne in HEq; last done.
