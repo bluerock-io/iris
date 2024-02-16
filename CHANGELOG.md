@@ -61,7 +61,10 @@ lemma.
   found: framing `R` in goal `Q ∗ ∃ y, P y ∗ R` still gives `Q ∗ ∃ y, P y`.
   This should simplify and potentially even speed up some proofs.  
   Porting to this change will require manually fixing broken proofs: `iFrame`
-  may now make more progress than your proof script expects.  
+  may now make more progress than your proof script expects. Proofs that look
+  like `iFrame. iExists _. iFrame.` may need to be replaced with just `iFrame.`
+  In some cases, you may need to be explicit in what hypotheses to `iFrame`,
+  to prevent wrong instantiation of existential quantifiers.  
   To temporarily fix broken proofs, you can restore `iFrame`'s old behavior with:
   ```
   Local Instance frame_exist_no_instantiate {PROP : bi} p R {A} (Φ Ψ : A → PROP) :
