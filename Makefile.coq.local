@@ -29,7 +29,7 @@ COQ_TEST=$(COQTOP) $(COQDEBUG) -batch -test-mode
 # These versions of Coq are known to have different output so we don't test them.
 # Need to make this a lazy variable (`=` instead of `:=`) since COQ_VERSION is only set later.
 # Make sure to recognize both 8.$NUM.0 and 8.$NUM+alpha.
-COQ_NOREF=$(shell echo "$(COQ_VERSION)" | grep -E "^8\.(16|17|18|20|21)[.+]" -q && echo 1)
+COQ_NOREF=$(shell echo "$(COQ_VERSION)" | grep -E "^8\.(16|17|18)[.+]" -q && echo 1)
 
 tests/.coqdeps.d: $(TESTFILES)
 	$(SHOW)'COQDEP TESTFILES'
@@ -50,7 +50,7 @@ $(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref) $(NORMALIZER)
 	  TMPFILE="$$(mktemp)" && \
 	  unset OCAMLRUNPARAM && \
 	  $(TIMER) $(COQ_TEST) $(COQFLAGS) $(COQLIBS) -load-vernac-source $< > "$$TMPFILE" && \
-	  sed -f $(NORMALIZER) "$$TMPFILE" > "$$TMPFILE".new && \
+	  sed -E -f $(NORMALIZER) "$$TMPFILE" > "$$TMPFILE".new && \
 	  mv "$$TMPFILE".new "$$TMPFILE" && \
 	  $(if $(COQ_NOREF), (diff --strip-trailing-cr -u "$$REF" "$$TMPFILE" || true) , \
 	    $(if $(MAKE_REF),mv "$$TMPFILE" "$$REF",diff --strip-trailing-cr -u "$$REF" "$$TMPFILE") \
