@@ -4,7 +4,6 @@ From iris.proofmode Require Import proofmode.
 From iris.base_logic.lib Require Export fancy_updates.
 From iris.base_logic.lib Require Import wsat.
 From iris.prelude Require Import options.
-Import uPred.
 Import le_upd_if.
 
 (** Semantic Invariants *)
