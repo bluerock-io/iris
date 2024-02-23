@@ -354,7 +354,7 @@ Global Instance frame_texist {TT : tele} p R (Φ Ψ : TT → PROP) :
   (∀ x, Frame p R (Φ x) (Ψ x)) → Frame p R (∃.. x, Φ x) (∃.. x, Ψ x) | 2.
 Proof. rewrite /Frame !bi_texist_exist. apply frame_exist_helper. Qed.
 Global Instance frame_forall {A} p R (Φ Ψ : A → PROP) :
-  (FrameNoInstantiateEx → (∀ a, Frame p R (Φ a) (Ψ a))) →
+  (FrameNoInstantiateEx → ∀ a, Frame p R (Φ a) (Ψ a)) →
   Frame p R (∀ x, Φ x) (∀ x, Ψ x) | 2.
 Proof.
   rewrite /Frame=> /(flip apply I) ?.
