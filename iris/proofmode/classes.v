@@ -400,9 +400,25 @@ Notation MaybeFrame p R P Q progress := (TCNoBackTrack (MaybeFrame' p R P Q prog
 (* The [iFrame] tactic is able to instantiate witnesses for existential
 quantifiers. We need a way to disable this behavior beneath connectives
 like [∀], [-∗] and [→], since it is often unwanted in these cases.
-Also see iris#565. *)
+Also see iris#565.
+
+We implement this using two type classes: [FrameNoInstantiateExist] and
+[FrameCanInstantiateExist]. These are essentially 'flags' for type class
+search, and do not carry any information: [FrameNoInstantiateExist] is
+equivalent to [True], but does not come with any instances.
+Recursive [Frame] instances can disable instantiating existentials in their
+recursive search by replacing the recursive [Frame ...] premise with
+[FrameNoInstantiateExist → Frame ...]. This explicitly adds a
+[FrameNoInstantiateExist] hypothesis to the recursive [Frame] search,
+causing [FrameNoInstantiateExist] to have instances in that recursive search.
+This will disables the instance that instantiates existential quantifiers. *)
 Class FrameNoInstantiateExist : Prop := frame_no_instantiate_exist : True.
+(* We disable that instance by adding a new premise to it: an instance of the
+[FrameCanInstantiateExist] type class, defined using stdpp's [TCUnless]. *)
 Notation FrameCanInstantiateExist := (TCUnless FrameNoInstantiateExist).
+(* Since [TCUnless P] will only find an instance if no instance of [P] can be
+found, the addition of [FrameNoInstantiateExist] to the context disables
+the instantiation of existential quantifiers. *)
 
 Class IntoExcept0 {PROP : bi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
 Global Arguments IntoExcept0 {_} _%I _%I : simpl never.
