@@ -196,11 +196,6 @@ Global Instance frame_or_persistent progress1 progress2 R P1 P2 Q1 Q2 Q :
   MakeOr Q1 Q2 Q → Frame true R (P1 ∨ P2) Q | 9.
 Proof. rewrite /Frame /MakeOr => [[<-]] [<-] _ <-. by rewrite -sep_or_l. Qed.
 
-(* We want a way to disable instantiating quantifiers when we are
-framing beneath connectives like [∀], [-∗] and [→]. See iris#565. *)
-Class FrameNoInstantiateExist : Prop := frame_no_instantiate_exist : True.
-Notation FrameCanInstantiateExist := (TCUnless FrameNoInstantiateExist).
-
 Global Instance frame_wand p R P1 P2 Q2 :
   (FrameNoInstantiateExist → Frame p R P2 Q2) →
   Frame p R (P1 -∗ P2) (P1 -∗ Q2) | 2.

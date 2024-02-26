@@ -425,8 +425,7 @@ Section proofmode_classes.
   Implicit Types e : expr Λ.
 
   Global Instance frame_wp p s E e R Φ Ψ :
-    (class_instances_frame.FrameNoInstantiateExist →
-     ∀ v, Frame p R (Φ v) (Ψ v)) →
+    (FrameNoInstantiateExist → ∀ v, Frame p R (Φ v) (Ψ v)) →
     Frame p R (WP e @ s; E {{ Φ }}) (WP e @ s; E {{ Ψ }}) | 2.
   Proof. rewrite /Frame=> HR. rewrite wp_frame_l. apply wp_mono, HR, I. Qed.
 

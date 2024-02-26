@@ -397,6 +397,13 @@ For more details, see also iris!989 and the [frame_and] and [frame_or_spatial]
 instances in [class_instances_frame.v] *)
 Notation MaybeFrame p R P Q progress := (TCNoBackTrack (MaybeFrame' p R P Q progress)).
 
+(* The [iFrame] tactic is able to instantiate witnesses for existential
+quantifiers. We need a way to disable this behavior beneath connectives
+like [∀], [-∗] and [→], since it is often unwanted in these cases.
+Also see iris#565. *)
+Class FrameNoInstantiateExist : Prop := frame_no_instantiate_exist : True.
+Notation FrameCanInstantiateExist := (TCUnless FrameNoInstantiateExist).
+
 Class IntoExcept0 {PROP : bi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
 Global Arguments IntoExcept0 {_} _%I _%I : simpl never.
 Global Arguments into_except_0 {_} _%I _%I {_}.
