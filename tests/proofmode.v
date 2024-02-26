@@ -745,7 +745,7 @@ Proof. iIntros (P) "[HΦ1 HΦ2]". by iFrame. Qed.
 
 Check "test_iFrame_no_instantiate_under_forall".
 Lemma test_iFrame_no_instantiate_under_forall (P : nat → PROP) :
-  □ P 0 ⊢ P 0 ∗ (∀ m : nat, ∃ n, P n ∗ ⌜n = m⌝).
+  □ P 0 ⊢ P 0 ∗ (∀ m : nat, ∃ n, P n ∗ ⌜n = m⌝ ∗ P 0).
 Proof.
   iIntros "#$". Show.
   (* [P 0] should get framed, [∃ n, P n] should remain untouched *)
@@ -753,7 +753,7 @@ Abort.
 
 Check "test_iFrame_no_instantiate_under_wand".
 Lemma test_iFrame_no_instantiate_under_wand (P : nat → PROP) :
-  □ P 0 ⊢ P 0 ∗ (P 1 -∗ ∃ n, P n ∗ ⌜n = 1⌝).
+  □ P 0 ⊢ P 0 ∗ (P 1 -∗ ∃ n, P n ∗ ⌜n = 1⌝ ∗ P 0).
 Proof.
   iIntros "#$". Show.
   (* [P 0] should get framed, [∃ n, P n] should remain untouched *)
@@ -761,7 +761,7 @@ Abort.
 
 Check "test_iFrame_no_instantiate_under_impl".
 Lemma test_iFrame_no_instantiate_under_impl (P : nat → PROP) :
-  □ P 0 ⊢ P 0 ∗ (P 1 → ∃ n, P n ∗ ⌜n = 1⌝).
+  □ P 0 ⊢ P 0 ∗ (P 1 → ∃ n, P n ∗ ⌜n = 1⌝ ∗ P 0).
 Proof.
   iIntros "#$". Show.
   (* [P 0] should get framed, [∃ n, P n] should remain untouched *)

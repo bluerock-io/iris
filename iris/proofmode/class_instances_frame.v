@@ -198,14 +198,14 @@ Proof. rewrite /Frame /MakeOr => [[<-]] [<-] _ <-. by rewrite -sep_or_l. Qed.
 
 (* We want a way to disable instantiating quantifiers when we are
 framing beneath connectives like [∀], [-∗] and [→]. See iris#565. *)
-Class FrameNoInstantiateEx : Prop := frame_no_instantiate_ex : True.
-Notation FrameCanInstantiateEx := (TCUnless FrameNoInstantiateEx).
+Class FrameNoInstantiateExist : Prop := frame_no_instantiate_exist : True.
+Notation FrameCanInstantiateExist := (TCUnless FrameNoInstantiateExist).
 
 Global Instance frame_wand p R P1 P2 Q2 :
-  (FrameNoInstantiateEx → Frame p R P2 Q2) →
+  (FrameNoInstantiateExist → Frame p R P2 Q2) →
   Frame p R (P1 -∗ P2) (P1 -∗ Q2) | 2.
 Proof.
-  rewrite /Frame=> /(flip apply I) ?. apply wand_intro_l.
+  rewrite /Frame=> /(_ I) ?. apply wand_intro_l.
   by rewrite assoc (comm _ P1) -assoc wand_elim_r.
 Qed.
 
@@ -329,11 +329,11 @@ Inductive TCCbnTele {A} (x : A) : A → Prop :=
 Existing Class TCCbnTele.
 Global Hint Mode TCCbnTele ! - - : typeclass_instances.
 
-(* We include a dependency on [FrameCanInstantiateEx], so that we can disable
-this instance when framing beneath [∀], [-∗] and [→] *)
+(* We include a dependency on [FrameCanInstantiateExist], so that we can
+disable this instance when framing beneath [∀], [-∗] and [→] *)
 Global Instance frame_exist {A} p R (Φ : A → PROP)
     (TT : tele) (g : TT → A) (Ψ : TT → PROP) Q :
-  FrameCanInstantiateEx →
+  FrameCanInstantiateExist →
   (∀ c, FrameExistRequirements p R Φ (g c) (Ψ c)) →
   TCCbnTele (∃.. c, Ψ c)%I Q →
   Frame p R (∃ a, Φ a) Q.
@@ -345,7 +345,7 @@ Qed.
 (* In case we are not allowed to instantiate, we try to look for a Frame that
 works for all instantiations. *)
 Global Instance frame_exist_no_instantiate {A} p R (Φ Ψ : A → PROP) :
-  FrameNoInstantiateEx →
+  FrameNoInstantiateExist →
   (∀ a, Frame p R (Φ a) (Ψ a)) →
   Frame p R (∃ a, Φ a) (∃ a, Ψ a).
 Proof. move=> _ H. eapply frame_exist_helper, H. Qed.
@@ -354,31 +354,31 @@ Global Instance frame_texist {TT : tele} p R (Φ Ψ : TT → PROP) :
   (∀ x, Frame p R (Φ x) (Ψ x)) → Frame p R (∃.. x, Φ x) (∃.. x, Ψ x) | 2.
 Proof. rewrite /Frame !bi_texist_exist. apply frame_exist_helper. Qed.
 Global Instance frame_forall {A} p R (Φ Ψ : A → PROP) :
-  (FrameNoInstantiateEx → ∀ a, Frame p R (Φ a) (Ψ a)) →
+  (FrameNoInstantiateExist → ∀ a, Frame p R (Φ a) (Ψ a)) →
   Frame p R (∀ x, Φ x) (∀ x, Ψ x) | 2.
 Proof.
-  rewrite /Frame=> /(flip apply I) ?.
+  rewrite /Frame=> /(_ I) ?.
   by rewrite sep_forall_l; apply forall_mono.
 Qed.
 Global Instance frame_tforall {TT : tele} p R (Φ Ψ : TT → PROP) :
-  (FrameNoInstantiateEx → (∀ x, Frame p R (Φ x) (Ψ x))) →
+  (FrameNoInstantiateExist → (∀ x, Frame p R (Φ x) (Ψ x))) →
   Frame p R (∀.. x, Φ x) (∀.. x, Ψ x) | 2.
 Proof. rewrite /Frame !bi_tforall_forall. apply frame_forall. Qed.
 
 Global Instance frame_impl_persistent R P1 P2 Q2 :
-  (FrameNoInstantiateEx → Frame true R P2 Q2) →
+  (FrameNoInstantiateExist → Frame true R P2 Q2) →
   Frame true R (P1 → P2) (P1 → Q2) | 2.
 Proof.
-  rewrite /Frame /= => /(flip apply I) ?. apply impl_intro_l.
+  rewrite /Frame /= => /(_ I) ?. apply impl_intro_l.
   by rewrite -persistently_and_intuitionistically_sep_l assoc (comm _ P1) -assoc impl_elim_r
              persistently_and_intuitionistically_sep_l.
 Qed.
 Global Instance frame_impl R P1 P2 Q2 :
   Persistent P1 → QuickAbsorbing P1 →
-  (FrameNoInstantiateEx → Frame false R P2 Q2) →
+  (FrameNoInstantiateExist → Frame false R P2 Q2) →
   Frame false R (P1 → P2) (P1 → Q2). (* Default cost > 1 *)
 Proof.
-  rewrite /Frame /QuickAbsorbing /==> ?? /(flip apply I) ?. apply impl_intro_l.
+  rewrite /Frame /QuickAbsorbing /==> ?? /(_ I) ?. apply impl_intro_l.
   rewrite {1}(persistent P1) persistently_and_intuitionistically_sep_l assoc.
   rewrite (comm _ (□ P1)%I) -assoc -persistently_and_intuitionistically_sep_l.
   rewrite persistently_elim impl_elim_r //.

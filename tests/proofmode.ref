@@ -334,7 +334,7 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   ============================
   _ : P 0
   --------------------------------------□
-  ∀ m : nat, ∃ n : nat, P n ∗ ⌜n = m⌝
+  ∀ x : nat, ∃ a : nat, P a ∗ ⌜a = x⌝
 "test_iFrame_no_instantiate_under_wand"
      : string
 1 goal
@@ -344,7 +344,7 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   ============================
   _ : P 0
   --------------------------------------□
-  P 1 -∗ ∃ n : nat, P n ∗ ⌜n = 1⌝
+  P 1 -∗ ∃ a : nat, P a ∗ ⌜a = 1⌝
 "test_iFrame_no_instantiate_under_impl"
      : string
 1 goal
@@ -354,7 +354,7 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   ============================
   _ : P 0
   --------------------------------------□
-  P 1 → ∃ n : nat, P n ∗ ⌜n = 1⌝
+  P 1 → ∃ a : nat, P a ∗ ⌜a = 1⌝
 "test_iFrame_affinely_emp"
      : string
 1 goal
