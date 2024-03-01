@@ -351,6 +351,13 @@ Proof.
   by rewrite -persistently_and_intuitionistically_sep_l assoc (comm _ P1) -assoc impl_elim_r
              persistently_and_intuitionistically_sep_l.
 Qed.
+(** You may wonder why this uses [Persist] and not [QuickPersist].
+The reason is that [QuickPersist] is not needed anywhere else, and
+even without [QuickPerists], this instance avoids quadratic complexity:
+we usually use the [Quick*] classes to not traverse the same term over
+and over again, but here [P1] is encountered at most once.
+It is hence not worth adding a new typeclass just for this extremely rarely used
+instance. *)
 Global Instance frame_impl R P1 P2 Q2 :
   Persistent P1 → QuickAbsorbing P1 →
   Frame false R P2 Q2 → Frame false R (P1 → P2) (P1 → Q2). (* Default cost > 1 *)
