@@ -364,6 +364,14 @@ Proof. done. Qed.
 Global Instance is_app_app {A} (l1 l2 : list A) : IsApp (l1 ++ l2) l1 l2.
 Proof. done. Qed.
 
+(** [IsDisjUnion] is similar to [IsCons] and [IsApp] but identifies the
+[disj_union] operator. *)
+Class IsDisjUnion `{DisjUnion A} (x l r : A) := is_disj_union : x = l ⊎ r.
+Global Hint Mode IsDisjUnion + + ! - - : typeclass_instances.
+
+Global Instance is_disj_union_disj_union `{DisjUnion A} (l r : A) : IsDisjUnion (l ⊎ r) l r.
+Proof. done. Qed.
+
 Class Frame {PROP : bi} (p : bool) (R P Q : PROP) := frame : □?p R ∗ Q ⊢ P.
 Global Arguments Frame {_} _ _%I _%I _%I.
 Global Arguments frame {_} _ _%I _%I _%I {_}.

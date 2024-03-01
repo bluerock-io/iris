@@ -107,10 +107,11 @@ Global Instance frame_big_sepL2_app {A B} p (Φ : nat → A → B → PROP)
   Frame p R ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2) Q.
 Proof. rewrite /IsApp /Frame=>-> -> ->. apply wand_elim_l', big_sepL2_app. Qed.
 
-Global Instance frame_big_sepMS_disj_union `{Countable A} p (Φ : A → PROP) R Q X1 X2 :
+Global Instance frame_big_sepMS_disj_union `{Countable A} p (Φ : A → PROP) R Q X X1 X2 :
+  IsDisjUnion X X1 X2 ->
   Frame p R (([∗ mset] y ∈ X1, Φ y) ∗ [∗ mset] y ∈ X2, Φ y) Q →
-  Frame p R ([∗ mset] y ∈ X1 ⊎ X2, Φ y) Q | 2.
-Proof. by rewrite /Frame big_sepMS_disj_union. Qed.
+  Frame p R ([∗ mset] y ∈ X, Φ y) Q | 2.
+Proof. rewrite /IsDisjUnion=>->. by rewrite /Frame big_sepMS_disj_union. Qed.
 
 (** The instances that allow framing under [∨] and [∧] need to be carefully
 constructed. Such instances should make progress on at least one, but
