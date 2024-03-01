@@ -8,6 +8,10 @@ from collections import namedtuple
 # This script lets you autoamtically trigger some operations on the Iris CI to
 # do further test/analysis on a branch (usually an MR).
 # Set the GITLAB_TOKEN environment variable to a GitLab access token.
+# You can generate such a token at
+# <https://gitlab.mpi-sws.org/-/user_settings/personal_access_tokens>.
+# Select only the "api" scope.
+#
 # Set at least one of IRIS_REV or STDPP_REV to control which branches of these
 # projects to build against (defaults to default git branch). IRIS_REPO and
 # STDPP_REPO can be used to take branches from forks. Setting IRIS to
