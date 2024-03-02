@@ -366,10 +366,11 @@ Proof. done. Qed.
 
 (** [IsDisjUnion] is similar to [IsCons] and [IsApp] but identifies the
 [disj_union] operator. *)
-Class IsDisjUnion `{DisjUnion A} (x l r : A) := is_disj_union : x = l ⊎ r.
+Class IsDisjUnion `{DisjUnion A} (X X1 X2 : A) := is_disj_union : X = X1 ⊎ X2.
 Global Hint Mode IsDisjUnion + + ! - - : typeclass_instances.
 
-Global Instance is_disj_union_disj_union `{DisjUnion A} (l r : A) : IsDisjUnion (l ⊎ r) l r.
+Global Instance is_disj_union_disj_union `{DisjUnion A} (X1 X2 : A) :
+  IsDisjUnion (X1 ⊎ X2) X1 X2.
 Proof. done. Qed.
 
 Class Frame {PROP : bi} (p : bool) (R P Q : PROP) := frame : □?p R ∗ Q ⊢ P.

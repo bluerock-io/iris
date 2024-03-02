@@ -2276,11 +2276,10 @@ End mutual_induction.
 Section FrameDisjUnion.
   Context {PROP : bi}.
   Implicit Types P Q R : PROP.
-  Context {A : Type} {EqDec : EqDecision A} {Count : Countable A}.
 
   (** Making sure that [iFrame] does not diverge on evars gmultisets by turning
   them into disjoint union of new evars. *)
-  Lemma test_divergence (P Q : PROP) :
+  Lemma test_iFrame_gmultiset_divergence `{Countable A} P Q :
     P ⊢ ∃ X : gmultiset A, [∗ mset] y ∈ X, Q.
   Proof.
     iIntros "?".
@@ -2290,12 +2289,13 @@ Section FrameDisjUnion.
   Abort.
 
   (** Making sure that we can still frame in disjoint unions. *)
-  Lemma test_functionality {X Y: gmultiset A} (Q : PROP) :
-    ([∗ mset] y ∈ X, Q) ∗
-    ([∗ mset] y ∈ Y, Q)
-    ⊢ [∗ mset] y ∈ X ⊎ Y, Q.
+  Lemma test_iFrame_gmultiset_functionality `{Countable A} (X Y: gmultiset A) Q :
+    ([∗ mset] y ∈ X, Q) ∗ ([∗ mset] y ∈ Y, Q) ⊢ [∗ mset] y ∈ X ⊎ Y, Q.
   Proof.
     iIntros "?".
-    progress iFrame.
+    solve [iFrame].
+  Restart.
+    iIntros "[??]".
+    solve [iFrame].
   Qed.
 End FrameDisjUnion.
