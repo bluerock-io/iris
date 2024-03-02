@@ -86,6 +86,7 @@ lemma.
   Johannes Hostert)
 * Add `token` library, providing a simple ghost token as a logic-level wrapper
   over the RA `excl unit`.
+* Add lemma `lc_fupd_add_laterN`. (by Thomas Somers)
 
 **Changes in `program_logic`:**
 
