@@ -130,6 +130,16 @@ Proof.
   iApply (lc_fupd_elim_later with "Hf Hupd").
 Qed.
 
+(** Similar to above, but here we are adding [n] laters. *)
+Lemma lc_fupd_add_laterN `{!invGS_gen HasLc Σ} E1 E2 P n :
+  £ n -∗ (▷^n |={E1, E2}=> P) -∗ |={E1, E2}=> P.
+Proof.
+  iIntros "Hf Hupd". iInduction n as [|n] "IH"; first done.
+  iDestruct "Hf" as "[H1 Hf]".
+  iApply (lc_fupd_add_later with "H1"); iNext.
+  iApply ("IH" with "[$] [$]").
+Qed.
+
 (** * [fupd] soundness lemmas *)
 
 (** "Unfolding" soundness stamement for no-LC fupd:
