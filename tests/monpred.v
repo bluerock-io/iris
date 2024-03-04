@@ -19,7 +19,7 @@ Section tests_unseal.
   Check "monPred_unseal_test_2".
   Lemma monPred_unseal_test_2 P Q (R : monPred) :
     ⎡ P ∗ Q ⎤ ∗ R ⊣⊢ False.
-  Restart.
+  Proof.
     uPred.unseal.
     (** Make sure [∗] on monPred is not unfolded *)
     Show.

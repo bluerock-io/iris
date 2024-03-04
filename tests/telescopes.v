@@ -150,7 +150,7 @@ Lemma test1_test {PROP : bi}  :
   TEST1 {{ ∃ a b : nat, <affine> ⌜a = b⌝ }} ⊢@{PROP} ▷ False.
 Proof.
   iIntros "H". iDestruct "H" as (x) "H". Show.
-Restart.
+Restart. Proof.
   iIntros "H". unfold test1. iDestruct "H" as (x) "H". Show.
 Abort.
 
@@ -160,7 +160,7 @@ Lemma test2_test {PROP : bi}  :
 Proof.
   iIntros "H". iModIntro. Show.
   iDestruct "H" as (x) "H". Show.
-Restart.
+Restart. Proof.
   iIntros "H". iDestruct "H" as (x) "H". Show.
 Abort.
 
@@ -171,7 +171,7 @@ Proof.
   iIntros "H". iMod "H".
   iDestruct "H" as (x) "H".
   Show.
-Restart.
+Restart. Proof.
   iIntros "H". iDestruct "H" as (x) "H". Show.
 Abort.
 

@@ -483,7 +483,7 @@ Proof.
   (* Adds an affine modality *)
   iSpecialize ("H1" with "[]"). { Show. done. }
   iSpecialize ("H2" with "[]"). { Show. done. }
-Restart.
+Restart. Proof.
   iIntros (?) "#H1 H2".
   (* Solving it directly as a pure goal also works. *)
   iSpecialize ("H1" with "[% //]").
@@ -499,7 +499,7 @@ Proof.
   (* Does not add an affine modality *)
   iSpecialize ("H1" with "[]"). { Show. done. }
   iSpecialize ("H2" with "[]"). { Show. done. }
-Restart.
+Restart. Proof.
   iIntros (?) "#H1 H2".
   (* Solving it directly as a pure goal also works. *)
   iSpecialize ("H1" with "[% //]").
@@ -515,7 +515,7 @@ Proof.
   (* Adds an affine modality *)
   iSpecialize ("H1" with "[]"). { Show. done. }
   iSpecialize ("H2" with "[]"). { Show. done. }
-Restart.
+Restart. Proof.
   iIntros (?) "#H1 H2".
   (* Solving it directly as a pure goal also works. *)
   iSpecialize ("H1" with "[% //]").
@@ -531,7 +531,7 @@ Proof.
   (* Does not add an affine modality *)
   iSpecialize ("H1" with "[]"). { Show. done. }
   iSpecialize ("H2" with "[]"). { Show. done. }
-Restart.
+Restart. Proof.
   iIntros (?) "#H1 H2".
   (* Solving it directly as a pure goal also works. *)
   iSpecialize ("H1" with "[% //]").
@@ -953,11 +953,11 @@ Qed.
 Lemma test_iLöb_forall `{!BiLöb PROP} P (n : nat) : P ⊢ ⌜ n = n ⌝.
 Proof.
   iIntros "HP". iLöb as "IH" forall (n) "HP".
-Restart.
+Restart. Proof.
   iIntros "HP". iLöb as "IH" forall "HP".
-Restart.
+Restart. Proof.
   iIntros "HP". iLöb as "IH" forall (n).
-Restart.
+Restart. Proof.
   iIntros "HP". iLöb as "IH".
 Abort.
 
