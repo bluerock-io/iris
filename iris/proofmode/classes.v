@@ -411,11 +411,13 @@ existentials in their recursive search by replacing the recursive [Frame ...]
 premise with [(FrameInstantiateExistDisabled → Frame ...)]. This explicitly
 adds a [FrameInstantiateExistDisabled] hypothesis to the recursive [Frame]
 search, causing [FrameInstantiateExistDisabled] to have instances in that
-recursive search. This will disable the instance that instantiates existential
-quantifiers. *)
+recursive search. This will disable the 'strong' instance that instantiates
+existential quantifiers, and instead enable a weaker instance that looks
+for a [Frame] that works for all possible instantiations. The weaker is enabled
+since we made [FrameInstantiateExistDisabled] one of its premises. *)
 Class FrameInstantiateExistDisabled : Prop := frame_instantiate_exist_disabled {}.
-(* We disable that instance by adding a new premise to it: an instance of the
-[FrameInstantiateExistEnabled] type class, defined using stdpp's [TCUnless]. *)
+(* The strong instance also has a new premise: an instance of
+the [FrameInstantiateExistEnabled] type class, defined using stdpp's [TCUnless]. *)
 Notation FrameInstantiateExistEnabled := (TCUnless FrameInstantiateExistDisabled).
 (* Since [TCUnless P] will only find an instance if no instance of [P] can be
 found, the addition of [FrameInstantiateExistDisabled] to the context disables
