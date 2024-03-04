@@ -402,22 +402,23 @@ quantifiers. We need a way to disable this behavior beneath connectives
 like [∀], [-∗] and [→], since it is often unwanted in these cases.
 Also see iris#565.
 
-We implement this using two type classes: [FrameNoInstantiateExist] and
-[FrameCanInstantiateExist]. These are essentially 'flags' for type class
-search, and do not carry any information: [FrameNoInstantiateExist] is
-equivalent to [True], but does not come with any instances.
-Recursive [Frame] instances can disable instantiating existentials in their
-recursive search by replacing the recursive [Frame ...] premise with
-[(FrameNoInstantiateExist → Frame ...)]. This explicitly adds a
-[FrameNoInstantiateExist] hypothesis to the recursive [Frame] search,
-causing [FrameNoInstantiateExist] to have instances in that recursive search.
-This will disable the instance that instantiates existential quantifiers. *)
-Class FrameNoInstantiateExist : Prop := frame_no_instantiate_exist : True.
+We implement this using two (notations for) type classes:
+[FrameInstantiateExistDisabled] and [FrameInstantiateExistEnabled]. These are
+essentially 'flags' for type class search, and do not carry any information:
+[FrameInstantiateExistDisabled] is equivalent to [True], but does not come with
+any instances. Recursive [Frame] instances can disable instantiating
+existentials in their recursive search by replacing the recursive [Frame ...]
+premise with [(FrameInstantiateExistDisabled → Frame ...)]. This explicitly
+adds a [FrameInstantiateExistDisabled] hypothesis to the recursive [Frame]
+search, causing [FrameInstantiateExistDisabled] to have instances in that
+recursive search. This will disable the instance that instantiates existential
+quantifiers. *)
+Class FrameInstantiateExistDisabled : Prop := frame_instantiate_exist_disabled {}.
 (* We disable that instance by adding a new premise to it: an instance of the
-[FrameCanInstantiateExist] type class, defined using stdpp's [TCUnless]. *)
-Notation FrameCanInstantiateExist := (TCUnless FrameNoInstantiateExist).
+[FrameInstantiateExistEnabled] type class, defined using stdpp's [TCUnless]. *)
+Notation FrameInstantiateExistEnabled := (TCUnless FrameInstantiateExistDisabled).
 (* Since [TCUnless P] will only find an instance if no instance of [P] can be
-found, the addition of [FrameNoInstantiateExist] to the context disables
+found, the addition of [FrameInstantiateExistDisabled] to the context disables
 the instantiation of existential quantifiers. *)
 
 Class IntoExcept0 {PROP : bi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
