@@ -324,8 +324,8 @@ Inductive TCCbnTele {A} (x : A) : A → Prop :=
 Existing Class TCCbnTele.
 Global Hint Mode TCCbnTele ! - - : typeclass_instances.
 
-(* We include a dependency on [FrameCanInstantiateExist], so that we can
-disable this instance when framing beneath [∀], [-∗] and [→] *)
+(* We include a dependency on [FrameCanInstantiateExist] so as to disable this
+instance when framing beneath [∀], [-∗] and [→] *)
 Global Instance frame_exist {A} p R (Φ : A → PROP)
     (TT : tele) (g : TT → A) (Ψ : TT → PROP) Q :
   FrameCanInstantiateExist →
@@ -337,8 +337,9 @@ Proof.
   eapply frame_exist_helper=> c.
   by specialize (H c) as [a G HG -> ->].
 Qed.
-(* In case we are not allowed to instantiate, we try to look for a Frame that
-works for all instantiations. *)
+(* If [FrameNoInstantiateExist] holds we are not allowed to instantiate
+existentials, so we just frame below the quantifier without instantiating
+anything. *)
 Global Instance frame_exist_no_instantiate {A} p R (Φ Ψ : A → PROP) :
   FrameNoInstantiateExist →
   (∀ a, Frame p R (Φ a) (Ψ a)) →
