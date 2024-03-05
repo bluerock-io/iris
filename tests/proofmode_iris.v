@@ -333,7 +333,7 @@ Section WP_tests.
     □ Φ 0 ⊢ WP e {{ _, Φ 0 ∗ ∃ n, Φ n }}.
   Proof.
     iIntros "#$".
-  (* [Φ 0] should get framed, [∃ n, Φ n] should remain untouched *)
+    (* [Φ 0] should get framed, [∃ n, Φ n] should remain untouched *)
     Show.
   Abort.
 
