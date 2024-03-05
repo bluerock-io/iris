@@ -397,6 +397,32 @@ For more details, see also iris!989 and the [frame_and] and [frame_or_spatial]
 instances in [class_instances_frame.v] *)
 Notation MaybeFrame p R P Q progress := (TCNoBackTrack (MaybeFrame' p R P Q progress)).
 
+(* The [iFrame] tactic is able to instantiate witnesses for existential
+quantifiers. We need a way to disable this behavior beneath connectives
+like [∀], [-∗] and [→], since it is often unwanted in these cases.
+Also see iris#565.
+
+We implement this using two (notations for) type classes:
+[FrameInstantiateExistDisabled] and [FrameInstantiateExistEnabled]. These are
+essentially 'flags' for type class search, and do not carry any information:
+[FrameInstantiateExistDisabled] is equivalent to [True], but does not come with
+any instances. Recursive [Frame] instances can disable instantiating
+existentials in their recursive search by replacing the recursive [Frame ...]
+premise with [(FrameInstantiateExistDisabled → Frame ...)]. This explicitly
+adds a [FrameInstantiateExistDisabled] hypothesis to the recursive [Frame]
+search, causing [FrameInstantiateExistDisabled] to have instances in that
+recursive search. This will disable the 'strong' instance that instantiates
+existential quantifiers, and instead enable a weaker instance that looks
+for a [Frame] that works for all possible instantiations. The weaker is enabled
+since we made [FrameInstantiateExistDisabled] one of its premises. *)
+Class FrameInstantiateExistDisabled : Prop := frame_instantiate_exist_disabled {}.
+(* The strong instance also has a new premise: an instance of
+the [FrameInstantiateExistEnabled] type class, defined using stdpp's [TCUnless]. *)
+Notation FrameInstantiateExistEnabled := (TCUnless FrameInstantiateExistDisabled).
+(* Since [TCUnless P] will only find an instance if no instance of [P] can be
+found, the addition of [FrameInstantiateExistDisabled] to the context disables
+the instantiation of existential quantifiers. *)
+
 Class IntoExcept0 {PROP : bi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
 Global Arguments IntoExcept0 {_} _%I _%I : simpl never.
 Global Arguments into_except_0 {_} _%I _%I {_}.

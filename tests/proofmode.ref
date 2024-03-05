@@ -325,6 +325,36 @@ Tactic failure: iFrame: cannot frame (Φ 0 1).
   ============================
   --------------------------------------∗
   ⌜1 = 0⌝ ∗ ⌜0 = 1⌝
+"test_iFrame_no_instantiate_under_forall"
+     : string
+1 goal
+  
+  PROP : bi
+  P : nat → PROP
+  ============================
+  _ : P 0
+  --------------------------------------□
+  ∀ x : nat, ∃ a : nat, P a ∗ ⌜a = x⌝
+"test_iFrame_no_instantiate_under_wand"
+     : string
+1 goal
+  
+  PROP : bi
+  P : nat → PROP
+  ============================
+  _ : P 0
+  --------------------------------------□
+  P 1 -∗ ∃ a : nat, P a ∗ ⌜a = 1⌝
+"test_iFrame_no_instantiate_under_impl"
+     : string
+1 goal
+  
+  PROP : bi
+  P : nat → PROP
+  ============================
+  _ : P 0
+  --------------------------------------□
+  P 1 → ∃ a : nat, P a ∗ ⌜a = 1⌝
 "test_iFrame_affinely_emp"
      : string
 1 goal

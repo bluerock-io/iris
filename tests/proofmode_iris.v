@@ -328,6 +328,15 @@ Section WP_tests.
     iMod (fupd_mask_subseteq E2).
   Abort.
 
+  Check "iFrame_WP_no_instantiate".
+  Lemma iFrame_WP_no_instantiate (e : expr Λ) (Φ : nat → iProp Σ) :
+    □ Φ 0 ⊢ WP e {{ _, Φ 0 ∗ ∃ n, Φ n }}.
+  Proof.
+    iIntros "#$".
+    (* [Φ 0] should get framed, [∃ n, Φ n] should remain untouched *)
+    Show.
+  Abort.
+
 End WP_tests.
 
 Section monpred_tests.
