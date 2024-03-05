@@ -70,7 +70,11 @@ lemma.
   Local Instance frame_exist_instantiate_disabled :
     FrameInstantiateExistDisabled := {}.
   ```
-  `iFrame` will not instantiate existential quantifiers below connectives such as `-∗`, `∀`, `→` and `WP`, since this is more frequently unsafe (MR: iris/iris!1035). If you have custom recursive `Frame` instances for which you want to disable instantiating existential quantifiers, you need to replace the `Frame ...` premise of your instance with `(FrameInstantiateExistDisabled → Frame ...)`.
+  `iFrame` will not instantiate existential quantifiers below connectives such as
+  `-∗`, `∀`, `→` and `WP`, since this is more frequently unsafe (MR: iris/iris!1035).
+  If you have custom recursive `Frame` instances for which you want to disable 
+  instantiating existential quantifiers, you need to replace the `Frame ...` premise
+  of your instance with `(FrameInstantiateExistDisabled → Frame ...)`.
 
 
 **Changes in `base_logic`:**
