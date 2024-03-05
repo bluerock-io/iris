@@ -59,7 +59,7 @@ lemma.
   framing `P x` in goal `Q ∗ ∃ y, P y ∗ R` will now succeed with remaining
   goal `Q ∗ R`. `iFrame` still behaves the same when no instantiation can be
   found: framing `R` in goal `Q ∗ ∃ y, P y ∗ R` still gives `Q ∗ ∃ y, P y`.
-  This should simplify and potentially even speed up some proofs.  
+  This should simplify and potentially even speed up some proofs (MR: iris/iris!1017).  
   Porting to this change will require manually fixing broken proofs: `iFrame`
   may now make more progress than your proof script expects. Proofs that look
   like `iFrame. iExists _. iFrame.` may need to be replaced with just `iFrame.`
@@ -67,11 +67,11 @@ lemma.
   to prevent wrong instantiation of existential quantifiers.  
   To temporarily fix broken proofs, you can restore `iFrame`'s old behavior with:
   ```
-  Local Instance frame_exist_no_instantiate {PROP : bi} p R {A} (Φ Ψ : A → PROP) :
-    (∀ a, Frame p R (Φ a) (Ψ a)) → Frame p R (∃ x, Φ x) (∃ x, Ψ x).
-  Proof. tc_solve. Qed.
-  #[local] Remove Hints class_instances_frame.frame_exists : typeclass_instances.
+  Local Instance frame_exist_instantiate_disabled : FrameInstantiateExistDisabled.
+  Proof. (* Coq will magic up the proof here *) Qed.
   ```
+  `iFrame` will not instantiate existential quantifiers below connectives such as `-∗`, `∀`, `→` and `WP`, since this is more frequently unsafe (MR: iris/iris!1035). If you have custom recursive `Frame` instances for which you want to disable instantiating existential quantifiers, you need to replace the `Frame ...` premise of your instance with `(FrameInstantiateExistDisabled → Frame ...)`.
+
 
 **Changes in `base_logic`:**
 
