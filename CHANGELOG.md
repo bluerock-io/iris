@@ -75,7 +75,8 @@ lemma.
   If you have custom recursive `Frame` instances for which you want to disable 
   instantiating existential quantifiers, you need to replace the `Frame ...` premise
   of your instance with `(FrameInstantiateExistDisabled → Frame ...)`.
-
+* `iFrame` no longer loops on `[∗mset ] x ∈ X, ..` when `X` is an existential variable 
+   (MR: iris/iris!1039). (by Jan-Oliver Kaiser for BedRock Systems)
 
 **Changes in `base_logic`:**
 
