@@ -158,9 +158,10 @@ Proof.
       iIntros (v) "H [??]". by iApply ("H" with "[$]").
 Qed.
 
-(** A version of [twp_wp_step_lc] but with a single later modality. This version
-is tailored to lift total Texan triples to a partial Texan triples with later
-credits, see e.g., [wp_alloc_lc] below. *)
+(** A version of [twp_wp_step_lc] that provides only a single later modality
+(but still [S n] later credits). This version is tailored to lift total Texan
+triples to a partial Texan triples with later credits, see e.g., [wp_alloc_lc]
+below. *)
 Lemma twp_wp_step_lc_texan s n E e P Φ :
   TCEq (to_val e) None →
   steps_lb n -∗

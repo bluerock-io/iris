@@ -1,8 +1,12 @@
 (** This file extends the HeapLang program logic with some derived laws (not
 using the lifting lemmas) about arrays and prophecies.
 
+We collect both the total WP [twp_X] and partial WP [wp_X] versions of the laws.
+The versions with later credits [wp_X_lc] are omitted because they are too
+specific and can simply be derived using [twp_wp_step_lc] when needed.
+
 For utility functions on arrays (e.g., freeing/copying an array), see
-[heap_lang.lib.array].  *)
+[heap_lang.lib.array]. *)
 
 From stdpp Require Import fin_maps.
 From iris.bi Require Import lib.fractional.
