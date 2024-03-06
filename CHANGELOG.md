@@ -101,8 +101,12 @@ lemma.
 
 **Changes in `heap_lang`:**
 
-* Replace `wp_lb_init` with a more general `steps_lb_0` lemma for creating a `steps_lb`
-  without depending on WP. (by Thomas Somers)
+* Replace `wp_lb_init` with a more general `steps_lb_0` lemma for creating a
+  `steps_lb` without depending on WP. (by Thomas Somers)
+* Add generic lemma `twp_wp_step_lc` to derive WP with later credits from TWP.
+* Add Texan triples with later credits for stateful operations: `wp_alloc_lc`,
+  `wp_alloc_lc`, `wp_free_lc`, `wp_load_lc`, `wp_store_lc`, `wp_xchg_lc`,
+  `wp_cmpxchg_fail_lc`, `wp_cmpxchg_suc_lc`, and `wp_faa_lc`.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
