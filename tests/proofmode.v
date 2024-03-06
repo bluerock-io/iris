@@ -2272,3 +2272,31 @@ Section mutual_induction.
     Fail iInduction t as [] "IH" using ntree_ind_alt.
   Abort.
 End mutual_induction.
+
+Section FrameDisjUnion.
+  Context {PROP : bi}.
+  Implicit Types P Q R : PROP.
+
+  (** Making sure that [iFrame] does not diverge on evars gmultisets by turning
+  them into disjoint union of new evars. *)
+  Lemma test_iFrame_gmultiset_divergence `{Countable A} P Q :
+    P ⊢ ∃ X : gmultiset A, [∗ mset] y ∈ X, Q.
+  Proof.
+    iIntros "?".
+    iExists _.
+    (* Makes no progress since there is nothing to do. *)
+    Timeout 1 iFrame.
+  Abort.
+
+  (** Making sure that we can still frame in disjoint unions. *)
+  Lemma test_iFrame_gmultiset_functionality `{Countable A} (X Y: gmultiset A) Q :
+    ([∗ mset] y ∈ X, Q) ∗ ([∗ mset] y ∈ Y, Q) ⊢ [∗ mset] y ∈ X ⊎ Y, Q.
+  Proof.
+    iIntros "?".
+    solve [iFrame].
+  Restart.
+  Proof.
+    iIntros "[??]".
+    solve [iFrame].
+  Qed.
+End FrameDisjUnion.
