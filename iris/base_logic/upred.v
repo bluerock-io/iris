@@ -18,9 +18,9 @@ Local Hint Extern 10 (_ ≤ _) => lia : core.
    monotonicity has to be stated in the SProp logic. Together with the
    usual closedness property of SProp, this gives exactly uPred_mono.
 
-   Then, we quotient uPred0 *in the sProp logic* with respect to
+   Then, we quotient uPred0 *in the siProp logic* with respect to
    equivalence on valid elements of M. That is, we quotient with
-   respect to the following *sProp* equivalence relation:
+   respect to the following *siProp* equivalence relation:
      P1 ≡ P2 := ∀ x, ✓ x → (P1(x) ↔ P2(x))       (1)
    When seen from the ambiant logic, obtaining this quotient requires
    definig both a custom Equiv and Dist.
@@ -30,7 +30,7 @@ Local Hint Extern 10 (_ ≤ _) => lia : core.
    representatives. More precisely, one can show that every
    equivalence class contains exactly one element P0 such that:
      ∀ x, (✓ x → P0(x)) → P0(x)                 (2)
-   (Again, this assertion has to be understood in sProp). Intuitively,
+   (Again, this assertion has to be understood in siProp). Intuitively,
    this says that P0 trivially holds whenever the resource is invalid.
    Starting from any element P, one can find this canonical
    representative by choosing:
@@ -38,7 +38,7 @@ Local Hint Extern 10 (_ ≤ _) => lia : core.
 
    Hence, as an alternative definition of uPred, we could use the set
    of canonical representatives (i.e., the subtype of monotonous
-   sProp predicates that verify (2)). This alternative definition would
+   siProp predicates that verify (2)). This alternative definition would
    save us from using a quotient. However, the definitions of the various
    connectives would get more complicated, because we have to make sure
    they all verify (2), which sometimes requires some adjustments. We
