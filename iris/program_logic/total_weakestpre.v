@@ -191,7 +191,8 @@ Proof.
   iModIntro; iSplit.
   { destruct s; eauto using reducible_no_obs_fill_inv. }
   iIntros (κ e2 σ2 efs Hstep).
-  iMod ("IH" $! κ (K e2) σ2 efs with "[]") as (?) "(Hσ & IH & IHefs)"; eauto using fill_step.
+  iMod ("IH" $! κ (K e2) σ2 efs with "[]")
+    as (?) "(Hσ & IH & IHefs)"; eauto using fill_step.
   iModIntro. iFrame "Hσ". iSplit; first done. iSplitR "IHefs".
   - iDestruct "IH" as "[IH _]". by iApply "IH".
   - by setoid_rewrite and_elim_r.
@@ -211,6 +212,43 @@ Proof.
   { by iApply "IH". }
   iApply (@big_sepL_impl with "Hfork").
   iIntros "!>" (k ef _) "H". by iApply "IH".
+Qed.
+
+(** This lemma is similar to [wp_step_fupdN_strong], the difference is the TWP
+(instead of a WP) in the premise. Since TWPs do not use up later credits, we get
+[£ n] in the viewshift in the premise. *)
+Lemma twp_wp_fupdN_strong n s E1 E2 e P Φ :
+  TCEq (to_val e) None → E2 ⊆ E1 →
+  (∀ σ ns κs nt, state_interp σ ns κs nt ={E1,∅}=∗
+                 ⌜n ≤ S (num_laters_per_step ns)⌝) ∧
+  ((|={E1,E2}=> £ n ={∅}▷=∗^n |={E2,E1}=> P) ∗
+    WP e @ s; E2 [{ v, P ={E1}=∗ Φ v }]) -∗
+  WP e @ s; E1 {{ Φ }}.
+Proof.
+  destruct n as [|n].
+  { iIntros (_ ?) "/= [_ [HP Hwp]]".
+    iApply (wp_strong_mono with "[Hwp]"); [done..|by iApply twp_wp|]; simpl.
+    iIntros (v) "H". iApply ("H" with "[>HP]"). iMod "HP".
+    iMod lc_zero as "Hlc". by iApply "HP". }
+  rewrite wp_unfold twp_unfold /wp_pre /twp_pre. iIntros (-> ?) "H".
+  iIntros (σ1 ns κ κs nt) "Hσ".
+  destruct (decide (n ≤ num_laters_per_step ns)) as [Hn|Hn]; first last.
+  { iDestruct "H" as "[Hn _]". iMod ("Hn" with "Hσ") as %?. lia. }
+  iDestruct "H" as "[_ [>HP Hwp]]". iMod ("Hwp" with "[$]") as "[% H]".
+  iIntros "!>". iSplitR.
+  { destruct s; eauto using reducible_no_obs_reducible. }
+  iIntros (e2 σ2 efs Hstep) "Hcred /=".
+  iDestruct ("H" $! κ e2 σ2 efs with "[% //]") as "H".
+  iMod ("HP" with "[Hcred]") as "HP".
+  { iApply (lc_weaken with "Hcred"); lia. }
+  iIntros "!> !>". iMod "HP". iModIntro.
+  iApply step_fupdN_le; [apply Hn|done|..].
+  iApply (step_fupdN_wand with "HP"); iIntros "HP".
+  iMod "H" as (->) "($ & Hwp & Hfork)". iMod "HP". iModIntro. iSplitR "Hfork".
+  - iApply twp_wp. iApply (twp_strong_mono with "Hwp"); [done|set_solver|].
+    iIntros (v) "HΦ". iApply ("HΦ" with "HP").
+  - iApply (big_sepL_impl with "Hfork").
+    iIntros "!>" (k ef _) "H". by iApply twp_wp.
 Qed.
 
 (** * Derived rules *)
