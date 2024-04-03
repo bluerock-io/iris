@@ -2294,8 +2294,7 @@ Section FrameDisjUnion.
   Proof.
     iIntros "?".
     solve [iFrame].
-  Restart.
-  Proof.
+  Restart. Proof.
     iIntros "[??]".
     solve [iFrame].
   Qed.
