@@ -3,7 +3,27 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
-## Iris master
+## Iris 4.2.0 (2024-04)
+
+The highlights of this release are:
+* We have new laws to "undiscard" discarded fractions, allowing one to update
+  from `DfracDiscarded` to `DfracOwn(q)` for some fresh `q`. This gives rise to
+  new laws for all constructions that use `dfrac`, such as
+  `ghost_map_elem_unpersist : ∀ k γ v, k ↪[γ]□ v ==∗ ∃ q, k ↪[γ]{#q} v`.
+* The `gmap_view K V` camera now supports value types `V` that are arbitrary
+  cameras, and lifts their composition to the whole map. The previous `gmap_view`
+  type can be recovered as `gmap_view K (agree V)`.
+* The `iFrame` tactic has become stronger for goals that contain existential
+  quantifiers: `iFrame` will now attempt to instantiate these. For example,
+  framing `P x` in goal `Q ∗ ∃ y, P y ∗ R` will now succeed with remaining
+  goal `Q ∗ R`.
+
+Iris 4.2 supports Coq 8.18 and 8.19.
+Coq 8.16 and 8.17 are no longer supported.
+
+This release was managed by Ralf Jung and Robbert Krebbers, with contributions
+from Ike Mulder, Jan-Oliver Kaiser, Johannes Hostert, Pierre Roux, Thomas
+Somers, and Yixuan Chen. Thanks a lot to everyone involved!
 
 **Changes in `algebra`:**
 
@@ -22,7 +42,7 @@ lemma.
 * Rename `cmra_discrete_update` → `cmra_discrete_total_update` and
   `cmra_discrete_updateP` → `cmra_discrete_total_updateP`. Repurpose original
   names for lemmas that only require `CmraDiscrete`, not `CmraTotal`.
-* Add a law for undiscarding discardable fractions, allowing one to update from
+* Add a law for undiscarding discarded fractions, allowing one to update from
   `DfracDiscarded` to `DfracOwn(q)` for some fresh `q`. This formalizes the
   intuition that a discarded fraction is merely an "existentially quantified
   fraction." (by Johannes Hostert)
