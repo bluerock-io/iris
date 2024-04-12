@@ -3,7 +3,7 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
-## Iris 4.2.0 (2024-04)
+## Iris 4.2.0 (2024-04-12)
 
 The highlights of this release are:
 * We have new laws to "undiscard" discarded fractions, allowing one to update
