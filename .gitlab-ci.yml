@@ -45,10 +45,10 @@ variables:
 ## Build jobs
 
 # The newest version runs with timing.
-build-coq.8.19.0:
+build-coq.8.19.1:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.19.0"
+    OPAM_PINS: "coq version 8.19.1"
     DENY_WARNINGS: "1"
     MANGLE_NAMES: "1"
     OPAM_PKG: "1"
