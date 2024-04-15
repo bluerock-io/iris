@@ -3,6 +3,13 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
+## Iris master
+
+**Changes in `base_logic`:**
+
+* Add lemma `na_own_empty` and persistence instance for `na_own p ∅` for
+  non-atomic invariant tokens. (by Benjamin Peters)
+
 ## Iris 4.2.0 (2024-04-12)
 
 The highlights of this release are:

@@ -45,6 +45,9 @@ Section proofs.
   Global Instance na_inv_persistent p N P : Persistent (na_inv p N P).
   Proof. rewrite /na_inv; apply _. Qed.
 
+  Global Instance na_own_empty_persistent p : Persistent (na_own p ∅).
+  Proof. rewrite /na_own; apply _. Qed.
+
   Lemma na_inv_iff p N P Q : na_inv p N P -∗ ▷ □ (P ↔ Q) -∗ na_inv p N Q.
   Proof.
     rewrite /na_inv. iIntros "(%i & % & HI) #HPQ".
@@ -108,6 +111,9 @@ Section proofs.
       + iSplitR "Hitok"; last by iFrame. eauto with iFrame.
     - iDestruct (na_own_disjoint with "Htoki Htoki2") as %?. set_solver.
   Qed.
+
+  Lemma na_own_empty p : ⊢ |==> na_own p ∅.
+  Proof. apply: own_unit. Qed.
 
   Global Instance into_inv_na p N P : IntoInv (na_inv p N P) N := {}.
 
