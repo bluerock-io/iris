@@ -99,7 +99,7 @@ To obtain a closed Iris proof, i.e., a proof that does not make assumptions like
 `inG`, you have to assemble a list of functors of all the involved modules,
 and if your proof relies on some singleton (most do, at least indirectly; also
 see the next section), you have to call the respective initialization or
-adequacy lemma.  [For example](tests/one_shot.v):
+adequacy lemma.  [For example](../tests/one_shot.v):
 ```coq
 Section client.
   Context `{!heapGS Σ, !one_shotG Σ, !spawnG Σ}.
@@ -142,9 +142,9 @@ would be incompatible with each other.
 
 The `gen_heapGpreS` typeclass (without the singleton data) is relevant for
 initialization, i.e., to create an instance of `gen_heapGS`. This is happening as
-part of [`heap_adequacy`](iris_heap_lang/adequacy.v) using the
+part of [`heap_adequacy`](../iris_heap_lang/adequacy.v) using the
 initialization lemma for `gen_heapGS` from
-[`gen_heap_init`](iris/base_logic/lib/gen_heap.v):
+[`gen_heap_init`](../iris/base_logic/lib/gen_heap.v):
 ```coq
 Lemma gen_heap_init `{gen_heapGpreS L V Σ} σ :
   (|==> ∃ _ : gen_heapGS L V Σ, gen_heap_ctx σ)%I.
@@ -232,9 +232,9 @@ F (X,X⁻) := gmap K (agree (nat * ▶ X))
 To make it convenient to construct such functors and prove their contractivity,
 we provide a number of abstractions:
 
-- [`oFunctor`](iris/algebra/ofe.v): functors from COFEs to OFEs.
-- [`rFunctor`](iris/algebra/cmra.v): functors from COFEs to cameras.
-- [`urFunctor`](iris/algebra/cmra.v): functors from COFEs to unital
+- [`oFunctor`](../iris/algebra/ofe.v): functors from COFEs to OFEs.
+- [`rFunctor`](../iris/algebra/cmra.v): functors from COFEs to cameras.
+- [`urFunctor`](../iris/algebra/cmra.v): functors from COFEs to unital
   cameras.
 
 Besides, there are the classes `oFunctorContractive`, `rFunctorContractive`, and

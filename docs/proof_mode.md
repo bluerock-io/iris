@@ -21,7 +21,7 @@ pervasively. These are defined in dedicated sections in this manual.
 
 Many of the tactics below apply to more goals than described in this document
 since the behavior of these tactics can be tuned via instances of the type
-classes in the file [proofmode/classes](iris/proofmode/classes.v). Most notably, many
+classes in the file [proofmode/classes](../iris/proofmode/classes.v). Most notably, many
 of the tactics can be applied when the connective to be introduced or to be eliminated
 appears under a later, an update modality, or in the conclusion of a
 weakest precondition.
