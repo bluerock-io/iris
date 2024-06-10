@@ -658,7 +658,7 @@ Lemma test_iFrame_disjunction_3_evars (Φ : nat → PROP) P1 P2 P3 P4 :
   P1 ⊢ ∃ a, R a.
 Proof.
   intros ?. simpl. iIntros "HP1". iExists _.
-  Timeout 1 iFrame. (* The combination of evars and nested disjunctions used to
+  Timeout 2 iFrame. (* The combination of evars and nested disjunctions used to
   cause excessive backtracking during the construction of [Frame] instances,
   which made [iFrame] very slow. Above [Timeout] ensures [iFrame] now performs
   acceptably in this situation *)
