@@ -410,6 +410,16 @@ Section pointsto_tests.
     iIntros (Φ) "Hl HΦ". Show. wp_load. by iApply "HΦ".
   Qed.
 
+  (* Failing CmpXchg from a persistent points-to predicate in the _persistent_ context. *)
+  Lemma persistent_pointsto_cmpxchg_persistent l :
+    {{{ l ↦□ #1 }}} CmpXchg #l #0 #1 {{{ v, RET v; True }}}.
+  Proof. iIntros (Φ) "#Hl HΦ". wp_cmpxchg_fail. by iApply "HΦ". Qed.
+
+  (* Failing CmpXchg from a persistent points-to predicate in the _spatial_ context. *)
+  Lemma persistent_pointsto_cmpxchg_spatial l :
+    {{{ l ↦□ #1 }}} CmpXchg #l #0 #1 {{{ v, RET v; True }}}.
+  Proof. iIntros (Φ) "Hl HΦ". wp_cmpxchg_fail. by iApply "HΦ". Qed.
+
   (* Make sure that we can split a pointsto containing an evar. *)
   Lemma pointsto_evar_iSplit l v :
     l ↦{#1 / 2} v -∗  ∃ q, l ↦{#1 / 2 + q} v.
