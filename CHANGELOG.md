@@ -20,6 +20,10 @@ lemma.
   wrappers of instances `big_sep*_mono'` for `flip (⊢)` instead of `(⊢)`. (by
   Yusuke Matsushita)
 
+**Changes in `heap_lang`:**
+
+* Make `wp_cmpxchg_fail` work when the points-to is in the persistent context.
+
 **Infrastructure:**
 
 * Add support for compiling the packages with dune. (by Rodolphe Lepigre) 

@@ -378,8 +378,8 @@ Proof.
   * iIntros "[#$ He]". iIntros "_". iApply Hi. iApply "He". iFrame "#".
   * by apply sep_mono_r, wand_mono.
 Qed.
-Lemma tac_twp_load Δ s E i K b l q v Φ :
-  envs_lookup i Δ = Some (b, l ↦{q} v)%I →
+Lemma tac_twp_load Δ s E i K b l dq v Φ :
+  envs_lookup i Δ = Some (b, l ↦{dq} v)%I →
   envs_entails Δ (WP fill K (Val v) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (Load (LitV l)) @ s; E [{ Φ }]).
 Proof.
@@ -504,28 +504,33 @@ Proof.
     apply sep_mono_r. apply wand_mono; auto.
 Qed.
 
-Lemma tac_wp_cmpxchg_fail Δ Δ' s E i K l q v v1 v2 Φ :
+Lemma tac_wp_cmpxchg_fail Δ Δ' s E i K b l dq v v1 v2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
-  envs_lookup i Δ' = Some (false, l ↦{q} v)%I →
+  envs_lookup i Δ' = Some (b, l ↦{dq} v)%I →
   v ≠ v1 → vals_compare_safe v v1 →
   envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_unseal=> ?????.
+  rewrite envs_entails_unseal=> ???? Hi.
   rewrite -wp_bind. eapply wand_apply; first by apply wand_entails, wp_cmpxchg_fail.
   rewrite into_laterN_env_sound -later_sep envs_lookup_split //; simpl.
-  by apply later_mono, sep_mono_r, wand_mono.
+  apply later_mono. destruct b; simpl.
+  - iIntros "[#$ He]". iIntros "_". iApply Hi. iApply "He". iFrame "#".
+  - iIntros "[$ He]". iIntros "Hl". iApply Hi. iApply "He". iFrame "Hl".
 Qed.
-Lemma tac_twp_cmpxchg_fail Δ s E i K l q v v1 v2 Φ :
-  envs_lookup i Δ = Some (false, l ↦{q} v)%I →
+Lemma tac_twp_cmpxchg_fail Δ s E i K b l dq v v1 v2 Φ :
+  envs_lookup i Δ = Some (b, l ↦{dq} v)%I →
   v ≠ v1 → vals_compare_safe v v1 →
   envs_entails Δ (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_unseal. intros. rewrite -twp_bind.
+  rewrite envs_entails_unseal. intros ??? Hi. rewrite -twp_bind.
   eapply wand_apply; first by apply wand_entails, twp_cmpxchg_fail.
   (* [//] solves some evars and enables further simplification. *)
-  rewrite envs_lookup_split /= // /=. by do 2 f_equiv.
+  rewrite envs_lookup_split /= // /=.
+  destruct b; simpl.
+  - iIntros "[#$ He]". iIntros "_". iApply Hi. iApply "He". iFrame "#".
+  - iIntros "[$ He]". iIntros "Hl". iApply Hi. iApply "He". iFrame "Hl".
 Qed.
 
 Lemma tac_wp_cmpxchg_suc Δ Δ' s E i K l v v1 v2 Φ :
