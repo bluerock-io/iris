@@ -17,6 +17,10 @@ lemma.
 * Add lemma `na_own_empty` and persistence instance for `na_own p ∅` for
   non-atomic invariant tokens. (by Benjamin Peters)
 
+**Changes in `heap_lang`:**
+
+* Make `wp_cmpxchg_fail` work when the points-to is in the persistent context.
+
 **Infrastructure:**
 
 * Add support for compiling the packages with dune. (by Rodolphe Lepigre) 
