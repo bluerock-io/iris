@@ -675,12 +675,12 @@ Qed.
 Lemma big_opS_gset_to_gmap (X : gset K) (a : A) :
   ([^op set] x ∈ X, {[ x := a ]}) ≡ gset_to_gmap a X.
 Proof.
-  induction X as [|? ? ? IHX] using set_ind_L.
-  { intros ?; rewrite big_opS_empty gset_to_gmap_empty //=. }
+  induction X as [|x X ? IH] using set_ind_L.
+  { rewrite big_opS_empty gset_to_gmap_empty //. }
   rewrite big_opS_insert //.
   rewrite gset_to_gmap_union_singleton.
   rewrite insert_singleton_op; [|by rewrite lookup_gset_to_gmap_None].
-  by rewrite IHX.
+  by rewrite IH.
 Qed.
 
 Lemma big_opS_gset_to_gmap_L `{!LeibnizEquiv A} (X : gset K) (a : A) :
