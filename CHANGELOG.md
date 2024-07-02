@@ -16,6 +16,9 @@ lemma.
 
 * Add lemma `na_own_empty` and persistence instance for `na_own p ∅` for
   non-atomic invariant tokens. (by Benjamin Peters)
+* Add instances `big_sepL_flip_mono'`, `big_sepM_flip_mono'`, etc., which are
+  wrappers of instances `big_sep*_mono'` for `flip (⊢)` instead of `(⊢)`. (by
+  Yusuke Matsushita)
 
 **Infrastructure:**
 
