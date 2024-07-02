@@ -605,7 +605,7 @@ Ltac iForallRevert x :=
   | Prop =>
      revert x; first
        [eapply tac_pure_revert;
-         [tc_solve (* [FromAffinely], should never fail *)
+         [tc_solve (* [MakeAffinely], should never fail *)
          |]
        |err x]
   | _ =>
@@ -813,9 +813,6 @@ Ltac iSpecializePat_go H1 pats :=
   let Δ := iGetCtx in
   lazymatch pats with
     | [] => idtac
-    | SForall :: ?pats =>
-       idtac "[IPM] The * specialization pattern is deprecated because it is applied implicitly.";
-       iSpecializePat_go H1 pats
     | SIdent ?H2 [] :: ?pats =>
        (* If we not need to specialize [H2] we can avoid a lot of unncessary
        context manipulation. *)
@@ -974,7 +971,7 @@ Fixpoint use_tac_specialize_intuitionistic_helper {M}
     (Δ : envs M) (pats : list spec_pat) : bool :=
   match pats with
   | [] => false
-  | (SForall | SPureGoal _) :: pats =>
+  | SPureGoal _ :: pats =>
      use_tac_specialize_intuitionistic_helper Δ pats
   | SAutoFrame _ :: _ => true
   | SIdent H _ :: pats =>
@@ -1992,7 +1989,9 @@ Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(H
   end;
     [tc_solve ||
      let I := match goal with |- ElimInv _ ?I  _ _ _ _ _ => I end in
-     fail "iInv: cannot eliminate invariant" I
+     fail "iInv: cannot open invariant" I "in the current goal"
+       "(the goal should be a fancy update or WP,"
+       "or another modality that supports invariant opening)"
     |iSolveSideCondition
     |let R := fresh in intros R; pm_reduce;
      (* Now we are left proving [envs_entails Δ'' R]. *)

@@ -5,10 +5,30 @@ lemma.
 
 ## Iris master
 
+**Changes in `proofmode`:**
+
+* Remove the `*` specialization pattern. This pattern has been deprecated and a
+  no-op since 2017. See https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/41.
+* Improve the error message of `iInv` in case the goal does not support
+  invariant opening.
+* Change `iInduction` to always generate a magic wand instead of sometimes
+  generating an implication for reverted hypotheses.
+
 **Changes in `base_logic`:**
 
 * Add lemma `na_own_empty` and persistence instance for `na_own p ∅` for
   non-atomic invariant tokens. (by Benjamin Peters)
+* Add instances `big_sepL_flip_mono'`, `big_sepM_flip_mono'`, etc., which are
+  wrappers of instances `big_sep*_mono'` for `flip (⊢)` instead of `(⊢)`. (by
+  Yusuke Matsushita)
+
+**Changes in `heap_lang`:**
+
+* Make `wp_cmpxchg_fail` work when the points-to is in the persistent context.
+
+**Infrastructure:**
+
+* Add support for compiling the packages with dune. (by Rodolphe Lepigre) 
 
 ## Iris 4.2.0 (2024-04-12)
 

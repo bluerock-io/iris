@@ -658,7 +658,7 @@ Lemma test_iFrame_disjunction_3_evars (Φ : nat → PROP) P1 P2 P3 P4 :
   P1 ⊢ ∃ a, R a.
 Proof.
   intros ?. simpl. iIntros "HP1". iExists _.
-  Timeout 1 iFrame. (* The combination of evars and nested disjunctions used to
+  Timeout 2 iFrame. (* The combination of evars and nested disjunctions used to
   cause excessive backtracking during the construction of [Frame] instances,
   which made [iFrame] very slow. Above [Timeout] ensures [iFrame] now performs
   acceptably in this situation *)
@@ -1601,6 +1601,32 @@ Proof.
   (* If the BI is affine, no affine modality should be added *)
   iIntros (Hφ) "H". iRevert (Hφ). Show. done.
 Qed.
+
+Check "test_iInduction_revert_pure".
+Lemma test_iInduction_revert_pure (n : nat) (Hn : 0 < n) (P : nat → PROP) :
+  ⊢ P n.
+Proof.
+  (* Check that we consistently get [<affine> _ -∗], not [→] *)
+  iInduction n as [|n] "IH" forall (Hn); first lia.
+  Show.
+Restart.
+Proof.
+  iInduction n as [|n] "IH"; first lia.
+  Show.
+Abort.
+
+Check "test_iInduction_revert_pure_affine".
+Lemma test_iInduction_revert_pure_affine `{!BiAffine PROP}
+  (n : nat) (Hn : 0 < n) (P : nat → PROP) : ⊢ P n.
+Proof.
+  (* Check that we consistently get [-∗], not [→]; and no [<affine>] *)
+  iInduction n as [|n] "IH" forall (Hn); first lia.
+  Show.
+Restart.
+Proof.
+  iInduction n as [|n] "IH"; first lia.
+  Show.
+Abort.
 
 (* Check that when framing things under the □ modality, we do not add [emp] in
 affine BIs. *)

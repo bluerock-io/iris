@@ -130,6 +130,10 @@ Section sep_list.
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
            (big_opL (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_sepL_mono; intros; apply Hf. Qed.
+  Global Instance big_sepL_flip_mono' :
+    Proper (pointwise_relation _ (pointwise_relation _ (flip (⊢))) ==> (=) ==> flip (⊢))
+           (big_opL (@bi_sep PROP) (A:=A)).
+  Proof. solve_proper. Qed.
   Global Instance big_sepL_id_mono' :
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_sep PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
@@ -606,6 +610,11 @@ Section sep_list2.
       ==> (=) ==> (=) ==> (⊢))
            (big_sepL2 (PROP:=PROP) (A:=A) (B:=B)).
   Proof. intros f g Hf l1 ? <- l2 ? <-. apply big_sepL2_mono; intros; apply Hf. Qed.
+  Global Instance big_sepL2_flip_mono' :
+    Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (flip (⊢))))
+            ==> (=) ==> (=) ==> flip (⊢))
+           (big_sepL2 (PROP:=PROP) (A:=A) (B:=B)).
+  Proof. solve_proper. Qed.
   Global Instance big_sepL2_proper' :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (⊣⊢)))
       ==> (=) ==> (=) ==> (⊣⊢))
@@ -1352,6 +1361,10 @@ Section sep_map.
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
            (big_opM (@bi_sep PROP) (K:=K) (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_sepM_mono; intros; apply Hf. Qed.
+  Global Instance big_sepM_flip_mono' :
+    Proper (pointwise_relation _ (pointwise_relation _ (flip (⊢))) ==> (=) ==> flip (⊢))
+           (big_opM (@bi_sep PROP) (K:=K) (A:=A)).
+  Proof. solve_proper. Qed.
 
   Global Instance big_sepM_empty_persistent Φ :
     Persistent ([∗ map] k↦x ∈ ∅, Φ k x).
@@ -2082,9 +2095,15 @@ Section map2.
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (⊢)))
       ==> (=) ==> (=) ==> (⊢)) (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
   Proof. intros f g Hf m1 ? <- m2 ? <-. apply big_sepM2_mono; intros; apply Hf. Qed.
+  Global Instance big_sepM2_flip_mono' :
+    Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (flip (⊢))))
+            ==> (=) ==> (=) ==> flip (⊢))
+           (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
+  Proof. solve_proper. Qed.
   Global Instance big_sepM2_proper' :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (⊣⊢)))
-      ==> (=) ==> (=) ==> (⊣⊢)) (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
+            ==> (=) ==> (=) ==> (⊣⊢))
+           (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
   Proof. intros f g Hf m1 ? <- m2 ? <-. apply big_sepM2_proper; intros; apply Hf. Qed.
 
   (** Shows that some property [P] is closed under [big_sepM2]. Examples of [P]
@@ -2592,6 +2611,10 @@ Section gset.
   Global Instance big_sepS_mono' :
     Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepS_mono. Qed.
+  Global Instance big_sepS_flip_mono' :
+    Proper (pointwise_relation _ (flip (⊢)) ==> (=) ==> flip (⊢))
+           (big_opS (@bi_sep PROP) (A:=A)).
+  Proof. solve_proper. Qed.
 
   Global Instance big_sepS_empty_persistent Φ :
     Persistent ([∗ set] x ∈ ∅, Φ x).
@@ -2931,6 +2954,10 @@ Section gmultiset.
   Global Instance big_sepMS_mono' :
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opMS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepMS_mono. Qed.
+  Global Instance big_sepMS_flip_mono' :
+     Proper (pointwise_relation _ (flip (⊢)) ==> (=) ==> flip (⊢))
+            (big_opMS (@bi_sep PROP) (A:=A)).
+  Proof. solve_proper. Qed.
 
   Global Instance big_sepMS_empty_persistent Φ :
     Persistent ([∗ mset] x ∈ ∅, Φ x).
