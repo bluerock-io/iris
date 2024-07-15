@@ -6,7 +6,8 @@ lemma.
 ## Iris master
 
 **Changes in `algebra`:**
-* Add lemmas `big_opS_gset_to_gmap`, `big_opS_gset_to_gmap_L` which rewrite
+
+* Add lemmas `big_opS_gset_to_gmap` and `big_opS_gset_to_gmap_L`, which rewrite
   between `gset_to_gmap` and big set ops of singleton maps.  (by Isaac van
   Bakel)
 
