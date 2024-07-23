@@ -108,7 +108,7 @@ Ltac wp_value_head :=
   end.
 
 Ltac wp_finish :=
-  wp_expr_simpl;      (* simplify occurences of subst/fill *)
+  wp_expr_simpl;      (* simplify occurrences of subst/fill *)
   try wp_value_head;  (* in case we have reached a value, get rid of the WP *)
   pm_prettify.        (* prettify ▷s caused by [MaybeIntoLaterNEnvs] and
                          λs caused by wp_value *)
@@ -124,7 +124,7 @@ reduced. For example, you can write [wp_pure (EIf _ _ _)], which will search
 for an [EIf _ _ _] in the expression, and reduce it.
 
 The use of [open_constr] in this tactic is essential. It will convert all holes
-(i.e. [_]s) into evars, that later get unified when an occurences is found
+(i.e. [_]s) into evars, that later get unified when an occurrence is found
 (see [unify e' efoc] in the code below). *)
 Tactic Notation "wp_pure" open_constr(efoc) :=
   iStartProof;
@@ -728,7 +728,7 @@ Tactic Notation "wp_smart_apply" open_constr(lem) "as" "(" simple_intropattern(x
 
 (** Tactic tailored for atomic triples: the first, simple one just runs
 [iAuIntro] on the goal, as atomic triples always have an atomic update as their
-premise. The second one additionaly does some framing: it gets rid of [Hs] from
+premise. The second one additionally does some framing: it gets rid of [Hs] from
 the context, reducing clutter. You get them all back in the continuation of the
 atomic operation. *)
 Tactic Notation "awp_apply" open_constr(lem) :=

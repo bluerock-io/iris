@@ -5,7 +5,7 @@ From iris.prelude Require Import options.
 (** The authoritative camera with fractional authoritative elements *)
 (** The authoritative camera has 2 types of elements: the authoritative element
 [●{dq} a] and the fragment [◯ b] (of which there can be several). To enable
-sharing of the authoritative element [●{dq} a], it is equiped with a
+sharing of the authoritative element [●{dq} a], it is equipped with a
 discardable fraction [dq]. Updates are only possible with the full
 authoritative element [● a] (syntax for [●{#1} a]]), while fractional
 authoritative elements have agreement, i.e., [✓ (●{dq1} a1 ⋅ ●{dq2} a2) → a1 ≡

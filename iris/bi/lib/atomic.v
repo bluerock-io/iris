@@ -322,7 +322,7 @@ Section lemmas.
   Qed.
 
   (* Everything that fancy updates can eliminate without changing, atomic
-  accessors can eliminate as well.  This is a forwarding instance needed becuase
+  accessors can eliminate as well.  This is a forwarding instance needed because
   atomic_acc is becoming opaque. *)
   Global Instance elim_modal_acc p q φ P P' Eo Ei α Pas β Φ :
     (∀ Q, ElimModal φ p q P P' (|={Eo,Ei}=> Q) (|={Eo,Ei}=> Q)) →

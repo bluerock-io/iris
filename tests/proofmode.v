@@ -673,7 +673,7 @@ Proof.
   _exactly_ once. This test shows that after finding a way to frame "HΦ1" on
   the left-hand side of the disjunction (and instantiating [n = 0] and [m = 1])
   the second way of framing "HΦ1" in the left-hand side is not considered,
-  even though this would cause the framing to be succesful on the right-hand
+  even though this would cause the framing to be successful on the right-hand
   side. Considering multiple successes can cause exponential blowups, see above *)
 Abort.
 
