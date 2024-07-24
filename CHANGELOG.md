@@ -698,7 +698,7 @@ everyone involved!
 
 * Define non-expansive instance for `dom`. This, in particular, makes it
   possible to `iRewrite` below `dom` (even if the `dom` appears in `⌜ _ ⌝`).
-* Generalize the authorative elements of `gmap_view` to be parameterized by a
+* Generalize the authoritative elements of `gmap_view` to be parameterized by a
   [discardable fraction](iris/algebra/dfrac.v) (`dfrac`) instead of a fraction
   (`frac`). Lemmas affected by this have been renamed such that the "frac" in
   their name has been changed into "dfrac". (by Simon Friis Vindum)
@@ -745,7 +745,7 @@ everyone involved!
   propositions that want to support framing are expected to register an
   appropriate instance themselves. HeapLang and gen_heap `↦` still support
   framing, but the other fractional propositions in Iris do not.
-* Strenghten the `Persistent`/`Affine`/`Timeless` results for big ops. Add a `'`
+* Strengthen the `Persistent`/`Affine`/`Timeless` results for big ops. Add a `'`
   to the name of the weaker results, which remain to be used as instances.
 
 **Changes in `heap_lang`:**
@@ -803,7 +803,7 @@ Chajed, and Yusuke Matsushita. Thanks a lot to everyone involved!
 
 **Changes in `algebra`:**
 
-* Generalize the authorative elements of the `view`, `auth` and `gset_bij`
+* Generalize the authoritative elements of the `view`, `auth` and `gset_bij`
   cameras to be parameterized by a [discardable fraction](iris/algebra/dfrac.v)
   (`dfrac`) instead of a fraction (`frac`). Normal fractions are now denoted
   `●{#q} a` and `●V{#q} a`. Lemmas affected by this have been renamed such that
@@ -911,7 +911,7 @@ Chajed, and Yusuke Matsushita. Thanks a lot to everyone involved!
 * Add `ghost_map`, a logic-level library for a `gmap K V` with an authoritative
   view and per-element points-to facts written `k ↪[γ] w`.
 * Generalize the soundness lemma of the base logic `step_fupdN_soundness`.
-  It applies even if invariants stay open accross an arbitrary number of laters.
+  It applies even if invariants stay open across an arbitrary number of laters.
   (by Jacques-Henri Jourdan)
 * Rename those `*G` typeclasses that must be global singletons to `*GS`, and
   their corresponding `preG` class to `GpreS`. Affects `invG`, `irisG`,
@@ -921,7 +921,7 @@ Chajed, and Yusuke Matsushita. Thanks a lot to everyone involved!
 
 * Change definition of weakest precondition to use a variable number of laters
   (i.e., logical steps) for each physical step of the operational semantics,
-  depending on the number of physical steps executed since the begining of the
+  depending on the number of physical steps executed since the beginning of the
   execution of the program. See merge request [!595](https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/595).
   This implies several API-breaking changes, which can be easily fixed in client
   formalizations in a backward compatible manner as follows:

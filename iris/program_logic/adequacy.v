@@ -6,7 +6,7 @@ From iris.prelude Require Import options.
 Import uPred.
 
 (** This file contains the adequacy statements of the Iris program logic. First
-we prove a number of auxilary results. *)
+we prove a number of auxiliary results. *)
 
 Section adequacy.
 Context `{!irisGS_gen hlc Λ Σ}.

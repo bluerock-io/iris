@@ -250,7 +250,7 @@ theories/base_logic/lib is for constructions in the base logic (using own)
 
 ### Iris lemmas: `-∗` vs `⊢`
 
-* For low-level lemmas, in particular if there is a high likelyhood someone would want to rewrite with it / use them in non-proofmode goals (e.g. modality intro rules), use `⊢`
+* For low-level lemmas, in particular if there is a high likelihood someone would want to rewrite with it / use them in non-proofmode goals (e.g. modality intro rules), use `⊢`
   * `P ⊢ |==£> P`
   * `(|==£> |==£> P) ⊢ |==£> P`
   * `▷ own γ a ⊢ ◇ ∃ b, own γ b ∧ ▷ (a ≡ b)`

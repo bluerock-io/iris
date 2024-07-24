@@ -12,7 +12,7 @@ Structure biIndex :=
 Global Existing Instances bi_index_inhabited bi_index_rel bi_index_rel_preorder.
 
 (* We may want to instantiate monPred with the reflexivity relation in
-   the case where there is no relevent order. In that case, there is
+   the case where there is no relevant order. In that case, there is
    no bottom element, so that we do not want to force any BI index to
    have one. *)
 Class BiIndexBottom {I : biIndex} (bot : I) :=

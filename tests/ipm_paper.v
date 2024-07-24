@@ -104,7 +104,7 @@ End list_reverse.
 
 (** The proofs from Section 5 *)
 (** This part contains a formalization of the monotone counter, but with an
-explicit contruction of the monoid, as we have also done in the proof mode
+explicit construction of the monoid, as we have also done in the proof mode
 paper. This should simplify explaining and understanding what is happening.
 A version that uses the authoritative monoid and natural number monoid
 under max can be found in [theories/heap_lang/lib/counter.v]. *)

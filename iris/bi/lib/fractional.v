@@ -26,7 +26,7 @@ Class AsFractional {PROP : bi} (P : PROP) (Φ : Qp → PROP) (q : Qp) := {
 Global Arguments AsFractional {_} _%I _%I _%Qp.
 Global Hint Mode AsFractional - ! - - : typeclass_instances.
 
-(** The class [FrameFractionalQp] is used for fractional framing, it substracts
+(** The class [FrameFractionalQp] is used for fractional framing, it subtracts
 the fractional of the hypothesis from the goal: it computes [r := qP - qR].
 See [frame_fractional] for how it is used. *)
 Class FrameFractionalQp (qR qP r : Qp) :=

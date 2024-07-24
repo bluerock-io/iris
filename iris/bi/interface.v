@@ -195,7 +195,7 @@ Section bi_mixin.
   Qed.
 
   (** We equip any BI with a later modality. This avoids an additional layer in
-  the BI hierachy and improves performance significantly (see Iris issue #303).
+  the BI hierarchy and improves performance significantly (see Iris issue #303).
 
   For non step-indexed BIs the later modality can simply be defined as the
   identity function, as the Löb axiom or contractiveness of later is not part of
