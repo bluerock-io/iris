@@ -19,7 +19,7 @@ trigger:
     ORIGIN_CI_PIPELINE_SOURCE: $CI_PIPELINE_SOURCE
     ORIGIN_CI_PIPELINE_URL: $CI_PIPELINE_URL
     ORIGIN_CI_PROJECT_PATH: $CI_PROJECT_PATH
-    ORIGIN_CI_PROJECT_TITLE: formal-methods/$CI_PROJECT_TITLE
+    ORIGIN_CI_PROJECT_TITLE: $CI_PROJECT_TITLE
   trigger:
     project: bedrocksystems/formal-methods/fm-ci
     branch: main
