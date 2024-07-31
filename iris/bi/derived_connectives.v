@@ -2,6 +2,8 @@ From iris.algebra Require Import monoid.
 From iris.bi Require Export interface.
 From iris.prelude Require Import options.
 
+#[local] Set Typeclasses Strict Resolution.
+
 Definition bi_iff {PROP : bi} (P Q : PROP) : PROP := (P → Q) ∧ (Q → P).
 Global Arguments bi_iff {_} _%I _%I : simpl never.
 Global Instance: Params (@bi_iff) 1 := {}.
@@ -17,7 +19,7 @@ Notation "P ∗-∗ Q" := (⊢ P ∗-∗ Q) : stdpp_scope.
 Class Persistent {PROP : bi} (P : PROP) := persistent : P ⊢ <pers> P.
 Global Arguments Persistent {_} _%I : simpl never.
 Global Arguments persistent {_} _%I {_}.
-Global Hint Mode Persistent + ! : typeclass_instances.
+Global Hint Mode Persistent - ! : typeclass_instances.
 Global Instance: Params (@Persistent) 1 := {}.
 
 Definition bi_affinely {PROP : bi} (P : PROP) : PROP := emp ∧ P.
@@ -29,7 +31,7 @@ Notation "'<affine>' P" := (bi_affinely P) : bi_scope.
 Class Affine {PROP : bi} (Q : PROP) := affine : Q ⊢ emp.
 Global Arguments Affine {_} _%I : simpl never.
 Global Arguments affine {_} _%I {_}.
-Global Hint Mode Affine + ! : typeclass_instances.
+Global Hint Mode Affine - ! : typeclass_instances.
 
 Definition bi_absorbingly {PROP : bi} (P : PROP) : PROP := True ∗ P.
 Global Arguments bi_absorbingly {_} _%I : simpl never.
@@ -40,7 +42,7 @@ Notation "'<absorb>' P" := (bi_absorbingly P) : bi_scope.
 Class Absorbing {PROP : bi} (P : PROP) := absorbing : <absorb> P ⊢ P.
 Global Arguments Absorbing {_} _%I : simpl never.
 Global Arguments absorbing {_} _%I.
-Global Hint Mode Absorbing + ! : typeclass_instances.
+Global Hint Mode Absorbing - ! : typeclass_instances.
 
 Definition bi_persistently_if {PROP : bi} (p : bool) (P : PROP) : PROP :=
   (if p then <pers> P else P)%I.
@@ -111,7 +113,7 @@ Global Typeclasses Opaque bi_except_0.
 Class Timeless {PROP : bi} (P : PROP) := timeless : ▷ P ⊢ ◇ P.
 Global Arguments Timeless {_} _%I : simpl never.
 Global Arguments timeless {_} _%I {_}.
-Global Hint Mode Timeless + ! : typeclass_instances.
+Global Hint Mode Timeless - ! : typeclass_instances.
 Global Instance: Params (@Timeless) 1 := {}.
 
 (** An optional precondition [mP] to [Q].
