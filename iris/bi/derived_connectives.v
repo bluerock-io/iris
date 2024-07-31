@@ -2,6 +2,8 @@ From iris.algebra Require Import monoid.
 From iris.bi Require Export interface.
 From iris.prelude Require Import options.
 
+#[local] Set Typeclasses Strict Resolution.
+
 Definition bi_iff {PROP : bi} (P Q : PROP) : PROP := (P → Q) ∧ (Q → P).
 Global Arguments bi_iff {_} _%_I _%_I : simpl never.
 Global Instance: Params (@bi_iff) 1 := {}.
@@ -17,7 +19,7 @@ Notation "P ∗-∗ Q" := (⊢ P ∗-∗ Q) : stdpp_scope.
 Class Persistent {PROP : bi} (P : PROP) := persistent : P ⊢ <pers> P.
 Global Arguments Persistent {_} _%_I : simpl never.
 Global Arguments persistent {_} _%_I {_}.
-Global Hint Mode Persistent + ! : typeclass_instances.
+Global Hint Mode Persistent - ! : typeclass_instances.
 Global Instance: Params (@Persistent) 1 := {}.
 Global Hint Extern 100 (Persistent (match ?x with _ => _ end)) =>
   destruct x : typeclass_instances.
@@ -31,7 +33,7 @@ Notation "'<affine>' P" := (bi_affinely P) : bi_scope.
 Class Affine {PROP : bi} (Q : PROP) := affine : Q ⊢ emp.
 Global Arguments Affine {_} _%_I : simpl never.
 Global Arguments affine {_} _%_I {_}.
-Global Hint Mode Affine + ! : typeclass_instances.
+Global Hint Mode Affine - ! : typeclass_instances.
 Global Hint Extern 100 (Affine (match ?x with _ => _ end)) =>
   destruct x : typeclass_instances.
 
@@ -44,7 +46,7 @@ Notation "'<absorb>' P" := (bi_absorbingly P) : bi_scope.
 Class Absorbing {PROP : bi} (P : PROP) := absorbing : <absorb> P ⊢ P.
 Global Arguments Absorbing {_} _%_I : simpl never.
 Global Arguments absorbing {_} _%_I.
-Global Hint Mode Absorbing + ! : typeclass_instances.
+Global Hint Mode Absorbing - ! : typeclass_instances.
 Global Hint Extern 100 (Absorbing (match ?x with _ => _ end)) =>
   destruct x : typeclass_instances.
 
@@ -117,7 +119,7 @@ Global Typeclasses Opaque bi_except_0.
 Class Timeless {PROP : bi} (P : PROP) := timeless : ▷ P ⊢ ◇ P.
 Global Arguments Timeless {_} _%_I : simpl never.
 Global Arguments timeless {_} _%_I {_}.
-Global Hint Mode Timeless + ! : typeclass_instances.
+Global Hint Mode Timeless - ! : typeclass_instances.
 Global Instance: Params (@Timeless) 1 := {}.
 Global Hint Extern 100 (Timeless (match ?x with _ => _ end)) =>
   destruct x : typeclass_instances.
