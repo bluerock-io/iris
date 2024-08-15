@@ -36,6 +36,10 @@ lemma.
 
 * Add support for compiling the packages with dune. (by Rodolphe Lepigre) 
 
+**Changes in `bi`:**
+
+* For derived connectives, add TC hints to destruct matches. (by Sanjit Bhat)
+
 ## Iris 4.2.0 (2024-04-12)
 
 The highlights of this release are:
