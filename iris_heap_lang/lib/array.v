@@ -57,7 +57,7 @@ Section proof.
     [[{ l ↦∗ vs }]] array_free #l #n @ s; E [[{ RET #(); True }]].
   Proof.
     iIntros (Hlen Φ) "Hl HΦ".
-    iInduction vs as [|v vs] "IH" forall (l n Hlen); subst n; wp_rec; wp_pures.
+    iInduction vs as [|v vs IH] forall (l n Hlen); subst n; wp_rec; wp_pures.
     { iApply "HΦ". done. }
     iDestruct (array_cons with "Hl") as "[Hv Hl]".
     wp_free. wp_pures. iApply ("IH" with "[] Hl"); eauto with lia.
@@ -77,7 +77,7 @@ Section proof.
     [[{ RET #(); dst ↦∗ vsrc ∗ src ↦∗{dq} vsrc }]].
   Proof.
     iIntros (Hvdst Hvsrc Φ) "[Hdst Hsrc] HΦ".
-    iInduction vdst as [|v1 vdst] "IH" forall (n dst src vsrc Hvdst Hvsrc);
+    iInduction vdst as [|v1 vdst IH] forall (n dst src vsrc Hvdst Hvsrc);
       destruct vsrc as [|v2 vsrc]; simplify_eq/=; try lia; wp_rec; wp_pures.
     { iApply "HΦ". auto with iFrame. }
     iDestruct (array_cons with "Hdst") as "[Hv1 Hdst]".
@@ -139,7 +139,7 @@ Section proof.
       }}}.
     Proof.
       iIntros (Hn Φ) "[Hl Hf] HΦ".
-      iInduction k as [|k] "IH" forall (i Hn); simplify_eq/=; wp_rec; wp_pures.
+      iInduction k as [|k IH] forall (i Hn); simplify_eq/=; wp_rec; wp_pures.
       { rewrite bool_decide_eq_true_2; last (repeat f_equal; lia).
         wp_pures. iApply ("HΦ" $! []). auto. }
       rewrite bool_decide_eq_false_2; last naive_solver lia.
@@ -166,7 +166,7 @@ Section proof.
       }]].
     Proof.
       iIntros (Hn Φ) "[Hl Hf] HΦ".
-      iInduction k as [|k] "IH" forall (i Hn); simplify_eq/=; wp_rec; wp_pures.
+      iInduction k as [|k IH] forall (i Hn); simplify_eq/=; wp_rec; wp_pures.
       { rewrite bool_decide_eq_true_2; last (repeat f_equal; lia).
         wp_pures. iApply ("HΦ" $! []). auto. }
       rewrite bool_decide_eq_false_2; last naive_solver lia.
@@ -232,7 +232,7 @@ Section proof.
       ([∗ list] k↦v ∈ vs, ∃ x, ⌜v = g x⌝ ∗ Q k x) -∗
       ∃ xs, ⌜ vs = g <$> xs ⌝ ∗ [∗ list] k↦x ∈ xs, Q k x.
     Proof.
-      iIntros "Hvs". iInduction vs as [|v vs] "IH" forall (Q); simpl.
+      iIntros "Hvs". iInduction vs as [|v vs IH] forall (Q); simpl.
       { iExists []. by auto. }
       iDestruct "Hvs" as "[(%x & -> & Hv) Hvs]".
       iDestruct ("IH" with "Hvs") as (xs ->) "Hxs".

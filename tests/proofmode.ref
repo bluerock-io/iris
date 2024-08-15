@@ -436,15 +436,15 @@ Tactic failure: iCombine: cannot find 'gives' clause for hypotheses
 1 goal
   
   PROP : bi
-  l, t1 : tree
+  l, r : tree
   Φ : tree → PROP
   ============================
   "Hleaf" : Φ leaf
-  "Hnode" : ∀ l0 r : tree, Φ l0 -∗ Φ r -∗ Φ (node l0 r)
-  "IH" : Φ l
-  "IH1" : Φ t1
+  "Hnode" : ∀ l0 r0 : tree, Φ l0 -∗ Φ r0 -∗ Φ (node l0 r0)
+  "IHl" : Φ l
+  "IHr" : Φ r
   --------------------------------------□
-  Φ (node l t1)
+  Φ (node l r)
 The command has indeed failed with message:
 Tactic failure: iSpecialize: cannot instantiate (∀ _ : φ, P -∗ False)%I with
 P.

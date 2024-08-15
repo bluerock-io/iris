@@ -96,7 +96,7 @@ Lemma pointsto_seq_array l dq v n :
   ([∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦{dq} v) -∗
   l ↦∗{dq} replicate n v.
 Proof.
-  rewrite /array. iInduction n as [|n'] "IH" forall (l); simpl.
+  rewrite /array. iInduction n as [|n' IH] forall (l); simpl.
   { done. }
   iIntros "[$ Hl]". rewrite -fmap_S_seq big_sepL_fmap.
   setoid_rewrite Nat2Z.inj_succ. setoid_rewrite <-Z.add_1_l.

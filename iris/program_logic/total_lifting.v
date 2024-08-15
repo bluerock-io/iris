@@ -82,7 +82,7 @@ Lemma twp_pure_step `{!Inhabited (state Λ)} s E e1 e2 φ n Φ :
   WP e2 @ s; E [{ Φ }] ⊢ WP e1 @ s; E [{ Φ }].
 Proof.
   iIntros (Hexec Hφ) "Hwp". specialize (Hexec Hφ).
-  iInduction Hexec as [e|n e1 e2 e3 [Hsafe ?]] "IH"; simpl; first done.
+  iInduction Hexec as [e|n e1 e2 e3 [Hsafe ?] ? IH]; simpl; first done.
   iApply twp_lift_pure_det_step_no_fork; [done|naive_solver|].
   iModIntro. by iApply "IH".
 Qed.

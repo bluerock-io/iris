@@ -306,7 +306,7 @@ Section general.
   Lemma bi_nsteps_trans n m x y z :
     bi_nsteps R n x y -∗ bi_nsteps R m y z -∗ bi_nsteps R (n + m) x z.
   Proof.
-    iInduction n as [|n] "IH" forall (x); simpl.
+    iInduction n as [|n IH] forall (x); simpl.
     - iIntros "Heq". iRewrite "Heq". auto.
     - iDestruct 1 as (x') "[Hxx' Hx'y]". iIntros "Hyz".
       iExists x'. iFrame "Hxx'". iApply ("IH" with "Hx'y Hyz").
@@ -323,7 +323,7 @@ Section general.
   Lemma bi_nsteps_add_inv n m x z :
     bi_nsteps R (n + m) x z ⊢ ∃ y, bi_nsteps R n x y ∗ bi_nsteps R m y z.
   Proof.
-    iInduction n as [|n] "IH" forall (x).
+    iInduction n as [|n IH] forall (x).
     - iIntros "Hxz". iExists x. auto.
     - iDestruct 1 as (y) "[Hxy Hyz]".
       iDestruct ("IH" with "Hyz") as (y') "[Hyy' Hy'z]".
@@ -368,7 +368,7 @@ Section general.
       iExists (S n). iSplitR; first auto with lia.
       iApply (bi_nsteps_l with "Hxx' Hx'y").
     - iDestruct 1 as (n ?) "Hxy".
-      iInduction n as [|n] "IH" forall (y). { lia. }
+      iInduction n as [|n IH] forall (y). { lia. }
       rewrite bi_nsteps_inv_r.
       iDestruct "Hxy" as (x') "[Hxx' Hx'y]".
       destruct n.
@@ -387,7 +387,7 @@ Section general.
       iDestruct "IH" as (n) "Hx'y".
       iExists (S n). iApply (bi_nsteps_l with "Hxx' Hx'y").
     - iDestruct 1 as (n) "Hxy".
-      iInduction n as [|n] "IH" forall (y).
+      iInduction n as [|n IH] forall (y).
       { simpl. iRewrite "Hxy". iApply bi_rtc_refl. }
       iDestruct (bi_nsteps_inv_r with "Hxy") as (x') "[Hxx' Hx'y]".
       iApply (bi_rtc_r with "[Hxx'] Hx'y").

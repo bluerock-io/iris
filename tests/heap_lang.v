@@ -106,7 +106,7 @@ Section tests.
     Φ #(n2 - 1) -∗ WP FindPred #n2 #n1 @ E [{ Φ }].
   Proof.
     iIntros (Hn) "HΦ".
-    iInduction (Z.gt_wf n2 n1) as [n1' _] "IH" forall (Hn).
+    iInduction (Z.gt_wf n2 n1) as [n1' _ IH] forall (Hn).
     wp_rec. wp_pures. case_bool_decide; wp_if.
     - iApply ("IH" with "[%] [%] HΦ"); lia.
     - by assert (n1' = n2 - 1)%Z as -> by lia.
@@ -133,12 +133,12 @@ Section tests.
   side-condition of the [=] operator. *)
   Lemma Id_wp (n : nat) : ⊢ WP Id #n {{ v, ⌜ v = #() ⌝ }}.
   Proof.
-    iInduction n as [|n] "IH"; wp_rec; wp_pures; first done.
+    iInduction n as [|n IH]; wp_rec; wp_pures; first done.
     by replace (S n - 1)%Z with (n:Z) by lia.
   Qed.
   Lemma Id_twp (n : nat) : ⊢ WP Id #n [{ v, ⌜ v = #() ⌝ }].
   Proof.
-    iInduction n as [|n] "IH"; wp_rec; wp_pures; first done.
+    iInduction n as [|n IH]; wp_rec; wp_pures; first done.
     by replace (S n - 1)%Z with (n:Z) by lia.
   Qed.
 

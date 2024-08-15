@@ -989,14 +989,14 @@ Lemma test_iInduction_wf (x : nat) P Q :
   □ P -∗ Q -∗ ⌜ (x + 0 = x)%nat ⌝.
 Proof.
   iIntros "#HP HQ".
-  iInduction (lt_wf x) as [[|x] _] "IH"; simpl; first done.
+  iInduction (lt_wf x) as [[|x] _ IH]; simpl; first done.
   rewrite (inj_iff S). by iApply ("IH" with "[%]"); first lia.
 Qed.
 
 Lemma test_iInduction_using (m : gmap nat nat) (Φ : nat → nat → PROP) y :
   ([∗ map] x ↦ i ∈ m, Φ y x) -∗ ([∗ map] x ↦ i ∈ m, emp ∗ Φ y x).
 Proof.
-  iIntros "Hm". iInduction m as [|i x m] "IH" using map_ind forall(y).
+  iIntros "Hm". iInduction m as [|i x m ? IH] using map_ind forall (y).
   - by rewrite !big_sepM_empty.
   - rewrite !big_sepM_insert //. iDestruct "Hm" as "[$ ?]".
     by iApply "IH".
@@ -1010,7 +1010,7 @@ Lemma test_iInduction_big_sepL_impl' {A} (Φ Ψ : nat → A → PROP) (l1 l2 : l
   [∗ list] k↦x ∈ l2, Ψ k x.
 Proof.
   iIntros (Hlen) "Hl #Himpl".
-  iInduction l1 as [|x1 l1] "IH" forall (Φ Ψ l2 Hlen).
+  iInduction l1 as [|x1 l1 IH] forall (Φ Ψ l2 Hlen).
 Abort.
 
 Inductive tree := leaf | node (l r: tree).
@@ -1019,10 +1019,10 @@ Check "test_iInduction_multiple_IHs".
 Lemma test_iInduction_multiple_IHs (t: tree) (Φ : tree → PROP) :
   □ Φ leaf -∗ □ (∀ l r, Φ l -∗ Φ r -∗ Φ (node l r)) -∗ Φ t.
 Proof.
-  iIntros "#Hleaf #Hnode". iInduction t as [|l r] "IH".
+  iIntros "#Hleaf #Hnode". iInduction t as [|l IHl r IHr].
   - iExact "Hleaf".
-  - Show. (* should have "IH" and "IH1", since [node] has two trees *)
-    iApply ("Hnode" with "IH IH1").
+  - Show. (* should have "IHl" and "IHr", since [node] has two trees *)
+    iApply ("Hnode" with "IHl IHr").
 Qed.
 
 Lemma test_iIntros_start_proof :
@@ -1619,11 +1619,11 @@ Lemma test_iInduction_revert_pure (n : nat) (Hn : 0 < n) (P : nat → PROP) :
   ⊢ P n.
 Proof.
   (* Check that we consistently get [<affine> _ -∗], not [→] *)
-  iInduction n as [|n] "IH" forall (Hn); first lia.
+  iInduction n as [|n IH] forall (Hn); first lia.
   Show.
 Restart.
 Proof.
-  iInduction n as [|n] "IH"; first lia.
+  iInduction n as [|n IH]; first lia.
   Show.
 Abort.
 
@@ -1632,11 +1632,11 @@ Lemma test_iInduction_revert_pure_affine `{!BiAffine PROP}
   (n : nat) (Hn : 0 < n) (P : nat → PROP) : ⊢ P n.
 Proof.
   (* Check that we consistently get [-∗], not [→]; and no [<affine>] *)
-  iInduction n as [|n] "IH" forall (Hn); first lia.
+  iInduction n as [|n IH] forall (Hn); first lia.
   Show.
 Restart.
 Proof.
-  iInduction n as [|n] "IH"; first lia.
+  iInduction n as [|n IH]; first lia.
   Show.
 Abort.
 
@@ -2054,7 +2054,7 @@ Check "iInduction_wrong_sel_pat".
 Lemma iInduction_wrong_sel_pat (n m : nat) (P Q : nat → PROP) :
   ⌜ n = m ⌝ -∗ P n -∗ P m.
 Proof.
-  Fail iInduction n as [|n] "IH" forall m.
+  Fail iInduction n as [|n IH] forall m.
 Abort.
 
 Check "test_iIntros_let_entails_fail".
@@ -2287,7 +2287,7 @@ Section mutual_induction.
     □ (∀ l, (∀ x, ⌜ x ∈ l ⌝ → P x) -∗ P (Tree l)) -∗
     ∀ t, P t.
   Proof.
-    iIntros "#H" (t). iInduction t as [] "IH".
+    iIntros "#H" (t). iInduction t as [l IH].
     Show. (* make sure that the induction hypothesis is exactly what we want *)
     iApply "H". iIntros (x ?). by iApply (big_sepL_elem_of with "IH").
   Qed.
@@ -2314,7 +2314,7 @@ Section mutual_induction.
     ∀ t, P t.
   Proof.
     iIntros "#H" (t).
-    Fail iInduction t as [] "IH" using ntree_ind_alt.
+    Fail iInduction t as [l IH] using ntree_ind_alt.
   Abort.
 End mutual_induction.
 

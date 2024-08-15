@@ -379,7 +379,7 @@ Module le_upd.
     iPoseProof (H C) as "Hc". iSpecialize ("Hc" with "H◯").
     iPoseProof (le_upd_elim_complete m with "H● Hc") as "H".
     simpl. iMod "H". iModIntro. iNext.
-    clear H. iInduction m as [|m] "IH"; simpl; [done|].
+    clear H. iInduction m as [|m IH]; simpl; [done|].
     iMod "H". iNext. by iApply "IH".
   Qed.
 End le_upd.

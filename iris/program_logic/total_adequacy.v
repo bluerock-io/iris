@@ -98,7 +98,7 @@ Proof.
   iMod ("IH" with "[% //]") as "($ & Hσ & [IH _] & IHfork)".
   iModIntro. iExists (length efs + nt). iFrame "Hσ".
   iApply (twptp_app [_] with "(IH [//])").
-  clear. iInduction efs as [|e efs] "IH"; simpl.
+  clear. iInduction efs as [|e efs IH]; simpl.
   { rewrite twptp_unfold /twptp_pre. iIntros (t2 σ1 ns κ κs σ2 nt1 Hstep).
     destruct Hstep; simplify_eq/=; discriminate_list. }
   iDestruct "IHfork" as "[[IH' _] IHfork]".
