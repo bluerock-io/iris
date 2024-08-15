@@ -1929,6 +1929,13 @@ Check "iRevert_fail".
 Lemma iRevert_fail P : P -∗ P.
 Proof. Fail iRevert "H". Abort.
 
+Check "iDestruct_exist_not_fresh_fail".
+Lemma iDestruct_exist_not_fresh_fail P (Φ : nat → PROP) :
+  P ∗ (∃ y, Φ y) -∗ ∃ x, P ∗ Φ x.
+Proof.
+  iIntros "[H HP2]". Fail iDestruct "HP2" as "[%x H]".
+Abort.
+
 Check "iDestruct_fail".
 Lemma iDestruct_fail P : P -∗ <absorb> P.
 Proof.
