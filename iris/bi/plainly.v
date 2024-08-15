@@ -107,6 +107,8 @@ Global Arguments Plain {_ _} _%I : simpl never.
 Global Arguments plain {_ _} _%I {_}.
 Global Hint Mode Plain + - ! : typeclass_instances.
 Global Instance: Params (@Plain) 1 := {}.
+Global Hint Extern 100 (Plain (match ?x with _ => _ end)) =>
+  destruct x : typeclass_instances.
 
 Definition plainly_if {PROP: bi} `{!BiPlainly PROP} (p : bool) (P : PROP) : PROP :=
   (if p then ■ P else P)%I.
