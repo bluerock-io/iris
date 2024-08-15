@@ -74,10 +74,44 @@ Module StringToIdent.
                    Ltac1.apply r [Ltac1.of_ident ident] Ltac1.run).
 End StringToIdent.
 
+Module IdentToString.
+  Import Ltac2.
+
+  Ltac2 char_to_coq_byte (c : char) : constr :=
+    let (ind, inst) :=
+      match Constr.Unsafe.kind constr:(byte) with
+      | Constr.Unsafe.Ind ind inst => (ind, inst)
+      | _ => Control.zero (Invalid_argument None)
+      end
+    in
+    let c := Constr.Unsafe.constructor ind (Char.to_int c) in
+    Constr.Unsafe.make (Constr.Unsafe.Constructor c inst).
+
+  Ltac2 string_to_coq_string (s : string) : constr :=
+    let len := String.length s in
+    let rec to_string acc i :=
+      if Int.equal i -1 then acc else
+      let c := String.get s i in
+      let byte := char_to_coq_byte c in
+      let a := compute constr:(Ascii.ascii_of_byte $byte) in
+      to_string constr:(String $a $acc) (Int.sub i 1)
+    in
+    to_string constr:(EmptyString) (Int.sub len 1).
+
+  Ltac2 ident_to_string (id : ident) : constr :=
+    string_to_coq_string (Ident.to_string id).
+
+  Ltac ident_to_string_cps :=
+    ltac2:(id r |- let id := Option.get (Ltac1.to_ident id) in
+                   let s := ident_to_string id in
+                   Ltac1.apply r [Ltac1.of_constr s] Ltac1.run).
+End IdentToString.
+
 (** Finally we wrap everything up intro a tactic that renames a variable given
 by ident [id] into the name given by string [s]. *)
 Ltac rename_by_string id s :=
   StringToIdent.string_to_ident_cps s ltac:(fun x => rename id into x).
 
-(* We also directly expose the CPS primitive. *)
+(* We also directly expose the CPS primitives. *)
 Ltac string_to_ident_cps := StringToIdent.string_to_ident_cps.
+Ltac ident_to_string_cps := IdentToString.ident_to_string_cps.
