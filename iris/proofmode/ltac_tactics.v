@@ -1281,7 +1281,7 @@ Local Tactic Notation "iExistDestruct" constr(H)
     intros _;
     let y := fresh name in
     intros y; pm_reduce;
-    match goal with
+    lazymatch goal with
     | |- False =>
       let Hx := pretty_ident Hx in
       fail "iExistDestruct:" Hx "not fresh"

@@ -1030,6 +1030,10 @@ Tactic failure: iPoseProof: "H1" not fresh.
      : string
 The command has indeed failed with message:
 Tactic failure: iElaborateSelPat: "H" not found.
+"iDestruct_exist_not_fresh_fail"
+     : string
+The command has indeed failed with message:
+Tactic failure: iExistDestruct: "H" not fresh.
 "iDestruct_fail"
      : string
 The command has indeed failed with message:
