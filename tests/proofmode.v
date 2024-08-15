@@ -1311,6 +1311,18 @@ Check "test_iSimpl_in4".
 Lemma test_iSimpl_in4 x y : ⌜ (3 + x)%nat = y ⌝ ⊢@{PROP} ⌜ S (S (S x)) = y ⌝.
 Proof. iIntros "H". Fail iSimpl in "%". by iSimpl in "H". Qed.
 
+Section iUnfold.
+  Definition def1 := 10.
+  Definition def2 := def1.
+  Check "test_iUnfold".
+  Lemma test_iUnfold : def2 = 10 → ⊢@{PROP} ⌜ def2 = 10 ⌝.
+  Proof. intros Hdef. iUnfold def2, def1. Show. done. Qed.
+
+  Check "test_iUnfold_in".
+  Lemma test_iUnfold_in : def2 = 10 → ⌜ def2 = 10 ⌝ ⊢@{PROP} ⌜ def2 = 10 ⌝.
+  Proof. iIntros "%Hdef Hdef". iUnfold def2, def1 in "Hdef". Show. done. Qed.
+End iUnfold.
+
 Check "test_iRename".
 Lemma test_iRename P : □P -∗ P.
 Proof. iIntros "#H". iRename "H" into "X". Show. iExact "X". Qed.
