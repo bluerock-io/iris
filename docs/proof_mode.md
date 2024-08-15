@@ -240,18 +240,26 @@ Induction
   + `iLöb as "IH" forall (x1 ... xn) "selpat"` : perform Löb induction,
   generalizing over the Coq level variables `x1 ... xn`, the hypotheses given by
   the selection pattern `selpat`, and the spatial context as usual.
-- `iInduction x as cpat "IH" "selpat"` : perform induction on
-  the Coq term `x`. The Coq introduction pattern `cpat` is used to name the introduced
-  variables. The induction hypotheses are inserted into the intuitionistic
-  context and given fresh names prefixed `IH`.
-  + `iInduction x as cpat "IH" forall (x1 ... xn) "selpat"` : perform induction,
+- `iInduction x as cpat "selpat"` : perform induction on the Coq term `x`. The
+  Coq introduction pattern `cpat` is used to name the introduced variables,
+  including the induction hypotheses which are introduced into the proof mode
+  context. Note that induction hypotheses should not be put into string
+  quotation marks `".."`, e.g., use `iInduction n as [|n IH]` to perform
+  induction on a natural number `n`. An implementation caveat is that the names
+  of the induction hypotheses should be fresh in both the Coq context and the
+  proof mode context.
+  + `iInduction x as cpat forall (x1 ... xn) "selpat"` : perform induction,
     generalizing over the Coq level variables `x1 ... xn`, the hypotheses given by
     the selection pattern `selpat`, and the spatial context.
-  + `iInduction x as cpat "IH" using t` : perform induction using the induction
+  + `iInduction x as cpat using t` : perform induction using the induction
     scheme `t`. Common examples of induction schemes are `map_ind`, `set_ind_L`,
     and `gmultiset_ind` for `gmap`, `gset`, and `gmultiset`.
-  + `iInduction x as cpat "IH" using t forall (x1 ... xn) "selpat"` : the above
+  + `iInduction x as cpat using t forall (x1 ... xn) "selpat"` : the above
     variants combined.
+  + `iInduction x as cpat "IH" "selpat"` : ignore the names of the induction
+    hypotheses from `cpat` and call them `IH`, `IH1`, `IH2`, etc. Here "IH" is
+    a string (in string quotation marks). This is *legacy* syntax that might be
+    deprecated in the future. Similar legacy syntax exists for all variants above.
 
 Rewriting / simplification
 --------------------------
