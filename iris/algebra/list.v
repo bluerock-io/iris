@@ -141,7 +141,7 @@ Proof.
   induction Hl as [|x1 x2 l1 l2 ?? IH]; intros f1 f2 Hf; simpl; [constructor|].
   f_equiv; [by apply Hf|]. apply IH. intros i y1 y2 Hy. by apply Hf.
 Qed.
-Global Instance list_bind_ne {A B : ofe} (f : A → list A) n :
+Global Instance list_bind_ne {A B : ofe} n :
   Proper ((dist n ==> dist n) ==> dist n ==> dist n)
          (mbind (M:=list) (A:=A) (B:=B)).
 Proof. intros f1 f2 Hf. induction 1; csimpl; [constructor|f_equiv; auto]. Qed.

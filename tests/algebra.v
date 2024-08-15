@@ -89,3 +89,8 @@ Proof. apply _. Qed.
 Lemma curry4_ne_test {A B C D E : ofe} (f : A * B * C * D → E) :
   NonExpansive f → NonExpansive4 (curry4 f).
 Proof. apply _. Qed.
+
+(** Regression test for https://gitlab.mpi-sws.org/iris/iris/-/issues/577 *)
+Lemma list_bind_ne_test {A B : ofe} (f : A → list B) :
+  NonExpansive f → NonExpansive (mbind (M:=list) f).
+Proof. apply _. Qed.
