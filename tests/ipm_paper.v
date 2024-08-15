@@ -174,8 +174,7 @@ Section M.
   Qed.
 End M.
 
-Class counterG Σ := CounterG { counter_tokG : inG Σ M_UR }.
-Local Existing Instance counter_tokG.
+Class counterG Σ := CounterG { #[local] counter_tokG :: inG Σ M_UR }.
 
 Definition counterΣ : gFunctors := #[GFunctor (constRF M_UR)].
 Global Instance subG_counterΣ {Σ} : subG counterΣ Σ → counterG Σ.

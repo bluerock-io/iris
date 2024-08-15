@@ -31,6 +31,9 @@ Module wsatGS.
   Proof. solve_inG. Qed.
 End wsatGS.
 Import wsatGS.
+
+(* Make the instances local to this file. We cannot use #[local] in the code
+above, as that would make the instances local to the module. *)
 Local Existing Instances wsat_inG wsatGpreS_inv wsatGpreS_enabled wsatGpreS_disabled.
 
 Definition invariant_unfold {Σ} (P : iProp Σ) : later (iProp Σ) :=

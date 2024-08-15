@@ -27,8 +27,7 @@ Definition one_shotR := csumR fracR (agreeR ZO).
 Definition Pending (q : Qp) : one_shotR := Cinl q.
 Definition Shot (n : Z) : one_shotR := Cinr (to_agree n).
 
-Class one_shotG Σ := { one_shot_inG : inG Σ one_shotR }.
-Local Existing Instance one_shot_inG.
+Class one_shotG Σ := { #[local] one_shot_inG :: inG Σ one_shotR }.
 
 Definition one_shotΣ : gFunctors := #[GFunctor one_shotR].
 Global Instance subG_one_shotΣ {Σ} : subG one_shotΣ Σ → one_shotG Σ.

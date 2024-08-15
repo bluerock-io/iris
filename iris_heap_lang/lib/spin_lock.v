@@ -13,8 +13,7 @@ Local Definition acquire : val :=
 Local Definition release : val := λ: "l", "l" <- #false.
 
 (** The CMRA we need. *)
-Class spin_lockG Σ := LockG { lock_tokG : tokenG Σ }.
-Local Existing Instance lock_tokG.
+Class spin_lockG Σ := LockG { #[local] lock_tokG :: tokenG Σ }.
 
 Definition spin_lockΣ : gFunctors := #[tokenΣ].
 

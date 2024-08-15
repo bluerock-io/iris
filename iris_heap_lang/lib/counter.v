@@ -13,8 +13,8 @@ Definition incr : val := rec: "incr" "l" :=
 Definition read : val := λ: "l", !"l".
 
 (** Monotone counter *)
-Class mcounterG Σ := MCounterG { mcounter_inG : inG Σ (authR max_natUR) }.
-Local Existing Instance mcounter_inG.
+Class mcounterG Σ :=
+  MCounterG { #[local] mcounter_inG :: inG Σ (authR max_natUR) }.
 
 Definition mcounterΣ : gFunctors := #[GFunctor (authR max_natUR)].
 
@@ -88,8 +88,7 @@ End mono_proof.
 
 (** Counter with contributions *)
 Class ccounterG Σ :=
-  CCounterG { ccounter_inG : inG Σ (frac_authR natR) }.
-Local Existing Instance ccounter_inG.
+  CCounterG { #[local] ccounter_inG :: inG Σ (frac_authR natR) }.
 
 Definition ccounterΣ : gFunctors :=
   #[GFunctor (frac_authR natR)].

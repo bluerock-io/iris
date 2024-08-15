@@ -23,21 +23,19 @@ Import le_upd_if.
 Inductive has_lc := HasLc | HasNoLc.
 
 Class invGpreS (Σ : gFunctors) : Set := InvGpreS {
-  invGpreS_wsat : wsatGpreS Σ;
-  invGpreS_lc : lcGpreS Σ;
+  #[local] invGpreS_wsat :: wsatGpreS Σ;
+  #[local] invGpreS_lc :: lcGpreS Σ;
 }.
 
+(* [invGS_lc] needs to be global in order to enable the use of lemmas like
+[lc_split] that require [lcGS], and not [invGS]. [invGS_wsat] also needs to be
+global as the lemmas in [invariants.v] require it. *)
 Class invGS_gen (hlc : has_lc) (Σ : gFunctors) : Set := InvG {
-  invGS_wsat : wsatGS Σ;
-  invGS_lc : lcGS Σ;
+  #[global] invGS_wsat :: wsatGS Σ;
+  #[global] invGS_lc :: lcGS Σ;
 }.
 Global Hint Mode invGS_gen - - : typeclass_instances.
 Global Hint Mode invGpreS - : typeclass_instances.
-Local Existing Instances invGpreS_wsat invGpreS_lc.
-(* [invGS_lc] needs to be global in order to enable the use of lemmas like [lc_split]
-   that require [lcGS], and not [invGS].
-   [invGS_wsat] also needs to be global as the lemmas in [invariants.v] require it. *)
-Global Existing Instances invGS_lc invGS_wsat.
 
 Notation invGS := (invGS_gen HasLc).
 

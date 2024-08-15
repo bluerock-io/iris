@@ -31,8 +31,8 @@ Local Definition acquire_writer : val :=
 Local Definition release_writer : val :=
   λ: "l", "l" <- #0.
 
-Class rw_spin_lockG Σ := RwLockG { rwlock_tokG : inG Σ (authR (gmultisetUR Qp)) }.
-Local Existing Instance rwlock_tokG.
+Class rw_spin_lockG Σ :=
+  RwLockG { #[local] rwlock_tokG :: inG Σ (authR (gmultisetUR Qp)) }.
 
 Definition rw_spin_lockΣ : gFunctors := #[GFunctor (authR (gmultisetUR Qp)) ].
 Global Instance subG_rw_spin_lockΣ {Σ} : subG rw_spin_lockΣ Σ → rw_spin_lockG Σ.
