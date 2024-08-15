@@ -1,6 +1,6 @@
 From Ltac2 Require Ltac2.
 From Coq Require Import Strings.String.
-From Coq Require Import Init.Byte.
+From Coq Require Import Init.Byte Ascii.
 From iris.prelude Require Import options.
 
 Import List.ListNotations.
@@ -77,26 +77,26 @@ End StringToIdent.
 Module IdentToString.
   Import Ltac2.
 
-  Ltac2 char_to_coq_byte (c : char) : constr :=
-    let (ind, inst) :=
-      match Constr.Unsafe.kind constr:(byte) with
-      | Constr.Unsafe.Ind ind inst => (ind, inst)
-      | _ => Control.zero (Invalid_argument None)
-      end
-    in
-    let c := Constr.Unsafe.constructor ind (Char.to_int c) in
-    Constr.Unsafe.make (Constr.Unsafe.Constructor c inst).
+  Ltac2 get_bit (n : int) (i : int) : bool :=
+    Int.equal (Int.land (Int.lsr n i) 1) 1.
+
+  Ltac2 get_bit_coq_bool (n : int) (i : int) : constr :=
+    if get_bit n i then constr:(true) else constr:(false).
+
+  Ltac2 char_to_coq_ascii (c : char) : constr :=
+    let i := Char.to_int c in
+    let bs := Array.init 8 (get_bit_coq_bool i) in
+    Constr.Unsafe.make (Constr.Unsafe.App constr:(Ascii) bs).
 
   Ltac2 string_to_coq_string (s : string) : constr :=
     let len := String.length s in
-    let rec to_string acc i :=
-      if Int.equal i -1 then acc else
-      let c := String.get s i in
-      let byte := char_to_coq_byte c in
-      let a := compute constr:(Ascii.ascii_of_byte $byte) in
-      to_string constr:(String $a $acc) (Int.sub i 1)
+    let rec to_string i :=
+      if Int.equal i len then constr:(EmptyString) else
+        let tail := to_string (Int.add i 1) in
+        let head := char_to_coq_ascii (String.get s i) in
+        constr:(String $head $tail)
     in
-    to_string constr:(EmptyString) (Int.sub len 1).
+    to_string 0.
 
   Ltac2 ident_to_string (id : ident) : constr :=
     string_to_coq_string (Ident.to_string id).
