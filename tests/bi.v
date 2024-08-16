@@ -102,7 +102,7 @@ Section internal_eq_ne.
   Proof. solve_proper. Qed.
 End internal_eq_ne.
 
-Section tc_match.
+Section instances_for_match.
   Context {PROP : bi}.
 
   Lemma match_persistent :
@@ -132,9 +132,9 @@ Section tc_match.
   Proof. apply _. Qed.
 
   Check "match_def_unfold_fail".
-  (* Don't want hint to unfold def's. *)
+  (* Don't want instances to unfold def's. *)
   Definition match_foo (b : bool) : PROP := if b then False%I else False%I.
   Lemma match_def_unfold_fail b :
     Persistent (match_foo b).
   Proof. Fail apply _. Abort.
-End tc_match.
+End instances_for_match.

@@ -38,7 +38,7 @@ lemma.
 
 **Changes in `bi`:**
 
-* Add hints for `match _ with _ end` (and thus `if _ then _ else` and
+* Add instances for `match _ with _ end` (and thus `if _ then _ else` and
   `'(_, _)` pair destructuring) for `Persistent`, `Affine`, `Absorbing`,
   `Timeless`, and `Plain`. (by Sanjit Bhat)
 
