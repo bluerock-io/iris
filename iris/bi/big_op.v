@@ -189,12 +189,12 @@ Section sep_list.
   Proof.
     intros Hli. assert (i ≤ length l) by eauto using lookup_lt_Some, Nat.lt_le_incl.
     rewrite -(take_drop_middle l i x) // big_sepL_app /=.
-    rewrite Nat.add_0_r take_length_le //.
+    rewrite Nat.add_0_r length_take_le //.
     rewrite assoc -!(comm _ (Φ _ _)) -assoc. apply sep_mono_r, forall_intro=> y.
-    rewrite insert_app_r_alt ?take_length_le //.
+    rewrite insert_app_r_alt ?length_take_le //.
     rewrite Nat.sub_diag /=. apply wand_intro_l.
     rewrite assoc !(comm _ (Φ _ _)) -assoc big_sepL_app /=.
-    by rewrite Nat.add_0_r take_length_le.
+    by rewrite Nat.add_0_r length_take_le.
   Qed.
 
   Lemma big_sepL_lookup_acc Φ l i x :
@@ -207,7 +207,7 @@ Section sep_list.
     l !! i = Some x → ([∗ list] k↦y ∈ l, Φ k y) ⊢ Φ i x.
   Proof.
     intros Hi. destruct select (TCOr _ _).
-    - rewrite -(take_drop_middle l i x) // big_sepL_app /= take_length.
+    - rewrite -(take_drop_middle l i x) // big_sepL_app /= length_take.
       apply lookup_lt_Some in Hi. rewrite (_ : _ + 0 = i); last lia.
       rewrite sep_elim_r sep_elim_l //.
     - rewrite big_sepL_lookup_acc // sep_elim_l //.
@@ -343,11 +343,11 @@ Section sep_list.
     Φ i x ∗ [∗ list] k↦y ∈ l, if decide (k = i) then emp else Φ k y.
   Proof.
     intros. rewrite -(take_drop_middle l i x) // !big_sepL_app /= Nat.add_0_r.
-    rewrite take_length_le; last eauto using lookup_lt_Some, Nat.lt_le_incl.
+    rewrite length_take_le; last eauto using lookup_lt_Some, Nat.lt_le_incl.
     rewrite decide_True // left_id.
     rewrite assoc -!(comm _ (Φ _ _)) -assoc. do 2 f_equiv.
     - apply big_sepL_proper=> k y Hk. apply lookup_lt_Some in Hk.
-      rewrite take_length in Hk. by rewrite decide_False; last lia.
+      rewrite length_take in Hk. by rewrite decide_False; last lia.
     - apply big_sepL_proper=> k y _. by rewrite decide_False; last lia.
   Qed.
   Lemma big_sepL_delete' `{!BiAffine PROP} Φ l i x :
@@ -490,7 +490,7 @@ Section sep_list2.
     ([∗ list] k↦y1;y2 ∈ l.*1; l.*2, Φ k y1 y2) ⊣⊢
     [∗ list] k ↦ xy ∈ l, Φ k (xy.1) (xy.2).
   Proof.
-    rewrite big_sepL2_alt !fmap_length.
+    rewrite big_sepL2_alt !length_fmap.
     by rewrite pure_True // True_and zip_fst_snd.
   Qed.
 
@@ -537,9 +537,9 @@ Section sep_list2.
   Proof.
     revert Φ l1'. induction l1 as [|x1 l1 IH]=> Φ -[|x1' l1'] /= Hlen.
     - by rewrite left_id.
-    - destruct Hlen as [[=]|Hlen]. rewrite big_sepL2_length Hlen /= app_length.
+    - destruct Hlen as [[=]|Hlen]. rewrite big_sepL2_length Hlen /= length_app.
       apply pure_elim'; lia.
-    - destruct Hlen as [[=]|Hlen]. rewrite big_sepL2_length -Hlen /= app_length.
+    - destruct Hlen as [[=]|Hlen]. rewrite big_sepL2_length -Hlen /= length_app.
       apply pure_elim'; lia.
     - by rewrite -assoc IH; last lia.
   Qed.
@@ -677,7 +677,7 @@ Section sep_list2.
     intros Hl1 Hl2. rewrite big_sepL2_alt. apply pure_elim_l=> Hl.
     rewrite {1}big_sepL_insert_acc; last by rewrite lookup_zip_with; simplify_option_eq.
     apply sep_mono_r. apply forall_intro => y1. apply forall_intro => y2.
-    rewrite big_sepL2_alt !insert_length pure_True // left_id -insert_zip_with.
+    rewrite big_sepL2_alt !length_insert pure_True // left_id -insert_zip_with.
     by rewrite (forall_elim (y1, y2)).
   Qed.
 
@@ -698,7 +698,7 @@ Section sep_list2.
     intros Hx1 Hx2. destruct select (TCOr _ _).
     - rewrite -(take_drop_middle l1 i x1) // -(take_drop_middle l2 i x2) //.
       apply lookup_lt_Some in Hx1. apply lookup_lt_Some in Hx2.
-      rewrite big_sepL2_app_same_length /= 2?take_length; last lia.
+      rewrite big_sepL2_app_same_length /= 2?length_take; last lia.
       rewrite (_ : _ + 0 = i); last lia.
       rewrite sep_elim_r sep_elim_l //.
     - rewrite big_sepL2_lookup_acc // sep_elim_l //.
@@ -708,14 +708,14 @@ Section sep_list2.
     ([∗ list] k↦y1;y2 ∈ f <$> l1; l2, Φ k y1 y2)
     ⊣⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k (f y1) y2).
   Proof.
-    rewrite !big_sepL2_alt fmap_length zip_with_fmap_l zip_with_zip big_sepL_fmap.
+    rewrite !big_sepL2_alt length_fmap zip_with_fmap_l zip_with_zip big_sepL_fmap.
     by f_equiv; f_equiv=> k [??].
   Qed.
   Lemma big_sepL2_fmap_r {B'} (g : B → B') (Φ : nat → A → B' → PROP) l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1; g <$> l2, Φ k y1 y2)
     ⊣⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 (g y2)).
   Proof.
-    rewrite !big_sepL2_alt fmap_length zip_with_fmap_r zip_with_zip big_sepL_fmap.
+    rewrite !big_sepL2_alt length_fmap zip_with_fmap_r zip_with_zip big_sepL_fmap.
     by f_equiv; f_equiv=> k [??].
   Qed.
 
@@ -865,12 +865,12 @@ Section sep_list2.
   Proof.
     intros. rewrite -(take_drop_middle l1 i x1) // -(take_drop_middle l2 i x2) //.
     assert (i < length l1 ∧ i < length l2) as [??] by eauto using lookup_lt_Some.
-    rewrite !big_sepL2_app_same_length /=; [|rewrite ?take_length; lia..].
-    rewrite Nat.add_0_r take_length_le; [|lia].
+    rewrite !big_sepL2_app_same_length /=; [|rewrite ?length_take; lia..].
+    rewrite Nat.add_0_r length_take_le; [|lia].
     rewrite decide_True // left_id.
     rewrite assoc -!(comm _ (Φ _ _ _)) -assoc. do 2 f_equiv.
     - apply big_sepL2_proper=> k y1 y2 Hk. apply lookup_lt_Some in Hk.
-      rewrite take_length in Hk. by rewrite decide_False; last lia.
+      rewrite length_take in Hk. by rewrite decide_False; last lia.
     - apply big_sepL2_proper=> k y1 y2 _. by rewrite decide_False; last lia.
   Qed.
   Lemma big_sepL2_delete' `{!BiAffine PROP} Φ l1 l2 i x1 x2 :
@@ -1104,7 +1104,7 @@ Section and_list.
     l !! i = Some x → ([∧ list] k↦y ∈ l, Φ k y) ⊢ Φ i x.
   Proof.
     intros. rewrite -(take_drop_middle l i x) // big_andL_app /=.
-    rewrite Nat.add_0_r take_length_le;
+    rewrite Nat.add_0_r length_take_le;
       eauto using lookup_lt_Some, Nat.lt_le_incl, and_elim_l', and_elim_r'.
   Qed.
 
@@ -1264,7 +1264,7 @@ Section or_list.
     l !! i = Some x → Φ i x ⊢ ([∨ list] k↦y ∈ l, Φ k y).
   Proof.
     intros. rewrite -(take_drop_middle l i x) // big_orL_app /=.
-    rewrite Nat.add_0_r take_length_le;
+    rewrite Nat.add_0_r length_take_le;
       eauto using lookup_lt_Some, Nat.lt_le_incl, or_intro_l', or_intro_r'.
   Qed.
 

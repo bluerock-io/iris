@@ -232,7 +232,7 @@ Section properties.
   Qed.
   Lemma list_singletonM_length i x : length {[ i := x ]} = S i.
   Proof.
-    rewrite /singletonM /list_singletonM app_length replicate_length /=; lia.
+    rewrite /singletonM /list_singletonM length_app length_replicate /=; lia.
   Qed.
 
   Lemma list_singletonM_core i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
@@ -344,7 +344,7 @@ Section properties.
       + by rewrite !list_lookup_opM !lookup_app_l.
       + rewrite !list_lookup_opM !list_lookup_middle // !Some_op_opM; apply (Hxy n).
       + rewrite !(cons_middle _ l1 l2) !assoc.
-        rewrite !list_lookup_opM !lookup_app_r !app_length //=; lia.
+        rewrite !list_lookup_opM !lookup_app_r !length_app //=; lia.
     - intros n mk; rewrite !list_lookup_validN !list_dist_lookup => Hl Hl' i.
       move: (Hl i) (Hl' i).
       destruct (lt_eq_lt_dec i (length l1)) as [[?|?]|?]; subst.
@@ -352,11 +352,11 @@ Section properties.
       + rewrite !list_lookup_opM !list_lookup_middle // !Some_op_opM !inj_iff.
         apply (Hxy' n).
       + rewrite !(cons_middle _ l1 l2) !assoc.
-        rewrite !list_lookup_opM !lookup_app_r !app_length //=; lia.
+        rewrite !list_lookup_opM !lookup_app_r !length_app //=; lia.
   Qed.
   Lemma list_singleton_local_update i x y ml :
     x ~l~> y @ ml ≫= (.!! i) → {[ i := x ]} ~l~> {[ i := y ]} @ ml.
-  Proof. intros; apply list_middle_local_update. by rewrite replicate_length. Qed.
+  Proof. intros; apply list_middle_local_update. by rewrite length_replicate. Qed.
 *)
 
   Lemma list_alloc_singletonM_local_update x l :
@@ -413,7 +413,7 @@ Section properties.
     rewrite Hk'eq.
     apply list_dist_lookup. intros i. rewrite !list_lookup_op.
     destruct (decide (i < length l)%nat) as [HLt|HGe].
-    - rewrite !lookup_app_l //; last by rewrite replicate_length.
+    - rewrite !lookup_app_l //; last by rewrite length_replicate.
       rewrite lookup_take; last done.
       rewrite lookup_replicate_2; last done.
       rewrite comm assoc -list_lookup_op.
@@ -422,8 +422,8 @@ Section properties.
       apply lookup_lt_is_Some in HLt as [? HEl].
       by rewrite HEl -Some_op ucmra_unit_right_id.
     - assert (length l ≤ i)%nat as HLe by lia.
-      rewrite !lookup_app_r //; last by rewrite replicate_length.
-      rewrite replicate_length.
+      rewrite !lookup_app_r //; last by rewrite length_replicate.
+      rewrite length_replicate.
       rewrite lookup_take_ge; last done.
       replace (mm !! _) with (drop (length l) mm !! (i - length l)%nat);
         last by rewrite lookup_drop; congr (mm !! _); lia.
@@ -469,7 +469,7 @@ Section properties.
     move: HLen. rewrite Hl'eq. clear. move=> HLen.
     assert (length m' ≤ length l)%nat as HLen'.
     { by rewrite list_length_op in HLen; lia. }
-    rewrite list_op_app list_length_op replicate_length max_l;
+    rewrite list_op_app list_length_op length_replicate max_l;
       last lia.
     rewrite list_drop_op -assoc. rewrite HLen. move: HLen'.
     remember (length l) as o. clear.
@@ -480,7 +480,7 @@ Section properties.
     subst. remember (m' ⋅ take _ _) as m''.
     remember (length m' `max` length (take o mm))%nat as o''.
     assert (o'' ≤ length m'')%nat as HLen.
-    { by subst; rewrite list_length_op !take_length; lia. }
+    { by subst; rewrite list_length_op !length_take; lia. }
     move: HLen. clear.
     intros HLen. move: n. apply equiv_dist, list_equiv_lookup.
     intros i. rewrite list_lookup_op.
@@ -493,7 +493,7 @@ Section properties.
       by rewrite -Some_op ucmra_unit_left_id.
     - rewrite lookup_ge_None_2.
       { rewrite lookup_ge_None_2 //.
-        by rewrite replicate_length; lia. }
+        by rewrite length_replicate; lia. }
       rewrite -HeqL. lia.
   Qed.
 

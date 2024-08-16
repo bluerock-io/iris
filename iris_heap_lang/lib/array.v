@@ -107,7 +107,7 @@ Section proof.
     wp_lam.
     wp_alloc dst as "Hdst"; first by auto.
     wp_smart_apply (twp_array_copy_to with "[$Hdst $Hvl]") as "[Hdst Hl]".
-    - rewrite replicate_length Z2Nat.id; lia.
+    - rewrite length_replicate Z2Nat.id; lia.
     - auto.
     - wp_pures.
       iApply "HΦ"; by iFrame.
@@ -253,7 +253,7 @@ Section proof.
       iIntros (Hn Φ) "Hf HΦ". iApply (wp_array_init with "Hf"); first done.
       iIntros "!>" (l vs). iDestruct 1 as (<-) "[Hl Hvs]".
       iDestruct (big_sepL_exists_eq with "Hvs") as (xs ->) "Hxs".
-      iApply "HΦ". iFrame "Hl Hxs". by rewrite fmap_length.
+      iApply "HΦ". iFrame "Hl Hxs". by rewrite length_fmap.
     Qed.
     Lemma twp_array_init_fmap stk E n f :
       (0 < n)%Z →
@@ -269,7 +269,7 @@ Section proof.
       iIntros (Hn Φ) "Hf HΦ". iApply (twp_array_init with "Hf"); first done.
       iIntros (l vs). iDestruct 1 as (<-) "[Hl Hvs]".
       iDestruct (big_sepL_exists_eq with "Hvs") as (xs ->) "Hxs".
-      iApply "HΦ". iFrame "Hl Hxs". by rewrite fmap_length.
+      iApply "HΦ". iFrame "Hl Hxs". by rewrite length_fmap.
     Qed.
   End array_init_fmap.
 End proof.

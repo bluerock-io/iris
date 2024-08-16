@@ -18,7 +18,7 @@ Section ofe.
     apply: (iso_cofe_subtype (λ l : list A, length l = m)
       (λ l, eq_rect _ (vec A) (list_to_vec l) m) vec_to_list)=> //.
     - intros v []. by rewrite /= vec_to_list_to_vec.
-    - intros c. by rewrite (conv_compl 0 (chain_map _ c)) /= vec_to_list_length.
+    - intros c. by rewrite (conv_compl 0 (chain_map _ c)) /= length_vec_to_list.
   Qed.
 
   Global Instance vnil_discrete : Discrete (@vnil A).

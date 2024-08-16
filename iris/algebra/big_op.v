@@ -111,7 +111,7 @@ Section list.
     ([^o list] k ↦ x ∈ l, Φ k x) ≡
     ([^o list] k ↦ x ∈ take n l, Φ k x) `o` ([^o list] k ↦ x ∈ drop n l, Φ (n + k) x).
   Proof.
-    rewrite -{1}(take_drop n l) big_opL_app take_length.
+    rewrite -{1}(take_drop n l) big_opL_app length_take.
     destruct (decide (length l ≤ n)).
     - rewrite drop_ge //=.
     - rewrite Nat.min_l //=; lia.
