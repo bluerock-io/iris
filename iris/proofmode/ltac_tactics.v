@@ -1021,7 +1021,7 @@ Tactic Notation "iSpecializeCore" open_constr(H)
        (* Check if we should use [tac_specialize_intuitionistic_helper]. Notice
        that [pm_eval] does not unfold [use_tac_specialize_intuitionistic_helper],
        so we should do that first. *)
-       let b := eval cbv [use_tac_specialize_intuitionistic_helper] in
+       let b := eval lazy [use_tac_specialize_intuitionistic_helper] in
          (if p then use_tac_specialize_intuitionistic_helper Δ pat else false) in
        lazymatch eval pm_eval in b with
        | true =>
@@ -1030,7 +1030,7 @@ Tactic Notation "iSpecializeCore" open_constr(H)
           lazymatch iTypeOf H with
           | Some (?q, _) =>
              let PROP := iBiOfGoal in
-             lazymatch eval compute in (q || tc_to_bool (BiAffine PROP)) with
+             lazymatch eval lazy in (q || tc_to_bool (BiAffine PROP)) with
              | true =>
                 notypeclasses refine (tac_specialize_intuitionistic_helper _ H _ _ _ _ _ _ _ _ _ _);
                   [pm_reflexivity
@@ -1684,7 +1684,7 @@ Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic3(tac) :=
      (** This case is used to make the tactic work in [Z_scope]. It would be
      better if we could bind tactic notation arguments to notation scopes, but
      that is not supported by Ltac. *)
-     let n := eval compute in (Z.to_nat lem) in intro_destruct n
+     let n := eval cbv in (Z.to_nat lem) in intro_destruct n
   | ident => tac lem
   | string => tac constr:(INamed lem)
   | _ => iPoseProofCore lem as p tac
