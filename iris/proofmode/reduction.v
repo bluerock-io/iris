@@ -2,11 +2,22 @@ From iris.bi Require Import bi telescopes.
 From iris.proofmode Require Import base environments.
 From iris.prelude Require Import options.
 
-(** Called by all tactics to perform computation to lookup items in the
-    context.  We avoid reducing anything user-visible here to make sure we
-    do not reduce e.g. before unification happens in [iApply].
-    This needs to contain all definitions used in the user-visible statements in
-    [coq_tactics], and their dependencies. *)
+(** The following tactics should be used when performing computation in the
+proofmode:
+
+- Use [cbv]/[vm_compute] (depending on expected size of computation) if the
+  expected result is a simple term (say, a boolean, number, list of strings),
+  and the input term does *not* involve user terms (such as bodies of hypotheses
+  in the proof mode environment).
+- Use [lazy] if the expected result is a simple term and the input term *does*
+  involve user terms.
+- Use [pm_eval] otherwise, particularly to compute new proof mode environments
+  and to lookup items in the proof mode environment. *)
+
+(** The reduction [pm_eval] avoids reducing anything user-visible to make sure
+we do not reduce e.g., before unification happens in [iApply]. This needs to
+contain all definitions used in the user-visible statements in [coq_tactics],
+and their dependencies. *)
 Declare Reduction pm_eval := cbv [
   (* base *)
   base.negb base.beq
