@@ -1,3 +1,4 @@
+From stdpp Require Import strings.
 From iris.bi Require Import bi plainly big_op.
 
 Unset Mangle Names.
@@ -100,3 +101,40 @@ Section internal_eq_ne.
   Goal NonExpansive (λ x, (⌜a = x⌝ : PROP)%I).
   Proof. solve_proper. Qed.
 End internal_eq_ne.
+
+Section tc_match.
+  Context {PROP : bi}.
+
+  Lemma match_persistent :
+    Persistent (PROP:=PROP) (∃ b : bool, if b then False else False).
+  Proof. apply _. Qed.
+  Lemma match_affine :
+    Affine (PROP:=PROP) (∃ b : bool, if b then False else False).
+  Proof. apply _. Qed.
+  Lemma match_absorbing :
+    Absorbing (PROP:=PROP) (∃ b : bool, if b then False else False).
+  Proof. apply _. Qed.
+  Lemma match_timeless :
+    Timeless (PROP:=PROP) (∃ b : bool, if b then False else False).
+  Proof. apply _. Qed.
+  Lemma match_plain `{!BiPlainly PROP} :
+    Plain (PROP:=PROP) (∃ b : bool, if b then False else False).
+  Proof. apply _. Qed.
+
+  Lemma match_list_persistent :
+    Persistent (PROP:=PROP)
+      (∃ l : list nat, match l with [] => False | _ :: _ => False end).
+  Proof. apply _. Qed.
+
+  (* From https://gitlab.mpi-sws.org/iris/iris/-/issues/576. *)
+  Lemma pair_timeless `{!Timeless (emp%I : PROP)} (m : gset (nat * nat)) :
+    Timeless (PROP:=PROP) ([∗ set] '(k1, k2) ∈ m, False).
+  Proof. apply _. Qed.
+
+  Check "match_def_unfold_fail".
+  (* Don't want hint to unfold def's. *)
+  Definition match_foo (b : bool) : PROP := if b then False%I else False%I.
+  Lemma match_def_unfold_fail b :
+    Persistent (match_foo b).
+  Proof. Fail apply _. Abort.
+End tc_match.

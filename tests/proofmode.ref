@@ -784,13 +784,6 @@ No applicable tactic.
      : string
 The command has indeed failed with message:
 x is already used.
-"test_TC_hint_for_connective_on_match"
-     : string
-The command has indeed failed with message:
-Cannot infer this placeholder of type "Persistent (match_foo b)" (no type
-class instance found) in environment:
-PROP : bi
-b : bool
 "elim_mod_accessor"
      : string
 1 goal

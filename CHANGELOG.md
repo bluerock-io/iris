@@ -38,7 +38,9 @@ lemma.
 
 **Changes in `bi`:**
 
-* For derived connectives, add TC hints to destruct matches. (by Sanjit Bhat)
+* Add hints for `match _ with _ end` (and thus `if _ then _ else` and
+  `'(_, _)` pair destructuring) for `Persistent`, `Affine`, `Absorbing`,
+  `Timeless`, and `Plain`. (by Sanjit Bhat)
 
 ## Iris 4.2.0 (2024-04-12)
 

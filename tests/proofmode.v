@@ -1652,39 +1652,6 @@ Proof.
   Fail iIntros (? x).
 Abort.
 
-Check "test_TC_hint_for_connective_on_match".
-
-Lemma test_match_persistent :
-  Persistent (∃ b : bool, if b then False else False : PROP).
-Proof. apply _. Qed.
-Lemma test_match_affine : Affine (∃ b : bool, if b then False else False : PROP).
-Proof. apply _. Qed.
-Lemma test_match_absorbing :
-  Absorbing (∃ b : bool, if b then False else False : PROP).
-Proof. apply _. Qed.
-Lemma test_match_timeless :
-  Timeless (∃ b : bool, if b then False else False : PROP).
-Proof. apply _. Qed.
-Lemma test_match_plain `{!BiPlainly PROP} :
-  Plain (PROP:=PROP) (∃ b : bool, if b then False else False).
-Proof. apply _. Qed.
-
-Lemma test_match_list :
-  Persistent (PROP:=PROP)
-    (∃ l : list nat, match l with _ => False end).
-Proof. apply _. Qed.
-
-(* From https://gitlab.mpi-sws.org/iris/iris/-/issues/576. *)
-Lemma test_match_pair `{!Timeless (emp%I : PROP)} (m : gset (nat * nat)) :
-  Timeless ([∗ set] '(k1, k2) ∈ m, False : PROP).
-Proof. apply _. Qed.
-
-(* Don't want hint to unfold def's. *)
-Definition match_foo (b : bool) : PROP := if b then False%I else False%I.
-Lemma test_match_def_unfold_fail b :
-  Persistent (match_foo b).
-Proof. Fail apply _. Abort.
-
 End tests.
 
 Section parsing_tests.
