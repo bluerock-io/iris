@@ -18,8 +18,7 @@ From iris.prelude Require Import options.
 
 Inductive state := Free | Locked.
 
-Class alockG Σ := LockG { lock_tokG : ghost_varG Σ state }.
-Local Existing Instance lock_tokG.
+Class alockG Σ := LockG { #[local] lock_tokG :: ghost_varG Σ state }.
 Definition alockΣ : gFunctors := #[ghost_varΣ state].
 Global Instance subG_alockΣ {Σ} : subG alockΣ Σ → alockG Σ.
 Proof. solve_inG. Qed.

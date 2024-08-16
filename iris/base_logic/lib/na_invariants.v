@@ -9,8 +9,7 @@ Import uPred.
 Definition na_inv_pool_name := gname.
 
 Class na_invG Σ :=
-  na_inv_inG : inG Σ (prodR coPset_disjR (gset_disjR positive)).
-Local Existing Instance na_inv_inG.
+  #[local] na_inv_inG :: inG Σ (prodR coPset_disjR (gset_disjR positive)).
 
 Definition na_invΣ : gFunctors :=
   #[ GFunctor (constRF (prodR coPset_disjR (gset_disjR positive))) ].

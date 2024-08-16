@@ -10,10 +10,9 @@ Import uPred.
    saved whatever-you-like. *)
 
 Class savedAnythingG (Σ : gFunctors) (F : oFunctor) := SavedAnythingG {
-  saved_anything_inG : inG Σ (dfrac_agreeR (oFunctor_apply F (iPropO Σ)));
+  #[local] saved_anything_inG :: inG Σ (dfrac_agreeR (oFunctor_apply F (iPropO Σ)));
   saved_anything_contractive : oFunctorContractive F (* NOT an instance to avoid cycles with [subG_savedAnythingΣ]. *)
 }.
-Local Existing Instance saved_anything_inG.
 
 Definition savedAnythingΣ (F : oFunctor) `{!oFunctorContractive F} : gFunctors :=
   #[ GFunctor (dfrac_agreeRF F) ].

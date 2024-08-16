@@ -10,15 +10,14 @@ Import uPred.
 
 (** The ghost state for later credits *)
 Class lcGpreS (Σ : gFunctors) := LcGpreS {
-  lcGpreS_inG : inG Σ (authR natUR)
+  #[local] lcGpreS_inG :: inG Σ (authR natUR)
 }.
 
 Class lcGS (Σ : gFunctors) := LcGS {
-  lcGS_inG : inG Σ (authR natUR);
+  #[local] lcGS_inG :: inG Σ (authR natUR);
   lcGS_name : gname;
 }.
 Global Hint Mode lcGS - : typeclass_instances.
-Local Existing Instances lcGS_inG lcGpreS_inG.
 
 Definition lcΣ := #[GFunctor (authR (natUR))].
 Global Instance subG_lcΣ {Σ} : subG lcΣ Σ → lcGpreS Σ.

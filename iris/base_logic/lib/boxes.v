@@ -6,10 +6,9 @@ Import uPred.
 
 (** The CMRAs we need. *)
 Class boxG Σ :=
-  boxG_inG : inG Σ (prodR
+  #[local] boxG_inG :: inG Σ (prodR
     (excl_authR boolO)
     (optionR (agreeR (laterO (iPropO Σ))))).
-Local Existing Instance boxG_inG.
 
 Definition boxΣ : gFunctors := #[ GFunctor (excl_authR boolO *
                                             optionRF (agreeRF (▶ ∙)) ) ].

@@ -126,14 +126,13 @@ class for the generalized heap module, bundles the usual `inG` assumptions
 together with the `gname`:
 ```coq
 Class gen_heapGpreS (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heapGpreS_heap : ghost_mapG Σ L V;
+  #[local] gen_heapGpreS_heap :: ghost_mapG Σ L V;
 }.
-Local Existing Instances gen_heapGpreS_heap.
+
 Class gen_heapGS (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapGS {
-  gen_heap_inG : gen_heapGpreS L V Σ;
+  #[local] gen_heap_inG :: gen_heapGpreS L V Σ;
   gen_heap_name : gname;
 }.
-Local Existing Instances gen_heap_inG.
 ```
 The trailing `S` here is for "singleton", because the idea is that only one
 instance of `gen_heapGS` ever exists. This is important, since two instances
@@ -283,8 +282,8 @@ Putting it all together, the `libG` typeclass and `libΣ` list of functors for
 your example would look as follows:
 
 ```coq
-Class libG Σ := { lib_inG : inG Σ (gmapR K (agreeR (prodO natO (laterO (iPropO Σ))))) }.
-Local Existing Instance lib_inG.
+Class libG Σ :=
+  { #[local] lib_inG :: inG Σ (gmapR K (agreeR (prodO natO (laterO (iPropO Σ))))) }.
 
 Definition libΣ : gFunctors := #[GFunctor (gmapRF K (agreeRF (natO * ▶ ∙)))].
 Instance subG_libΣ {Σ} : subG libΣ Σ → libG Σ.
