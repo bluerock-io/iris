@@ -31,6 +31,7 @@ lemma.
 **Changes in `heap_lang`:**
 
 * Make `wp_cmpxchg_fail` work when the points-to is in the persistent context.
+* Seal definition of `pointsto`, add copies of all relevant lemmas.
 
 **Infrastructure:**
 
