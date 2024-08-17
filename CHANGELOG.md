@@ -37,6 +37,12 @@ lemma.
 
 * Add support for compiling the packages with dune. (by Rodolphe Lepigre) 
 
+**Changes in `bi`:**
+
+* Add instances for `match _ with _ end` (and thus `if _ then _ else` and
+  `'(_, _)` pair destructuring) for `Persistent`, `Affine`, `Absorbing`,
+  `Timeless`, and `Plain`. (by Sanjit Bhat)
+
 ## Iris 4.2.0 (2024-04-12)
 
 The highlights of this release are:

@@ -20,3 +20,10 @@ P : PROP
 
 ?p : "Persistent (■ P)"
 
+"match_def_unfold_fail"
+     : string
+The command has indeed failed with message:
+Cannot infer this placeholder of type "Persistent (match_foo b)" (no type
+class instance found) in environment:
+PROP : bi
+b : bool
