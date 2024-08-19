@@ -20,6 +20,10 @@ lemma.
 * Change `iInduction` to always generate a magic wand instead of sometimes
   generating an implication for reverted hypotheses.
 * Add `iUnfold` tactic.
+* Improve ability to name induction hypotheses (IHs) in `iInduction`: when
+  performing `iInduction x as cpat` the names of the IHs in the Coq introduction
+  pattern `cpat` are used to name the IHs in the proof mode context. For
+  example, `iInduction n as [|n IH]` and `iInduction t as [|l IHl r IHr]`.
 
 **Changes in `base_logic`:**
 
