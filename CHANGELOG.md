@@ -19,6 +19,7 @@ lemma.
   invariant opening.
 * Change `iInduction` to always generate a magic wand instead of sometimes
   generating an implication for reverted hypotheses.
+* Add `iUnfold` tactic.
 
 **Changes in `base_logic`:**
 

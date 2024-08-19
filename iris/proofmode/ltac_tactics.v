@@ -230,6 +230,14 @@ Tactic Notation "iEval" tactic3(t) "in" constr(Hs) :=
 Tactic Notation "iSimpl" := iEval (simpl).
 Tactic Notation "iSimpl" "in" constr(H) := iEval (simpl) in H.
 
+Ltac _iUnfold r := iEval (unfold r).
+Tactic Notation "iUnfold" ne_reference_list_sep(ids,",") :=
+  ltac1_list_iter _iUnfold ids.
+
+Ltac _iUnfold_in r H := iEval (unfold r) in H.
+Tactic Notation "iUnfold" ne_reference_list_sep(ids,",") "in" constr(H) :=
+  ltac1_list_iter ltac:(fun r => _iUnfold_in r H) ids.
+
 (* It would be nice to also have an `iSsrRewrite`, however, for this we need to
 pass arguments to Ssreflect's `rewrite` like `/= foo /bar` in Ltac, see:
 

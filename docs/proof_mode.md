@@ -273,6 +273,10 @@ Rewriting / simplification
 - `iSimpl` / `iSimpl in "selpat"` : perform `simpl` on the proof mode
   goal / hypotheses given by the selection pattern `selpat`. This is a
   shorthand for `iEval (simpl)`.
+- `iUnfold xs` / `iUnfold xs in "selpat"` : perform `unfold xs` on the proof
+  mode goal / hypotheses given by the selection pattern `selpat`. This is a
+  shorthand for `iEval (unfold xs)`. Similar to Coq's `unfold`, the argument
+  `xs` should be a comma-separated non-empty list.
 
 Iris
 ----
