@@ -6,9 +6,6 @@ From iris.prelude Require Import options.
 Import List.ListNotations.
 Local Open Scope list.
 
-Ltac2 compute (c : Init.constr) : Init.constr :=
-  Std.eval_vm Init.None c.
-
 Module StringToIdent.
   Import Ltac2.
 
@@ -44,6 +41,9 @@ Module StringToIdent.
     | String _ ?s' => Int.add 1 (coq_string_length s')
     | _ => Control.throw (NotStringLiteral s)
     end.
+
+  Ltac2 compute (c : constr) : constr :=
+    Std.eval_vm None c.
 
   (** [coq_string_to_string] converts a Gallina string in a constr to an Ltac2
   native string *)
