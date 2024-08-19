@@ -240,7 +240,7 @@ Induction
   + `iLöb as "IH" forall (x1 ... xn) "selpat"` : perform Löb induction,
   generalizing over the Coq level variables `x1 ... xn`, the hypotheses given by
   the selection pattern `selpat`, and the spatial context as usual.
-- `iInduction x as cpat "selpat"` : perform induction on the Coq term `x`. The
+- `iInduction x as cpat` : perform induction on the Coq term `x`. The
   Coq introduction pattern `cpat` is used to name the introduced variables,
   including the induction hypotheses which are introduced into the proof mode
   context. Note that induction hypotheses should not be put into string
