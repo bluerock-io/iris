@@ -159,7 +159,7 @@ Lemma wp_pure_step_fupd `{!Inhabited (state Λ)} s E E' e1 e2 φ n Φ :
   (|={E}[E']▷=>^n £ n -∗ WP e2 @ s; E {{ Φ }}) ⊢ WP e1 @ s; E {{ Φ }}.
 Proof.
   iIntros (Hexec Hφ) "Hwp". specialize (Hexec Hφ).
-  iInduction Hexec as [e|n e1 e2 e3 [Hsafe ?]] "IH"; simpl.
+  iInduction Hexec as [e|n e1 e2 e3 [Hsafe ?] ? IH]; simpl.
   { iMod lc_zero as "Hz". by iApply "Hwp". }
   iApply wp_lift_pure_det_step_no_fork.
   - intros σ. specialize (Hsafe σ). destruct s; eauto using reducible_not_val.

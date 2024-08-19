@@ -265,7 +265,7 @@ Proof.
   iIntros "!>" (e2 σ2 efs Hstep) "Hcred". iMod ("H" $! e2 σ2 efs with "[% //] Hcred") as "H".
   iIntros "!>!>". iMod "H". iMod "HP". iModIntro.
   revert n Hn. generalize (num_laters_per_step ns)=>n0 n Hn.
-  iInduction n as [|n] "IH" forall (n0 Hn).
+  iInduction n as [|n IH] forall (n0 Hn).
   - iApply (step_fupdN_wand with "H"). iIntros ">($ & Hwp & $)". iMod "HP".
     iModIntro. iApply (wp_strong_mono with "Hwp"); [done|set_solver|].
     iIntros (v) "HΦ". iApply ("HΦ" with "HP").

@@ -360,7 +360,7 @@ Lemma heap_array_to_seq_meta l vs (n : nat) :
   ([∗ map] l' ↦ _ ∈ heap_array l vs, meta_token l' ⊤) -∗
   [∗ list] i ∈ seq 0 n, meta_token (l +ₗ (i : nat)) ⊤.
 Proof.
-  iIntros (<-) "Hvs". iInduction vs as [|v vs] "IH" forall (l)=> //=.
+  iIntros (<-) "Hvs". iInduction vs as [|v vs IH] forall (l)=> //=.
   rewrite big_opM_union; last first.
   { apply map_disjoint_spec=> l' v1 v2 /lookup_singleton_Some [-> _].
     intros (j&w&?&Hjl&?&?)%heap_array_lookup.
@@ -375,7 +375,7 @@ Lemma heap_array_to_seq_pointsto l v (n : nat) :
   ([∗ map] l' ↦ ov ∈ heap_array l (replicate n v), gen_heap.pointsto l' (DfracOwn 1) ov) -∗
   [∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦ v.
 Proof.
-  iIntros "Hvs". iInduction n as [|n] "IH" forall (l); simpl.
+  iIntros "Hvs". iInduction n as [|n IH] forall (l); simpl.
   { done. }
   rewrite big_opM_union; last first.
   { apply map_disjoint_spec=> l' v1 v2 /lookup_singleton_Some [-> _].
