@@ -418,6 +418,7 @@ Ltac iFrameAnyIntuitionistic :=
     match Hs with [] => idtac | ?H :: ?Hs => repeat iFrameHyp H; go Hs end in
   match goal with
   | |- envs_entails ?Δ _ =>
+     (* [lazy] because [Δ] involves user terms *)
      let Hs := eval lazy in (env_dom (env_intuitionistic Δ)) in go Hs
   end.
 
@@ -427,6 +428,7 @@ Ltac iFrameAnySpatial :=
     match Hs with [] => idtac | ?H :: ?Hs => try iFrameHyp H; go Hs end in
   match goal with
   | |- envs_entails ?Δ _ =>
+     (* [lazy] because [Δ] involves user terms *)
      let Hs := eval lazy in (env_dom (env_spatial Δ)) in go Hs
   end.
 
@@ -1021,6 +1023,7 @@ Tactic Notation "iSpecializeCore" open_constr(H)
        (* Check if we should use [tac_specialize_intuitionistic_helper]. Notice
        that [pm_eval] does not unfold [use_tac_specialize_intuitionistic_helper],
        so we should do that first. *)
+       (* [lazy] because [Δ] involves user terms *)
        let b := eval lazy [use_tac_specialize_intuitionistic_helper] in
          (if p then use_tac_specialize_intuitionistic_helper Δ pat else false) in
        lazymatch eval pm_eval in b with
@@ -1030,6 +1033,7 @@ Tactic Notation "iSpecializeCore" open_constr(H)
           lazymatch iTypeOf H with
           | Some (?q, _) =>
              let PROP := iBiOfGoal in
+             (* [lazy] because [PROP] involves user terms *)
              lazymatch eval lazy in (q || tc_to_bool (BiAffine PROP)) with
              | true =>
                 notypeclasses refine (tac_specialize_intuitionistic_helper _ H _ _ _ _ _ _ _ _ _ _);
