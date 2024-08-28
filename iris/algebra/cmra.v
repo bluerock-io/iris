@@ -1727,7 +1727,7 @@ Section discrete_fun_cmra.
     by intros [h Hh]; exists (h x); rewrite /op /discrete_fun_op_instance (Hh x).
   Qed.
 
-  Lemma discrete_fun_included_spec `{Hfin : Finite A} (f g : discrete_fun B) :
+  Lemma discrete_fun_included_spec `{Finite A} (f g : discrete_fun B) :
     f ≼ g ↔ ∀ x, f x ≼ g x.
   Proof.
     split; [by intros; apply discrete_fun_included_spec_1|].
