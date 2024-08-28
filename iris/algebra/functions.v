@@ -162,21 +162,22 @@ Section cmra.
       eauto using discrete_fun_singleton_updateP_empty with subst.
   Qed.
 
-  Lemma discrete_fun_updateP `{Hfin: Finite A} f P :
-    (∀ a, f a ~~>: P a) → f ~~>: (λ f', ∀ a, P a (f' a)).
+  Lemma discrete_fun_updateP `{!Finite A} f P Q :
+    (∀ a, f a ~~>: P a) → (∀ f', (∀ a, P a (f' a)) → Q f') → f ~~>: Q.
   Proof.
-    rewrite cmra_total_updateP. setoid_rewrite cmra_total_updateP.
-    intros Hf n z Hfz.
+    repeat setoid_rewrite cmra_total_updateP. intros Hf HP n h Hh.
     destruct (finite_choice
-      (λ a y, P a y ∧ ✓{n} (y ⋅ (z a)))
-      ltac:(naive_solver)) as [f' Hf'].
+      (λ a y, P a y ∧ ✓{n} (y ⋅ (h a)))) as [f' Hf']; first naive_solver.
     naive_solver.
   Qed.
+  Lemma discrete_fun_updateP' `{!Finite A} f P :
+    (∀ a, f a ~~>: P a) → f ~~>: λ f', ∀ a, P a (f' a).
+  Proof. eauto using discrete_fun_updateP. Qed.
 
   Lemma discrete_fun_update f g :
     (∀ a, f a ~~> g a) → f ~~> g.
   Proof.
-    rewrite cmra_total_update. setoid_rewrite cmra_total_update.
-    intros Hfg n zf Hz a. apply (Hfg a), Hz.
+    repeat setoid_rewrite cmra_total_update.
+    intros Hfg n h Hh a. apply (Hfg a), Hh.
   Qed.
 End cmra.
