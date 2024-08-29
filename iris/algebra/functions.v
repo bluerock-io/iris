@@ -161,4 +161,23 @@ Section cmra.
     rewrite !cmra_update_updateP;
       eauto using discrete_fun_singleton_updateP_empty with subst.
   Qed.
+
+  Lemma discrete_fun_updateP `{!Finite A} f P Q :
+    (∀ a, f a ~~>: P a) → (∀ f', (∀ a, P a (f' a)) → Q f') → f ~~>: Q.
+  Proof.
+    repeat setoid_rewrite cmra_total_updateP. intros Hf HP n h Hh.
+    destruct (finite_choice
+      (λ a y, P a y ∧ ✓{n} (y ⋅ (h a)))) as [f' Hf']; first naive_solver.
+    naive_solver.
+  Qed.
+  Lemma discrete_fun_updateP' `{!Finite A} f P :
+    (∀ a, f a ~~>: P a) → f ~~>: λ f', ∀ a, P a (f' a).
+  Proof. eauto using discrete_fun_updateP. Qed.
+
+  Lemma discrete_fun_update f g :
+    (∀ a, f a ~~> g a) → f ~~> g.
+  Proof.
+    repeat setoid_rewrite cmra_total_update.
+    intros Hfg n h Hh a. apply (Hfg a), Hh.
+  Qed.
 End cmra.
