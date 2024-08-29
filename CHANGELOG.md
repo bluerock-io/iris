@@ -10,6 +10,9 @@ lemma.
 * Add lemmas `big_opS_gset_to_gmap` and `big_opS_gset_to_gmap_L`, which rewrite
   between `gset_to_gmap` and big set ops of singleton maps.  (by Isaac van
   Bakel)
+* Add lemmas `discrete_fun_update` and `discrete_fun_updateP`, which updates an
+  abitrary `discrete_fun` to another. For `discrete_fun_updateP`, this requires
+  the domain to be finite, similar to `discrete_fun_included_spec`. (by Janggun Lee)
 
 **Changes in `proofmode`:**
 
