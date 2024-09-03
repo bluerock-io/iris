@@ -398,13 +398,11 @@ Section lemmas.
     intros ?? Hm'.
     induction m' as [|k v m' ? IH] using map_ind; decompose_map_disjoint.
     { rewrite big_opM_empty left_id_L right_id. done. }
-    rewrite IH //.
-    2:{ by eapply map_Forall_insert_1_2. }
-    rewrite big_opM_insert // assoc.
+    apply map_Forall_insert in Hm' as [??]; last done.
+    rewrite IH //. rewrite big_opM_insert // assoc.
     apply cmra_update_op; last done.
-    rewrite -insert_union_l. apply (gmap_view_alloc _ k dq); [|done|].
-    - by apply lookup_union_None.
-    - eapply Hm'. erewrite lookup_insert. done.
+    rewrite -insert_union_l. apply (gmap_view_alloc _ k dq); [|done..].
+    by apply lookup_union_None.
   Qed.
 
   Lemma gmap_view_delete m k v :
