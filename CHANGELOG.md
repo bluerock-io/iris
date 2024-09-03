@@ -13,6 +13,8 @@ lemma.
 * Add lemmas `discrete_fun_update` and `discrete_fun_updateP`, which updates an
   abitrary `discrete_fun` to another. For `discrete_fun_updateP`, this requires
   the domain to be finite, similar to `discrete_fun_included_spec`. (by Janggun Lee)
+* Add lemmas `discrete_fun_singleton_valid` and `discrete_fun_singleton_unit`, which simplify 
+  cmra validity and unit used with `discrete_fun_singleton`. (by Janggun Lee)
 
 **Changes in `proofmode`:**
 
