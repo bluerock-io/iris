@@ -9,203 +9,202 @@ so we can add it.
 
 ### Binders
 
-**Good:** `(a : B)`
-**Bad:** `(a:B)`, `(a: B)`
+This applies to Context, Implicit Types, and definitions.
 
-**TODO**: Prefer `(a : B)` to `a : B`
+- **Put a space on both sides of the colon.**
 
-This applies to Context, Implicit Types, and definitions
+  Good: `(a : B)` <br>
+  Bad: `(a:B)`, `(a: B)`
+
+- **Prefer `(a : B)` to `a : B`.** (TODO)
+
 
 ### Patterns
 
 #### Disjunctions & branches
 
-Always mark the disjuncts when destructuring a disjunctive pattern, even if you don't bind anything, to indicate that the proof branches
+- **Always mark the disjuncts when destructuring a disjunctive pattern, even if you don't bind anything, to indicate that the proof branches.**
 
-**Good:**
-```coq
-Lemma foo : ∀ b : bool, b = true ∨ b = false.
-Proof.
-  intros [|].
-  ...
-```
+  Good:
+  ```coq
+  Lemma foo : ∀ b : bool, b = true ∨ b = false.
+  Proof.
+    intros [|].
+    ...
+  ```
 
-**Bad:**
-```coq
-Lemma foo : ∀ b : bool, b = true ∨ b = false.
-Proof.
-  intros [].
-  ...
-```
+  Bad:
+  ```coq
+  Lemma foo : ∀ b : bool, b = true ∨ b = false.
+  Proof.
+    intros [].
+    ...
+  ```
 
 #### Uncategorized
 
-**TODO:** Use `"[H1 H2]"` when possible otherwise do `"(H1 & H2 & H3)"`
+- **Use `"[H1 H2]"` when possible otherwise do `"(H1 & H2 & H3)"`.** (TODO)
 
 ### Unicode
 
-Always use Unicode variants of forall, exists, ->, <=, >=
+- **Always use Unicode variants of forall, exists, ->, <=, >=.**
 
-**Good:** `∀ ∃ → ≤ ≥`
-**Bad:** `forall exists -> <= >=`
+  Good: `∀ ∃ → ≤ ≥`<br>
+  Bad: `forall exists -> <= >=`
 
 ### Equivalent vernacular commands
 
-Use `Context`, never `Variable`
+- **Use `Context`, never `Variable`.**
 
-**TODO:** Use `Implicit Types`, never `Implicit Type`
+- **Use `Implicit Types`, never `Implicit Type`.** (TODO)
 
-Use `Lemma`, not `Theorem` (or the other variants: `Fact`, `Corollary`,
-`Remark`)
+- **Use `Lemma`, not `Theorem` (or the other variants: `Fact`, `Corollary`, `Remark`)**.
 
-**TODO:** Always add `Global` or `Local` to `Hint`, `Arguments`, and `Instance`.
+- **Always add `Global` or `Local` to `Hint`, `Arguments`, and `Instance`.** (TODO)
 
 ### `Require`
 
-Never put `Require` in the middle of a file. All `Require` must be at the top.
+- **Never put `Require` in the middle of a file.** All `Require` must be at the top.
 If you only want to *import* a certain module in some specific place (for instance, in a `Section` or other `Module`), you can do something like:
 
-```coq
-From lib Require component.
-
-(* ... *)
-
-Import component.
-```
+  ```coq
+  From lib Require component.
+  
+  (* ... *)
+  
+  Import component.
+  ```
 
 ### Ltac
 
-We prefer `first [ t1 | fail 1 "..." ]` to `t1 || fail "..."` because the latter will fail if `t1` doesn't make progress. See https://gitlab.mpi-sws.org/iris/iris/-/issues/216. Note that `first [ t1 | fail "..."]` is simply incorrect; the failure message will never show up and will be replaced with a generic failure.
+- **Prefer `first [ t1 | fail 1 "..." ]` to `t1 || fail "..."`.** This is better because the latter will fail if `t1` doesn't make progress. See https://gitlab.mpi-sws.org/iris/iris/-/issues/216. Note that `first [ t1 | fail "..."]` is simply incorrect; the failure message will never show up and will be replaced with a generic failure.
 
 ### Coqdoc comments
 
-Module-level comments (covering the entire file) go at the top of the file, before the `Require`.
+- **Module-level comments (covering the entire file) go at the top of the file, before the `Require`.**
 
 ### Uncategorized
 
-Indent the body of a match by one space:
+- **Indent the body of a match by one space.**
 
-**Good:**
-```coq
-match foo with
-| Some x =>
-   long line here using x
-```
+  Good:
+  ```coq
+  match foo with
+  | Some x =>
+     long line here using x
+  ```
+  
+  *RJ*: This is odd, usually everything is in (multiples of) 2 spaces, I think.
+  
+  *Tej*: https://gitlab.mpi-sws.org/iris/iris/-/blob/920bc3d97b8830139045e1780f2aff4d05b910cd/iris_heap_lang/proofmode.v#L194
 
-*RJ*: This is odd, usually everything is in (multiples of) 2 spaces, I think.
+- **Avoid using the extra square brackets around an Ltac match.**
 
-*Tej*: https://gitlab.mpi-sws.org/iris/iris/-/blob/920bc3d97b8830139045e1780f2aff4d05b910cd/iris_heap_lang/proofmode.v#L194
+  Good:
+  ```coq
+  match goal with
+  | |- ?g => idtac g
+  end
+  ```
+  
+  Bad:
+  ```coq
+  match goal with
+  | [ |- ?g ] => idtac g
+  end
+  ```
 
-Avoid using the extra square brackets around an Ltac match:
+- **Use coqdoc syntax in comments for Coq identifiers and inline code, e.g. `[cmraT]`.**
 
-**Good:**
-```coq
-match goal with
-| |- ?g => idtac g
-end
-```
+- **Put proofs either all on one line (`Proof. reflexivity. Qed.`) or split up the usual way with indentation.**
 
-**Bad:**
-```coq
-match goal with
-| [ |- ?g ] => idtac g
-end
-```
+  Bad:
+  
+  ```coq
+  Lemma foo : 2 + 2 = 4 ∧ 1 + 2 = 3.
+  Proof. split.
+    - reflexivity.
+    - done.
+  Qed.
+  ```
 
-Use coqdoc syntax in comments for Coq identifiers and inline code, e.g. `[cmraT]`
+- **Put the entire theorem statement on one line or one premise per line, indented by 2 spaces.**
 
-Put proofs either all on one line (`Proof. reflexivity. Qed.`) or split up the usual way with indentation.
-
-**Bad:**
-
-```coq
-Lemma foo : 2 + 2 = 4 ∧ 1 + 2 = 3.
-Proof. split.
-  - reflexivity.
-  - done.
-Qed.
-```
-
-Put the entire theorem statement on one line or one premise per line, indented by 2 spaces.
-
-**Bad:**
-
-```coq
-Lemma foo x y z :
-    x < y → y < z →
+  Bad:
+  
+  ```coq
+  Lemma foo x y z :
+      x < y → y < z →
+      x < z.
+  ```
+  
+  Good:
+  
+  ```coq
+  Lemma foo x y z : x < y → y < z → x < z.
+  ```
+  
+  Good: (particularly if premises are longer)
+  
+  ```coq
+  Lemma foo x y z :
+    x < y →
+    y < z →
     x < z.
-```
+  ```
 
-**Good:**
+- **If the parameters before the `:` become too long, indent later lines by 4 spaces and always have a newline after `:`.**
 
-```coq
-Lemma foo x y z : x < y → y < z → x < z.
-```
+  Bad:
+  
+  ```coq
+  Lemma foo (very_long_name : has_a_very_long_type)
+  (even_longer_name : has_an_even_longer_type) : x < y → y < z →
+    x < z.
+  ```
+  
+  Good:
+  
+  ```coq
+  Lemma foo (very_long_name : has_a_very_long_type)
+      (even_longer_name : has_an_even_longer_type) :
+    x < y → y < z → x < z.
+  ```
 
-**Good:** (particularly if premises are longer)
+- **For definitions that don't fit into one line, put `:=` before the linebreak, not after.**
 
-```coq
-Lemma foo x y z :
-  x < y →
-  y < z →
-  x < z.
-```
+  Bad:
+  
+  ```coq
+  Definition foo (arg1 arg2 arg3 : name_of_the_type)
+    := the body that is very long.
+  ```
+  
+  Good:
+  
+  ```coq
+  Definition foo (arg1 arg2 arg3 : name_of_the_type) :=
+    the body that is very long.
+  ```
 
-If the parameters before the `:` become too long, indent later lines by 4 spaces and always have a newline after `:`:
+- **For tests with output put `Check "theorem name in a string"` before it so that the output from different tests is separated.**
 
-**Bad:**
+- **For long `t1; t2; t3` and `t; [t1 | t2 | t3]` split them like this, and indent by 2 spaces.**
 
-```coq
-Lemma foo (very_long_name : has_a_very_long_type)
-(even_longer_name : has_an_even_longer_type) : x < y → y < z →
-  x < z.
-```
+  Good:
+  ```coq
+  t;
+    [t1
+    |t2
+    |t3].
+  ```
+  
+  ```coq
+  t;
+    t1;
+    t2.
+  ```
 
-**Good:**
-
-```coq
-Lemma foo (very_long_name : has_a_very_long_type)
-    (even_longer_name : has_an_even_longer_type) :
-  x < y → y < z → x < z.
-```
-
-For definitions that don't fit into one line, put `:=` before the linebreak, not after.
-
-
-**Bad:**
-
-```coq
-Definition foo (arg1 arg2 arg3 : name_of_the_type)
-  := the body that is very long.
-```
-
-**Good:**
-
-```coq
-Definition foo (arg1 arg2 arg3 : name_of_the_type) :=
-  the body that is very long.
-```
-
-For tests with output put `Check "theorem name in a string"` before it so that the output from different tests is separated.
-
-For long `t1; t2; t3` and `t; [t1 | t2 | t3]` split them like this, and indent by 2 spaces:
-
-**Good:**
-```coq
-t;
-  [t1
-  |t2
-  |t3].
-```
-
-```coq
-t;
-  t1;
-  t2.
-```
-
-
-**TODO:** Keep all `Require`, `Import` and `Export` at the top of the file.
 
 
 ## File organization
