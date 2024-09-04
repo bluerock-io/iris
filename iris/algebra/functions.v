@@ -86,6 +86,16 @@ Section cmra.
       rewrite ?discrete_fun_lookup_singleton ?discrete_fun_lookup_singleton_ne //.
     by apply ucmra_unit_validN.
   Qed.
+  Lemma discrete_fun_singleton_valid x (y : B x) : ✓ discrete_fun_singleton x y ↔ ✓ y.
+  Proof.
+    by rewrite !cmra_valid_validN; setoid_rewrite discrete_fun_singleton_validN.
+  Qed.
+
+  Lemma discrete_fun_singleton_unit x : discrete_fun_singleton x (ε : B x) ≡ ε.
+  Proof.
+    move=>x'; destruct (decide (x = x')) as [->|];
+      by rewrite ?discrete_fun_lookup_singleton ?discrete_fun_lookup_singleton_ne.
+  Qed.
 
   Lemma discrete_fun_singleton_core x (y : B x) :
     core (discrete_fun_singleton x y) ≡ discrete_fun_singleton x (core y).
