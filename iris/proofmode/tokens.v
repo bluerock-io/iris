@@ -37,8 +37,8 @@ Inductive state :=
 Definition cons_state (kn : state) (k : list token) : list token :=
   match kn with
   | SNone => k
-  | SName s => TName (string_rev s) :: k
-  | SPure s => TPure (if String.eqb s "" then None else Some (string_rev s)) :: k
+  | SName s => TName (String.rev s) :: k
+  | SPure s => TPure (if String.eqb s "" then None else Some (String.rev s)) :: k
   | SNat n => TNat n :: k
   end.
 
@@ -77,17 +77,17 @@ Fixpoint tokenize_go (s : string) (k : list token) (kn : state) : list token :=
   | String a s =>
      (* TODO: Complain about invalid characters, to future-proof this
      against making more characters special. *)
-     if is_space a then tokenize_go s (cons_state kn k) SNone else
+     if Ascii.is_space a then tokenize_go s (cons_state kn k) SNone else
      match kn with
      | SNone =>
-        match is_nat a with
+        match Ascii.is_nat a with
         | Some n => tokenize_go s k (SNat n)
         | None => tokenize_go s k (SName (String a ""))
         end
      | SName s' => tokenize_go s k (SName (String a s'))
      | SPure s' => tokenize_go s k (SPure (String a s'))
      | SNat n =>
-        match is_nat a with
+        match Ascii.is_nat a with
         | Some n' => tokenize_go s k (SNat (n' + 10 * n))
         | None => tokenize_go s (TNat n :: k) (SName (String a ""))
         end

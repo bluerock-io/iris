@@ -1196,7 +1196,7 @@ Tactic Notation "iSplit" :=
 
 Tactic Notation "iSplitL" constr(Hs) :=
   iStartProof;
-  let Hs := words Hs in
+  let Hs := String.words Hs in
   let Hs := eval vm_compute in (INamed <$> Hs) in
   let Δ := iGetCtx in
   eapply tac_sep_split with Left Hs _ _; (* (js:=Hs) *)
@@ -1212,7 +1212,7 @@ Tactic Notation "iSplitL" constr(Hs) :=
 
 Tactic Notation "iSplitR" constr(Hs) :=
   iStartProof;
-  let Hs := words Hs in
+  let Hs := String.words Hs in
   let Hs := eval vm_compute in (INamed <$> Hs) in
   let Δ := iGetCtx in
   eapply tac_sep_split with Right Hs _ _; (* (js:=Hs) *)
@@ -1481,7 +1481,7 @@ Tactic Notation "iDestructHyp" constr(H) "as"
 
 (** * Combinining hypotheses *)
 Tactic Notation "iCombine" constr(Hs) "as" constr(pat) :=
-  let Hs := words Hs in
+  let Hs := String.words Hs in
   let Hs := eval vm_compute in (INamed <$> Hs) in
   let H := iFresh in
   let Δ := iGetCtx in
@@ -1502,7 +1502,7 @@ Tactic Notation "iCombine" constr(H1) constr(H2) "as" constr(pat) :=
   iCombine [H1;H2] as pat.
 
 Tactic Notation "iCombineGivesCore" constr(Hs) "gives" tactic3(tac) :=
-  let Hs := words Hs in
+  let Hs := String.words Hs in
   let Hs := eval vm_compute in (INamed <$> Hs) in
   let H := iFresh in
   let Δ := iGetCtx in
@@ -1534,7 +1534,7 @@ Tactic Notation "iCombine" constr(H1) constr(H2)
 
 Tactic Notation "iCombineAsGivesCore" constr(Hs) "as" constr(pat1)
                                       "gives" tactic3(tac) :=
-  let Hs := words Hs in
+  let Hs := String.words Hs in
   let Hs := eval vm_compute in (INamed <$> Hs) in
   let H1 := iFresh in
   let H2 := iFresh in
