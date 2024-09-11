@@ -113,7 +113,7 @@ Global Arguments gmapO _ {_ _} _.
 (** Non-expansiveness of higher-order map functions and big-ops *)
 Global Instance merge_ne `{Countable K} {A B C : ofe} n :
   Proper ((dist (A:=option A) n ==> dist (A:=option B) n ==> dist (A:=option C) n) ==>
-          dist n ==> dist n ==> dist n) (merge (MA:=gmap K A)).
+          dist n ==> dist n ==> (≡{n}@{gmap K C}≡)) merge.
 Proof.
   intros ?? Hf ?? Hm1 ?? Hm2 i. rewrite !lookup_merge.
   destruct (Hm1 i), (Hm2 i); try apply Hf; by constructor.
@@ -126,7 +126,8 @@ Proof.
   by do 2 destruct 1; first [apply Hf | constructor].
 Qed.
 Global Instance map_fmap_ne `{Countable K} {A B : ofe} (f : A → B) n :
-  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (MA:=gmap K A) f).
+  Proper (dist n ==> dist n) f →
+  Proper (dist n ==> (≡{n}@{gmap K B}≡)) (fmap f).
 Proof. intros ? m m' ? k; rewrite !lookup_fmap. by repeat f_equiv. Qed.
 Global Instance map_zip_with_ne `{Countable K} {A B C : ofe} (f : A → B → C) n :
   Proper (dist n ==> dist n ==> dist n) f →
@@ -713,9 +714,6 @@ Qed.
 End unital_properties.
 
 (** Functor *)
-Global Instance gmap_fmap_ne `{Countable K} {A B : ofe} (f : A → B) n :
-  Proper (dist n ==> dist n) f → Proper (dist n ==>dist n) (fmap (MA:=gmap K A) f).
-Proof. by intros ? m m' Hm k; rewrite !lookup_fmap; apply option_fmap_ne. Qed.
 Lemma gmap_fmap_ne_ext `{Countable K}
   {A : Type} {B : ofe} (f1 f2 : A → B) (m : gmap K A) n :
   (∀ i x, m !! i = Some x → f1 x ≡{n}≡ f2 x) →
