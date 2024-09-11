@@ -232,10 +232,10 @@ Tactic failure: wp_pure: "Hcred" is not fresh.
   q3 : Qp
   v4 : val
   q4 : Qp
-  H : ((✓ (DfracOwn q3 ⋅ DfracOwn q4) ∧ v3 = v4)
-       ∧ ✓ (DfracOwn q2 ⋅ (DfracOwn q3 ⋅ DfracOwn q4)) ∧ v2 = v3)
-      ∧ ✓ (DfracOwn q1 ⋅ (DfracOwn q2 ⋅ (DfracOwn q3 ⋅ DfracOwn q4)))
-        ∧ v1 = v2
+  H :
+    ((✓ (DfracOwn q3 ⋅ DfracOwn q4) ∧ v3 = v4)
+     ∧ ✓ (DfracOwn q2 ⋅ (DfracOwn q3 ⋅ DfracOwn q4)) ∧ v2 = v3)
+    ∧ ✓ (DfracOwn q1 ⋅ (DfracOwn q2 ⋅ (DfracOwn q3 ⋅ DfracOwn q4))) ∧ v1 = v2
   ============================
   --------------------------------------∗
   ⌜(q1 + (q2 + (q3 + q4)) ≤ 1)%Qp⌝ ∗ ⌜v1 = v2⌝ ∗ ⌜

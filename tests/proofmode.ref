@@ -708,8 +708,8 @@ No applicable tactic.
   
   PROP : bi
   Ψ, Φ : nat → PROP
-  HP : ∀ (f : nat → nat) (y : nat),
-         TCEq f (λ x : nat, x + 10) → Ψ (f 1) -∗ Φ y
+  HP :
+    ∀ (f : nat → nat) (y : nat), TCEq f (λ x : nat, x + 10) → Ψ (f 1) -∗ Φ y
   ============================
   "H" : Ψ 11
   --------------------------------------∗

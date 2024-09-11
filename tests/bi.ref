@@ -5,21 +5,17 @@ m : gmap nat nat
 The term "m" has type "gmap nat nat" while it is expected to have type
  "gmap nat Z" (cannot unify "nat" and "Z").
 The command has indeed failed with message:
-Unable to satisfy the following constraints:
 In environment:
 PROP : bi
 P : PROP
-
-?p : "Persistent (|==> P)"
-
+Could not find an instance for the following existential variables:
+?p : Persistent (|==> P)
 The command has indeed failed with message:
-Unable to satisfy the following constraints:
 In environment:
 PROP : bi
 P : PROP
-
-?p : "Persistent (■ P)"
-
+Could not find an instance for the following existential variables:
+?p : Persistent (■ P)
 "match_def_unfold_fail"
      : string
 The command has indeed failed with message:
