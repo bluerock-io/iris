@@ -4,6 +4,11 @@ NO_TEST:=
 # use MAKE_REF=1 to generate new reference files
 MAKE_REF:=
 
+# Only test reference output on known versions of Coq, to avoid blocking
+# Coq CI when they change the printing a little.
+# Need to make this a lazy variable (`=` instead of `:=`) since COQ_VERSION is only set later.
+COQ_REF=$(shell echo "$(COQ_VERSION)" | grep -E "^8\.(20)\." -q && echo 1)
+
 # Run tests interleaved with main build.  They have to be in the same target for this.
 real-all: style $(if $(NO_TEST),,test)
 
@@ -26,10 +31,6 @@ test: $(TESTFILES:.v=.vo)
 .PHONY: test
 
 COQ_TEST=$(COQTOP) $(COQDEBUG) -batch -test-mode
-# These versions of Coq are known to have different output so we don't test them.
-# Need to make this a lazy variable (`=` instead of `:=`) since COQ_VERSION is only set later.
-# Make sure to recognize both 8.$NUM.0 and 8.$NUM+alpha.
-COQ_NOREF=$(shell echo "$(COQ_VERSION)" | grep -E "^8\.(16|17|18|20|21)[.+]" -q && echo 1)
 
 tests/.coqdeps.d: $(TESTFILES)
 	$(SHOW)'COQDEP TESTFILES'
@@ -46,14 +47,15 @@ tests/.coqdeps.d: $(TESTFILES)
 # - Cleanup, and mark as done for make.
 $(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref) $(NORMALIZER)
 	$(HIDE)REF=$*".ref" && \
-	  echo "COQTEST$(if $(COQ_NOREF), [ref diff ignored],$(if $(MAKE_REF), [make ref],)) $< (ref: $$REF)" && \
+	  echo "COQTEST$(if $(COQ_REF),$(if $(MAKE_REF), [make ref],), [ref diff ignored]) $< (ref: $$REF)" && \
 	  TMPFILE="$$(mktemp)" && \
 	  unset OCAMLRUNPARAM && \
 	  $(TIMER) $(COQ_TEST) $(COQFLAGS) $(COQLIBS) -load-vernac-source $< > "$$TMPFILE" && \
 	  sed -E -f $(NORMALIZER) "$$TMPFILE" > "$$TMPFILE".new && \
 	  mv "$$TMPFILE".new "$$TMPFILE" && \
-	  $(if $(COQ_NOREF), (diff --strip-trailing-cr -u "$$REF" "$$TMPFILE" || true) , \
-	    $(if $(MAKE_REF),mv "$$TMPFILE" "$$REF",diff --strip-trailing-cr -u "$$REF" "$$TMPFILE") \
+	  $(if $(COQ_REF),\
+	    $(if $(MAKE_REF),mv "$$TMPFILE" "$$REF",diff --strip-trailing-cr -u "$$REF" "$$TMPFILE"), \
+	    (diff --strip-trailing-cr -u "$$REF" "$$TMPFILE" || true) \
 	  ) && \
 	  rm -f "$$TMPFILE" && \
 	  touch $@

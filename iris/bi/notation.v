@@ -33,7 +33,7 @@ which successfully undergoes automatic left-factoring. *)
 
 (** * BI connectives *)
 Reserved Notation "'emp'".
-Reserved Notation "'⌜' φ '⌝'" (at level 1, φ at level 200, format "⌜ φ ⌝").
+Reserved Notation "'⌜' φ '⌝'" (at level 0, φ at level 200, format "⌜ φ ⌝").
 Reserved Notation "P ∗ Q" (at level 80, right associativity, format "P  ∗  '/' Q").
 Reserved Notation "P -∗ Q"
   (at level 99, Q at level 200, right associativity,
