@@ -125,10 +125,10 @@ Global Arguments listO : clear implicits.
 
 (** Non-expansiveness of higher-order list functions and big-ops *)
 Global Instance list_fmap_ne {A B : ofe} n :
-  Proper ((dist n ==> dist n) ==> dist n ==> dist n) (fmap (M:=list) (A:=A) (B:=B)).
+  Proper ((dist n ==> dist n) ==> (≡{n}@{list A}≡) ==> (≡{n}@{list B}≡)) fmap.
 Proof. intros f1 f2 Hf l1 l2 Hl; by eapply Forall2_fmap, Forall2_impl; eauto. Qed.
 Global Instance list_omap_ne {A B : ofe} n :
-  Proper ((dist n ==> dist n) ==> dist n ==> dist n) (omap (M:=list) (A:=A) (B:=B)).
+  Proper ((dist n ==> dist n) ==> (≡{n}@{list A}≡) ==> (≡{n}@{list B}≡)) omap.
 Proof.
   intros f1 f2 Hf. induction 1 as [|x1 x2 l1 l2 Hx Hl]; csimpl; [constructor|].
   destruct (Hf _ _ Hx); [f_equiv|]; auto.
@@ -142,10 +142,10 @@ Proof.
   f_equiv; [by apply Hf|]. apply IH. intros i y1 y2 Hy. by apply Hf.
 Qed.
 Global Instance list_bind_ne {A B : ofe} n :
-  Proper ((dist n ==> dist n) ==> dist n ==> dist n)
-         (mbind (M:=list) (A:=A) (B:=B)).
+  Proper ((dist n ==> dist n) ==> (≡{n}@{list B}≡) ==> (≡{n}@{list A}≡)) mbind.
 Proof. intros f1 f2 Hf. induction 1; csimpl; [constructor|f_equiv; auto]. Qed.
-Global Instance list_join_ne {A : ofe} : NonExpansive (mjoin (M:=list) (A:=A)).
+Global Instance list_join_ne {A : ofe} n :
+  Proper (dist n ==> (≡{n}@{list A}≡)) mjoin.
 Proof. induction 1; simpl; [constructor|solve_proper]. Qed.
 Global Instance zip_with_ne {A B C : ofe} n :
   Proper ((dist n ==> dist n ==> dist n) ==> dist n ==> dist n ==> dist n)

@@ -92,5 +92,5 @@ Proof. apply _. Qed.
 
 (** Regression test for https://gitlab.mpi-sws.org/iris/iris/-/issues/577 *)
 Lemma list_bind_ne_test {A B : ofe} (f : A → list B) :
-  NonExpansive f → NonExpansive (mbind (M:=list) f).
+  NonExpansive f → NonExpansive (mbind f : list A → list B).
 Proof. apply _. Qed.
