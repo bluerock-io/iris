@@ -7,4 +7,6 @@
      -w -notation-overridden
      -w -redundant-canonical-projection
      -w -unknown-warning
-     -w -argument-scope-delimiter)))))
+     -w -argument-scope-delimiter
+     -w -notation-incompatible-prefix
+)))))
