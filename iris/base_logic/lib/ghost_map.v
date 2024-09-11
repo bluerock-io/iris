@@ -206,7 +206,8 @@ Section lemmas.
     unseal. iIntros "H1 H2".
     (* We need to explicitly specify the Inj instances instead of
     using inj _ since we need to specify [leibnizO] for [to_agree_inj]. *)
-    iCombine "H1 H2" gives %[? ?%(map_fmap_equiv_inj _ (to_agree_inj (A:=(leibnizO _))))]%gmap_view_auth_dfrac_op_valid.
+    iCombine "H1 H2" gives %[? ?%(map_fmap_equiv_inj _
+      (to_agree_inj (A:=(leibnizO _))))]%gmap_view_auth_dfrac_op_valid.
     iPureIntro. split; first done. by fold_leibniz.
   Qed.
   Lemma ghost_map_auth_agree γ q1 q2 m1 m2 :
