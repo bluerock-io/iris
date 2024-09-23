@@ -38,6 +38,11 @@ lemma.
   wrappers of instances `big_sep*_mono'` for `flip (⊢)` instead of `(⊢)`. (by
   Yusuke Matsushita)
 
+**Changes in `program_logic`:**
+
+* Add some missing proofmode instances for total weakest preconditions. (by 
+  Janggun Lee)
+
 **Changes in `heap_lang`:**
 
 * Make `wp_cmpxchg_fail` work when the points-to is in the persistent context.

@@ -343,6 +343,17 @@ Section proofmode_classes.
     by rewrite /ElimModal intuitionistically_if_elim
       fupd_frame_r wand_elim_r fupd_twp.
   Qed.
+  (** Error message instance for non-mask-changing view shifts.
+  Also uses a slightly different error: we cannot apply [fupd_mask_subseteq]
+  if [e] is not atomic, so we tell the user to first add a leading [fupd]
+  and then change the mask of that. *)
+  Global Instance elim_modal_fupd_twp_wrong_mask p s E1 E2 e P Φ :
+    ElimModal
+      (pm_error "Goal and eliminated modality must have the same mask.
+Use [iApply fupd_twp; iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]")
+      p false
+      (|={E2}=> P) False (WP e @ s; E1 [{ Φ }]) False | 100.
+  Proof. intros []. Qed.
 
   Global Instance elim_modal_fupd_twp_atomic p s E1 E2 e P Φ :
     ElimModal (Atomic (stuckness_to_atomicity s) e) p false
@@ -352,8 +363,28 @@ Section proofmode_classes.
     intros ?. by rewrite intuitionistically_if_elim
       fupd_frame_r wand_elim_r twp_atomic.
   Qed.
+  (** Error message instance for mask-changing view shifts. *)
+  Global Instance elim_modal_fupd_twp_atomic_wrong_mask p s E1 E2 E2' e P Φ :
+    ElimModal
+      (pm_error "Goal and eliminated modality must have the same mask.
+  Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]")
+      p false
+      (|={E2,E2'}=> P) False
+      (WP e @ s; E1 [{ Φ }]) False | 200.
+  Proof. intros []. Qed.
 
   Global Instance add_modal_fupd_twp s E e P Φ :
     AddModal (|={E}=> P) P (WP e @ s; E [{ Φ }]).
   Proof. by rewrite /AddModal fupd_frame_r wand_elim_r fupd_twp. Qed.
+
+  Global Instance elim_acc_twp_atomic {X} E1 E2 α β γ e s Φ :
+    ElimAcc (X:=X) (Atomic (stuckness_to_atomicity s) e)
+            (fupd E1 E2) (fupd E2 E1)
+            α β γ (WP e @ s; E1 [{ Φ }])
+            (λ x, WP e @ s; E2 [{ v, |={E2}=> β x ∗ (γ x -∗? Φ v) }])%I | 100.
+  Proof.
+    iIntros (?) "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
+    iApply (twp_wand with "(Hinner Hα)").
+    iIntros (v) ">[Hβ HΦ]". iApply "HΦ". by iApply "Hclose".
+  Qed.
 End proofmode_classes.
