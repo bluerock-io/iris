@@ -5,6 +5,8 @@ lemma.
 
 ## Iris master
 
+Iris master supports Coq 8.19 and 8.20. Coq 8.18 is no longer supported.
+
 **Changes in `algebra`:**
 
 * Add lemmas `big_opS_gset_to_gmap` and `big_opS_gset_to_gmap_L`, which rewrite

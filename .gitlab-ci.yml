@@ -81,14 +81,6 @@ build-coq.8.19.1:
     OPAM_PINS: "coq version 8.19.1"
     DENY_WARNINGS: "1"
 
-# The oldest version runs in MRs, without name mangling.
-build-coq.8.18.0:
-  <<: *template
-  <<: *branches_and_mr
-  variables:
-    OPAM_PINS: "coq version 8.18.0"
-    DENY_WARNINGS: "1"
-
 trigger-stdpp.dev:
   <<: *template
   variables:
