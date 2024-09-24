@@ -2,7 +2,7 @@ From iris.algebra Require Import frac.
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic Require Import base_logic.
 From iris.base_logic.lib Require Import invariants cancelable_invariants na_invariants ghost_var.
-From iris.program_logic Require Import weakestpre.
+From iris.program_logic Require Import total_weakestpre.
 From iris.prelude Require Import options.
 
 Unset Mangle Names.
@@ -344,7 +344,58 @@ Section WP_tests.
     Show.
   Abort.
 
+  Check "iInv_WP".
+  Lemma iInv_WP (e : expr Λ) N E P :
+    ↑N ⊆ E → 
+    inv N P ⊢ WP e @ E {{ _, True }}.
+  Proof.
+    iIntros (?) "Hinv".
+    iInv N as "HP". Show.
+  Abort.
+
 End WP_tests.
+
+Section TWP_tests.
+  Context `{!irisGS_gen hlc Λ Σ}.
+  Implicit Types P Q R : iProp Σ.
+
+  Check "iMod_TWP_mask_mismatch".
+  Lemma iMod_TWP_mask_mismatch E1 E2 P (e : expr Λ) :
+    (|={E2}=> P) ⊢ WP e @ E1 [{ _, True }].
+  Proof.
+    Fail iIntros ">HP".
+    iIntros "HP". Fail iMod "HP".
+    iApply fupd_twp; iMod (fupd_mask_subseteq E2).
+  Abort.
+
+  Check "iMod_TWP_atomic_mask_mismatch".
+  Lemma iMod_TWP_atomic_mask_mismatch E1 E2 E2' P (e : expr Λ) :
+    (|={E2,E2'}=> P) ⊢ WP e @ E1 [{ _, True }].
+  Proof.
+    Fail iIntros ">HP".
+    iIntros "HP". Fail iMod "HP".
+    iMod (fupd_mask_subseteq E2).
+  Abort.
+
+  Check "iFrame_TWP_no_instantiate".
+  Lemma iFrame_TWP_no_instantiate (e : expr Λ) (Φ : nat → iProp Σ) :
+    □ Φ 0 ⊢ WP e [{ _, Φ 0 ∗ ∃ n, Φ n }].
+  Proof.
+    iIntros "#$".
+    (* [Φ 0] should get framed, [∃ n, Φ n] should remain untouched *)
+    Show.
+  Abort.
+
+  Check "iInv_TWP".
+  Lemma iInv_TWP (e : expr Λ) N E P :
+    ↑N ⊆ E → 
+    inv N P ⊢ WP e @ E [{ _, True }].
+  Proof.
+    iIntros (?) "Hinv".
+    iInv N as "HP". Show.
+  Abort.
+
+End TWP_tests.
 
 Section monpred_tests.
   Context `{!invGS_gen hlc Σ}.
