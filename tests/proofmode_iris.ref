@@ -268,6 +268,80 @@ Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
   _ : Φ 0
   --------------------------------------□
   WP e {{ _, ∃ n : nat, Φ n }}
+"iInv_WP"
+     : string
+2 goals
+  
+  hlc : has_lc
+  Λ : language
+  Σ : gFunctors
+  irisGS_gen0 : irisGS_gen hlc Λ Σ
+  e : expr Λ
+  N : namespace
+  E : coPset
+  P : iProp Σ
+  H : ↑N ⊆ E
+  ============================
+  Atomic (stuckness_to_atomicity NotStuck) e
+
+goal 2 is:
+ "HP" : ▷ P
+ --------------------------------------∗
+ WP e @ E ∖ ↑N {{ _, |={E ∖ ↑N}=> ▷ P ∗ True }}
+"iMod_TWP_mask_mismatch"
+     : string
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+Use [iApply fupd_twp; iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+Use [iApply fupd_twp; iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+"iMod_TWP_atomic_mask_mismatch"
+     : string
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+  Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+  Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+"iFrame_TWP_no_instantiate"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Λ : language
+  Σ : gFunctors
+  irisGS_gen0 : irisGS_gen hlc Λ Σ
+  e : expr Λ
+  Φ : nat → iProp Σ
+  ============================
+  _ : Φ 0
+  --------------------------------------□
+  WP e [{ _, ∃ n : nat, Φ n }]
+"iInv_TWP"
+     : string
+2 goals
+  
+  hlc : has_lc
+  Λ : language
+  Σ : gFunctors
+  irisGS_gen0 : irisGS_gen hlc Λ Σ
+  e : expr Λ
+  N : namespace
+  E : coPset
+  P : iProp Σ
+  H : ↑N ⊆ E
+  ============================
+  Atomic (stuckness_to_atomicity NotStuck) e
+
+goal 2 is:
+ "HP" : ▷ P
+ --------------------------------------∗
+ WP e @ E ∖ ↑N [{ _, |={E ∖ ↑N}=> ▷ P ∗ True }]
 "test_iInv"
      : string
 1 goal
