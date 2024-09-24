@@ -40,8 +40,8 @@ lemma.
 
 **Changes in `program_logic`:**
 
-* Add some missing proofmode instances for total weakest preconditions. (by 
-  Janggun Lee)
+* Add missing proofmode instances for error reporting and opening invariants
+  around total weakest preconditions. (by Janggun Lee)
 
 **Changes in `heap_lang`:**
 
