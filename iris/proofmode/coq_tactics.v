@@ -654,9 +654,9 @@ Class CombineSepsAsGives {PROP : bi} (Ps : list PROP) (Q R : PROP) := {
   combine_seps_as_gives_gives : [∗] Ps ⊢ <pers> R;
 }.
 Global Hint Mode CombineSepsAsGives + ! - - : typeclass_instances.
-Global Arguments CombineSepsAsGives {_} _%I _%I _%I.
-Global Arguments combine_seps_as_gives_as {_} _%I _%I _%I {_}.
-Global Arguments combine_seps_as_gives_gives {_} _%I _%I _%I {_}.
+Global Arguments CombineSepsAsGives {_} _%_I _%_I _%_I.
+Global Arguments combine_seps_as_gives_as {_} _%_I _%_I _%_I {_}.
+Global Arguments combine_seps_as_gives_gives {_} _%_I _%_I _%_I {_}.
 
 Global Instance combine_seps_as_gives_nil : @CombineSepsAsGives PROP [] emp True.
 Proof.
@@ -703,8 +703,8 @@ the following [CombineSepsAs] typeclass. *)
 Class CombineSepsAs {PROP : bi} (Ps : list PROP) (Q : PROP) :=
   combine_seps_as : [∗] Ps ⊢ Q.
 Global Hint Mode CombineSepsAs + ! - : typeclass_instances.
-Global Arguments CombineSepsAs {_} _%I _%I.
-Global Arguments combine_seps_as {_} _%I _%I {_}.
+Global Arguments CombineSepsAs {_} _%_I _%_I.
+Global Arguments combine_seps_as {_} _%_I _%_I {_}.
 
 (** To ensure consistency of the output [Q] with that of [CombineSepsAsGives],
 the only instance of [CombineSepsAs] is constructed with an instance of

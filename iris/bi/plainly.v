@@ -12,7 +12,7 @@ Local Set Primitive Projections.
 Set Default Proof Using "Type*".
 
 Class Plainly (PROP : Type) := plainly : PROP → PROP.
-Global Arguments plainly {PROP}%type_scope {_} _%I.
+Global Arguments plainly {PROP}%_type_scope {_} _%_I.
 Global Hint Mode Plainly ! : typeclass_instances.
 Global Instance: Params (@plainly) 2 := {}.
 Global Typeclasses Opaque plainly.
@@ -103,8 +103,8 @@ End plainly_laws.
 
 (* Derived properties and connectives *)
 Class Plain {PROP: bi} `{!BiPlainly PROP} (P : PROP) := plain : P ⊢ ■ P.
-Global Arguments Plain {_ _} _%I : simpl never.
-Global Arguments plain {_ _} _%I {_}.
+Global Arguments Plain {_ _} _%_I : simpl never.
+Global Arguments plain {_ _} _%_I {_}.
 Global Hint Mode Plain + - ! : typeclass_instances.
 Global Instance: Params (@Plain) 1 := {}.
 Global Hint Extern 100 (Plain (match ?x with _ => _ end)) =>
@@ -112,7 +112,7 @@ Global Hint Extern 100 (Plain (match ?x with _ => _ end)) =>
 
 Definition plainly_if {PROP: bi} `{!BiPlainly PROP} (p : bool) (P : PROP) : PROP :=
   (if p then ■ P else P)%I.
-Global Arguments plainly_if {_ _} !_ _%I /.
+Global Arguments plainly_if {_ _} !_ _%_I /.
 Global Instance: Params (@plainly_if) 2 := {}.
 Global Typeclasses Opaque plainly_if.
 

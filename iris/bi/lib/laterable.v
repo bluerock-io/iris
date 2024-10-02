@@ -5,8 +5,8 @@ From iris.prelude Require Import options.
 (** The class of laterable assertions *)
 Class Laterable {PROP : bi} (P : PROP) := laterable :
   P ⊢ ∃ Q, ▷ Q ∗ □ (▷ Q -∗ ◇ P).
-Global Arguments Laterable {_} _%I : simpl never.
-Global Arguments laterable {_} _%I {_}.
+Global Arguments Laterable {_} _%_I : simpl never.
+Global Arguments laterable {_} _%_I {_}.
 Global Hint Mode Laterable + ! : typeclass_instances.
 
 (** Proofmode class for turning [P] into a laterable [Q].
@@ -19,9 +19,9 @@ Class IntoLaterable {PROP : bi} (P Q : PROP) : Prop := {
   into_laterable : P ⊢ Q;
   into_laterable_result_laterable : Laterable Q;
 }.
-Global Arguments IntoLaterable {_} P%I Q%I.
-Global Arguments into_laterable {_} P%I Q%I {_}.
-Global Arguments into_laterable_result_laterable {_} P%I Q%I {_}.
+Global Arguments IntoLaterable {_} P%_I Q%_I.
+Global Arguments into_laterable {_} P%_I Q%_I {_}.
+Global Arguments into_laterable_result_laterable {_} P%_I Q%_I {_}.
 Global Hint Mode IntoLaterable + ! - : typeclass_instances.
 
 Section instances.

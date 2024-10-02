@@ -129,7 +129,7 @@ Module inv. Section inv.
 
   (** We have invariants *)
   Context (name : Type) (inv : name → PROP → PROP).
-  Global Arguments inv _ _%I.
+  Global Arguments inv _ _%_I.
   Hypothesis inv_persistent : ∀ i P, Persistent (inv i P).
   Hypothesis inv_alloc : ∀ P, P ⊢ fupd M1 (∃ i, inv i P).
   Hypothesis inv_fupd :

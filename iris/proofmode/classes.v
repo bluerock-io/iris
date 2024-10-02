@@ -12,26 +12,26 @@ Inductive pm_error (s : string) := .
 
 Class FromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   from_assumption : □?p P ⊢ Q.
-Global Arguments FromAssumption {_} _ _%I _%I : simpl never.
-Global Arguments from_assumption {_} _ _%I _%I {_}.
+Global Arguments FromAssumption {_} _ _%_I _%_I : simpl never.
+Global Arguments from_assumption {_} _ _%_I _%_I {_}.
 Global Hint Mode FromAssumption + + - - : typeclass_instances.
 
 Class KnownLFromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   #[global] knownl_from_assumption :: FromAssumption p P Q.
-Global Arguments KnownLFromAssumption {_} _ _%I _%I : simpl never.
-Global Arguments knownl_from_assumption {_} _ _%I _%I {_}.
+Global Arguments KnownLFromAssumption {_} _ _%_I _%_I : simpl never.
+Global Arguments knownl_from_assumption {_} _ _%_I _%_I {_}.
 Global Hint Mode KnownLFromAssumption + + ! - : typeclass_instances.
 
 Class KnownRFromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   #[global] knownr_from_assumption :: FromAssumption p P Q.
-Global Arguments KnownRFromAssumption {_} _ _%I _%I : simpl never.
-Global Arguments knownr_from_assumption {_} _ _%I _%I {_}.
+Global Arguments KnownRFromAssumption {_} _ _%_I _%_I : simpl never.
+Global Arguments knownr_from_assumption {_} _ _%_I _%_I {_}.
 Global Hint Mode KnownRFromAssumption + + - ! : typeclass_instances.
 
 Class IntoPure {PROP : bi} (P : PROP) (φ : Prop) :=
   into_pure : P ⊢ ⌜φ⌝.
-Global Arguments IntoPure {_} _%I _%type_scope : simpl never.
-Global Arguments into_pure {_} _%I _%type_scope {_}.
+Global Arguments IntoPure {_} _%_I _%_type_scope : simpl never.
+Global Arguments into_pure {_} _%_I _%_type_scope {_}.
 Global Hint Mode IntoPure + ! - : typeclass_instances.
 
 (* [IntoPureT] is a variant of [IntoPure] with the argument in [Type] to avoid
@@ -72,8 +72,8 @@ Note that the Boolean [a] is not needed for the (dual) [IntoPure] class, because
 there we can just ask that [P] is [Affine]. *)
 Class FromPure {PROP : bi} (a : bool) (P : PROP) (φ : Prop) :=
   from_pure : <affine>?a ⌜φ⌝ ⊢ P.
-Global Arguments FromPure {_} _ _%I _%type_scope : simpl never.
-Global Arguments from_pure {_} _ _%I _%type_scope {_}.
+Global Arguments FromPure {_} _ _%_I _%_type_scope : simpl never.
+Global Arguments from_pure {_} _ _%_I _%_type_scope {_}.
 Global Hint Mode FromPure + - ! - : typeclass_instances.
 
 Class FromPureT {PROP : bi} (a : bool) (P : PROP) (φ : Type) :=
@@ -86,14 +86,14 @@ Global Hint Extern 0 (FromPureT _ _ _) =>
 
 Class IntoInternalEq `{BiInternalEq PROP} {A : ofe} (P : PROP) (x y : A) :=
   into_internal_eq : P ⊢ x ≡ y.
-Global Arguments IntoInternalEq {_ _ _} _%I _%type_scope _%type_scope : simpl never.
-Global Arguments into_internal_eq {_ _ _} _%I _%type_scope _%type_scope {_}.
+Global Arguments IntoInternalEq {_ _ _} _%_I _%_type_scope _%_type_scope : simpl never.
+Global Arguments into_internal_eq {_ _ _} _%_I _%_type_scope _%_type_scope {_}.
 Global Hint Mode IntoInternalEq + - - ! - - : typeclass_instances.
 
 Class IntoPersistent {PROP : bi} (p : bool) (P Q : PROP) :=
   into_persistent : <pers>?p P ⊢ <pers> Q.
-Global Arguments IntoPersistent {_} _ _%I _%I : simpl never.
-Global Arguments into_persistent {_} _ _%I _%I {_}.
+Global Arguments IntoPersistent {_} _ _%_I _%_I : simpl never.
+Global Arguments into_persistent {_} _ _%_I _%_I {_}.
 Global Hint Mode IntoPersistent + + ! - : typeclass_instances.
 
 (** The [FromModal φ M sel P Q] class is used by the [iModIntro] tactic to
@@ -116,8 +116,8 @@ modalities [N] are [bupd], [fupd], [except_0], [monPred_subjectively] and
 Class FromModal {PROP1 PROP2 : bi} {A}
     (φ : Prop) (M : modality PROP1 PROP2) (sel : A) (P : PROP2) (Q : PROP1) :=
   from_modal : φ → M Q ⊢ P.
-Global Arguments FromModal {_ _ _} _ _ _%I _%I _%I : simpl never.
-Global Arguments from_modal {_ _ _} _ _ _ _%I _%I {_}.
+Global Arguments FromModal {_ _ _} _ _ _%_I _%_I _%_I : simpl never.
+Global Arguments from_modal {_ _ _} _ _ _ _%_I _%_I {_}.
 Global Hint Mode FromModal - + - - - - ! - : typeclass_instances.
 
 (** The [FromAffinely P Q] class is used to add an [<affine>] modality to the
@@ -126,8 +126,8 @@ proposition [Q].
 The input is [Q] and the output is [P]. *)
 Class FromAffinely {PROP : bi} (P Q : PROP) :=
   from_affinely : <affine> Q ⊢ P.
-Global Arguments FromAffinely {_} _%I _%I : simpl never.
-Global Arguments from_affinely {_} _%I _%I {_}.
+Global Arguments FromAffinely {_} _%_I _%_I : simpl never.
+Global Arguments from_affinely {_} _%_I _%_I {_}.
 Global Hint Mode FromAffinely + - ! : typeclass_instances.
 
 (** The [IntoAbsorbingly P Q] class is used to add an [<absorb>] modality to
@@ -136,8 +136,8 @@ the proposition [Q].
 The input is [Q] and the output is [P]. *)
 Class IntoAbsorbingly {PROP : bi} (P Q : PROP) :=
   into_absorbingly : P ⊢ <absorb> Q.
-Global Arguments IntoAbsorbingly {_} _%I _%I.
-Global Arguments into_absorbingly {_} _%I _%I {_}.
+Global Arguments IntoAbsorbingly {_} _%_I _%_I.
+Global Arguments into_absorbingly {_} _%_I _%_I {_}.
 Global Hint Mode IntoAbsorbingly + - ! : typeclass_instances.
 
 (** Converting an assumption [R] into a wand [P -∗ Q] is done in three stages:
@@ -150,34 +150,34 @@ Global Hint Mode IntoAbsorbingly + - ! : typeclass_instances.
 - Instantiate the premise of the wand or implication. *)
 Class IntoWand {PROP : bi} (p q : bool) (R P Q : PROP) :=
   into_wand : □?p R ⊢ □?q P -∗ Q.
-Global Arguments IntoWand {_} _ _ _%I _%I _%I : simpl never.
-Global Arguments into_wand {_} _ _ _%I _%I _%I {_}.
+Global Arguments IntoWand {_} _ _ _%_I _%_I _%_I : simpl never.
+Global Arguments into_wand {_} _ _ _%_I _%_I _%_I {_}.
 Global Hint Mode IntoWand + + + ! - - : typeclass_instances.
 
 Class IntoWand' {PROP : bi} (p q : bool) (R P Q : PROP) :=
   into_wand' : IntoWand p q R P Q.
-Global Arguments IntoWand' {_} _ _ _%I _%I _%I : simpl never.
+Global Arguments IntoWand' {_} _ _ _%_I _%_I _%_I : simpl never.
 Global Hint Mode IntoWand' + + + ! ! - : typeclass_instances.
 Global Hint Mode IntoWand' + + + ! - ! : typeclass_instances.
 
 Class FromWand {PROP : bi} (P Q1 Q2 : PROP) := from_wand : (Q1 -∗ Q2) ⊢ P.
-Global Arguments FromWand {_} _%I _%I _%I : simpl never.
-Global Arguments from_wand {_} _%I _%I _%I {_}.
+Global Arguments FromWand {_} _%_I _%_I _%_I : simpl never.
+Global Arguments from_wand {_} _%_I _%_I _%_I {_}.
 Global Hint Mode FromWand + ! - - : typeclass_instances.
 
 Class FromImpl {PROP : bi} (P Q1 Q2 : PROP) := from_impl : (Q1 → Q2) ⊢ P.
-Global Arguments FromImpl {_} _%I _%I _%I : simpl never.
-Global Arguments from_impl {_} _%I _%I _%I {_}.
+Global Arguments FromImpl {_} _%_I _%_I _%_I : simpl never.
+Global Arguments from_impl {_} _%_I _%_I _%_I {_}.
 Global Hint Mode FromImpl + ! - - : typeclass_instances.
 
 Class FromSep {PROP : bi} (P Q1 Q2 : PROP) := from_sep : Q1 ∗ Q2 ⊢ P.
-Global Arguments FromSep {_} _%I _%I _%I : simpl never.
-Global Arguments from_sep {_} _%I _%I _%I {_}.
+Global Arguments FromSep {_} _%_I _%_I _%_I : simpl never.
+Global Arguments from_sep {_} _%_I _%_I _%_I {_}.
 Global Hint Mode FromSep + ! - - : typeclass_instances. (* For iSplit{L,R} *)
 
 Class FromAnd {PROP : bi} (P Q1 Q2 : PROP) := from_and : Q1 ∧ Q2 ⊢ P.
-Global Arguments FromAnd {_} _%I _%I _%I : simpl never.
-Global Arguments from_and {_} _%I _%I _%I {_}.
+Global Arguments FromAnd {_} _%_I _%_I _%_I : simpl never.
+Global Arguments from_and {_} _%_I _%_I _%_I {_}.
 Global Hint Mode FromAnd + ! - - : typeclass_instances.
 
 (** The [IntoAnd p P Q1 Q2] class is used to handle some [[H1 H2]] intro
@@ -190,8 +190,8 @@ patterns:
 The inputs are [p P] and the outputs are [Q1 Q2]. *)
 Class IntoAnd {PROP : bi} (p : bool) (P Q1 Q2 : PROP) :=
   into_and : □?p P ⊢ □?p (Q1 ∧ Q2).
-Global Arguments IntoAnd {_} _ _%I _%I _%I : simpl never.
-Global Arguments into_and {_} _ _%I _%I _%I {_}.
+Global Arguments IntoAnd {_} _ _%_I _%_I _%_I : simpl never.
+Global Arguments into_and {_} _ _%_I _%_I _%_I {_}.
 Global Hint Mode IntoAnd + + ! - - : typeclass_instances.
 
 (** The [IntoSep P Q1 Q2] class is used to handle [[H1 H2]] intro patterns in
@@ -203,47 +203,47 @@ the spatial context, except:
 The input is [P] and the outputs are [Q1 Q2]. *)
 Class IntoSep {PROP : bi} (P Q1 Q2 : PROP) :=
   into_sep : P ⊢ Q1 ∗ Q2.
-Global Arguments IntoSep {_} _%I _%I _%I : simpl never.
-Global Arguments into_sep {_} _%I _%I _%I {_}.
+Global Arguments IntoSep {_} _%_I _%_I _%_I : simpl never.
+Global Arguments into_sep {_} _%_I _%_I _%_I {_}.
 Global Hint Mode IntoSep + ! - - : typeclass_instances.
 
 Class FromOr {PROP : bi} (P Q1 Q2 : PROP) := from_or : Q1 ∨ Q2 ⊢ P.
-Global Arguments FromOr {_} _%I _%I _%I : simpl never.
-Global Arguments from_or {_} _%I _%I _%I {_}.
+Global Arguments FromOr {_} _%_I _%_I _%_I : simpl never.
+Global Arguments from_or {_} _%_I _%_I _%_I {_}.
 Global Hint Mode FromOr + ! - - : typeclass_instances.
 
 Class IntoOr {PROP : bi} (P Q1 Q2 : PROP) := into_or : P ⊢ Q1 ∨ Q2.
-Global Arguments IntoOr {_} _%I _%I _%I : simpl never.
-Global Arguments into_or {_} _%I _%I _%I {_}.
+Global Arguments IntoOr {_} _%_I _%_I _%_I : simpl never.
+Global Arguments into_or {_} _%_I _%_I _%_I {_}.
 Global Hint Mode IntoOr + ! - - : typeclass_instances.
 
 Class FromExist {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :=
   from_exist : (∃ x, Φ x) ⊢ P.
-Global Arguments FromExist {_ _} _%I _%I : simpl never.
-Global Arguments from_exist {_ _} _%I _%I {_}.
+Global Arguments FromExist {_ _} _%_I _%_I : simpl never.
+Global Arguments from_exist {_ _} _%_I _%_I {_}.
 Global Hint Mode FromExist + - ! - : typeclass_instances.
 
 Class IntoExist {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name: ident_name) :=
   into_exist : P ⊢ ∃ x, Φ x.
-Global Arguments IntoExist {_ _} _%I _%I _ : simpl never.
-Global Arguments into_exist {_ _} _%I _%I _ {_}.
+Global Arguments IntoExist {_ _} _%_I _%_I _ : simpl never.
+Global Arguments into_exist {_ _} _%_I _%_I _ {_}.
 Global Hint Mode IntoExist + - ! - - : typeclass_instances.
 
 Class IntoForall {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :=
   into_forall : P ⊢ ∀ x, Φ x.
-Global Arguments IntoForall {_ _} _%I _%I : simpl never.
-Global Arguments into_forall {_ _} _%I _%I {_}.
+Global Arguments IntoForall {_ _} _%_I _%_I : simpl never.
+Global Arguments into_forall {_ _} _%_I _%_I {_}.
 Global Hint Mode IntoForall + - ! - : typeclass_instances.
 
 Class FromForall {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name : ident_name) :=
   from_forall : (∀ x, Φ x) ⊢ P.
-Global Arguments FromForall {_ _} _%I _%I _ : simpl never.
-Global Arguments from_forall {_ _} _%I _%I _ {_}.
+Global Arguments FromForall {_ _} _%_I _%_I _ : simpl never.
+Global Arguments from_forall {_ _} _%_I _%_I _ {_}.
 Global Hint Mode FromForall + - ! - - : typeclass_instances.
 
 Class IsExcept0 {PROP : bi} (Q : PROP) := is_except_0 : ◇ Q ⊢ Q.
-Global Arguments IsExcept0 {_} _%I : simpl never.
-Global Arguments is_except_0 {_} _%I {_}.
+Global Arguments IsExcept0 {_} _%_I : simpl never.
+Global Arguments is_except_0 {_} _%_I {_}.
 Global Hint Mode IsExcept0 + ! : typeclass_instances.
 
 (** [CombineSepAs], [MaybeCombineSepAs] and [CombineSepGives] are all used for
@@ -279,8 +279,8 @@ In terms of costs, note that the [AsFractional] instance for [CombineSepAs]
 has cost 50. If that instance should take priority over yours, make sure to use
 a higher cost. *)
 Class CombineSepAs {PROP : bi} (P Q R : PROP) := combine_sep_as : P ∗ Q ⊢ R.
-Global Arguments CombineSepAs {_} _%I _%I _%I : simpl never.
-Global Arguments combine_sep_as {_} _%I _%I _%I {_}.
+Global Arguments CombineSepAs {_} _%_I _%_I _%_I : simpl never.
+Global Arguments combine_sep_as {_} _%_I _%_I _%_I {_}.
 Global Hint Mode CombineSepAs + ! ! - : typeclass_instances.
 
 (** The [progress] parameter is of the following [progress_indicator] type: *)
@@ -292,8 +292,8 @@ indicates that a [CombineSepAs] instance was used. *)
 Class MaybeCombineSepAs {PROP : bi}
     (P Q R : PROP) (progress : progress_indicator) :=
   maybe_combine_sep_as : P ∗ Q ⊢ R.
-Global Arguments MaybeCombineSepAs {_} _%I _%I _%I _ : simpl never.
-Global Arguments maybe_combine_sep_as {_} _%I _%I _%I _ {_}.
+Global Arguments MaybeCombineSepAs {_} _%_I _%_I _%_I _ : simpl never.
+Global Arguments maybe_combine_sep_as {_} _%_I _%_I _%_I _ {_}.
 Global Hint Mode MaybeCombineSepAs + ! ! - - : typeclass_instances.
 
 Global Instance maybe_combine_sep_as_combine_sep_as {PROP : bi} (R P Q : PROP) :
@@ -311,8 +311,8 @@ non-trivial information. If such information cannot be found, we want to
 produce an error, instead of the trivial hypothesis [True]. *)
 Class CombineSepGives {PROP : bi} (P Q R : PROP) :=
   combine_sep_gives : P ∗ Q ⊢ <pers> R.
-Global Arguments CombineSepGives {_} _%I _%I _%I : simpl never.
-Global Arguments combine_sep_gives {_} _%I _%I _%I {_}.
+Global Arguments CombineSepGives {_} _%_I _%_I _%_I : simpl never.
+Global Arguments combine_sep_gives {_} _%_I _%_I _%_I {_}.
 Global Hint Mode CombineSepGives + ! ! - : typeclass_instances.
 
 (** The [ElimModal φ p p' P P' Q Q'] class is used by the [iMod] tactic.
@@ -336,16 +336,16 @@ originally). A corresponding [ElimModal] instance for the Iris 1/2-style update
 modality, would have a side-condition [φ] on the masks. *)
 Class ElimModal {PROP : bi} (φ : Prop) (p p' : bool) (P P' : PROP) (Q Q' : PROP) :=
   elim_modal : φ → □?p P ∗ (□?p' P' -∗ Q') ⊢ Q.
-Global Arguments ElimModal {_} _ _ _ _%I _%I _%I _%I : simpl never.
-Global Arguments elim_modal {_} _ _ _ _%I _%I _%I _%I {_}.
+Global Arguments ElimModal {_} _ _ _ _%_I _%_I _%_I _%_I : simpl never.
+Global Arguments elim_modal {_} _ _ _ _%_I _%_I _%_I _%_I {_}.
 Global Hint Mode ElimModal + - ! - ! - ! - : typeclass_instances.
 
 (* Used by the specialization pattern [ > ] in [iSpecialize] and [iAssert] to
 add a modality to the goal corresponding to a premise/asserted proposition. *)
 Class AddModal {PROP : bi} (P P' : PROP) (Q : PROP) :=
   add_modal : P ∗ (P' -∗ Q) ⊢ Q.
-Global Arguments AddModal {_} _%I _%I _%I : simpl never.
-Global Arguments add_modal {_} _%I _%I _%I {_}.
+Global Arguments AddModal {_} _%_I _%_I _%_I : simpl never.
+Global Arguments add_modal {_} _%_I _%_I _%_I {_}.
 Global Hint Mode AddModal + - ! ! : typeclass_instances.
 
 Lemma add_modal_id {PROP : bi} (P Q : PROP) : AddModal P P Q.
@@ -374,8 +374,8 @@ Global Instance is_disj_union_disj_union `{DisjUnion A} (X1 X2 : A) :
 Proof. done. Qed.
 
 Class Frame {PROP : bi} (p : bool) (R P Q : PROP) := frame : □?p R ∗ Q ⊢ P.
-Global Arguments Frame {_} _ _%I _%I _%I.
-Global Arguments frame {_} _ _%I _%I _%I {_}.
+Global Arguments Frame {_} _ _%_I _%_I _%_I.
+Global Arguments frame {_} _ _%_I _%_I _%_I {_}.
 Global Hint Mode Frame + + ! ! - : typeclass_instances.
 
 (* The boolean [progress] indicates whether actual framing has been performed.
@@ -385,8 +385,8 @@ used.
 the [MaybeFrame] notation defined below. *)
 Class MaybeFrame' {PROP : bi} (p : bool) (R P Q : PROP) (progress : bool) :=
   maybe_frame : □?p R ∗ Q ⊢ P.
-Global Arguments MaybeFrame' {_} _ _%I _%I _%I _.
-Global Arguments maybe_frame {_} _ _%I _%I _%I _ {_}.
+Global Arguments MaybeFrame' {_} _ _%_I _%_I _%_I _.
+Global Arguments maybe_frame {_} _ _%_I _%_I _%_I _ {_}.
 Global Hint Mode MaybeFrame' + + ! - - - : typeclass_instances.
 
 Global Instance maybe_frame_frame {PROP : bi} p (R P Q : PROP) :
@@ -433,8 +433,8 @@ found, the addition of [FrameInstantiateExistDisabled] to the context disables
 the instantiation of existential quantifiers. *)
 
 Class IntoExcept0 {PROP : bi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
-Global Arguments IntoExcept0 {_} _%I _%I : simpl never.
-Global Arguments into_except_0 {_} _%I _%I {_}.
+Global Arguments IntoExcept0 {_} _%_I _%_I : simpl never.
+Global Arguments into_except_0 {_} _%_I _%_I {_}.
 Global Hint Mode IntoExcept0 + ! - : typeclass_instances.
 Global Hint Mode IntoExcept0 + - ! : typeclass_instances.
 
@@ -474,13 +474,13 @@ Proof. iIntros "H". iFrame "H". Qed.
 *)
 Class MaybeIntoLaterN {PROP : bi} (only_head : bool) (n : nat) (P Q : PROP) :=
   maybe_into_laterN : P ⊢ ▷^n Q.
-Global Arguments MaybeIntoLaterN {_} _ _%nat_scope _%I _%I.
-Global Arguments maybe_into_laterN {_} _ _%nat_scope _%I _%I {_}.
+Global Arguments MaybeIntoLaterN {_} _ _%_nat_scope _%_I _%_I.
+Global Arguments maybe_into_laterN {_} _ _%_nat_scope _%_I _%_I {_}.
 Global Hint Mode MaybeIntoLaterN + + + - - : typeclass_instances.
 
 Class IntoLaterN {PROP : bi} (only_head : bool) (n : nat) (P Q : PROP) :=
   #[global] into_laterN :: MaybeIntoLaterN only_head n P Q.
-Global Arguments IntoLaterN {_} _ _%nat_scope _%I _%I.
+Global Arguments IntoLaterN {_} _ _%_nat_scope _%_I _%_I.
 Global Hint Mode IntoLaterN + + + ! - : typeclass_instances.
 
 Global Instance maybe_into_laterN_default {PROP : bi} only_head n (P : PROP) :
@@ -499,8 +499,8 @@ embeddings using [iModIntro].
 Input: the proposition [P], output: the proposition [Q] so that [P ⊢ ⎡Q⎤]. *)
 Class IntoEmbed {PROP PROP' : bi} `{BiEmbed PROP PROP'} (P : PROP') (Q : PROP) :=
   into_embed : P ⊢ ⎡Q⎤.
-Global Arguments IntoEmbed {_ _ _} _%I _%I.
-Global Arguments into_embed {_ _ _} _%I _%I {_}.
+Global Arguments IntoEmbed {_ _ _} _%_I _%_I.
+Global Arguments into_embed {_ _ _} _%_I _%_I {_}.
 Global Hint Mode IntoEmbed + + + ! -  : typeclass_instances.
 
 (* We use two type classes for [AsEmpValid], in order to avoid loops in
@@ -517,10 +517,10 @@ Global Hint Mode IntoEmbed + + + ! -  : typeclass_instances.
    projections for hints modes would make this fail.*)
 Class AsEmpValid {PROP : bi} (φ : Prop) (P : PROP) :=
   as_emp_valid : φ ↔ ⊢ P.
-Global Arguments AsEmpValid {_} _%type _%I.
+Global Arguments AsEmpValid {_} _%_type _%_I.
 Class AsEmpValid0 {PROP : bi} (φ : Prop) (P : PROP) :=
   as_emp_valid_0 : AsEmpValid φ P.
-Global Arguments AsEmpValid0 {_} _%type _%I.
+Global Arguments AsEmpValid0 {_} _%_type _%_I.
 Global Existing Instance as_emp_valid_0 | 0.
 
 Lemma as_emp_valid_1 (φ : Prop) {PROP : bi} (P : PROP) `{!AsEmpValid φ P} :
@@ -533,7 +533,7 @@ Proof. by apply as_emp_valid. Qed.
 (* Input: [P]; Outputs: [N],
    Extracts the namespace associated with an invariant assertion. Used for [iInv]. *)
 Class IntoInv {PROP : bi} (P: PROP) (N: namespace).
-Global Arguments IntoInv {_} _%I _.
+Global Arguments IntoInv {_} _%_I _.
 Global Hint Mode IntoInv + ! - : typeclass_instances.
 
 (** Accessors.
@@ -556,8 +556,8 @@ Class ElimAcc {PROP : bi} {X : Type} (φ : Prop) (M1 M2 : PROP → PROP)
       (α β : X → PROP) (mγ : X → option PROP)
       (Q : PROP) (Q' : X → PROP) :=
   elim_acc : φ → ((∀ x, α x -∗ Q' x) -∗ accessor M1 M2 α β mγ -∗ Q).
-Global Arguments ElimAcc {_} {_} _ _%I _%I _%I _%I _%I _%I : simpl never.
-Global Arguments elim_acc {_} {_} _ _%I _%I _%I _%I _%I _%I {_}.
+Global Arguments ElimAcc {_} {_} _ _%_I _%_I _%_I _%_I _%_I _%_I : simpl never.
+Global Arguments elim_acc {_} {_} _ _%_I _%_I _%_I _%_I _%_I _%_I {_}.
 Global Hint Mode ElimAcc + ! - ! ! ! ! ! ! - : typeclass_instances.
 
 (* Turn [P] into an accessor.
@@ -573,8 +573,8 @@ Global Hint Mode ElimAcc + ! - ! ! ! ! ! ! - : typeclass_instances.
 Class IntoAcc {PROP : bi} {X : Type} (Pacc : PROP) (φ : Prop) (Pin : PROP)
       (M1 M2 : PROP → PROP) (α β : X → PROP) (mγ : X → option PROP) :=
   into_acc : φ → Pacc -∗ Pin -∗ accessor M1 M2 α β mγ.
-Global Arguments IntoAcc {_} {_} _%I _ _%I _%I _%I _%I _%I _%I : simpl never.
-Global Arguments into_acc {_} {_} _%I _ _%I _%I _%I _%I _%I _%I {_} : simpl never.
+Global Arguments IntoAcc {_} {_} _%_I _ _%_I _%_I _%_I _%_I _%_I _%_I : simpl never.
+Global Arguments into_acc {_} {_} _%_I _ _%_I _%_I _%_I _%_I _%_I _%_I {_} : simpl never.
 Global Hint Mode IntoAcc + - ! - - - - - - - : typeclass_instances.
 
 (* The typeclass used for the [iInv] tactic.
@@ -599,8 +599,8 @@ Class ElimInv {PROP : bi} {X : Type} (φ : Prop)
       (Pinv Pin : PROP) (Pout : X → PROP) (mPclose : option (X → PROP))
       (Q : PROP) (Q' : X → PROP) :=
   elim_inv : φ → Pinv ∗ Pin ∗ (∀ x, Pout x ∗ (default (λ _, emp) mPclose) x -∗ Q' x) ⊢ Q.
-Global Arguments ElimInv {_} {_} _ _%I _%I _%I _%I _%I _%I : simpl never.
-Global Arguments elim_inv {_} {_} _ _%I _%I _%I _%I _%I _%I {_}.
+Global Arguments ElimInv {_} {_} _ _%_I _%_I _%_I _%_I _%_I _%_I : simpl never.
+Global Arguments elim_inv {_} {_} _ _%_I _%_I _%_I _%_I _%_I _%_I {_}.
 Global Hint Mode ElimInv + - - ! - - ! ! - : typeclass_instances.
 
 (** We make sure that tactics that perform actions on *specific* hypotheses or

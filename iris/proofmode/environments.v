@@ -271,7 +271,7 @@ Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
 Definition envs_entails_unseal :
   @envs_entails = λ PROP (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
 Proof. by rewrite /envs_entails pre_envs_entails_unseal. Qed.
-Global Arguments envs_entails {PROP} Δ Q%I.
+Global Arguments envs_entails {PROP} Δ Q%_I.
 Global Instance: Params (@envs_entails) 1 := {}.
 
 Record envs_Forall2 {PROP : bi} (R : relation PROP) (Δ1 Δ2 : envs PROP) := {

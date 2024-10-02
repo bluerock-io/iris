@@ -34,12 +34,12 @@ different [A], the plan is to generalize the notation to use [Inhabited] instead
 to pick a default value depending on [A]. *)
 Class Wp (PROP EXPR VAL A : Type) :=
   wp : A → coPset → EXPR → (VAL → PROP) → PROP.
-Global Arguments wp {_ _ _ _ _} _ _ _%E _%I.
+Global Arguments wp {_ _ _ _ _} _ _ _%_E _%_I.
 Global Instance: Params (@wp) 8 := {}.
 
 Class Twp (PROP EXPR VAL A : Type) :=
   twp : A → coPset → EXPR → (VAL → PROP) → PROP.
-Global Arguments twp {_ _ _ _ _} _ _ _%E _%I.
+Global Arguments twp {_ _ _ _ _} _ _ _%_E _%_I.
 Global Instance: Params (@twp) 8 := {}.
 
 (** Notations for partial weakest preconditions *)
