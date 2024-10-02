@@ -1852,7 +1852,7 @@ Section sigTOF.
     repeat intro. apply sigT_map => a. exact: oFunctor_map_contractive.
   Qed.
 End sigTOF.
-Global Arguments sigTOF {_} _%OF.
+Global Arguments sigTOF {_} _%_OF.
 
 Notation "{ x  &  P }" := (sigTOF (λ x, P%OF)) : oFunctor_scope.
 Notation "{ x : A &  P }" := (@sigTOF A%type (λ x, P%OF)) : oFunctor_scope.

@@ -4,7 +4,7 @@ From iris.prelude Require Import options.
 
 Class Fractional {PROP : bi} (Φ : Qp → PROP) :=
   fractional p q : Φ (p + q)%Qp ⊣⊢ Φ p ∗ Φ q.
-Global Arguments Fractional {_} _%I : simpl never.
+Global Arguments Fractional {_} _%_I : simpl never.
 Global Arguments fractional {_ _ _} _ _.
 
 (** The [AsFractional] typeclass eta-expands a proposition [P] into [Φ q] such
@@ -23,7 +23,7 @@ Class AsFractional {PROP : bi} (P : PROP) (Φ : Qp → PROP) (q : Qp) := {
   as_fractional : P ⊣⊢ Φ q;
   as_fractional_fractional : Fractional Φ
 }.
-Global Arguments AsFractional {_} _%I _%I _%Qp.
+Global Arguments AsFractional {_} _%_I _%_I _%_Qp.
 Global Hint Mode AsFractional - ! - - : typeclass_instances.
 
 (** The class [FrameFractionalQp] is used for fractional framing, it subtracts

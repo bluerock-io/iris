@@ -19,8 +19,6 @@
 -arg -w -arg -redundant-canonical-projection
 # Some warnings exist only on some Coq versions
 -arg -w -arg -unknown-warning
-# Fixing this one requires Coq 8.19
--arg -w -arg -argument-scope-delimiter
 # https://gitlab.mpi-sws.org/iris/stdpp/-/issues/216
 -arg -w -arg -notation-incompatible-prefix
 

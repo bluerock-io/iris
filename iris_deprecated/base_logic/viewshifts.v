@@ -11,7 +11,7 @@ From iris.prelude Require Import options.
 
 Definition vs `{!invGS Σ} (E1 E2 : coPset) (P Q : iProp Σ) : iProp Σ :=
   □ (P -∗ |={E1,E2}=> Q).
-Global Arguments vs {_ _} _ _ _%I _%I.
+Global Arguments vs {_ _} _ _ _%_I _%_I.
 
 Global Instance: Params (@vs) 4 := {}.
 Notation "P ={ E1 , E2 }=> Q" := (vs E1 E2 P Q)

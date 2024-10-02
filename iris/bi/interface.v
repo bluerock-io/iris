@@ -308,12 +308,12 @@ Global Arguments bi_dist : simpl never.
 Global Arguments bi_equiv : simpl never.
 Global Arguments bi_entails {PROP} _ _ : simpl never, rename.
 Global Arguments bi_emp {PROP} : simpl never, rename.
-Global Arguments bi_pure {PROP} _%stdpp : simpl never, rename.
+Global Arguments bi_pure {PROP} _%_stdpp : simpl never, rename.
 Global Arguments bi_and {PROP} _ _ : simpl never, rename.
 Global Arguments bi_or {PROP} _ _ : simpl never, rename.
 Global Arguments bi_impl {PROP} _ _ : simpl never, rename.
-Global Arguments bi_forall {PROP _} _%I : simpl never, rename.
-Global Arguments bi_exist {PROP _} _%I : simpl never, rename.
+Global Arguments bi_forall {PROP _} _%_I : simpl never, rename.
+Global Arguments bi_exist {PROP _} _%_I : simpl never, rename.
 Global Arguments bi_sep {PROP} _ _ : simpl never, rename.
 Global Arguments bi_wand {PROP} _ _ : simpl never, rename.
 Global Arguments bi_persistently {PROP} _ : simpl never, rename.
@@ -362,7 +362,7 @@ Notation "(.⊣⊢ Q )" := (λ P, P ≡@{bi_car _} Q) (only parsing) : stdpp_sco
 
 Definition bi_emp_valid {PROP : bi} (P : PROP) : Prop := emp ⊢ P.
 
-Global Arguments bi_emp_valid {_} _%I : simpl never.
+Global Arguments bi_emp_valid {_} _%_I : simpl never.
 Global Typeclasses Opaque bi_emp_valid.
 
 Notation "⊢ Q" := (bi_emp_valid Q%I) : stdpp_scope.

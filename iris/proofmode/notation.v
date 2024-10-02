@@ -4,9 +4,9 @@ From iris.prelude Require Import options.
 
 Declare Scope proof_scope.
 Delimit Scope proof_scope with env.
-Global Arguments Envs _ _%proof_scope _%proof_scope _.
+Global Arguments Envs _ _%_proof_scope _%_proof_scope _.
 Global Arguments Enil {_}.
-Global Arguments Esnoc {_} _%proof_scope _%string _%I.
+Global Arguments Esnoc {_} _%_proof_scope _%_string _%_I.
 
 Notation "" := Enil (only printing) : proof_scope.
 Notation "Γ H : P" := (Esnoc Γ (INamed H) P%I)

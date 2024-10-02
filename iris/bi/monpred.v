@@ -108,7 +108,7 @@ Section cofe.
 End cofe.
 
 Global Arguments monPred _ _ : clear implicits.
-Global Arguments monPred_at {_ _} _%I _.
+Global Arguments monPred_at {_ _} _%_I _.
 Local Existing Instance monPred_mono.
 Global Arguments monPredO _ _ : clear implicits.
 
@@ -305,8 +305,8 @@ Local Definition monPred_unseal :=
    @monPred_in_unseal, @monPred_later_unseal).
 End monPred_defs.
 
-Global Arguments monPred_objectively {_ _} _%I.
-Global Arguments monPred_subjectively {_ _} _%I.
+Global Arguments monPred_objectively {_ _} _%_I.
+Global Arguments monPred_subjectively {_ _} _%_I.
 Notation "'<obj>' P" := (monPred_objectively P) : bi_scope.
 Notation "'<subj>' P" := (monPred_subjectively P) : bi_scope.
 
@@ -667,8 +667,8 @@ End monPred.
 
 Class Objective {I : biIndex} {PROP : bi} (P : monPred I PROP) :=
   objective_at i j : P i ⊢ P j.
-Global Arguments Objective {_ _} _%I.
-Global Arguments objective_at {_ _} _%I {_}.
+Global Arguments Objective {_ _} _%_I.
+Global Arguments objective_at {_ _} _%_I {_}.
 Global Hint Mode Objective + + ! : typeclass_instances.
 Global Instance: Params (@Objective) 2 := {}.
 
