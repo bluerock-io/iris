@@ -18,7 +18,8 @@ Notation "Γ '_' : P" := (Esnoc Γ (IAnon _) P%I)
 
 Notation "Γ '--------------------------------------' □ Δ '--------------------------------------' ∗ Q" :=
   (envs_entails (Envs Γ Δ _) Q%I)
-  (at level 1, Q at level 200, left associativity,
+  (* The level of Δ is picked to silence warnings about incompatible prefixes. See https://github.com/coq/coq/issues/19631. *)
+  (at level 1, Δ at level 200, Q at level 200, left associativity,
   format "'[' Γ '--------------------------------------' □ '//' Δ '--------------------------------------' ∗ '//' Q ']'", only printing) :
   stdpp_scope.
 Notation "Δ '--------------------------------------' ∗ Q" :=
@@ -28,6 +29,6 @@ Notation "Δ '--------------------------------------' ∗ Q" :=
 Notation "Γ '--------------------------------------' □ Q" :=
   (envs_entails (Envs Γ Enil _) Q%I)
   (at level 1, Q at level 200, left associativity,
-  format "'[' Γ '--------------------------------------' □ '//' Q ']'", only printing)  : stdpp_scope.
+  format "'[' Γ '--------------------------------------' □ '//' Q ']'", only printing) : stdpp_scope.
 Notation "'--------------------------------------' ∗ Q" := (envs_entails (Envs Enil Enil _) Q%I)
   (at level 1, Q at level 200, format "'[' '--------------------------------------' ∗ '//' Q ']'", only printing) : stdpp_scope.
