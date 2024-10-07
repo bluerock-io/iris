@@ -76,11 +76,11 @@ build-coq.8.20.0-dune:
     MAKE_TARGET: "dune"
 
 # The oldest version runs in MRs, without name mangling.
-build-coq.8.19.1:
+build-coq.8.19.2:
   <<: *template
   <<: *branches_and_mr
   variables:
-    OPAM_PINS: "coq version 8.19.1"
+    OPAM_PINS: "coq version 8.19.2"
 
 trigger-stdpp.dev:
   <<: *template
