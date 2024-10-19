@@ -1,12 +1,15 @@
 From iris.algebra Require Export ofe.
 From iris.prelude Require Import options.
 
+(* Note that [Inhabited] is not derivable. Take [F X := ▶ X], then a possible
+solution is [Empty_set]. *)
 Record solution (F : oFunctor) := Solution {
   solution_car :> ofe;
+  solution_inhabited : Inhabited solution_car;
   solution_cofe : Cofe solution_car;
   solution_iso :> ofe_iso (oFunctor_apply F solution_car) solution_car;
 }.
-Global Existing Instance solution_cofe.
+Global Existing Instances solution_inhabited solution_cofe.
 
 Module solver. Section solver.
 Context (F : oFunctor) `{Fcontr : !oFunctorContractive F}.
@@ -177,6 +180,8 @@ Proof.
   - rewrite (ff_tower k (i - S k) X). by destruct (Nat.sub_add _ _ _).
 Qed.
 
+Global Instance tower_inhabited : Inhabited tower := populate (embed 0 ()).
+
 Program Definition unfold_chain (X : T) : chain (oFunctor_apply F T) :=
   {| chain_car n := map (project n,embed' n) (X (S n)) |}.
 Next Obligation.
@@ -206,7 +211,7 @@ Proof. by intros n X Y HXY k; rewrite /fold /= HXY. Qed.
 
 Theorem result : solution F.
 Proof using Type*.
-  refine (Solution F T _ (OfeIso (OfeMor fold) (OfeMor unfold) _ _)).
+  refine (Solution F T _ _ (OfeIso (OfeMor fold) (OfeMor unfold) _ _)).
   - move=> X /=. rewrite equiv_dist=> n k; rewrite /unfold /fold /=.
     rewrite -g_tower -(gg_tower _ n); apply (_ : Proper (_ ==> _) (g _)).
     trans (map (ff n, gg n) (X (S (n + k)))).

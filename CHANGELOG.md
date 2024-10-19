@@ -17,6 +17,7 @@ Iris master supports Coq 8.19 and 8.20. Coq 8.18 is no longer supported.
   the domain to be finite, similar to `discrete_fun_included_spec`. (by Janggun Lee)
 * Add lemmas `discrete_fun_singleton_valid` and `discrete_fun_singleton_unit`, which simplify 
   cmra validity and unit used with `discrete_fun_singleton`. (by Janggun Lee)
+* Add `Inhabited` instance for the solution of the COFE solver.
 
 **Changes in `proofmode`:**
 
