@@ -21,6 +21,9 @@
 -arg -w -arg -unknown-warning
 # Warning seems incorrect, see https://gitlab.mpi-sws.org/iris/stdpp/-/issues/216
 -arg -w -arg -notation-incompatible-prefix
+# We can't do this migration yet until we require Coq 9.0
+-arg -w -arg -deprecated-from-Coq
+-arg -w -arg -deprecated-dirpath-Coq
 
 iris/prelude/options.v
 iris/prelude/prelude.v
