@@ -17,8 +17,6 @@
 # Cannot use non-canonical projections as it causes massive unification failures
 # (https://github.com/coq/coq/issues/6294).
 -arg -w -arg -redundant-canonical-projection
-# Some warnings exist only on some Coq versions
--arg -w -arg -unknown-warning
 # Warning seems incorrect, see https://gitlab.mpi-sws.org/iris/stdpp/-/issues/216
 -arg -w -arg -notation-incompatible-prefix
 # We can't do this migration yet until we require Coq 9.0
