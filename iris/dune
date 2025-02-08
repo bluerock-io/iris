@@ -2,4 +2,4 @@
 (coq.theory
  (name iris)
  (package coq-iris)
- (theories Ltac2 stdpp))
+ (theories Ltac2 Stdlib stdpp))

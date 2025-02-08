@@ -2,4 +2,4 @@
 (coq.theory
  (name iris.unstable)
  (package coq-iris-unstable)
- (theories stdpp iris iris.heap_lang))
+ (theories Stdlib stdpp iris iris.heap_lang))
