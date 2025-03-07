@@ -2,4 +2,4 @@
 (coq.theory
  (name iris.deprecated)
  (package coq-iris-deprecated)
- (theories stdpp iris))
+ (theories Stdlib stdpp iris))
